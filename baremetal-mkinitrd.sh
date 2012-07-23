@@ -54,7 +54,7 @@ if [ ! -d "$MODULE_DIR" ]; then
 	return 1
 fi
 
-INITRD_DIR=`mktemp -t -d phy-mkinitrd.XXXXXXXX`
+INITRD_DIR=`mktemp -t -d baremetal-mkinitrd.XXXXXXXX`
 if [ $? -ne 0 ]; then
 	exit 1
 fi
