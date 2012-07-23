@@ -1,0 +1,157 @@
+#!/bin/bash
+
+# Copyright (c) 2012 NTT DOCOMO, INC. 
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+echo "init"
+
+source /init-func
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+export PATH
+
+mkdir -p /proc
+mkdir -p /sys
+mkdir -p /dev
+mkdir -p /boot
+mkdir -p /etc
+mkdir -p /mnt
+mkdir -p /lib/modules
+
+mount -t proc proc /proc
+
+readonly _BOOTIF_=$(get_kernel_parameter BOOTIF)
+readonly _IP_=$(get_kernel_parameter ip)
+readonly BOOT_MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g"  | sed -e "s/^01://g" | tr 'a-f' 'A-F')
+readonly BOOT_IP_ADDRESS=$(echo "$_IP_" | cut -d':' -f1)
+readonly BOOT_SERVER=$(echo "$_IP_" | cut -d':' -f2)
+readonly BOOT_NETMASK=$(echo "$_IP_" | cut -d':' -f4)
+
+readonly DISK=$(get_kernel_parameter disk)
+
+readonly DEPLOYMENT_ID=$(get_kernel_parameter deployment_id)
+readonly DEPLOYMENT_KEY=$(get_kernel_parameter deployment_key)
+readonly ISCSI_TARGET_IQN=$(get_kernel_parameter iscsi_target_iqn)
+
+if [ -z "$ISCSI_TARGET_IQN" ]; then
+	echo "iscsi_target_iqn is not defined"
+	echo "Starting troubleshooting shell."
+	bash
+fi
+
+mount -t sysfs none /sys
+mount -t tmpfs none /dev
+ln -sf /proc/self/fd /dev/fd
+mknod /dev/null c 1 3
+mknod /dev/zero c 1 5
+mknod /dev/random c 1 8
+mknod /dev/urandom c 1 9
+mknod /dev/tty0 c 4 0
+mknod /dev/tty1 c 4 1
+mknod /dev/tty2 c 4 2
+mknod /dev/tty3 c 4 3
+mknod /dev/tty4 c 4 4
+mknod /dev/tty5 c 4 5
+mknod /dev/tty6 c 4 6
+mknod /dev/tty7 c 4 7
+mknod /dev/tty8 c 4 8
+mknod /dev/tty9 c 4 9
+mknod /dev/tty c 5 0
+mknod -m 0600 /dev/console c 5 1
+mknod -m 0666 /dev/ptmx c 5 2
+mkdir -p /dev/.udev
+mkdir -p /dev/.udev/data
+
+echo "starting syslogd"
+
+echo '*.* /initlog' > /etc/syslog.conf
+syslogd
+klogd
+
+echo "starting udevd"
+udevd --daemon --resolve-names=never
+
+echo "load modules"
+load_modules_by_udev
+
+echo "starting network $BOOT_MAC_ADDRESS"
+t=0
+while ! BOOT_INTERFACE=$(find_interface "$BOOT_MAC_ADDRESS"); do
+	t=`expr "$t" + 5`
+	if [ "$t" -gt 10 ]; then
+		break
+	fi
+	sleep 5
+done
+if [ -z "$BOOT_INTERFACE" ]; then
+	echo "could not find an interface owns MAC=$BOOT_MAC_ADDRESS"
+	echo "Starting troubleshooting shell."
+	bash
+fi
+
+readonly BOOT_INTERFACE
+
+ifconfig lo 127.0.0.1 up
+ifconfig "$BOOT_INTERFACE" up
+if [ $? -ne 0 ]; then
+	sleep 10
+	ifconfig "$BOOT_INTERFACE" up
+	if [ $? -ne 0 ]; then
+		echo "Failed to up $BOOT_INTERFACE"
+		echo "Starting troubleshooting shell."
+		bash
+	fi
+fi
+ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"
+
+echo "pinging to boot server $BOOT_SERVER"
+w=30
+while [ $w -gt 0 ]; do
+	ping -c 5 -q "$BOOT_SERVER" > /dev/null
+	if [ $? -eq 0 ]; then
+		break
+	fi
+	sleep 1
+	w=`expr $w - 5`
+done
+
+echo "network ready"
+
+target_disk=`find_disk "$DISK"`
+echo "start iSCSI target on $target_disk"
+start_iscsi_target "$ISCSI_TARGET_IQN" "$target_disk" ALL
+if [ $? -ne 0 ]; then
+	echo "Could not find disk to use."
+	echo "Starting troubleshooting shell."
+	bash
+fi
+
+echo "request boot server to deploy image"
+d="i=$DEPLOYMENT_ID&k=$DEPLOYMENT_KEY&a=$BOOT_IP_ADDRESS&n=$ISCSI_TARGET_IQN"
+wget --post-data "$d" "http://$BOOT_SERVER:10000"
+
+echo "waiting for notice of complete"
+nc -l -p 10000
+
+echo "stop iSCSI target on $target_disk"
+
+stop_iscsi_target
+
+echo "rebooting"
+reboot -f
+
+echo "failed to reboot"
+echo "Starting troubleshooting shell."
+bash

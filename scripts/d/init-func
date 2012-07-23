@@ -1,0 +1,179 @@
+# Copyright (c) 2012 NTT DOCOMO, INC. 
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+function get_kernel_parameter() {
+	local name=$1
+	for i in `cat /proc/cmdline`; do
+		case "$i" in
+		${name}=*)
+			echo "${i#${name}=}"
+			return 0
+			;;
+		${name})
+			echo ""
+			return 0
+			;;
+		*)
+			;;
+		esac
+	done
+	echo ""
+	return 1
+}
+
+function load_modules_by_udev() {
+	depmod
+	udevadm trigger --action=add
+	udevadm settle
+}
+
+function strip_dev() {
+	echo "$1" | sed -e 's:^/dev/::'
+}
+
+function prepend_dev() {
+	case "$1" in
+	/dev/*)
+		echo "$1"
+		;;
+	*)
+		echo "/dev/$1"
+		;;
+	esac
+}
+
+function whole_disk_name() {
+	local dev=`prepend_dev "$1"`
+	case "$dev" in
+	/dev/sd*|/dev/hd*)
+		echo "$dev" | sed -e 's/[0-9]*$//'
+		;;
+	/dev/cciss/*)
+		echo "$dev" | sed -e 's/p[0-9]*$//'
+		;;
+	*)
+		echo ""
+		return 1
+		;;
+	esac
+}
+
+function partition_name() {
+	local dev=`prepend_dev "$1"`
+	local part=$2
+	case "$dev" in
+	/dev/sd*|/dev/hd*)
+		echo "${dev}${part}"
+		;;
+	/dev/cciss/*)
+		echo "${dev}p${part}"
+		;;
+	*)
+		echo ""
+		return 1
+		;;
+	esac
+}
+
+function find_interface() {
+	local mac=$1
+	eth=`ifconfig -a | grep -i "$mac" | awk {' print $1 '} | head -n 1`
+	if [ -n "$eth" ]; then
+		echo "$eth"
+		return 0
+	else
+		return 1
+	fi
+}
+
+function set_mac() {
+	local dev=$1
+	local mac=$2
+	ip link set "$dev" address "$mac"
+}
+
+function swap_ifname() {
+	local dev=$1
+	local dev2=$2
+	if [ "$dev" = "$dev2" ]; then
+		return
+	fi
+	if ip link show "$dev2" >/dev/null; then
+		# dev2 exists
+		# swap device name
+		ip link set "$dev" name "_$dev"
+		ip link set "$dev2" name "$dev"
+		ip link set "_$dev" name "$dev2"
+	else
+		ip link set "$dev" name "$dev2"
+	fi
+}
+
+function partition_exists() {
+	local dev=$1
+	dev=`strip_dev "$dev"`
+	if tail -n +3 /proc/partitions | grep "$dev" >/dev/null; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+function find_disk() {
+	local disks=$1
+	local dev
+
+	# find device
+	local OLD_IFS=$IFS
+	IFS=,
+	for i in $disks; do
+		dev=`whole_disk_name "$i"`
+		if partition_exists "$dev"; then
+			dev=`prepend_dev "$dev"`
+			break
+		fi
+	dev=""
+	done
+	IFS=$OLD_IFS
+
+	if [ -z "$dev" ]; then
+		return 1
+	fi
+	echo "$dev"
+	return 0
+}
+
+function start_iscsi_target() {
+	local iqn=$1
+	local dev=$2
+	local cli=$3
+
+	# used by tgtd
+	mkdir -p /var/run
+
+	tgtd
+
+	tgtadm --lld iscsi --mode target --op new --tid 1 --targetname "$iqn"
+	tgtadm --lld iscsi --mode logicalunit --op new --tid 1 --lun 1 --backing-store "$dev"
+	tgtadm --lld iscsi --mode target --op bind --tid 1 --initiator-address "$cli"
+}
+
+function stop_iscsi_target() {
+	tgtadm --lld iscsi --mode logicalunit --op delete --tid 1 --lun 1
+	tgtadm --lld iscsi --mode target --op delete --tid 1
+	killall tgtd
+}
+
+
