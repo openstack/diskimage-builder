@@ -81,7 +81,7 @@ mkdir -p "$INITRD_DIR/etc/udev"
 cat >"$INITRD_DIR/etc/udev/udev.conf" <<EOF
 udev_root="/dev"
 udev_rules="/lib/udev/rules.d"
-udev_log="info"
+udev_log="no"
 EOF
 
 libs=
