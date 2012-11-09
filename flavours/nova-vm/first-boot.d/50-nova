@@ -1,0 +1,85 @@
+#!/bin/bash
+set -e
+set -o xtrace
+
+source $(dirname $0)/defaults
+#HOST_IP
+
+NOVA_DIR="/etc/nova/"
+
+SQL_CONNECTION="mysql://nova:${MYSQL_NOVAPASS}d@localhost:3306/nova"
+
+
+sed -e "s,^admin_tenant_name\s*=\s*.\+$,admin_tenant_name = service," -i ${NOVA_DIR}/api-paste.ini
+sed -e "s,^admin_user\s*=\s*.\+$,admin_user = nova," -i ${NOVA_DIR}/api-paste.ini
+sed -e "s,^admin_password\s*=\s*.\+$,admin_password = ${NOVA_PASS}," -i ${NOVA_DIR}/api-paste.ini
+
+sed -i '/volume/d' /etc/nova/api-paste.ini
+
+cat << EOF > ${NOVA_DIR}/nova.conf
+[DEFAULT]
+# MySQL Connection #
+sql_connection=mysql://nova:password@${HOST_IP}/nova
+
+# nova-scheduler #
+rabbit_password=${RABBIT_PASS}
+scheduler_driver=nova.scheduler.simple.SimpleScheduler
+
+# nova-api #
+cc_host=${HOST_IP}
+auth_strategy=keystone
+s3_host=${HOST_IP}
+ec2_host=${HOST_IP}
+nova_url=http://${HOST_IP}:8774/v1.1/
+ec2_url=http://${HOST_IP}:8773/services/Cloud
+keystone_ec2_url=http://${HOST_IP}:5000/v2.0/ec2tokens
+api_paste_config=/etc/nova/api-paste.ini
+allow_admin_api=true
+use_deprecated_auth=false
+ec2_private_dns_show_ip=True
+dmz_cidr=169.254.169.254/32
+ec2_dmz_host=${HOST_IP}
+metadata_host=${HOST_IP}
+metadata_listen=0.0.0.0
+enabled_apis=ec2,osapi_compute,metadata
+
+# Networking #
+#network_api_class=nova.network.quantumv2.api.API
+#quantum_url=http://${HOST_IP}:9696
+#quantum_auth_strategy=keystone
+#quantum_admin_tenant_name=service
+#quantum_admin_username=quantum
+#quantum_admin_password=password
+#quantum_admin_auth_url=http://${HOST_IP}:35357/v2.0
+#libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
+#linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
+#firewall_driver=nova.virt.libvirt.firewall.IptablesFirewallDriver
+
+# Cinder #
+volume_api_class=nova.volume.cinder.API
+
+# Glance #
+glance_api_servers=${HOST_IP}:9292
+image_service=nova.image.glance.GlanceImageService
+
+# novnc #
+novnc_enable=true
+novncproxy_base_url=http://${HOST_IP}:6080/vnc_auto.html
+vncserver_proxyclient_address=127.0.0.1
+vncserver_listen=0.0.0.0
+
+# Misc #
+logdir=/var/log/nova
+state_path=/var/lib/nova
+lock_path=/var/lock/nova
+root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
+verbose=true
+EOF
+
+nova-manage db sync
+service nova-api restart
+service nova-cert restart
+service nova-consoleauth restart
+service nova-scheduler restart
+service novnc restart
+service nova-network restart

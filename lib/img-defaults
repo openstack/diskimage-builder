@@ -1,0 +1,14 @@
+# options for create-baremetal-image.sh
+ARCH=${ARCH:-$(dpkg --print-architecture)}
+RELEASE=${RELEASE:-quantal}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$RELEASE-server-cloudimg-$ARCH-root.tar.gz}
+CLOUD_IMAGES=${CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
+FS_TYPE=${FS_TYPE:-ext4}
+# Used to set the file extension only at this stage.
+IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
+IMAGE_NAME=${IMAGE_NAME:-image}
+IMAGE_SIZE=${IMAGE_SIZE:-1} # N.B. This size is in GB
+# Set via the CLI normally. 
+# IMAGE_FLAVOUR=
+IMG_PATH=~/.cache/image-create
+FLAVOURS_DIR=$(dirname $0)/../flavours

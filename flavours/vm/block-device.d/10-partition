@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+source $_LIB/die
+[ -n "$IMAGE_BLOCK_DEVICE" ] || die "Image block device not set"
+
+# Create 1 partition far enough up the disk to permit grub to be installed on
+# the MBR.
+sudo sfdisk $IMAGE_BLOCK_DEVICE << EOF
+1 - - *
+0 0;
+0 0;
+0 0;
+EOF
+
+echo "IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1"

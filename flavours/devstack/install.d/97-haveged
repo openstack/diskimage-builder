@@ -1,0 +1,7 @@
+#!/bin/bash
+# Install the haveged daemon so ssh config on startup isn't glacial.
+
+set -e
+set -o xtrace
+
+apt-get -y install haveged

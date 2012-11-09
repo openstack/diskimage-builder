@@ -1,0 +1,10 @@
+#!/bin/bash
+# Install the image creation toolchain so folk can create their own images
+# (also includes the bootstrap-from-devstack facilities needed until we have
+# full image mastering of openstack).
+
+set -e
+set -o xtrace
+
+apt-get -y install git
+sudo -Hiu stack git clone git://github.com/tripleo/demo.git

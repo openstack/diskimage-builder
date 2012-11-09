@@ -1,0 +1,26 @@
+#!/bin/bash
+# Configure eth1, the baremetal network.
+
+set -e
+set -o xtrace
+
+cat << EOF >> /etc/network/interfaces
+
+auto eth1
+iface eth1 inet static
+    # This matches the localrc we have configured for demo environments.
+    # It is unroutable and not suitable for production: it is a test network.
+    address 192.0.2.1
+    netmask 255.255.255.0
+    # Expose the metadata service needed by the nodes as they boot.
+    up iptables -t nat -A PREROUTING -d 169.254.169.254 -p tcp -m tcp --dport 80 -j REDIRECT --to-port 8775
+    # Grant access to the rest of the world by routing via the bootstrap node
+    # (libvirt rejects traffic from unknown ip addresses, meaning that using
+    # the default libvirt nat environment requires the MASQUERADE for the bare
+    # metal nodes unless you reconfigure libvirt as well).  Alternatively you
+    # can create a second bridge on your machine and attached eth0 to that
+    # (with an appropriate static config (or dhcp on the bridge).
+    up iptables -t nat -A POSTROUTING  -s 192.0.2.0/24 -o eth0 -j MASQUERADE
+    # This matches the client range defined in localrc.
+    up ip addr add 192.0.2.33/29 dev eth1
+EOF

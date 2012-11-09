@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Build iscsi modules with installed kernel
+
+set -e
+set -o xtrace
+
+package=iscsitarget-dkms
+name=iscsitarget
+
+kernel_version=`ls /boot/vmlinuz-* -r -1| head -n1 | xargs basename |sed 's/vmlinuz-//'`
+
+version=`dpkg-query -W -f='${Version}' "$package" \
+    |rev|cut -d- -f2-|rev|cut -d':' -f2|tr -d "\n"`
+
+isadded=`dkms status -m "$cd name" -v "$version"`
+
+
+
+if [ "x${isadded}" = "x" ] ; then
+        dkms add -m "$name" -v "$version" -k "$kernel_version" || true
+fi
+
+dkms build -m "$name" -v "$version" -k "$kernel_version" && dkms install -m "$name" -v "$version" -k "$kernel_version" || true
+
+
+

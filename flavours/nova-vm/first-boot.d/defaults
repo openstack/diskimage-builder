@@ -1,0 +1,27 @@
+set -e
+
+DEFAULT_PASSWORD=${DEFAULT_PASSWORD:-password}
+
+# HOST_IP
+# Find the interface used for the default route
+HOST_IP_IFACE=${HOST_IP_IFACE:-$(ip route | sed -n '/^default/{ s/.*dev \(\w\+\)\s\+.*/\1/; p; }')}
+# Search for an IP unless an explicit is set by ``HOST_IP`` environment variable
+HOST_IP=`LC_ALL=C ip -f inet addr show ${HOST_IP_IFACE} | awk '/inet/ {split($2,parts,"/");  print parts[1]}'`
+
+# Mysql Passwords
+MYSQL_ADMPASS=${MYSQL_ADMPASS:-$ {DEFAULT_PASSWORD}}
+MYSQL_NOVAPASS=${MYSQL_NOVAPASS:-$MYSQL_ADMPASS}
+MYSQL_GLANCEPASS=${MYSQL_GLANCEPASS:-$MYSQL_ADMPASS}
+MYSQL_KEYSTONEPASS=${MYSQL_KEYSTONEPASS:-$MYSQL_ADMPASS}
+MYSQL_CINDERPASS=${MYSQL_CINDERPASS:-$MYSQL_ADMPASS}
+
+#Rabbitmq Passwords
+RABBIT_PASS=${RABBIT_PASS:-${DEFAULT_PASSWORD}}
+
+#Keystone
+AUTH_TOKEN=${AUTH_TOKEN:-${DEFAULT_PASSWORD}}
+SERVICE_TOKEN=${AUTH_TOKEN}
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-${DEFAULT_PASSWORD}}
+
+#Glance
+GLANCE_PASS=${GLANCE_PASS:-${DEFAULT_PASSWORD}}

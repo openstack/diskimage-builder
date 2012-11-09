@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Build iscsi modules with installed kernel
+
+set -e
+set -o xtrace
+
+apt-get clean
+
+

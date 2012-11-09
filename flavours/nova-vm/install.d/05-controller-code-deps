@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Install controller base requiered packages
+
+set -e
+set -o xtrace
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install haproxy rabbitmq-server mysql-server ntp dkms

@@ -1,0 +1,79 @@
+#!/bin/bash
+
+set -e
+
+SCRIPTNAME=$(basename $0)
+export _LIB=$(dirname $0)/../lib
+source $_LIB/die
+
+function show_options () {
+    echo "Options:"
+    echo "    -a i386|amd64 -- set the architecture of the image"
+    echo "    -o filename -- set the name of the output file" 
+    echo "    -x -- turn on tracing"
+    exit 0
+}
+
+TEMP=`getopt -o a:ho:x -n $SCRIPTNAME -- "$@"`
+echo "XXX $TEMP"
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        -a) export ARCH=$2; shift 2 ;;
+        -o) export IMAGE_NAME=$2; shift 2 ;;
+        -h) show_options;;
+        -x) shift; set -x;;
+        --) shift ; break ;;
+        *) echo "Internal error!" ; exit 1 ;;
+    esac
+done
+for arg do IMAGE_FLAVOUR="$IMAGE_FLAVOUR $arg" ; done
+
+source $_LIB/img-defaults
+source $_LIB/img-functions
+
+echo "Building flavours: $IMAGE_FLAVOUR"
+echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."
+mkdir -p $IMG_PATH
+
+# TODO: make a flavour.
+ensure_nbd
+
+mk_build_dir
+ensure_base_available
+
+qemu-img create -f qcow2 $TMP_IMAGE_PATH ${IMAGE_SIZE}G
+
+# Should have a grab-next-dev helper ?
+NBD_DEV=/dev/nbd0
+if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then 
+  CACHE="--cache=writeback"
+else 
+  echo "Warning: qemu-nbd without --cache=writeback is /slow/."
+  CACHE=""
+fi
+sudo qemu-nbd -c $NBD_DEV $CACHE $TMP_IMAGE_PATH 
+export EXTRA_UNMOUNT="sudo qemu-nbd -d $NBD_DEV"
+export IMAGE_BLOCK_DEVICE=$NBD_DEV
+TEMP=`run_d block-device`
+echo "$TEMP"
+TEMP=`echo "$TEMP" | grep "IMAGE_BLOCK_DEVICE="`
+eval "$TEMP"
+
+sudo mkfs -F -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
+
+mount_tmp_image ${IMAGE_BLOCK_DEVICE}
+
+create_base
+run_d extra-data
+do_pre_install
+do_install
+prepare_first_boot
+finalise_base
+unmount_image
+compress_image
+save_image $IMAGE_NAME.$IMAGE_TYPE

@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+set -o xtrace
+
+source $(dirname $0)/defaults
+#MYSQL_ADMPASS
+#MYSQL_NOVAPASS
+#MYSQL_GLANCEPASS
+#MYSQL_KEYSTONEPASS
+#MYSQL_CINDERPASS
+
+
+service mysql stop || true
+MYSQL_BOOTSTRAP="/usr/sbin/mysqld --bootstrap --user=mysql --skip-grant-tables"
+sqltfile=`mktemp`
+cat <<EOF > $sqltfile
+USE mysql;
+UPDATE user SET password=PASSWORD("$MYSQL_ADMPASS") WHERE user='root';
+EOF
+$MYSQL_BOOTSTRAP < $sqltfile
+rm -f $sqltfile
+sed -i 's/^bind-address/#bind-address/' /etc/mysql/my.cnf
+service mysql start
+
+sqltfile=`mktemp`
+cat <<EOF > $sqltfile
+CREATE DATABASE IF NOT EXISTS nova;
+GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '${MYSQL_NOVAPASS}';
+
+CREATE DATABASE IF NOT EXISTS cinder;
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY '${MYSQL_CINDERPASS}';
+
+CREATE DATABASE IF NOT EXISTS keystone;
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '${MYSQL_KEYSTONEPASS}';
+
+CREATE DATABASE IF NOT EXISTS glance;
+GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '${MYSQL_GLANCEPASS}';
+
+FLUSH PRIVILEGES;
+EOF
+
+mysql -uroot --password=$MYSQL_ADMPASS < $sqltfile
+rm -f sqltfile

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Save user SSH public key if available.
+# (Obviously not suitable for downloadable images).
+
+set -e
+source $_LIB/die
+[ -n "$TMP_HOOKS_PATH." ] || die "Temp hook path not set"
+
+if [ -e ~/.ssh/authorized_keys ]; then
+   cat ~/.ssh/authorized_keys > $TMP_HOOKS_PATH/ssh-authorized-keys
+fi

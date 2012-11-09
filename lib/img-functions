@@ -1,0 +1,251 @@
+function unmount_image () {
+    # unmount from the chroot
+    # Don't use TMP_MOUNT_PATH here, it might not have been set.
+    sudo umount -f $TMP_BUILD_DIR/mnt/sys || true
+    sudo umount -f $TMP_BUILD_DIR/mnt/proc || true
+    sudo umount -f $TMP_BUILD_DIR/mnt/dev || true
+    sudo umount -f $TMP_BUILD_DIR/mnt/tmp/in_target.d || true
+    # give it a second (ok really 5) to umount XXX - why? should instead track
+    # the mount data / lsof etc.
+    sleep 5
+    # oh ya don't want to forget to unmount the image
+    sudo umount -f $TMP_BUILD_DIR/mnt || true
+    # having disk corruption issues; one possibility is qemu-nbd not flush dirty
+    # pages on disconnect?
+    sync
+    if [ -n "$EXTRA_UNMOUNT" ]; then
+        $EXTRA_UNMOUNT
+    fi
+}
+
+function cleanup () {
+    unmount_image
+    rm -rf $TMP_BUILD_DIR
+}
+
+function mk_build_dir () {
+  export TMP_BUILD_DIR=$(mktemp -t -d image.XXXXXXXX)
+  [ $? -eq 0 ] || die "Failed to create tmp directory"
+  trap cleanup EXIT
+  echo Building in $TMP_BUILD_DIR
+  export TMP_IMAGE_PATH=$TMP_BUILD_DIR/image
+  export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
+}
+
+function ensure_nbd () {
+    NBD=`which qemu-nbd`
+    if [ -z "$NBD" ];  then
+        echo "Need qemu-nbd to build qcow2 files."
+	sudo apt-get install qemu-utils
+    fi
+    # prep nbd for mounting
+    (lsmod | grep '^nbd ') || sudo modprobe nbd max_part=16
+}
+
+function ensure_base_available () {
+    # TODO: don't cache -current forever.
+    if [ ! -f $IMG_PATH/$BASE_IMAGE_FILE ] ; then
+       echo "Fetching Base Image"
+       wget $CLOUD_IMAGES/$RELEASE/current/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
+       mv $IMG_PATH/$BASE_IMAGE_FILE.tmp $IMG_PATH/$BASE_IMAGE_FILE
+    fi
+}
+
+function ensure_sudo () {
+    sudo echo "Ensuring sudo is available"
+}
+
+function mount_tmp_image () {
+  mkdir $TMP_BUILD_DIR/mnt
+  sudo mount $@ $TMP_BUILD_DIR/mnt
+  [ $? -eq 0 ] || die "Failed to mount image"
+  export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
+}
+
+function create_base () {
+    # Extract the base image
+    sudo tar -C $TMP_MOUNT_PATH -xzf $IMG_PATH/$BASE_IMAGE_FILE
+
+    # Configure Image
+    # Setup resolv.conf so we can chroot to install some packages
+    # XXXX: Should store the old state rather than unlink; then restore later.
+    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
+        sudo unlink $TMP_MOUNT_PATH/etc/resolv.conf
+    fi
+
+    if [ -f $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
+        sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
+    fi
+
+    # Recreate resolv.conf
+    sudo touch $TMP_MOUNT_PATH/etc/resolv.conf
+    sudo chmod 777 $TMP_MOUNT_PATH/etc/resolv.conf
+    echo nameserver 8.8.8.8 > $TMP_MOUNT_PATH/etc/resolv.conf
+
+    # supporting kernel file systems
+    sudo mount -t proc none $TMP_MOUNT_PATH/proc
+    sudo mount --bind /dev $TMP_MOUNT_PATH/dev
+    sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
+
+    # If we have a network proxy, use it.
+    if [ -n "$http_proxy" ] ; then
+        sudo dd of=$TMP_MOUNT_PATH/etc/apt/apt.conf.d/60img-build-proxy << _EOF_
+    Acquire::http::Proxy "$http_proxy";
+_EOF_
+    fi
+}
+
+# Helper function to run a command inside the chroot
+function run_in_target() {
+   # -E to preserve http_proxy
+   sudo -E chroot $TMP_MOUNT_PATH "$@"
+}
+
+function generate_hooks () {
+  mkdir -p $TMP_HOOKS_PATH
+  for _FLAVOUR in $IMAGE_FLAVOUR ; do 
+    [ -d $FLAVOURS_DIR/$_FLAVOUR ] || die "The flavour does not exist." ;
+    cp -t $TMP_HOOKS_PATH -a $FLAVOURS_DIR/$_FLAVOUR/* ;
+  done
+}
+
+# Check that a real flavour has been chosen (prevents foot-guns)
+function check_flavour () {
+  [ -d $TMP_HOOKS_PATH ] || generate_hooks
+}
+
+# Helper function to run a directory of scripts inside the chroot
+function run_d_in_target() {
+    check_flavour
+    # If we can find a directory of hooks to run in the target filesystem, bind
+    # mount it into the target and then execute run-parts in a chroot
+    if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
+      sudo mkdir $TMP_MOUNT_PATH/tmp/in_target.d
+      sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
+      sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
+      run_in_target run-parts -v /tmp/in_target.d/$1.d
+      sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
+      sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d
+    fi
+}
+
+# Run a directory of hooks outside the target.
+function run_d() {
+    check_flavour
+    if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
+      run-parts ${TMP_HOOKS_PATH}/$1.d
+    fi
+}
+
+function prepare_first_boot () {
+    if [ -d ${TMP_HOOKS_PATH}/first-boot.d ] ; then
+      sudo cp -t $TMP_MOUNT_PATH/etc/ -a $TMP_HOOKS_PATH/first-boot.d
+      run_in_target mv /etc/rc.local /etc/rc.local.REAL
+      sudo dd of=$TMP_MOUNT_PATH/etc/rc.local <<EOF
+#!/bin/bash
+set -e
+set -o xtrace
+
+run-parts -v /etc/first-boot.d
+rm -fr /etc/first-boot.d
+mv /etc/rc.local.REAL /etc/rc.local
+exit 0
+EOF
+      run_in_target chmod 755 /etc/rc.local
+    fi
+}
+
+function finalise_base () {
+    # Undo our proxy support
+    sudo rm -f $TMP_MOUNT_PATH/etc/apt/apt.conf.d/60img-build-proxy
+    # Now remove the resolv.conf we created above
+    sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
+    # The we need to recreate it as a link
+    sudo ln -sf ../run/resolvconf/resolv.conf $TMP_MOUNT_PATH/etc/resolv.conf
+}
+
+function compress_image () {
+    # Recreate our image to throw away unnecessary data
+    qemu-img convert -c $TMP_IMAGE_PATH -O qcow2 $TMP_IMAGE_PATH-new
+    rm $TMP_IMAGE_PATH
+    mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
+}
+
+function save_image () {
+    # TODO: this really should rename the old file
+    if [ -f  $1 ] ; then
+       echo "Old Image file Found REMOVING"
+       rm -f $1
+    fi
+
+    cp $TMP_IMAGE_PATH $1
+    rm -r $TMP_BUILD_DIR
+    # All done!
+    trap EXIT
+    echo "Image file $1 created..."
+}
+
+function block_apt_translations () {
+# Configure APT not to fetch translations files
+sudo dd of=$TMP_MOUNT_PATH/etc/apt/apt.conf.d/95no-translations <<EOF
+APT::Acquire::Languages "none";
+EOF
+
+# And now make sure that we don't fall foul of Debian bug 641967
+find $TMP_MOUNT_PATH/var/lib/apt/lists/ -type f -name '*_i18n_Translation-*' -exec sudo rm -f {} \;
+}
+
+function block_daemons () {
+# Prevent package installs from starting daemons
+sudo mv $TMP_MOUNT_PATH/sbin/start-stop-daemon $TMP_MOUNT_PATH/sbin/start-stop-daemon.REAL
+sudo dd of=$TMP_MOUNT_PATH/sbin/start-stop-daemon <<EOF
+#!/bin/sh
+echo
+echo "Warning: Fake start-stop-daemon called, doing nothing"
+EOF
+sudo chmod 755 $TMP_MOUNT_PATH/sbin/start-stop-daemon
+
+sudo mv $TMP_MOUNT_PATH/sbin/initctl $TMP_MOUNT_PATH/sbin/initctl.REAL
+sudo dd of=$TMP_MOUNT_PATH/sbin/initctl <<EOF
+#!/bin/sh
+echo "initctl (tripleo 1.0)"
+echo "Warning: Fake initctl called, doing nothing"
+EOF
+sudo chmod 755 $TMP_MOUNT_PATH/sbin/initctl
+
+sudo mv $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d.REAL
+sudo dd of=$TMP_MOUNT_PATH/usr/sbin/invoke-rc.d <<EOF
+#!/bin/sh
+echo "invoke-rc.d (tripleo 1.0)"
+echo "Warning: Fake inovke-rc.d called, doing nothing"
+EOF
+sudo chmod 755 $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d
+}
+
+function unblock_daemons () {
+  sudo mv $TMP_MOUNT_PATH/sbin/start-stop-daemon.REAL $TMP_MOUNT_PATH/sbin/start-stop-daemon
+  sudo mv $TMP_MOUNT_PATH/sbin/initctl.REAL $TMP_MOUNT_PATH/sbin/initctl
+  sudo mv $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d.REAL $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d
+}
+
+function do_pre_install () {
+  block_daemons
+  block_apt_translations
+  # Install baseline packages and tools
+  run_in_target apt-get -y update
+  run_in_target apt-get -y install python-software-properties
+  run_in_target add-apt-repository -y ppa:tripleo/demo
+  # Uncomment to get the bleeding edge - this should be a flavour thing.
+  # run_in_target add-apt-repository -y ppa:tripleo/demo-staging
+  # Run pre-install scripts. These do things that prepare the chroot for package installs
+  run_d_in_target pre-install
+  run_in_target apt-get -y update
+}
+
+function do_install () {
+  # These are useful, or at worst not harmful, for all imges we build.
+  run_in_target apt-get -y install linux-image-generic vlan open-iscsi
+  # Call install scripts to pull in the software users want.
+  run_d_in_target install
+  unblock_daemons
+}

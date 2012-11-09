@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Install controller openstack packages
+
+set -e
+set -o xtrace
+
+apt-get -y install swift rsync memcached python-netifaces python-xattr python-memcache
+

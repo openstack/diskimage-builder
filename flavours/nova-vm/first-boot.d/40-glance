@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+set -o xtrace
+
+source $(dirname $0)/defaults
+#MYSQL_GLANCEPASS
+#GLANCE_PASS
+#RABBIT_PASS
+
+GLANCE_DIR="/etc/glance/"
+
+SQL_CONNECTION="mysql://glance:${MYSQL_GLANCEPASS}@localhost:3306/glance"
+
+sed -e "s,^sql_connection\s*=\s*.\+$,sql_connection = $SQL_CONNECTION," -i ${GLANCE_DIR}/glance-api.conf
+sed -e "s,^sql_connection\s*=\s*.\+$,sql_connection = $SQL_CONNECTION," -i ${GLANCE_DIR}/glance-registry.conf
+
+sed -e "s,^admin_tenant_name\s*=\s*.\+$,admin_tenant_name = service," -i ${GLANCE_DIR}/glance-api.conf
+sed -e "s,^admin_tenant_name\s*=\s*.\+$,admin_tenant_name = service," -i ${GLANCE_DIR}/glance-registry.conf
+
+sed -e "s,^admin_user\s*=\s*.\+$,admin_user = glance," -i ${GLANCE_DIR}/glance-api.conf
+sed -e "s,^admin_user\s*=\s*.\+$,admin_user = glance," -i ${GLANCE_DIR}/glance-registry.conf
+
+sed -e "s,^admin_password\s*=\s*.\+$,admin_password = ${GLANCE_PASS}," -i ${GLANCE_DIR}/glance-api.conf
+sed -e "s,^admin_password\s*=\s*.\+$,admin_password = ${GLANCE_PASS}," -i ${GLANCE_DIR}/glance-registry.conf
+
+sed -e "s,^notifier_strategy\s*=\s*.\+$,notifier_strategy = rabbit," -i ${GLANCE_DIR}/glance-api.conf
+sed -e "s,^rabbit_password\s*=\s*.\+$,rabbit_password = ${RABBIT_PASS}," -i ${GLANCE_DIR}/glance-api.conf
+
+service glance-api restart
+service glance-registry restart
+glance-manage db_sync
+
+#wget http://uec-images.ubuntu.com/releases/precise/release/ubuntu-12.04-server-cloudimg-amd64.tar.gz
+#tar xzvf ubuntu-12.04-server-cloudimg-amd64.tar.gz
+#glance image-create --name="Ubuntu 12.04 UEC" --public --container-format=ovf --disk-format=qcow2 < precise-server-cloudimg-amd64.img

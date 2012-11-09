@@ -1,0 +1,12 @@
+#!/bin/bash
+# Configure grub
+
+
+set -e
+set -o xtrace
+
+# XXX: grub-probe on the nbd0 device returns nothing - workaround, manually
+# specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
+grub-install --modules="biosdisk part_msdos" /dev/nbd0
+# XXX: Undiagnosed, but the LABEL=cloudimg-rootfs isn't being picked up: workaround it.
+sed -i 's%/dev/nbd0p1%LABEL=cloudimg-rootfs%' /boot/grub/grub.cfg

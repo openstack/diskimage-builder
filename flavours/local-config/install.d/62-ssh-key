@@ -1,0 +1,10 @@
+#!/bin/bash
+# Save user SSH public key if available.
+# XXX: Obviously not suitable for downloadable images.
+
+set -e
+
+if [ -e "/tmp/in_target.d/ssh-authorized-keys" ]; then
+    sudo -u stack mkdir ~stack/.ssh
+    sudo -Hiu stack dd of=~stack/.ssh/authorized_keys oflag=append conv=notrunc if=/tmp/in_target.d/ssh-authorized-keys
+fi
