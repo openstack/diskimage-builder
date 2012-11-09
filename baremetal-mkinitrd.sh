@@ -22,6 +22,36 @@ EOF
 	exit 1
 fi
 
+FLAVOUR=${FLAVOUR:-baremetal}
+echo "Building flavour(s): ${FLAVOUR}"
+
+if [[ "$FLAVOUR" == *hwdiscovery* ]] ; then
+  HWDISCOVERY_BINARIES="lshw"
+  for binary in ${HWDISCOVERY_BINARIES} ; do
+    LOCATION=$(which $binary)
+    if [ -z "$LOCATION" ]; then
+      echo "$binary is not found in PATH" 1>&2
+      echo "Please install it"
+      exit 1
+    fi
+  done
+  FLAVOUR_BINARIES="${FLAVOUR_BINARIES} ${HWDISCOVERY_BINARIES}"
+fi
+
+if [[ "$FLAVOUR" == *hwburnin* ]] ; then
+  HWDISCOVERY_BINARIES="spew memtester"
+  for binary in ${HWDISCOVERY_BINARIES} ; do
+    LOCATION=$(which $binary)
+    if [ -z "$LOCATION" ]; then
+      echo "$binary is not found in PATH" 1>&2
+      echo "Please install it"
+      exit 1
+    fi
+  done
+  FLAVOUR_BINARIES="${FLAVOUR_BINARIES} ${HWDISCOVERY_BINARIES}"
+fi
+
+
 BUSYBOX=${BUSYBOX:-$(which busybox)}
 if [ -z "$BUSYBOX" ]; then
 	echo "busybox is not found in PATH" 1>&2
@@ -85,7 +115,7 @@ udev_log="no"
 EOF
 
 libs=
-for i in "$BUSYBOX" bash modprobe udevd udevadm wget tgtd tgtadm reboot shutdown; do
+for i in "$BUSYBOX" bash modprobe udevd udevadm wget tgtd tgtadm reboot shutdown $FLAVOUR_BINARIES; do
 	if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
 		continue
 	fi

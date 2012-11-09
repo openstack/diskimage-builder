@@ -33,6 +33,16 @@ function get_kernel_parameter() {
 	return 1
 }
 
+function string_contains() {
+  local string=$1
+  local word=$2
+  if [ "$string" != "${string/$word/}" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 function load_modules_by_udev() {
 	depmod
 	udevadm trigger --action=add
