@@ -78,6 +78,11 @@ part of the process you need to customise:
 * first-boot.d: Runs inside the image before rc.local. Scripts from here are
   good for doing per-instance configuration based on cloud metadata.
 
+You can create a file listing any binary packages that your outside-the-chroot
+hooks need in order to run:
+
+* binary-deps : list one native package per line.
+
 Third party flavours
 --------------------
 
