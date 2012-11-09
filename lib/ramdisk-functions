@@ -122,7 +122,6 @@ EOF
 
   # Add our final steps to /init
   cat <${INIT}-end >>$TMP_MOUNT_PATH/init
-
 }
 
 function finalise_image () {
