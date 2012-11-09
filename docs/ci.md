@@ -37,6 +37,10 @@ Jenkins
 
         disk-image-create vm glance nova-bm swift cinder quantum \
         -o bootstrap-prod.qcow2
+
+ * ramdisk deploy image buil
+
+        ramdisk-image-create deploy
         
  * Tempest w/baremetal using libvirt networking as the power API.
    take a bootstrap baremetal devstack from above, N VM 'bare metal' nodes,

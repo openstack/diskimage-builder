@@ -15,6 +15,8 @@ What tools are there?
   ramdisk pair for running maintenance on bare metal machines (deployment,
   inventory, burnin etc).
 
+    ramdisk-image-create -o deploy.ramdisk deploy
+
 * disk-image-get-kernel filename : Extract the appropriate kernel and ramdisk
   to use when doing PXE boot using filename as the image for a machine.
 
