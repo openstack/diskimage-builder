@@ -78,10 +78,13 @@ part of the process you need to customise:
 * first-boot.d: Runs inside the image before rc.local. Scripts from here are
   good for doing per-instance configuration based on cloud metadata.
 
-You can create a file listing any binary packages that your outside-the-chroot
-hooks need in order to run:
+Ramdisk flavours support the following files in their flavour directories:
 
-* binary-deps : list one native package per line.
+* binary-deps : executables required to be fed into the ramdisk. These need
+  to be present in your $PATH.
+
+* init : a POSIX shell script fragment that will be appended to the default
+  script executed as the ramdisk is booted (/init)
 
 Third party flavours
 --------------------
