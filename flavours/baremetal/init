@@ -1,0 +1,26 @@
+if [ -z "$ISCSI_TARGET_IQN" ]; then
+  echo "iscsi_target_iqn is not defined"
+  echo "Starting troubleshooting shell."
+  bash
+fi
+
+target_disk=`find_disk "$DISK"`
+echo "start iSCSI target on $target_disk"
+start_iscsi_target "$ISCSI_TARGET_IQN" "$target_disk" ALL
+if [ $? -ne 0 ]; then
+  echo "Could not find disk to use."
+  echo "Starting troubleshooting shell."
+  bash
+fi
+
+echo "request boot server to deploy image"
+d="i=$DEPLOYMENT_ID&k=$DEPLOYMENT_KEY&a=$BOOT_IP_ADDRESS&n=$ISCSI_TARGET_IQN"
+wget --post-data "$d" "http://$BOOT_SERVER:10000"
+
+echo "waiting for notice of complete"
+nc -l -p 10000
+
+echo "stop iSCSI target on $target_disk"
+
+stop_iscsi_target
+

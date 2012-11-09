@@ -1,0 +1,11 @@
+
+
+# Final init steps
+
+echo "rebooting"
+reboot -f
+
+echo "failed to reboot"
+echo "Starting troubleshooting shell."
+bash
+

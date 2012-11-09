@@ -1,0 +1,5 @@
+echo "Starting HW Discovery"
+# XXX: Collect iLO specific data, bundle everything up and POST it somewhere
+lshw -json # XXX: Do something with this
+sleep 30
+

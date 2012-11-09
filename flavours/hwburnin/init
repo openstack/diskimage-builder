@@ -1,0 +1,4 @@
+echo "Starting HW Burnin"
+memtester 1G 10 # XXX: Discover RAM size
+# XXX: Discover and test disks with spew
+

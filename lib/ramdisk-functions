@@ -107,6 +107,22 @@ function populate_init () {
   for F in "$FUNCTIONS_D"/* ; do
     cp "$F" "$TMP_MOUNT_PATH"
   done
+
+  # Append /init with any flavour fragments that are present
+  for _FLVR in ${RAMDISK_FLAVOUR} ; do
+    _FILE="${FLAVOURS_DIR}/${_FLVR}/init"
+    if [ -a $_FILE ]; then
+      cat >>$TMP_MOUNT_PATH/init <<EOF
+
+# init fragment from ${_FLVR}
+EOF
+      cat <$_FILE >>$TMP_MOUNT_PATH/init
+    fi  
+  done
+
+  # Add our final steps to /init
+  cat <${INIT}-end >>$TMP_MOUNT_PATH/init
+
 }
 
 function finalise_image () {
