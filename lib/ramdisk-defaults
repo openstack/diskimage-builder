@@ -1,0 +1,6 @@
+# options for initrd-create.sh
+KERNEL_VERSION=${KERNEL_VERSION:-$(uname -r)}
+MODULE_ROOT=${MODULE_ROOT:-""}
+BUSYBOX=${BUSYBOX:-$(which busybox)}
+IMAGE_NAME=${IMAGE_NAME:-"ramdisk"}
+FLAVOURS_DIR=$(dirname $0)/../flavours

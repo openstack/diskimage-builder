@@ -23,15 +23,6 @@ function cleanup () {
     rm -rf $TMP_BUILD_DIR
 }
 
-function mk_build_dir () {
-  export TMP_BUILD_DIR=$(mktemp -t -d image.XXXXXXXX)
-  [ $? -eq 0 ] || die "Failed to create tmp directory"
-  trap cleanup EXIT
-  echo Building in $TMP_BUILD_DIR
-  export TMP_IMAGE_PATH=$TMP_BUILD_DIR/image
-  export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
-}
-
 function ensure_nbd () {
     NBD=`which qemu-nbd`
     if [ -z "$NBD" ];  then
@@ -101,19 +92,6 @@ function run_in_target() {
    sudo -E chroot $TMP_MOUNT_PATH "$@"
 }
 
-function generate_hooks () {
-  mkdir -p $TMP_HOOKS_PATH
-  for _FLAVOUR in $IMAGE_FLAVOUR ; do 
-    [ -d $FLAVOURS_DIR/$_FLAVOUR ] || die "The flavour does not exist." ;
-    cp -t $TMP_HOOKS_PATH -a $FLAVOURS_DIR/$_FLAVOUR/* ;
-  done
-}
-
-# Check that a real flavour has been chosen (prevents foot-guns)
-function check_flavour () {
-  [ -d $TMP_HOOKS_PATH ] || generate_hooks
-}
-
 # Helper function to run a directory of scripts inside the chroot
 function run_d_in_target() {
     check_flavour
@@ -169,20 +147,6 @@ function compress_image () {
     qemu-img convert -c $TMP_IMAGE_PATH -O qcow2 $TMP_IMAGE_PATH-new
     rm $TMP_IMAGE_PATH
     mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
-}
-
-function save_image () {
-    # TODO: this really should rename the old file
-    if [ -f  $1 ] ; then
-       echo "Old Image file Found REMOVING"
-       rm -f $1
-    fi
-
-    cp $TMP_IMAGE_PATH $1
-    rm -r $TMP_BUILD_DIR
-    # All done!
-    trap EXIT
-    echo "Image file $1 created..."
 }
 
 function block_apt_translations () {

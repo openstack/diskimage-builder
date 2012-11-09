@@ -1,0 +1,116 @@
+function fullpath() {
+  local f=$1
+  if [ "${f#/}" = "$f" ]; then
+    echo `pwd`/"$f"
+  else
+    echo "$f"
+  fi
+}
+
+function cleanup () {
+  rm -rf "$TMP_BUILD_DIR"
+}
+
+function ensure_binaries() {
+  BINARY_DEPS="${BUSYBOX}"
+  for _FLVR in ${RAMDISK_FLAVOUR} ; do
+    _FILE="${FLAVOURS_DIR}/${_FLVR}/binary-deps"
+    if [ -a $_FILE ]; then
+      for _LINE in $(cat $_FILE) ; do
+        BINARY_DEPS="${BINARY_DEPS} $_LINE"
+      done
+    fi  
+  done
+
+  for _BIN in $BINARY_DEPS ; do
+    _LOCATION=""
+    _LOCATION="${_LOCATION:-$(which $_BIN)}"
+    if [ -z "$_LOCATION" ]; then
+      echo "$_BIN is not found in your PATH" 1>&2
+      echo "Please install it on your system"
+      exit 1
+    fi
+  done
+
+  export BINARY_DEPS
+}
+
+function create_base () {
+  echo "Creating base system"
+
+  mkdir -p "$TMP_MOUNT_PATH/bin"
+  ln -s bin "$TMP_MOUNT_PATH/sbin"
+  mkdir -p "$TMP_MOUNT_PATH/lib"
+  ln -s lib "$TMP_MOUNT_PATH/lib64"
+  mkdir -p "$TMP_MOUNT_PATH/lib/modules"
+  mkdir -p "$TMP_MOUNT_PATH/etc"
+  mkdir -p "$TMP_MOUNT_PATH/etc/udev"
+
+  cp -a "$LIB_UDEV" "$TMP_MOUNT_PATH/lib/udev"
+
+  mkdir -p "$TMP_MOUNT_PATH/etc/modprobe.d"
+  echo "blacklist evbug" > "$TMP_MOUNT_PATH/etc/modprobe.d/blacklist.conf"
+
+  mkdir -p "$TMP_MOUNT_PATH/etc/udev"
+  cat >"$TMP_MOUNT_PATH/etc/udev/udev.conf" <<EOF
+udev_root="/dev"
+udev_rules="/lib/udev/rules.d"
+udev_log="no"
+EOF
+}
+
+function populate_lib () {
+  echo "Populating /lib"
+
+  libs=
+  for i in "$BUSYBOX" bash modprobe udevd udevadm wget tgtd tgtadm reboot shutdown $BINARY_DEPS ; do
+    if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
+      continue
+    fi
+    path=`which $i 2>/dev/null` || path=$i
+    if ! [ -x "$path" ]; then
+      echo "$i is not found in PATH" 2>&1
+      exit 1
+    fi
+    cp -L "$path" "$TMP_MOUNT_PATH/bin/"
+    if l=`ldd "$path"`; then
+      l=$( echo "$l" | grep '/' | tr "\t" " " )
+      l=$( echo "$l" | sed 's/^.* => \([^ ]*\).*$/\1/' )
+      l=$( echo "$l" | sed 's/^ *\([^ ]*\) *(0x[0-9a-f]*)/\1/' )
+      l=$( echo "$l" | tr " " "\n" )
+      libs=$( printf "%s\n%s\n" "$l" "$libs" | sort | uniq )
+    fi
+  done
+  cp $libs "$TMP_MOUNT_PATH/lib/"
+
+  cp -a "$MODULE_DIR" "$TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION"
+  cp -a "$FIRMWARE_DIR" "$TMP_MOUNT_PATH/lib/firmware"
+}
+
+function populate_busybox () {
+  echo "Creating symlinks for busybox binaries"
+
+  for i in $( "$BUSYBOX" --list ); do
+    if [ -f "$TMP_MOUNT_PATH/bin/$i" ]; then
+      echo "skip $i"
+      continue
+    fi
+    ln -s busybox "$TMP_MOUNT_PATH/bin/$i"
+  done
+}
+
+function populate_init () {
+  echo "Installing init"
+  # XXX: This needs to understand flavours and the pre-shipped init needs to split up
+  cp "$INIT" "$TMP_MOUNT_PATH/init"
+  chmod +x $TMP_MOUNT_PATH/init
+  for F in "$FUNCTIONS_D"/* ; do
+    cp "$F" "$TMP_MOUNT_PATH"
+  done
+}
+
+function finalise_image () {
+  echo "Finalising image"
+  (cd "$TMP_MOUNT_PATH"; find . | cpio -o -H newc | gzip > "$TMP_IMAGE_PATH" )
+}
+
