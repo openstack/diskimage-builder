@@ -34,3 +34,12 @@ function check_flavour () {
   [ -d $TMP_HOOKS_PATH ] || generate_hooks
 }
 
+# Run a hook, looking for a regex in its stdout, and eval the matched lines.
+# $1 is the hook to run
+# $2 is the regex to look for
+function eval_run_d () {
+  local TEMP=`run_d $1`
+  echo "$TEMP"
+  TEMP=`echo "$TEMP" | grep "$2"`
+  eval "$TEMP"
+}

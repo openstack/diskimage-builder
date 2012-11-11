@@ -46,6 +46,7 @@ ensure_nbd
 
 mk_build_dir
 ensure_base_available
+eval_run_d block-device-size "IMAGE_SIZE="
 
 qemu-img create -f qcow2 $TMP_IMAGE_PATH ${IMAGE_SIZE}G
 
@@ -60,10 +61,7 @@ fi
 sudo qemu-nbd -c $NBD_DEV $CACHE $TMP_IMAGE_PATH 
 export EXTRA_UNMOUNT="sudo qemu-nbd -d $NBD_DEV"
 export IMAGE_BLOCK_DEVICE=$NBD_DEV
-TEMP=`run_d block-device`
-echo "$TEMP"
-TEMP=`echo "$TEMP" | grep "IMAGE_BLOCK_DEVICE="`
-eval "$TEMP"
+eval_run_d block-device "IMAGE_BLOCK_DEVICE="
 
 sudo mkfs -F -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
 

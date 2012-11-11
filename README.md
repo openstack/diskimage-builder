@@ -57,6 +57,16 @@ Writing a flavour
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise:
 
+* block-device-size.d: Alter the size (in GB) of the disk image. This is useful
+  when a particular flavour will require a certain minimum (or maximum) size.
+  You can either error and stop the build, or adjust the size to match.
+  NB: Due to the current simple implementation, the last output value wins
+  so this should be used rarely - only one flavour in a mix can reliably set
+  a size.
+
+ * outputs: $IMAGE\_SIZE={size_in_GB}
+ * inputs: $IMAGE_SIZE={size_in_GB}
+
 * block-device.d: customise the block device that the image will be made on
   (e.g. to make partitions).
 
