@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Keystone Datas
 #
@@ -11,15 +11,15 @@
 # Support: openstack@lists.launchpad.net
 # License: Apache Software License (ASL) 2.0
 #
-
 source $(dirname $0)/defaults
 
 export OS_TENANT_NAME=admin
-export OS_USER_NAME=admin
+export OS_USERNAME=admin
 export OS_PASSWORD=${ADMIN_PASSWORD}
 export OS_AUTH_URL="http://localhost:5000/v2.0/"
 export SERVICE_ENDPOINT="http://localhost:35357/v2.0"
 SERVICE_TENANT_NAME=${SERVICE_TENANT_NAME:-service}
+export SERVICE_TOKEN=${SERVICE_TOKEN}
 
 get_id () {
     echo `$@ | awk '/ id / { print $4 }'`

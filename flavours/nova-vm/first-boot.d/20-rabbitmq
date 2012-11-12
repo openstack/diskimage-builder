@@ -5,4 +5,4 @@ set -o xtrace
 source $(dirname $0)/defaults
 #RABBIT_PASS
 
-rabbitmqctl change_password guest $̣{RABBIT_PASS}
+rabbitmqctl change_password guest ${RABBIT_PASS}

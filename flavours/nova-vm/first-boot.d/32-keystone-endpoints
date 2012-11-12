@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Keystone Endpoints
 #
@@ -11,7 +11,6 @@
 # Support: openstack@lists.launchpad.net
 # License: Apache Software License (ASL) 2.0
 #
-
 source $(dirname $0)/defaults
 
 # MySQL definitions
@@ -21,8 +20,8 @@ MYSQL_HOST=localhost
 
 # Keystone definitions
 KEYSTONE_REGION=RegionOne
-SERVICE_TOKEN=password
-SERVICE_ENDPOINT="http://localhost:35357/v2.0"
+export SERVICE_TOKEN=password
+export SERVICE_ENDPOINT="http://localhost:35357/v2.0"
 
 keystone service-create --name nova --type compute --description 'OpenStack Compute Service'
 keystone service-create --name cinder --type volume --description 'OpenStack Volume Service'

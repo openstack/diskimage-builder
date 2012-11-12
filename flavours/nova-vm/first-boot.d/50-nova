@@ -7,8 +7,7 @@ source $(dirname $0)/defaults
 
 NOVA_DIR="/etc/nova/"
 
-SQL_CONNECTION="mysql://nova:${MYSQL_NOVAPASS}d@localhost:3306/nova"
-
+SQL_CONNECTION="mysql://nova:${MYSQL_NOVAPASS}@localhost:3306/nova"
 
 sed -e "s,^admin_tenant_name\s*=\s*.\+$,admin_tenant_name = service," -i ${NOVA_DIR}/api-paste.ini
 sed -e "s,^admin_user\s*=\s*.\+$,admin_user = nova," -i ${NOVA_DIR}/api-paste.ini
