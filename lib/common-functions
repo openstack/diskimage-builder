@@ -40,6 +40,8 @@ function check_flavour () {
 function eval_run_d () {
   local TEMP=`run_d $1`
   echo "$TEMP"
-  TEMP=`echo "$TEMP" | grep "$2"`
-  eval "$TEMP"
+  if [ `echo "$TEMP" | grep -s "$2"` ]; then
+      TEMP=`echo "$TEMP" | grep "$2"`
+      eval "$TEMP"
+  fi
 }
