@@ -101,7 +101,6 @@ function populate_busybox () {
 
 function populate_init () {
   echo "Installing init"
-  # XXX: This needs to understand flavours and the pre-shipped init needs to split up
   cp "$INIT" "$TMP_MOUNT_PATH/init"
   chmod +x $TMP_MOUNT_PATH/init
   for F in "$FUNCTIONS_D"/* ; do
@@ -128,4 +127,16 @@ function finalise_image () {
   echo "Finalising image"
   (cd "$TMP_MOUNT_PATH"; find . | cpio -o -H newc | gzip > "$TMP_IMAGE_PATH" )
 }
+
+function populate_udev () {
+  echo "Installing udev rules"
+
+  for _FLVR in ${RAMDISK_FLAVOUR} ; do
+    _DIR="${FLAVOURS_DIR}/${_FLVR}/udev"
+    if [ -d $_DIR ]; then
+      find $_DIR -type f -exec cp -v {} $TMP_MOUNT_PATH/lib/udev/rules.d/ \;
+    fi
+  done
+}
+
 

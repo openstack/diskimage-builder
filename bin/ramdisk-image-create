@@ -86,6 +86,7 @@ create_base
 populate_lib
 populate_busybox
 populate_init
+populate_udev
 finalise_image
 save_image $IMAGE_NAME
 
