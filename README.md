@@ -31,8 +31,6 @@ disks and disk images, mature automation makes customisation and testing easier.
 Design
 ======
 
-Still brief - more details needed.
-
 Images are built using a chroot and bind mounted /proc /sys and /dev. The goal
 of the image building process is to produce blank slate machines that have all
 the necessary bits to fulfill a specific purpose in the running of an Openstack
@@ -42,7 +40,36 @@ A flavour is a particular set of code that alters how the image is built, or
 runs within the chroot to prepare the image. E.g. the local-config flavour
 copies in the http proxy and ssh keys of the user running the image build
 process into the image, whereas the vm flavour makes the image build a regular
-VM image with partition table and installed grub boot sector. 
+VM image with partition table and installed grub boot sector. The mellanox
+flavour adds support for mellanox infiniband hardware to both the deploy
+ramdisk and the built images.
+
+Images start as a base ubuntu cloud image. Other distributions may be added in
+future, the infrastructure deliberately makes few assumptions about the exact
+operating system is use. The base image has opensshd running (a new key
+generated on first boot) and accepts use keys via the cloud metadata service,
+loading them into the 'ubuntu' user.
+
+The goal of a built image is to have any global configuration ready to roll,
+but nothing that ties it to a specific cloud instance: images should be able to
+be dropped into a test cloud and validated, and then deployed into a production
+cloud (usually via bare metal nova) for production use. As such, the image
+contents can be modelled as three distinct portions:
+
+- global content: the actual code, kernel, always-applicable config (like
+  disabling password authentication to sshd).
+- metadata / config management provided configuration: user ssh keys, network
+  address and routes, configuration management server location and public key,
+  credentials to access other servers in the cloud. These are typically
+  refreshed on every boot.
+- persistent state: sshd server key, database contents, swift storage areas,
+  nova instance disk images, disk image cache. These would typically be stored
+  on a dedicated partition and not overwritten when re-deploying the image.
+
+The goal of the image building tools is to create machine images that content
+the correct global content and are ready for 'last-mile' configuration by the
+nova metadata API, after which a configuration management system can take over
+(until the next deploy, when it all starts over from scratch). 
 
 Existing flavours
 -----------------
