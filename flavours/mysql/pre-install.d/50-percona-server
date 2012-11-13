@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+set -o xtrace
+
+# add Percona GPG key
+#gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+#gpg -a --export CD2EFD2A | apt-key add -
+
+# add Percona repo
+# XXX: autodetect distribution when Percona supports Quantal
+#VER='precise'
+#cat <<EOL > /etc/apt/sources.list.d/percona
+#deb http://repo.percona.com/apt $VER main
+#deb-src http://repo.percona.com/apt $VER main
+#EOL

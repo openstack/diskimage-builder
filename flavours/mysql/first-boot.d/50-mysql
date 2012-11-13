@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+set -o xtrace
+
+# get MYSQL_PASS and HOST_IP
+source $(dirname $0)/defaults
+
+service mysql stop || true
+
+MYSQL_BOOTSTRAP="/usr/sbin/mysqld --bootstrap --user=mysql --skip-grant-tables"
+
+sqltfile=`mktemp`
+cat <<EOF > $sqltfile
+USE mysql;
+UPDATE user SET password=PASSWORD("$MYSQL_PASS") WHERE user='root';
+EOF
+$MYSQL_BOOTSTRAP < $sqltfile
+rm -f $sqltfile
+
+CNF=/etc/mysql/my.cnf
+cp -f $(dirname $0)/my.cnf $CNF
+sed -i "s/^bind-address=.*/bind-address=$HOST_IP/" $CNF
+
+service mysql start
