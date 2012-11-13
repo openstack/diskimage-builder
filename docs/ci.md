@@ -30,12 +30,12 @@ Jenkins
 
  * baremetal SPOF node build (archive the resulting image).
 
-        disk-image-create mysql haproxy-mysql haproxy-api local-boot \
+        disk-image-create base mysql haproxy-mysql haproxy-api local-boot \
         rabbitmq -o baremetal-spof
 
  * baremetal demo node build (archive the resulting image).
 
-        disk-image-create vm glance nova-bm swift cinder quantum \
+        disk-image-create base vm glance nova-bm swift cinder quantum \
         -o bootstrap-prod
 
  * ramdisk deploy image buil
