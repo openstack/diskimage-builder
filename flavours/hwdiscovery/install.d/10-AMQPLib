@@ -1,0 +1,7 @@
+#!/bin/bash
+# ensure we have a amqp client
+
+set -e
+set -o xtrace
+
+apt-get -y install python-AMQPLib
