@@ -16,7 +16,6 @@
 # under the License.
 
 set -e
-set -o xtrace
 
 SCRIPTNAME=$(basename $0)
 export _LIB=$(dirname $0)/../lib
