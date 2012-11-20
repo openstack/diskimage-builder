@@ -63,7 +63,7 @@ function populate_lib () {
   echo "Populating /lib"
 
   libs=
-  for i in "$BUSYBOX" bash modprobe udevd udevadm wget reboot shutdown $BINARY_DEPS ; do
+  for i in "$BUSYBOX" bash lsmod modprobe udevd udevadm wget reboot shutdown $BINARY_DEPS ; do
     if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
       continue
     fi
