@@ -6,8 +6,7 @@ CpuCount=`hwinfo --cpu|grep "Hardware Class: cpu"|wc -l`
 MemorySize=`hwinfo --memory|grep "Memory Size:"|awk -F':' {'print $2'}|tr -d ' '`
 DiskSize=`lshw -C disk|grep size|awk -F'(' {'print $2'}|tr -d ')'|tr -d ' '`
 NicInfo1=`hwinfo --network|grep -B2 "Link detected: yes"|grep -C1 "HW Address:"`
-
-NicInfo2=`echo "${NicInfo1}"|awk '/Device File: vlan*/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}'`
+NicInfo2=`echo "${NicInfo1}"|awk '/Device File: (vlan*|br*)/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}'`
 NicDev=`echo "${NicInfo2}"|grep "Device File:"|awk -F':' {'print $2'}|tr -d ' '`
 NicMac=`echo "${NicInfo2}"|grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' '`
 
