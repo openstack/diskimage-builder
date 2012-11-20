@@ -45,14 +45,24 @@ function create_base () {
   mkdir -p "$TMP_MOUNT_PATH/lib/modules"
   mkdir -p "$TMP_MOUNT_PATH/etc"
   mkdir -p "$TMP_MOUNT_PATH/etc/udev"
+  # cjk adding for discovery support
+  mkdir -p "$TMP_MOUNT_PATH/var/lib/dhcp"
+  mkdir -p "$TMP_MOUNT_PATH/var/run"
+
 
   cp -a "$LIB_UDEV" "$TMP_MOUNT_PATH/lib/udev"
+  # cjk adding for hwdiscovery support
+  cp "/sbin/dhclient-script" "$TMP_MOUNT_PATH/sbin"
 
   mkdir -p "$TMP_MOUNT_PATH/etc/modprobe.d"
   echo "blacklist evbug" > "$TMP_MOUNT_PATH/etc/modprobe.d/blacklist.conf"
 
+  # cjk adding for hwdiscovery support
+  touch "$TMP_MOUNT_PATH/etc/fstab"
+
   mkdir -p "$TMP_MOUNT_PATH/etc/udev"
   cat >"$TMP_MOUNT_PATH/etc/udev/udev.conf" <<EOF
+
 udev_root="/dev"
 udev_rules="/lib/udev/rules.d"
 udev_log="no"
