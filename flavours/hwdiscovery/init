@@ -1,5 +1,32 @@
+
 echo "Starting HW Discovery"
 # XXX: Collect iLO specific data, bundle everything up and POST it somewhere
-lshw -json # XXX: Do something with this
-sleep 30
+#lshw -json # XXX: Do something with this
+CpuCount=`hwinfo --cpu|grep "Hardware Class: cpu"|wc -l`
+MemorySize=`hwinfo --memory|grep "Memory Size:"|awk -F':' {'print $2'}|tr -d ' '`
+DiskSize=`lshw -C disk|grep size|awk -F'(' {'print $2'}|tr -d ')'|tr -d ' '`
+NicInfo1=`hwinfo --network|grep -B2 "Link detected: yes"|grep -C1 "HW Address:"`
+
+NicInfo2=`echo "${NicInfo1}"|awk '/Device File: vlan*/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}'`
+NicDev=`echo "${NicInfo2}"|grep "Device File:"|awk -F':' {'print $2'}|tr -d ' '`
+NicMac=`echo "${NicInfo2}"|grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' '`
+
+echo "Cpu Count: ${CpuCount}"
+echo "Memory: ${MemorySize}"
+echo "Disk: ${DiskSize}"
+echo "Network device : ${NicDev}"
+echo "Network Mac: ${NicMac}"
+
+# in testing the nic did not get a vaild ip... 
+dhclient "${NicDev}"
+
+# for testing assume that dhcp server is == baremetal-deployhelper server
+# dns flavour will make this better
+ServerInfo1=`grep dhcp-server-identifier /var/lib/dhcp/dhclient.leases`
+PingToServer=`echo "${ServerInfo1}"|awk -F'dhcp-server-identifier' {'print $2'}|tr -d ';'|tr -d ' '`
+
+echo "Reporting findings to ${PingToServer}."
+#wget "http://${PingToServer}:10000?HWDiscovery=True&Ram=${MemorySize}&Disk=${DiskSize}&Cpu=${CpuCount}&NetDev=${Nicdev}&NetMac=${NicMac}"
+
+bash
 
