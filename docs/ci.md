@@ -16,7 +16,7 @@ Jenkins
 * Jobs to build:
  * bootstrap VM from-scratch (archive bootstrap.qcow2).
 
-        disk-image-create vm devstack -o bootstrap -a i386
+        disk-image-create vm base devstack -o bootstrap -a i386
 
  * devstack nova-bm execution (archive the resulting image).
    Chained off of the bootstrap vm build
@@ -25,7 +25,7 @@ Jenkins
 
  * bootstrap VM via image-build chain (archive bm-cloud.qcow2).
 
-        disk-image-create vm glance nova-bm swift mysql haproxy-api \
+        disk-image-create vm base glance nova-bm swift mysql haproxy-api \
         haproxy-mysql cinder quantum rabbitmq -o bootstrap-prod
 
  * baremetal SPOF node build (archive the resulting image).
