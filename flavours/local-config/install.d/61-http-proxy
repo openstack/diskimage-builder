@@ -6,11 +6,9 @@ set -e
 set -o xtrace
 
 if [ -n "$http_proxy" ]; then
-    sudo -Hiu stack dd of=~stack/.profile oflag=append conv=notrunc << EOF
-export no_proxy=192.0.2.1
-export http_proxy=$http_proxy
-EOF
-    sudo dd of=/etc/apt/apt.conf.d/61-use-http-proxy << _EOF_
-    Acquire::http::Proxy "$http_proxy";
-_EOF_
+    if [ -d ~stack ]; then
+      echo export no_proxy=192.0.2.1 >> ~stack/.profile
+      echo export http_proxy=$http_proxy >> ~stack/.profile
+    fi
+    echo Acquire::http::Proxy \"$http_proxy\"; > /etc/apt/apt.conf.d/61-use-http-proxy
 fi

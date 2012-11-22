@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+set -o xtrace
+
+# jenkins installs into /var/lib/jenkins which is rather restrictive. 
+mv /var/lib/jenkins /mnt/
+ln -s /mnt/jenkins /var/lib/jenkins
+
+
