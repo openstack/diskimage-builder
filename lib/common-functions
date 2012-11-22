@@ -105,5 +105,9 @@ function mount_qcow_image() {
 
     WORK_DIR=$(mktemp -d)
     map_nbd $1
-    sudo mount ${NBD_DEV}p1 $WORK_DIR
+    if [ -e "${NBD_DEV}p1" ]; then
+       sudo mount ${NBD_DEV}p1 $WORK_DIR
+    else
+       sudo mount ${NBD_DEV} $WORK_DIR
+    fi
 }
