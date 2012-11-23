@@ -1,4 +1,4 @@
-B11;rgb:0000/0000/0000#!/bin/bash
+#!/bin/bash
 
 set -e
 set -o xtrace
