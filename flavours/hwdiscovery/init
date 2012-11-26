@@ -1,31 +1,52 @@
-
 echo "Starting HW Discovery"
-# XXX: Collect iLO specific data, bundle everything up and POST it somewhere
-#lshw -json # XXX: Do something with this
-CpuCount=`hwinfo --cpu|grep "Hardware Class: cpu"|wc -l`
-MemorySize=`hwinfo --memory|grep "Memory Size:"|awk -F':' {'print $2'}|tr -d ' '`
-DiskSize=`lshw -C disk|grep size|awk -F'(' {'print $2'}|tr -d ')'|tr -d ' '`
-NicInfo1=`hwinfo --network|grep -B2 "Link detected: yes"|grep -C1 "HW Address:"`
-NicInfo2=`echo "${NicInfo1}"|awk '/Device File: (vlan*|br*)/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}'`
-NicDev=`echo "${NicInfo2}"|grep "Device File:"|awk -F':' {'print $2'}|tr -d ' '`
-NicMac=`echo "${NicInfo2}"|grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' '`
 
-echo "Cpu Count: ${CpuCount}"
-echo "Memory: ${MemorySize}"
-echo "Disk: ${DiskSize}"
-echo "Network device : ${NicDev}"
-echo "Network Mac: ${NicMac}"
+function cpu_cores() {
+  hwinfo --cpu | grep -c "Hardware Class: cpu"
+}
 
-# in testing the nic did not get a vaild ip... 
-dhclient "${NicDev}"
+function ram() {
+  # XXX: /proc may not be the best place to get this from, but hwinfo reports weird values (e.g. "1GB + 512MB" on a test VM of mine)
+  _KB=$(grep MemTotal /proc/meminfo | awk '{ print $2 }')
+  echo "$((_KB * 1024)) bytes"
+}
 
-# for testing assume that dhcp server is == baremetal-deployhelper server
-# dns flavour will make this better
-ServerInfo1=`grep dhcp-server-identifier /var/lib/dhcp/dhclient.leases`
-PingToServer=`echo "${ServerInfo1}"|awk -F'dhcp-server-identifier' {'print $2'}|tr -d ';'|tr -d ' '`
+function pxe_mac() {
+  # XXX: This is making all sorts of risky assumptions. Firstly that the underlying drivers correctly report link. Secondly that only the primary
+  # XXX: NIC is wired up. Without a backend service on the DHCP/PXE server which could examine all of our detected MACs, there really is no good
+  # XXX: way to solve this in Linux.
+  _info1=$(hwinfo --network|grep -B2 "Link detected: yes"|grep -C1 "HW Address:")
+  _info2=$(echo "${_info1}"|awk '/Device File: (vlan*|br*)/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}')
+  _dev=$(echo "${_info1}" | grep "Device File:"|awk -F':' {'print $2'}|tr -d ' ')
+  _mac=$(echo "${_info2}" | grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' ')
+  echo $_mac
+}
 
-echo "Reporting findings to ${PingToServer}."
-#wget "http://${PingToServer}:10000?HWDiscovery=True&Ram=${MemorySize}&Disk=${DiskSize}&Cpu=${CpuCount}&NetDev=${Nicdev}&NetMac=${NicMac}"
+function disk() {
+  # XXX: This is returning only the first disk discovered, which is very likely to be insufficient on machines that present us with multiple disks
+  # XXX: This is likely reporting in TB, but the units are not guaranteed. Maybe convert to bytes?
+  lshw -C disk | grep size | awk -F'(' '{ print $2 }' | tr -d ')' | head -1
+}
 
-bash
+function raw_disk() {
+  hwinfo --disk
+}
+
+function raw_network() {
+  hwinfo --network
+}
+
+cat <<EOF
+{
+  "cpu cores" : "$(cpu_cores)",
+  "disk size" : "$(disk)",
+  "ram size" : "$(ram)",
+  "pxe mac" : "$(pxe_mac)",
+  "extra data" : {
+    "raw disk" : "$(raw_disk | base64)",
+    "raw network" : "$(raw_network | base64)",
+  }
+}
+EOF
+
+sleep 30
 
