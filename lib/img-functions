@@ -116,7 +116,9 @@ function run_d_in_target() {
       sudo mkdir $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
+      trap - EXIT
       run_in_target run-parts -v /tmp/in_target.d/$1.d
+      trap cleanup EXIT
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
       sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d
     fi
