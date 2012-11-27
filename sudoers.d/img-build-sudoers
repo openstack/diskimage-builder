@@ -40,4 +40,5 @@ ALL ALL=(root) NOPASSWD: /usr/bin/qemu-nbd -c /dev/nbd0 --cache=writeback /tmp/*
 ALL ALL=(root) NOPASSWD: /usr/bin/qemu-nbd -d /dev/nbd0
 ALL ALL=(root) NOPASSWD: /usr/bin/touch /tmp/*/mnt/*
 ALL ALL=(root) NOPASSWD: /usr/bin/unlink /tmp/*/mnt/*
+ALL ALL=(root) NOPASSWD: /bin/cp -t /tmp/*/mnt/etc/ -a /tmp/*/hooks/first-boot.d
 ALL ALL=(root) SETENV: NOPASSWD: /usr/sbin/chroot /tmp/*/mnt *

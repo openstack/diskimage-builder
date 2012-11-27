@@ -6,7 +6,7 @@ set -o xtrace
 source $(dirname $0)/defaults
 
 if [ -n "${JENKINS_PLUGINS}" ];then
-    for plugin in ${JENKINS_PLUGINS//,/ }; then
+    for plugin in ${JENKINS_PLUGINS//,/ }; do
         wget -q http://updates.jenkins-ci.org/latest/${plugin}.hpi -O /var/lib/jenkins/plugins/${plugin}.hpi
     done
     chown jenkins:nogroup /var/lib/jenkins/plugins/*
