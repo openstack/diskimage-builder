@@ -66,13 +66,19 @@ mk_build_dir
 
 INIT="$_DIR/../scripts/init"
 FUNCTIONS_D="$_DIR/../scripts/d"
-LIB_UDEV="$_DIR/../udev"
 
 MODULE_DIR=$MODULE_ROOT/lib/modules/$KERNEL_VERSION
 FIRMWARE_DIR=$MODULE_ROOT/lib/firmware
 
 if [ ! -d "$MODULE_DIR" ]; then
 	echo "ERROR: kernel module directory not found at $MODULE_DIR"
+	return 1
+fi
+
+LIB_UDEV=$LIB_UDEV_ROOT/lib/udev
+
+if [ ! -d "$LIB_UDEV" ]; then
+	echo "ERROR: udev directory not found at $LIB_UDEV"
 	return 1
 fi
 

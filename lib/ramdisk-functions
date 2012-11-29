@@ -49,8 +49,10 @@ function create_base () {
   mkdir -p "$TMP_MOUNT_PATH/var/lib/dhcp"
   mkdir -p "$TMP_MOUNT_PATH/var/run"
 
-
-  cp -a "$LIB_UDEV" "$TMP_MOUNT_PATH/lib/udev"
+  mkdir -p "$TMP_MOUNT_PATH/lib/udev/rules.d"
+  cp -a "$LIB_UDEV/rules.d/50-firmware.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
+  cp -a "$LIB_UDEV/rules.d/80-drivers.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
+  cp -a "$LIB_UDEV/firmware" "$TMP_MOUNT_PATH/lib/udev"
   # cjk adding for hwdiscovery support
   cp "/sbin/dhclient-script" "$TMP_MOUNT_PATH/sbin"
 
@@ -73,7 +75,7 @@ function populate_lib () {
   echo "Populating /lib"
 
   libs=
-  for i in "$BUSYBOX" bash lsmod modprobe udevd udevadm wget reboot shutdown $BINARY_DEPS ; do
+  for i in "$BUSYBOX" "$LIB_UDEV/firmware" bash lsmod modprobe udevd udevadm wget reboot shutdown $BINARY_DEPS ; do
     if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
       continue
     fi

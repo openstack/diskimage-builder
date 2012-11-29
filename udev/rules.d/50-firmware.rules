@@ -1,1 +1,0 @@
-SUBSYSTEM=="firmware", ACTION=="add", RUN+="firmware.sh"
