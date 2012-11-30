@@ -13,8 +13,8 @@ function cleanup () {
 
 function ensure_binaries() {
   BINARY_DEPS="${BUSYBOX}"
-  for _FLVR in ${RAMDISK_FLAVOUR} ; do
-    _FILE="${FLAVOURS_DIR}/${_FLVR}/binary-deps"
+  for _FLVR in ${RAMDISK_ELEMENT} ; do
+    _FILE="${ELEMENTS_DIR}/${_FLVR}/binary-deps"
     if [ -a $_FILE ]; then
       for _LINE in $(cat $_FILE) ; do
         BINARY_DEPS="${BINARY_DEPS} $_LINE"
@@ -119,9 +119,9 @@ function populate_init () {
     cp "$F" "$TMP_MOUNT_PATH"
   done
 
-  # Append /init with any flavour fragments that are present
-  for _FLVR in ${RAMDISK_FLAVOUR} ; do
-    _FILE="${FLAVOURS_DIR}/${_FLVR}/init"
+  # Append /init with any element fragments that are present
+  for _FLVR in ${RAMDISK_ELEMENT} ; do
+    _FILE="${ELEMENTS_DIR}/${_FLVR}/init"
     if [ -a $_FILE ]; then
       cat >>$TMP_MOUNT_PATH/init <<EOF
 
@@ -143,8 +143,8 @@ function finalise_image () {
 function populate_udev () {
   echo "Installing udev rules"
 
-  for _FLVR in ${RAMDISK_FLAVOUR} ; do
-    _DIR="${FLAVOURS_DIR}/${_FLVR}/udev"
+  for _FLVR in ${RAMDISK_ELEMENT} ; do
+    _DIR="${ELEMENTS_DIR}/${_FLVR}/udev"
     if [ -d $_DIR ]; then
       find $_DIR -type f -exec cp -v {} $TMP_MOUNT_PATH/lib/udev/rules.d/ \;
     fi

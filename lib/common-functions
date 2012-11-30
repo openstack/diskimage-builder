@@ -38,14 +38,14 @@ function save_image () {
 
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
-  for _FLAVOUR in $IMAGE_FLAVOUR ; do 
-    [ -d $FLAVOURS_DIR/$_FLAVOUR ] || die "The flavour does not exist." ;
-    cp -t $TMP_HOOKS_PATH -a $FLAVOURS_DIR/$_FLAVOUR/* ;
+  for _ELEMENT in $IMAGE_ELEMENT ; do 
+    [ -d $ELEMENTS_DIR/$_ELEMENT ] || die "The element does not exist." ;
+    cp -t $TMP_HOOKS_PATH -a $ELEMENTS_DIR/$_ELEMENT/* ;
   done
 }
 
-# Check that a real flavour has been chosen (prevents foot-guns)
-function check_flavour () {
+# Check that a real element has been chosen (prevents foot-guns)
+function check_element () {
   [ -d $TMP_HOOKS_PATH ] || generate_hooks
 }
 

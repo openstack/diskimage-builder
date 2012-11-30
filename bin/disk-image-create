@@ -46,17 +46,17 @@ while true ; do
         *) echo "Internal error!" ; exit 1 ;;
     esac
 done
-for arg do IMAGE_FLAVOUR="$IMAGE_FLAVOUR $arg" ; done
+for arg do IMAGE_ELEMENT="$IMAGE_ELEMENT $arg" ; done
 
 source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
 
-echo "Building flavours: $IMAGE_FLAVOUR"
+echo "Building elements: $IMAGE_ELEMENT"
 echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."
 mkdir -p $IMG_PATH
 
-# TODO: make a flavour.
+# TODO: make an element.
 ensure_nbd
 
 mk_build_dir

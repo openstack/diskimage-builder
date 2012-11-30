@@ -8,10 +8,10 @@ in the demo repository, while the reusable tools live here.
 What tools are there?
 ---------------------
 
-* disk-image-create -o filename {flavour} [{flavour} ...] : Create an image of
-  flavour {flavour}, optionally mixing in other flavours.
+* disk-image-create -o filename {element} [{element} ...] : Create an image of
+  element {element}, optionally mixing in other elements.
 
-* ramdisk-image-create -o filename {flavour} [{flavour} ...] : Create a kernel+
+* ramdisk-image-create -o filename {element} [{element} ...] : Create a kernel+
   ramdisk pair for running maintenance on bare metal machines (deployment,
   inventory, burnin etc).
 
@@ -20,7 +20,7 @@ What tools are there?
 * disk-image-get-kernel filename : Extract the appropriate kernel and ramdisk
   to use when doing PXE boot using filename as the image for a machine.
 
-* flavours can be found in the top level flavours directory.
+* elements can be found in the top level elements directory.
 
 Why?
 ----
@@ -36,12 +36,12 @@ of the image building process is to produce blank slate machines that have all
 the necessary bits to fulfill a specific purpose in the running of an Openstack
 cloud: e.g. a nova-compute node.
 
-A flavour is a particular set of code that alters how the image is built, or
-runs within the chroot to prepare the image. E.g. the local-config flavour
+An element is a particular set of code that alters how the image is built, or
+runs within the chroot to prepare the image. E.g. the local-config element
 copies in the http proxy and ssh keys of the user running the image build
-process into the image, whereas the vm flavour makes the image build a regular
+process into the image, whereas the vm element makes the image build a regular
 VM image with partition table and installed grub boot sector. The mellanox
-flavour adds support for mellanox infiniband hardware to both the deploy
+element adds support for mellanox infiniband hardware to both the deploy
 ramdisk and the built images.
 
 Images start as a base ubuntu cloud image. Other distributions may be added in
@@ -71,24 +71,24 @@ the correct global content and are ready for 'last-mile' configuration by the
 nova metadata API, after which a configuration management system can take over
 (until the next deploy, when it all starts over from scratch). 
 
-Existing flavours
+Existing elements
 -----------------
 
-Flavours are found in the subdirectory flavours. Each flavour is in a directory
-named after the flavour itself. Flavours *should* have a README.md in the root
-of the flavour directory describing what it is for.
+Elements are found in the subdirectory elements. Each element is in a directory
+named after the element itself. Elements *should* have a README.md in the root
+of the element directory describing what it is for.
 
-Writing a flavour
+Writing an element
 -----------------
 
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise:
 
 * block-device-size.d: Alter the size (in GB) of the disk image. This is useful
-  when a particular flavour will require a certain minimum (or maximum) size.
+  when a particular element will require a certain minimum (or maximum) size.
   You can either error and stop the build, or adjust the size to match.
   NB: Due to the current simple implementation, the last output value wins
-  so this should be used rarely - only one flavour in a mix can reliably set
+  so this should be used rarely - only one element in a mix can reliably set
   a size.
 
  * outputs: $IMAGE\_SIZE={size_in_GB}
@@ -117,7 +117,7 @@ part of the process you need to customise:
 * first-boot.d: Runs inside the image before rc.local. Scripts from here are
   good for doing per-instance configuration based on cloud metadata.
 
-Ramdisk flavours support the following files in their flavour directories:
+Ramdisk elements support the following files in their element directories:
 
 * binary-deps : executables required to be fed into the ramdisk. These need
   to be present in your $PATH.
@@ -125,10 +125,10 @@ Ramdisk flavours support the following files in their flavour directories:
 * init : a POSIX shell script fragment that will be appended to the default
   script executed as the ramdisk is booted (/init)
 
-Third party flavours
+Third party elements
 --------------------
 
-Pending implementation. The idea is to have a search path for flavours.
+Pending implementation. The idea is to have a search path for elements.
 
 Installation
 ============

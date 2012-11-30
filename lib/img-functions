@@ -115,7 +115,7 @@ function run_in_target() {
 
 # Helper function to run a directory of scripts inside the chroot
 function run_d_in_target() {
-    check_flavour
+    check_element
     # If we can find a directory of hooks to run in the target filesystem, bind
     # mount it into the target and then execute run-parts in a chroot
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
@@ -130,7 +130,7 @@ function run_d_in_target() {
 
 # Run a directory of hooks outside the target.
 function run_d() {
-    check_flavour
+    check_element
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
       run-parts ${TMP_HOOKS_PATH}/$1.d
     fi
@@ -220,7 +220,7 @@ function do_pre_install () {
   run_in_target apt-get -y update
   run_in_target apt-get -y install python-software-properties
   run_in_target add-apt-repository -y ppa:tripleo/demo
-  # Uncomment to get the bleeding edge - this should be a flavour thing.
+  # Uncomment to get the bleeding edge - this should be an element thing.
   # run_in_target add-apt-repository -y ppa:tripleo/demo-staging
   # Run pre-install scripts. These do things that prepare the chroot for package installs
   run_d_in_target pre-install

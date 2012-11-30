@@ -51,13 +51,13 @@ while true ; do
         *) echo "Internal error!" ; exit 1 ;;
     esac
 done
-for arg do RAMDISK_FLAVOUR="$RAMDISK_FLAVOUR $arg" ; done
+for arg do RAMDISK_ELEMENT="$RAMDISK_ELEMENT $arg" ; done
 
 source $_LIB/ramdisk-defaults
 source $_LIB/common-functions
 source $_LIB/ramdisk-functions
 
-echo "Building flavour(s): ${RAMDISK_FLAVOUR}"
+echo "Building element(s): ${RAMDISK_ELEMENT}"
 
 echo "Discovering binary dependencies"
 ensure_binaries
