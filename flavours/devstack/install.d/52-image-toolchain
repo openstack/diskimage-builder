@@ -7,4 +7,7 @@ set -e
 set -o xtrace
 
 apt-get -y install git
-sudo -Hiu stack git clone git://github.com/tripleo/demo.git
+if [ -n "$http_proxy" ]; then
+    sudo -Hiu stack git config --global http.proxy $http_proxy
+fi
+sudo -Hiu stack git clone https://github.com/tripleo/demo.git
