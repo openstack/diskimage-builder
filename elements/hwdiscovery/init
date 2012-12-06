@@ -19,6 +19,7 @@ function pxe_mac() {
   _dev=$(echo "${_info1}" | grep "Device File:"|awk -F':' {'print $2'}|tr -d ' ')
   _mac=$(echo "${_info2}" | grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' ')
   echo $_mac
+  export HW_DISCOVERY_BOOT_IFACE="$_mac"
 }
 
 function disk() {
@@ -35,7 +36,7 @@ function raw_network() {
   hwinfo --network
 }
 
-cat <<EOF
+HW_DISCOVERY_OUTPUT=$(cat <<EOF
 {
   "cpu cores" : "$(cpu_cores)",
   "disk size" : "$(disk)",
@@ -44,9 +45,19 @@ cat <<EOF
   "extra data" : {
     "raw disk" : "$(raw_disk | base64)",
     "raw network" : "$(raw_network | base64)",
+    $_vendor_hwdiscovery_data
   }
 }
 EOF
+)
+
+# Print the resulting JSON for debugging purposes
+echo $HW_DISCOVERY_OUTPUT
+
+# Now submit the JSON
+HW_DISCOVERY_DATA=$(echo ${HW_DISCOVERY_OUTPUT} | base64)
+HW_DISCOVERY_URL=$(get_kernel_parameter HW_DISCOVERY_URL)
+wget --post-data "hwdiscovery=true&hwdiscovery_data=${HW_DISCOVERY_DATA}" ${HW_DISCOVERY_URL}
 
 sleep 30
 

@@ -1,3 +1,5 @@
 lshw
 hwinfo
 dhclient
+wget
+base64
