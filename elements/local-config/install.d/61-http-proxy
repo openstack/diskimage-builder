@@ -6,9 +6,21 @@ set -e
 set -o xtrace
 
 if [ -n "$http_proxy" ]; then
-    if [ -d ~stack ]; then
-      echo export no_proxy=192.0.2.1 >> ~stack/.profile
+   if [ -d ~stack ]; then
       echo export http_proxy=$http_proxy >> ~stack/.profile
-    fi
-    echo "Acquire::http::Proxy \"$http_proxy\";" > /etc/apt/apt.conf.d/61-use-http-proxy
+   fi
+   echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/61-use-http-proxy
+fi
+
+if [ -n "$https_proxy" ]; then
+   if [ -d ~stack ]; then
+      echo export https_proxy=$https_proxy >> ~stack/.profile
+   fi
+   echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/61-use-https-proxy
+fi
+
+if [ -n "$http_proxy" -o -n "$https_proxy"]; then
+   if [ -d ~stack ]; then
+      echo export no_proxy=192.0.2.1 >> ~stack/.profile
+   fi
 fi
