@@ -10,5 +10,5 @@ if [ -n "$http_proxy" ]; then
       echo export no_proxy=192.0.2.1 >> ~stack/.profile
       echo export http_proxy=$http_proxy >> ~stack/.profile
     fi
-    echo Acquire::http::Proxy \"$http_proxy\"; > /etc/apt/apt.conf.d/61-use-http-proxy
+    echo "Acquire::http::Proxy \"$http_proxy\";" > /etc/apt/apt.conf.d/61-use-http-proxy
 fi
