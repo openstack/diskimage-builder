@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -uex
+
+CFN_TOOLS_ROOT=/opt/aws/bin # Heat hard codes this
+
+HEAT_API_SOURCE=https://github.com/heat-api/heat-jeos.git
+
+OS_ROOT=/opt/stack
+JEOS_ROOT=$OS_ROOT/heat-jeos
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install git-core python-psutil
+
+mkdir -p $OS_ROOT
+git clone $HEAT_API_SOURCE $JEOS_ROOT
+cd $JEOS_ROOT
+git checkout master
+
+mkdir -p $CFN_TOOLS_ROOT
+ln -sf $JEOS_ROOT/heat_jeos/cfntools/* $CFN_TOOLS_ROOT
