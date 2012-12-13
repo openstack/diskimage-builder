@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# install icinga-core
+
+set -e
+set -o xtrace
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install icinga-core
