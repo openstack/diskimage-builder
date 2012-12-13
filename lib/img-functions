@@ -39,7 +39,7 @@ function cleanup () {
 }
 
 function ensure_nbd () {
-    NBD=`which qemu-nbd`
+    NBD=`which qemu-nbd` || true
     if [ -z "$NBD" ];  then
         echo "Need qemu-nbd to build qcow2 files."
 	sudo apt-get install qemu-utils
