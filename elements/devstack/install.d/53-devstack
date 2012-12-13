@@ -1,0 +1,11 @@
+#!/bin/bash
+# Initialize devstack in the bootstrap image
+
+set -e
+set -o xtrace
+
+apt-get -y install git
+if [ -n "$http_proxy" ]; then
+    sudo -Hiu stack git config --global http.proxy $http_proxy
+fi
+sudo -Hiu stack git clone -b baremetal-dev https://github.com/tripleo/devstack.git
