@@ -165,7 +165,7 @@ function finalise_base () {
 
 function compress_image () {
     # Recreate our image to throw away unnecessary data
-    qemu-img convert -c $TMP_IMAGE_PATH -O qcow2 $TMP_IMAGE_PATH-new
+    qemu-img convert ${COMPRESS_IMAGE:+-c} $TMP_IMAGE_PATH -O qcow2 $TMP_IMAGE_PATH-new
     rm $TMP_IMAGE_PATH
     mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
 }

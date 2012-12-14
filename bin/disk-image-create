@@ -26,10 +26,12 @@ function show_options () {
     echo "    -a i386|amd64 -- set the architecture of the image"
     echo "    -o filename -- set the name of the output file" 
     echo "    -x -- turn on tracing"
+    echo "    -u -- uncompressed; do not compress the image - larger but faster"
     exit 0
 }
 
-TEMP=`getopt -o a:ho:x -n $SCRIPTNAME -- "$@"`
+COMPRESS_IMAGE="true"
+TEMP=`getopt -o a:ho:xu -n $SCRIPTNAME -- "$@"`
 echo "XXX $TEMP"
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
@@ -42,6 +44,7 @@ while true ; do
         -o) export IMAGE_NAME=$2; shift 2 ;;
         -h) show_options;;
         -x) shift; set -x;;
+        -u) shift; export COMPRESS_IMAGE="";;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -63,7 +66,7 @@ mk_build_dir
 ensure_base_available
 eval_run_d block-device-size "IMAGE_SIZE="
 
-qemu-img create -f qcow2 $TMP_IMAGE_PATH ${IMAGE_SIZE}G
+qemu-img create -f qcow2 -o preallocation=metadata $TMP_IMAGE_PATH ${IMAGE_SIZE}G
 
 # Should have a grab-next-dev helper ?
 NBD_DEV=/dev/nbd0
