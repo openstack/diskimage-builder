@@ -1,0 +1,6 @@
+#!/bin/bash
+# These are useful, or at worst not harmful, for all imges we build.
+
+set -e
+
+apt-get -y install linux-image-generic vlan open-iscsi

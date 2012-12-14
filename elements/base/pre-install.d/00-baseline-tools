@@ -1,0 +1,8 @@
+#!/bin/bash
+# Install baseline packages and tools.
+
+set -e
+
+apt-get -y update
+apt-get -y install python-software-properties
+add-apt-repository -y ppa:tripleo/demo

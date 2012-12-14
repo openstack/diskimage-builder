@@ -216,20 +216,11 @@ function unblock_daemons () {
 function do_pre_install () {
   block_daemons
   block_apt_translations
-  # Install baseline packages and tools
-  run_in_target apt-get -y update
-  run_in_target apt-get -y install python-software-properties
-  run_in_target add-apt-repository -y ppa:tripleo/demo
-  # Uncomment to get the bleeding edge - this should be an element thing.
-  # run_in_target add-apt-repository -y ppa:tripleo/demo-staging
   # Run pre-install scripts. These do things that prepare the chroot for package installs
   run_d_in_target pre-install
-  run_in_target apt-get -y update
 }
 
 function do_install () {
-  # These are useful, or at worst not harmful, for all imges we build.
-  run_in_target apt-get -y install linux-image-generic vlan open-iscsi
   # Call install scripts to pull in the software users want.
   run_d_in_target install
   unblock_daemons

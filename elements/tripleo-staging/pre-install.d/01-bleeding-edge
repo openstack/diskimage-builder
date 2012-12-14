@@ -1,0 +1,6 @@
+#!/bin/bash
+# Install bleeding edge tools instead of stable ones.
+
+set -e
+
+add-apt-repository -y ppa:tripleo/demo-staging
