@@ -125,6 +125,20 @@ Ramdisk elements support the following files in their element directories:
 * init : a POSIX shell script fragment that will be appended to the default
   script executed as the ramdisk is booted (/init)
 
+Debugging elements
+------------------
+
+Export 'break' to drop to a shell during the image build. Break points can be
+set either before or after any of the hook points by exporting
+"break=[before|after]-hook-name". Multiple break points can be specified as a
+comma-delimited string. Some examples:
+
+* break=before-block-device-size will break before the block device size hooks
+  are called.
+
+* break=after-first-boot,before-pre-install will break after the first-boot
+  hooks and before the pre-install hooks.
+
 Third party elements
 --------------------
 
