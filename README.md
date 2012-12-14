@@ -139,6 +139,23 @@ comma-delimited string. Some examples:
 * break=after-first-boot,before-pre-install will break after the first-boot
   hooks and before the pre-install hooks.
 
+Testing Elements
+----------------
+
+Elements can be tested using python. To create a test:
+
+* Create a directory called 'tests' in the element directory.
+
+* Create an empty file called '\_\_init\_\_.py' to make it into a python
+  package.
+
+* Create your test files as 'test\_whatever.py', using regular python test
+  code.
+
+To run all the tests use testr - `testr run`. To run just some tests provide
+one or more regex filters - tests matching any of them are run -
+`testr run apt-proxy`.
+
 Third party elements
 --------------------
 
