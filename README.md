@@ -125,6 +125,59 @@ Ramdisk elements support the following files in their element directories:
 * init : a POSIX shell script fragment that will be appended to the default
   script executed as the ramdisk is booted (/init)
 
+Structure of an element
+-----------------------
+
+The above-mentioned global content can be further broken down in a way that
+encourages composition of elements and reusability of their components. One
+possible approach to this would be to label elements as either a "driver",
+"service", or "config" element. Below are some examples.
+
+- Driver-specific elements should only contain the necessary bits for that
+  driver:
+      elements/
+         driver-mellanox/
+            init           - modprobe line
+            install.d/
+               10-mlx      - package installation
+
+- An element that installs and configures Nova might be a bit more complex:
+      elements/
+         service-nova/
+            pre-install.d/
+               50-my-ppa   - add a PPA
+            install.d/
+               10-user     - common Nova user accts
+               50-my-pack  - install packages from my PPA
+               60-nova     - install nova and some dependencies
+            first-boot.d/
+               60-nova     - do some post-install config for nova
+
+- In the general case, configuration should probably be handled either by the
+  meta-data service (eg, during first-boot.d) or via normal CM tools
+  (eg, salt). That being said, it may occasionally be desirable to create a
+  set of elements which express a distinct configuration of the same software
+  components. For example, if one were to bake a region-specific SSL cert into
+  the images deployed in each region, one might express it like this:
+      elements/
+         config-az1/
+            first-boot.d/
+               20-ssl      - add the az1 certificate
+         config-az2/
+            first-boot.d/
+               20-ssl      - add the az2 certificate
+
+In this way, depending on the hardware and in which availability zone it is
+to be deployed, an image would be composed of:
+
+  zero or more driver-elements
+  one or more service-elements
+  zero or more config-elements
+
+It should be noted that this is merely a naming convention to assist in
+managing elements. Diskimage-builder is not, and should not be, functionally
+dependent upon specific element names.
+
 Debugging elements
 ------------------
 
