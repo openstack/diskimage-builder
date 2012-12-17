@@ -32,8 +32,8 @@ function show_options () {
 
 COMPRESS_IMAGE="true"
 TEMP=`getopt -o a:ho:xu -n $SCRIPTNAME -- "$@"`
-echo "XXX $TEMP"
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+echo "XXX $TEMP"
 
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
