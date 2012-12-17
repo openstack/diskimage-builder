@@ -9,7 +9,8 @@ What tools are there?
 ---------------------
 
 * disk-image-create -o filename {element} [{element} ...] : Create an image of
-  element {element}, optionally mixing in other elements.
+  element {element}, optionally mixing in other elements. You will usually want
+  to include the "base" element in your image.
 
 * ramdisk-image-create -o filename {element} [{element} ...] : Create a kernel+
   ramdisk pair for running maintenance on bare metal machines (deployment,

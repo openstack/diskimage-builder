@@ -1,5 +1,5 @@
 #!/bin/bash
-# These are useful, or at worst not harmful, for all imges we build.
+# These are useful, or at worst not harmful, for all images we build.
 
 set -e
 
