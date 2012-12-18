@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# install glance-api
+
+set -e
+set -o xtrace
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    python-pip git-core python-setuptools python-dev python-lxml python-netaddr \
+    python-pastescript python-pastedeploy python-paste python-sqlalchemy        \
+    python-greenlet python-routes python-simplejson python-webob rabbitmq-server
+
+OS_ROOT=/opt/stack
+mkdir -p $OS_ROOT
+
+# clone source
+GLANCE_ROOT=$OS_ROOT/glance
+git clone https://github.com/openstack/glance.git $GLANCE_ROOT
+cd $GLANCE_ROOT
+git checkout master
+
+# pip dependencies
+python setup.py egg_info
+pip install -r glance.egg-info/requires.txt
+cd -
+
+# config
+mkdir -p /etc/glance
+cp $GLANCE_ROOT/etc/glance-api.conf /etc/glance
+cp $GLANCE_ROOT/etc/policy.json /etc/glance
+cp $GLANCE_ROOT/etc/glance-api-paste.ini /etc/glance
+cp $GLANCE_ROOT/etc/logging.cnf.sample /etc/glance/logging.conf
+

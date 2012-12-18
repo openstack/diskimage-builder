@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+set -o xtrace
+
+# upstart script
+cp -f $(dirname $0)/etc_init_glance-api.conf /etc/init/glance-api.conf
+
