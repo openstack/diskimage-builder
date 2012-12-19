@@ -19,7 +19,7 @@ if [ -n "$https_proxy" ]; then
    echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/61-use-https-proxy
 fi
 
-if [ -n "$http_proxy" -o -n "$https_proxy"]; then
+if [ -n "$http_proxy" -o -n "$https_proxy" ]; then
    if [ -d ~stack ]; then
       echo export no_proxy=192.0.2.1 >> ~stack/.profile
    fi
