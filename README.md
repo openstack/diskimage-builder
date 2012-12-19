@@ -1,9 +1,9 @@
 Image building tools for Openstack
 ==================================
 
-These tools are the components of tripleo (https://github.com/tripleo/demo)
+These tools are the components of tripleo (https://github.com/tripleo/incubator)
 that do the plumbing involved in building disk images. Specific configs live
-in the demo repository, while the reusable tools live here.
+in the incubator repository, while the reusable tools live here.
 
 What tools are there?
 ---------------------
