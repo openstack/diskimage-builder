@@ -1,0 +1,34 @@
+#!/bin/sh
+set -e
+set -o xtrace
+
+useradd -G admin -m quantum -s /bin/false
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    python-pip git-core python-setuptools python-dev python-lxml python-netaddr \
+    python-pastescript python-pastedeploy python-paste python-sqlalchemy        \
+    python-greenlet python-routes python-simplejson python-webob rabbitmq-server
+
+OS_ROOT=/opt/stack
+mkdir -p $OS_ROOT
+
+# clone source
+QUANTUM_ROOT=$OS_ROOT/quantum
+git clone https://github.com/openstack/quantum.git $QUANTUM_ROOT
+cd $QUANTUM_ROOT
+git checkout master
+
+# pip dependencies
+python setup.py egg_info
+pip install -r quantum.egg-info/requires.txt
+python setup.py install
+cd -
+
+# config
+mkdir -p /etc/quantum
+cp $QUANTUM_ROOT/etc/quantum.conf /etc/quantum
+cp $QUANTUM_ROOT/etc/policy.json /etc/quantum
+cp $QUANTUM_ROOT/etc/api-paste.ini /etc/quantum
+
+# default is 'fake plugin', with which service won't start
+sed -i 's/core_plugin =.*/core_plugin = quantum.plugins.openvswitch.ovs_quantum_plugin.OVSQuantumPluginV2/' /etc/quantum/quantum.conf
