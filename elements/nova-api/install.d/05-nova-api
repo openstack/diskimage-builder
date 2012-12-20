@@ -1,0 +1,39 @@
+#!/bin/sh
+set -eux
+
+useradd -G admin -m nova -s /bin/false
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    python-pip git-core python-setuptools python-dev python-lxml python-netaddr \
+    python-pastescript python-pastedeploy python-paste python-sqlalchemy        \
+    python-greenlet python-routes python-simplejson python-webob rabbitmq-server
+
+OS_ROOT=/opt/stack
+mkdir -p $OS_ROOT
+
+# clone source
+NOVA_ROOT=$OS_ROOT/nova
+git clone https://github.com/openstack/nova.git $NOVA_ROOT
+cd $NOVA_ROOT
+git checkout master
+
+# pip dependencies
+python setup.py egg_info
+pip install -r nova.egg-info/requires.txt
+cd -
+
+SYS_DIRS="/etc/nova /var/log/nova $NOVA_ROOT/keys"
+for d in $SYS_DIRS; do
+  mkdir -p $d
+  chown nova:nova $d
+done
+
+# config
+cp $NOVA_ROOT/etc/nova/nova.conf.sample /etc/nova/nova.conf
+cp $NOVA_ROOT/etc/nova/logging_sample.conf /etc/nova/logging.conf
+cp $NOVA_ROOT/etc/nova/api-paste.ini /etc/nova
+cp $NOVA_ROOT/etc/nova/policy.json /etc/nova
+
+# upstart script
+cp -f $(dirname $0)/../upstart/nova-api.conf /etc/init
+
