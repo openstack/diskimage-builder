@@ -4,5 +4,5 @@
 set -e
 
 apt-get -y update
-apt-get -y install python-software-properties
+apt-get -y install python-software-properties language-pack-en
 add-apt-repository -y ppa:tripleo/demo
