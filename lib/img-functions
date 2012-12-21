@@ -231,3 +231,10 @@ function do_install () {
   run_d_in_target install
   unblock_daemons
 }
+
+function do_extra_package_install () {
+  # Install any packages that were requested with the -p command line option
+  if [ "$INSTALL_PACKAGES" != "" ]; then
+    run_in_target apt-get -y install ${INSTALL_PACKAGES[@]}
+  fi
+}
