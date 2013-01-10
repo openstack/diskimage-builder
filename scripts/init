@@ -40,6 +40,7 @@ readonly BOOT_MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g"  | sed -e "s/^01
 readonly BOOT_IP_ADDRESS=$(echo "$_IP_" | cut -d':' -f1)
 readonly BOOT_SERVER=$(echo "$_IP_" | cut -d':' -f2)
 readonly BOOT_NETMASK=$(echo "$_IP_" | cut -d':' -f4)
+readonly BOOT_GATEWAY=$(echo "$_IP_" | cut -d':' -f3)
 
 readonly DISK=$(get_kernel_parameter disk)
 
@@ -111,6 +112,7 @@ if [ $? -ne 0 ]; then
 	fi
 fi
 ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"
+route add default gw $BOOT_GATEWAY
 
 echo "pinging to boot server $BOOT_SERVER"
 w=30
