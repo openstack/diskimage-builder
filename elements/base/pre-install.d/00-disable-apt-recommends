@@ -1,0 +1,9 @@
+#!/bin/sh
+# Prevent apt from installing recommended packages
+
+dd of=/etc/apt/apt.conf.d/95disable-recommends << _EOF_
+APT::Install-Recommends "0";
+Apt::Install-Suggests "0";
+_EOF_
+
+
