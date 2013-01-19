@@ -1,0 +1,26 @@
+#!/bin/bash
+# Until http://pad.lv/1101347 is fixed, we need this user to be able to
+# Log on to heat booted machines using the given SSH keypair
+
+set -uex
+
+# Setup ec2-user as expected by HEAT
+if ! getent passwd ec2-user ; then
+    useradd -m -G admin ec2-user -s /bin/bash
+fi
+if ! [ -e /etc/sudoers.d/ec2-user ] ; then
+    echo "ec2-user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ec2-user
+    chmod 0440 /etc/sudoers.d/ec2-user
+    visudo -c
+fi
+
+# We must pin to this fixed cloud-init from the demo ppa to ensure keys
+# are installed. This can be removed if http://pad.lv/1100920 is ever
+# fixed in the distro
+cat > /etc/apt/preferences.d/cloud-init-from-ppa <<EOF
+Package: cloud-init
+Pin: release o=LP-PPA-tripleo-demo
+Pin-Priority: 900
+EOF
+# Should pull from demo PPA if cloud-init exists there.
+apt-get -y install cloud-init
