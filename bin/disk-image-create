@@ -18,6 +18,7 @@
 set -e
 
 SCRIPTNAME=$(basename $0)
+SCRIPT_HOME=$(dirname $0)
 export _LIB=$(dirname $0)/../lib
 source $_LIB/die
 
@@ -57,6 +58,8 @@ for arg do IMAGE_ELEMENT="$IMAGE_ELEMENT $arg" ; done
 source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
+
+IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
 
 echo "Building elements: $IMAGE_ELEMENT"
 echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."

@@ -23,6 +23,8 @@ What tools are there?
 
 * elements can be found in the top level elements directory.
 
+* element-info : Extract information about elements.
+
 Why?
 ----
 
@@ -117,6 +119,9 @@ part of the process you need to customise:
 
 * first-boot.d: Runs inside the image before rc.local. Scripts from here are
   good for doing per-instance configuration based on cloud metadata.
+
+* element-deps : A plain text, newline separated list of elements which will
+  be added to the list of elements built into the image at image creation time.
 
 Ramdisk elements support the following files in their element directories:
 

@@ -20,6 +20,7 @@
 set -e
 
 SCRIPTNAME=$(basename $0)
+SCRIPT_HOME=$(dirname $0)
 export _DIR=$(dirname $0)
 export _LIB=${_DIR}/../lib
 source $_LIB/die
@@ -56,6 +57,8 @@ for arg do RAMDISK_ELEMENT="$RAMDISK_ELEMENT $arg" ; done
 source $_LIB/ramdisk-defaults
 source $_LIB/common-functions
 source $_LIB/ramdisk-functions
+
+RAMDISK_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $RAMDISK_ELEMENT)
 
 echo "Building element(s): ${RAMDISK_ELEMENT}"
 
