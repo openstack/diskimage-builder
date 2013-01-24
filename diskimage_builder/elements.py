@@ -86,6 +86,5 @@ def main(argv):
         print(' '.join(expand_dependencies(args.elements)))
         return 0
 
-
     sys.stderr.write("ERROR: please choose an option.\n")
     return -1

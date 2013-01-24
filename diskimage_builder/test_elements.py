@@ -17,7 +17,10 @@ import os
 import sys
 import unittest
 
-class StubPackage: pass
+
+class StubPackage:
+    pass
+
 
 # conceptually load_tests should be in __init__, but see
 # http://bugs.python.org/issue16662 instead. So, its here in test_elements.py

@@ -20,7 +20,9 @@ from fixtures import Fixture, TempDir
 
 from diskimage_builder.elements import expand_dependencies
 
-data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'test-elements'))
+data_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), 'test-elements'))
+
 
 def _populate_element(element_dir, element_name, element_deps=[]):
         element_home = os.path.join(element_dir, element_name)
@@ -28,6 +30,7 @@ def _populate_element(element_dir, element_name, element_deps=[]):
         deps_path = os.path.join(element_home, 'element-deps')
         with open(deps_path, 'w') as deps_file:
             deps_file.write("\n".join(element_deps))
+
 
 class TestElementDeps(TestCase):
 
@@ -45,27 +48,27 @@ class TestElementDeps(TestCase):
 
     def test_non_transitive_deps(self):
         result = expand_dependencies(['requires-foo'],
-            elements_dir=self.element_dir)
+                                     elements_dir=self.element_dir)
         self.assertEquals(set(['requires-foo', 'foo']), result)
 
     def test_transitive_deps(self):
         result = expand_dependencies(['requires-requires-foo'],
-            elements_dir=self.element_dir)
+                                     elements_dir=self.element_dir)
         self.assertEquals(set(['requires-requires-foo',
                                'requires-foo',
                                'foo']), result)
 
     def test_no_deps(self):
         result = expand_dependencies(['foo'],
-            elements_dir=self.element_dir)
+                                     elements_dir=self.element_dir)
         self.assertEquals(set(['foo']), result)
 
     def test_self(self):
         result = expand_dependencies(['self'],
-            elements_dir=self.element_dir)
+                                     elements_dir=self.element_dir)
         self.assertEquals(set(['self']), result)
 
     def test_circular(self):
         result = expand_dependencies(['circular1'],
-            elements_dir=self.element_dir)
+                                     elements_dir=self.element_dir)
         self.assertEquals(set(['circular1', 'circular2']), result)
