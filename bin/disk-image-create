@@ -2,13 +2,13 @@
 #
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -29,7 +29,7 @@ source $_LIB/die
 function show_options () {
     echo "Options:"
     echo "    -a i386|amd64 -- set the architecture of the image"
-    echo "    -o filename -- set the name of the output file" 
+    echo "    -o filename -- set the name of the output file"
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
@@ -92,13 +92,13 @@ qemu-img create -f qcow2 -o preallocation=metadata $TMP_IMAGE_PATH ${IMAGE_SIZE}
 
 # Should have a grab-next-dev helper ?
 NBD_DEV=/dev/nbd0
-if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then 
+if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then
   CACHE="--cache=writeback"
-else 
+else
   echo "Warning: qemu-nbd without --cache=writeback is /slow/."
   CACHE=""
 fi
-sudo qemu-nbd -c $NBD_DEV $CACHE $TMP_IMAGE_PATH 
+sudo qemu-nbd -c $NBD_DEV $CACHE $TMP_IMAGE_PATH
 export EXTRA_UNMOUNT="sudo qemu-nbd -d $NBD_DEV"
 export IMAGE_BLOCK_DEVICE=$NBD_DEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="

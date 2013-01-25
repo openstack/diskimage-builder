@@ -1,32 +1,4 @@
-#!/bin/sh
-
-# install keystone
-
-set -e
-set -o xtrace
-
-install-packages \
-    python-pip git-core python-setuptools python-dev python-lxml python-netaddr \
-    python-pastescript python-pastedeploy python-paste python-sqlalchemy        \
-    python-greenlet python-routes python-simplejson python-webob
-
-OS_ROOT=/opt/stack
-mkdir -p $OS_ROOT
-
-# clone source
-KEYSTONE_ROOT=$OS_ROOT/keystone
-git clone https://github.com/openstack/keystone.git $KEYSTONE_ROOT
-cd $KEYSTONE_ROOT
-git checkout master
-
-# pip dependencies
-python setup.py egg_info
-pip install -r keystone.egg-info/requires.txt
-cd -
-
-# config
-mkdir -p /etc/keystone
-cp $KEYSTONE_ROOT/etc/keystone.conf.sample /etc/keystone/keystone.conf
-cp $KEYSTONE_ROOT/etc/policy.json /etc/keystone
-cp $KEYSTONE_ROOT/etc/logging.conf.sample /etc/keystone/logging.conf
+#!/bin/bash
+set -eux
+os-svc-install -n keystone -u keystone -r https://github.com/openstack/keystone.git -c "/opt/stack/keystone/bin/keystone-all"
 

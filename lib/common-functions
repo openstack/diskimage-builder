@@ -1,12 +1,12 @@
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -38,7 +38,7 @@ function save_image () {
 
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
-  for _ELEMENT in $IMAGE_ELEMENT ; do 
+  for _ELEMENT in $IMAGE_ELEMENT ; do
     [ -d $ELEMENTS_DIR/$_ELEMENT ] || die "Element $_ELEMENT does not exist." ;
     cp -t $TMP_HOOKS_PATH -a $ELEMENTS_DIR/$_ELEMENT/* ;
   done
@@ -80,9 +80,9 @@ function eval_run_d () {
 function map_nbd {
     (lsmod | grep '^nbd ') || sudo modprobe nbd max_part=16
 
-    if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then 
+    if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then
         CACHE="--cache=writeback"
-    else 
+    else
         echo "Warning: qemu-nbd without --cache=writeback is /slow/."
         CACHE=""
     fi

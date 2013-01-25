@@ -1,0 +1,7 @@
+#!/bin/bash
+set -eux
+
+install-packages python-pip
+
+install -m 0755 -o root -g root $(dirname $0)/../os-svc-install /usr/local/bin/os-svc-install
+
