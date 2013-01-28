@@ -17,6 +17,10 @@
 
 set -e
 
+# Prevent perl from complaining a lot, but also remove any unexpected side-effects
+# of $LANG varying between build hosts
+export LANG=C
+
 SCRIPTNAME=$(basename $0)
 SCRIPT_HOME=$(dirname $0)
 export _LIB=$(dirname $0)/../lib
