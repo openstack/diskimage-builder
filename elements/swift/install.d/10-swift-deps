@@ -5,5 +5,5 @@
 set -e
 set -o xtrace
 
-apt-get -y install swift rsync memcached python-netifaces python-xattr python-memcache
+install-packages swift rsync memcached python-netifaces python-xattr python-memcache
 

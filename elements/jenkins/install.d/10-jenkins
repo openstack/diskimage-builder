@@ -3,8 +3,8 @@
 set -e
 set -o xtrace
 
-apt-get -y install jenkins
+install-packages jenkins
 
-# jenkins installs into /var/lib/jenkins which is rather restrictive. 
+# jenkins installs into /var/lib/jenkins which is rather restrictive.
 mv /var/lib/jenkins /mnt/
 ln -s /mnt/jenkins /var/lib/jenkins

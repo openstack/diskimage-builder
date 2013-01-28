@@ -4,4 +4,4 @@
 set -e
 set -o xtrace
 
-apt-get -y install haveged
+install-packages haveged

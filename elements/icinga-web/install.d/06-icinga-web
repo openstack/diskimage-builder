@@ -5,5 +5,5 @@
 set -e
 set -o xtrace
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install icinga-web icinga-cgi
+install-packages icinga-web icinga-cgi
 

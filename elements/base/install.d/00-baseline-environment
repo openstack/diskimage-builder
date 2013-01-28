@@ -3,4 +3,4 @@
 
 set -e
 
-apt-get -y install linux-image-generic vlan open-iscsi
+install-packages linux-image-generic vlan open-iscsi

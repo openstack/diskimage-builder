@@ -5,7 +5,7 @@
 set -e
 set -o xtrace
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install \
+install-packages \
     python-pip git-core python-setuptools python-dev python-lxml python-netaddr \
     python-pastescript python-pastedeploy python-paste python-sqlalchemy        \
     python-greenlet python-routes python-simplejson python-webob rabbitmq-server
@@ -30,4 +30,3 @@ cp $GLANCE_ROOT/etc/glance-api.conf /etc/glance
 cp $GLANCE_ROOT/etc/policy.json /etc/glance
 cp $GLANCE_ROOT/etc/glance-api-paste.ini /etc/glance
 cp $GLANCE_ROOT/etc/logging.cnf.sample /etc/glance/logging.conf
-

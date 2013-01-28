@@ -3,5 +3,5 @@
 set -e
 set -o xtrace
 
-apt-get -y install salt-minion
+install-packages salt-minion
 

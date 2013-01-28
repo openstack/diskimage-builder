@@ -23,4 +23,4 @@ Pin: release o=LP-PPA-tripleo-demo
 Pin-Priority: 900
 EOF
 # Should pull from demo PPA if cloud-init exists there.
-apt-get -y install cloud-init
+install-packages cloud-init

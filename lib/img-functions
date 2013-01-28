@@ -235,6 +235,11 @@ function do_install () {
 function do_extra_package_install () {
   # Install any packages that were requested with the -p command line option
   if [ "$INSTALL_PACKAGES" != "" ]; then
-    run_in_target apt-get -y install ${INSTALL_PACKAGES[@]}
+    run_in_target install-packages ${INSTALL_PACKAGES[@]}
   fi
+}
+
+function copy_elements_lib () {
+  sudo mkdir -p $TMP_MOUNT_PATH/lib/diskimage-builder
+  sudo cp -t $TMP_MOUNT_PATH/lib/diskimage-builder $_LIB/elements-functions
 }

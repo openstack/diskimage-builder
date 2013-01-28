@@ -5,4 +5,4 @@
 set -e
 set -o xtrace
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install haproxy rabbitmq-server mysql-server ntp dkms
+install-packages haproxy rabbitmq-server mysql-server ntp dkms

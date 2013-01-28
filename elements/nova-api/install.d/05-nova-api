@@ -3,7 +3,7 @@ set -eux
 
 useradd -G admin -m nova -s /bin/false
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install \
+install-packages \
     python-pip git-core python-setuptools python-dev python-lxml python-netaddr \
     python-pastescript python-pastedeploy python-paste python-sqlalchemy        \
     python-greenlet python-routes python-simplejson python-webob rabbitmq-server

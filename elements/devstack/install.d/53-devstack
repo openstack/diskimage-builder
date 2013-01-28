@@ -4,7 +4,7 @@
 set -e
 set -o xtrace
 
-apt-get -y install git
+install-packages git
 if [ -n "$http_proxy" ]; then
     sudo -Hiu stack git config --global http.proxy $http_proxy
 fi
