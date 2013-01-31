@@ -32,13 +32,14 @@ function show_options () {
     echo "    -o filename -- set the name of the output file" 
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
+    echo "    -c -- clear environment before starting work"
     echo "    -p package[,package,package] -- list of packages to install in the image"
     exit 0
 }
 
 INSTALL_PACKAGES=""
 COMPRESS_IMAGE="true"
-TEMP=`getopt -o a:ho:xup: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:xucp: -n $SCRIPTNAME -- "$@"`
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 echo "XXX $TEMP"
 
@@ -52,11 +53,19 @@ while true ; do
         -h) show_options;;
         -x) shift; set -x;;
         -u) shift; export COMPRESS_IMAGE="";;
+        -c) shift ; export CLEAR_ENV=1;;
         -p) IFS="," read -a INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES ; shift 2 ;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
 done
+
+if [ "$CLEAR_ENV" == "1" -a "$HOME" != "" ]; then
+  echo "Re-execing to clear environment."
+  echo "(note this will prevent much of the local_config element from working)"
+  exec -c $0 "$@"
+fi
+
 for arg do IMAGE_ELEMENT="$IMAGE_ELEMENT $arg" ; done
 
 source $_LIB/img-defaults
