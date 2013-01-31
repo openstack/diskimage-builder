@@ -39,7 +39,7 @@ function save_image () {
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
   for _ELEMENT in $IMAGE_ELEMENT ; do 
-    [ -d $ELEMENTS_DIR/$_ELEMENT ] || die "The element does not exist." ;
+    [ -d $ELEMENTS_DIR/$_ELEMENT ] || die "Element $_ELEMENT does not exist." ;
     cp -t $TMP_HOOKS_PATH -a $ELEMENTS_DIR/$_ELEMENT/* ;
   done
 }
