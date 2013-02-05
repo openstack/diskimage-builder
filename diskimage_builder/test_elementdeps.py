@@ -16,9 +16,10 @@
 import os
 
 from testtools import TestCase
-from fixtures import Fixture, TempDir
+from fixtures import Fixture, EnvironmentVariable, TempDir
 
 from diskimage_builder.elements import expand_dependencies
+from diskimage_builder.elements import get_elements_dir
 
 data_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'test-elements'))
@@ -72,3 +73,13 @@ class TestElementDeps(TestCase):
         result = expand_dependencies(['circular1'],
                                      elements_dir=self.element_dir)
         self.assertEquals(set(['circular1', 'circular2']), result)
+
+
+class TestElements(TestCase):
+    def test_depends_on_env(self):
+        self.useFixture(EnvironmentVariable('ELEMENTS_DIR', '/foo/bar'))
+        self.assertEquals('/foo/bar', get_elements_dir())
+
+    def test_env_not_set(self):
+        self.useFixture(EnvironmentVariable('ELEMENTS_DIR', ''))
+        self.assertRaises(Exception, get_elements_dir, ())
