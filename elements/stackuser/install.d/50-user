@@ -4,9 +4,21 @@
 set -e
 set -o xtrace
 
-useradd -G admin -m stack -s /bin/bash
+useradd -m stack -s /bin/bash
+
 passwd stack <<EOF
 stack
 stack
 EOF
 
+
+sudo_file=/etc/sudoers.d/stack
+cat > /etc/sudoers.d/stack <<eof
+# the stack user sometimes requires passwordless
+# sudo for scripted operations.
+stack ALL=(ALL) NOPASSWD:ALL
+eof
+
+chmod 0440 $sudo_file
+
+visudo -c
