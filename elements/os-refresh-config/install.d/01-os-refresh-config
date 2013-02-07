@@ -1,0 +1,15 @@
+#!/bin/bash
+# We need to install this early in install.d because other elements will
+# need to use os-refresh-config --print-base to know where to put files
+
+set -eux
+
+install-packages git-core python-pip
+
+pip install git+https://github.com/tripleo/os-refresh-config.git
+
+cat > /etc/init/os-refresh-config.conf <<- eof
+start on runlevel [2345]
+task
+exec os-refresh-config
+eof
