@@ -48,15 +48,6 @@ function ensure_nbd () {
     (lsmod | grep '^nbd ') || sudo modprobe nbd max_part=16
 }
 
-function ensure_base_available () {
-    # TODO: don't cache -current forever.
-    if [ ! -f $IMG_PATH/$BASE_IMAGE_FILE ] ; then
-       echo "Fetching Base Image"
-       wget $CLOUD_IMAGES/$RELEASE/current/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
-       mv $IMG_PATH/$BASE_IMAGE_FILE.tmp $IMG_PATH/$BASE_IMAGE_FILE
-    fi
-}
-
 function ensure_sudo () {
     sudo echo "Ensuring sudo is available"
 }
@@ -69,8 +60,17 @@ function mount_tmp_image () {
 }
 
 function create_base () {
-    # Extract the base image
-    sudo tar -C $TMP_MOUNT_PATH -xzf $IMG_PATH/$BASE_IMAGE_FILE
+    # Copy data in to the root.
+    TARGET_ROOT=$TMP_MOUNT_PATH run_d root
+
+    if [ -z "$(ls /tmp/foo)" ] ; then
+        # Nothing copied in, use Ubuntu.
+	echo "Adding ubuntu element as / had no contents"
+        IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT ubuntu)
+	generate_hooks
+	echo "Now building: $IMAGE_ELEMENT"
+	TARGET_ROOT=$TMP_MOUNT_PATH run_d root
+    fi
 
     # Configure Image
     # Setup resolv.conf so we can chroot to install some packages
@@ -243,3 +243,4 @@ function copy_elements_lib () {
   sudo mkdir -p $TMP_MOUNT_PATH/lib/diskimage-builder
   sudo cp -t $TMP_MOUNT_PATH/lib/diskimage-builder $_LIB/elements-functions
 }
+

@@ -87,6 +87,16 @@ Writing an element
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise:
 
+* root.d: Create or adapt the initial root filesystem content. This is where
+  alternative distribution support is added, or customisations such as
+  building on an existing image. If no element configures a root, the ubuntu
+  element will be automatically invoked to obtain an Ubuntu image.
+  Runs outside the chroot on the host environment, so should cleanup after
+  itself using the root-finished.d hook.
+  NB: Only one element can use this at a time.
+
+ * inputs: $ARCH=i386|amd64 $TARGET\_ROOT=/path/to/target/workarea
+
 * block-device-size.d: Alter the size (in GB) of the disk image. This is useful
   when a particular element will require a certain minimum (or maximum) size.
   You can either error and stop the build, or adjust the size to match.
@@ -94,8 +104,8 @@ part of the process you need to customise:
   so this should be used rarely - only one element in a mix can reliably set
   a size.
 
- * outputs: $IMAGE\_SIZE={size_in_GB}
- * inputs: $IMAGE_SIZE={size_in_GB}
+ * outputs: $IMAGE\_SIZE={size\_in\_GB}
+ * inputs: $IMAGE\_SIZE={size\_in\_GB}
 
 * block-device.d: customise the block device that the image will be made on
   (e.g. to make partitions).

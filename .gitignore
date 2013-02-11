@@ -5,3 +5,4 @@
 .tox
 *.egg-info
 dist
+*.qcow2

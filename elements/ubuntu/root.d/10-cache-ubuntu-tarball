@@ -1,0 +1,22 @@
+#!/bin/bash
+# These are useful, or at worst not harmful, for all images we build.
+
+set -e
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+IMG_PATH=~/.cache/image-create
+CLOUD_IMAGES=${CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
+RELEASE=${RELEASE:-quantal}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$RELEASE-server-cloudimg-$ARCH-root.tar.gz}
+
+mkdir -p $IMG_PATH
+# TODO: don't cache -current forever.
+if [ ! -f $IMG_PATH/$BASE_IMAGE_FILE ] ; then
+   echo "Fetching Base Image"
+   wget $CLOUD_IMAGES/$RELEASE/current/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
+   mv $IMG_PATH/$BASE_IMAGE_FILE.tmp $IMG_PATH/$BASE_IMAGE_FILE
+fi
+# Extract the base image
+sudo tar -C $TARGET_ROOT -xzf $IMG_PATH/$BASE_IMAGE_FILE
