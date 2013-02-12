@@ -22,7 +22,7 @@ setuptools.setup(
     name='diskimage_builder',
     version='0.0.1',
     description="""Build Disk Images for use on OpenStack Nova""",
-    long_description = readme_text,
+    long_description=readme_text,
     license='Apache License (2.0)',
     author='HP Cloud Services',
     author_email='nobody@hp.com',
