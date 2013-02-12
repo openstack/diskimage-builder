@@ -1,0 +1,6 @@
+#!/bin/bash
+
+printf "%s\t%s\t%s\t%s\n" \
+    cloud-init cloud-init/datasources multiselect "NoCloud, None" | \
+        debconf-set-selections
+DEBIAN_FRONTEND=noninteractive dpkg-reconfigure cloud-init
