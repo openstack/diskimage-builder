@@ -14,7 +14,7 @@
 # under the License.
 
 # options for create-baremetal-image.sh
-ARCH=${ARCH:-$(dpkg --print-architecture)}
+export ARCH=${ARCH:-$(dpkg --print-architecture)}
 FS_TYPE=${FS_TYPE:-ext4}
 # Used to set the file extension only at this stage.
 IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
