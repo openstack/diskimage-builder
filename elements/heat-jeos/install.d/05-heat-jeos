@@ -9,7 +9,7 @@ HEAT_API_SOURCE=https://github.com/heat-api/heat-jeos.git
 OS_ROOT=/opt/stack
 JEOS_ROOT=$OS_ROOT/heat-jeos
 
-install-packages git-core python-psutil
+install-packages git-core python-psutil python-pip
 
 mkdir -p $OS_ROOT
 git clone $HEAT_API_SOURCE $JEOS_ROOT
