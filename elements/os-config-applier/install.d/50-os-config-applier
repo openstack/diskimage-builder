@@ -9,8 +9,10 @@ pip install -U git+https://github.com/tripleo/os-config-applier.git
 mkdir -p /opt/stack
 git clone $TEMPLATES /opt/stack/openstack-config-templates
 
-cat > /etc/init/os-config-applier.conf <<- eof
-start on runlevel [2345]
-task
+runscript=$(os-refresh-config --print-base)/configuration.d/10-os-config-applier
+mkdir -p $(dirname $runscript)
+cat > $runscript <<- eof
+#!/bin/sh
 exec os-config-applier -t /opt/stack/openstack-config-templates/templates
 eof
+chmod 0755 $runscript
