@@ -40,8 +40,7 @@ function ensure_binaries() {
   done
 
   for _BIN in $BINARY_DEPS ; do
-    _LOCATION=""
-    _LOCATION="${_LOCATION:-$(which $_BIN)}"
+    _LOCATION=$(which "$_BIN" || echo "")
     if [ -z "$_LOCATION" ]; then
       echo "$_BIN is not found in your PATH" 1>&2
       echo "Please install it on your system"
