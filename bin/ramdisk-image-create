@@ -65,8 +65,6 @@ echo "Building element(s): ${RAMDISK_ELEMENT}"
 echo "Discovering binary dependencies"
 ensure_binaries
 
-mk_build_dir
-
 INIT="$_DIR/../scripts/init"
 FUNCTIONS_D="$_DIR/../scripts/d"
 
