@@ -1,11 +1,32 @@
 #!/bin/bash
-# Configure grub
 
+# Configure grub. Note that the various conditionals here are to handle
+# different distributions gracefully.
 
 set -e
 
 # XXX: grub-probe on the nbd0 device returns nothing - workaround, manually
 # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
-grub-install --modules="biosdisk part_msdos" /dev/nbd0
-# XXX: Undiagnosed, but the LABEL=cloudimg-rootfs isn't being picked up: workaround it.
-sed -i 's%/dev/nbd0p1%LABEL=cloudimg-rootfs%' /boot/grub/grub.cfg
+GRUBNAME=`which grub-install` || echo "trying grub2-install"
+if [ -z "$GRUBNAME" ]; then
+    GRUBNAME=`which grub2-install`
+fi
+if [ -z "$GRUBNAME" ]; then
+    echo "NO grub-install or grub2-install found"
+    exit 1
+fi
+BOOT_DEV=/dev/nbd0
+PART_DEV=/dev/nbd0p1
+$GRUBNAME --modules="biosdisk part_msdos" $BOOT_DEV
+# This might be better factored out into a per-distro 'install-bootblock'
+# helper.
+if [ -f "/boot/grub/grub.cfg" ] ; then
+  GRUB_CFG=/boot/grub/grub.cfg
+elif [ -f "/boot/grub2/grub.cfg" ] ; then
+  GRUB_CFG=/boot/grub2/grub.cfg
+fi
+# grub-mkconfig generates a config with the device in it,
+# force use of a LABEL:
+# NOTE: Updating the grub config by hand once deployed should work, its just
+# prepping it in a different environment that needs fiddling.
+sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ "i386" = "$ARCH" ]; then
+  basearch=i386
+  arch=i686
+elif [ "amd64" = "$ARCH" ]; then
+  basearch=x86_64
+  arch=x86_64
+else
+  echo "********************"
+  echo "Unknown arch '$ARCH'"
+  echo "********************"
+  exit 1
+fi
+
+echo $basearch > /etc/yum/vars/basearch
+echo $arch > /etc/yum/vars/arch

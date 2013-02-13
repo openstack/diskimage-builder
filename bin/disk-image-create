@@ -61,7 +61,7 @@ while true ; do
     esac
 done
 
-if [ "$CLEAR_ENV" == "1" -a "$HOME" != "" ]; then
+if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   echo "Re-execing to clear environment."
   echo "(note this will prevent much of the local_config element from working)"
   exec -c $0 "$@"

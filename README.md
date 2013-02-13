@@ -37,7 +37,9 @@ Design
 Images are built using a chroot and bind mounted /proc /sys and /dev. The goal
 of the image building process is to produce blank slate machines that have all
 the necessary bits to fulfill a specific purpose in the running of an Openstack
-cloud: e.g. a nova-compute node.
+cloud: e.g. a nova-compute node. Images produce either a filesystem image with
+a label of cloudimg-rootfs, or can be customised to produce disk images (but
+will still contain a filesystem labelled cloudimg-rootfs).
 
 An element is a particular set of code that alters how the image is built, or
 runs within the chroot to prepare the image. E.g. the local-config element

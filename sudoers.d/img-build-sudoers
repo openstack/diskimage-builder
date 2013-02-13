@@ -43,3 +43,7 @@ ALL ALL=(root) NOPASSWD: /usr/bin/unlink /tmp/*/mnt/*
 ALL ALL=(root) NOPASSWD: /bin/cp -t /tmp/*/mnt/etc/ -a /tmp/*/hooks/first-boot.d
 ALL ALL=(root) NOPASSWD: /usr/bin/install -m 0755 -o root -g root -D */dib-run-parts /tmp/*/mnt/usr/local/bin/dib-run-parts
 ALL ALL=(root) SETENV: NOPASSWD: /usr/sbin/chroot /tmp/*/mnt *
+ALL ALL=(root) NOPASSWD: /sbin/losetup --show -r -f /tmp/*/*.raw
+ALL ALL=(root) NOPASSWD: /sbin/losetup -d /dev/loop*
+ALL ALL=(root) NOPASSWD: /sbin/losetup -d /dev/loop*
+ALL ALL=(root) NOPASSWD: /sbin/partprobe /dev/loop*
