@@ -122,7 +122,7 @@ function run_d_in_target() {
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       check_break before-$1 run_in_target bash
-      run_in_target run-parts -v /tmp/in_target.d/$1.d
+      run_in_target run-parts /tmp/in_target.d/$1.d
       check_break after-$1 run_in_target bash
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
       sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d
@@ -149,7 +149,7 @@ function prepare_first_boot () {
 set -e
 set -o xtrace
 
-run-parts -v /etc/first-boot.d
+run-parts /etc/first-boot.d
 rm -fr /etc/first-boot.d
 mv /etc/rc.local.REAL /etc/rc.local
 exit 0
