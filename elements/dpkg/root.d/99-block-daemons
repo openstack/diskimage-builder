@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+[ -n "$TARGET_ROOT" ]
+
+# Prevent package installs from starting daemons
+sudo mv $TARGET_ROOT/sbin/start-stop-daemon $TARGET_ROOT/sbin/start-stop-daemon.REAL
+sudo dd of=$TARGET_ROOT/sbin/start-stop-daemon <<EOF
+#!/bin/sh
+echo
+echo "Warning: Fake start-stop-daemon called, doing nothing"
+EOF
+sudo chmod 755 $TARGET_ROOT/sbin/start-stop-daemon
+
+sudo mv $TARGET_ROOT/sbin/initctl $TARGET_ROOT/sbin/initctl.REAL
+sudo dd of=$TARGET_ROOT/sbin/initctl <<EOF
+#!/bin/sh
+echo "initctl (tripleo 1.0)"
+echo "Warning: Fake initctl called, doing nothing"
+EOF
+sudo chmod 755 $TARGET_ROOT/sbin/initctl
+
+sudo mv $TARGET_ROOT/usr/sbin/invoke-rc.d $TARGET_ROOT/usr/sbin/invoke-rc.d.REAL
+sudo dd of=$TARGET_ROOT/usr/sbin/invoke-rc.d <<EOF
+#!/bin/sh
+echo "invoke-rc.d (tripleo 1.0)"
+echo "Warning: Fake inovke-rc.d called, doing nothing"
+EOF
+sudo chmod 755 $TARGET_ROOT/usr/sbin/invoke-rc.d

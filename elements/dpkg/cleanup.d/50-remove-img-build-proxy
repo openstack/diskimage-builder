@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+[ -n "$TARGET_ROOT" ]
+
+# Undo our proxy support
+sudo rm -f $TARGET_ROOT/etc/apt/apt.conf.d/60img-build-proxy

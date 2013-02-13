@@ -109,9 +109,11 @@ mount_tmp_image ${IMAGE_BLOCK_DEVICE}
 
 create_base
 run_d extra-data
-do_pre_install
+# Run pre-install scripts. These do things that prepare the chroot for package installs
+run_d_in_target pre-install
 do_extra_package_install
-do_install
+# Call install scripts to pull in the software users want.
+run_d_in_target install
 prepare_first_boot
 finalise_base
 unmount_image
