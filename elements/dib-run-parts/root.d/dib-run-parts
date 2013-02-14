@@ -16,6 +16,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+allowed_regex=${RUN_PARTS_REGEX:-"^[0-9A-Za-z_-]+$"}
+
 set -ue
 
 name=$(basename $0)
@@ -41,8 +43,9 @@ if ! [ -d $target_dir ] ; then
 fi
 
 # We specifically only want to sort *by the numbers*.
-# Lexical sorting is not guaranteed.
-targets=$(find $target_dir -type f -executable \! -name '.*' -printf '%f\n' | sort -n)
+# Lexical sorting is not guaranteed, and identical numbers may be
+# parallelized later
+targets=$(find $target_dir -type f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n)
 
 for target in $targets ; do
     output "Running $target_dir/$target"
