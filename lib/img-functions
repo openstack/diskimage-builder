@@ -98,12 +98,6 @@ function create_base () {
     sudo mount --bind /dev $TMP_MOUNT_PATH/dev
     sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
 
-    # If we have a network proxy, use it.
-    if [ -n "$http_proxy" ] ; then
-        sudo dd of=$TMP_MOUNT_PATH/etc/apt/apt.conf.d/60img-build-proxy << _EOF_
-    Acquire::http::Proxy "$http_proxy";
-_EOF_
-    fi
 }
 
 # Helper function to run a command inside the chroot
@@ -160,8 +154,7 @@ EOF
 }
 
 function finalise_base () {
-    # Undo our proxy support
-    sudo rm -f $TMP_MOUNT_PATH/etc/apt/apt.conf.d/60img-build-proxy
+    TARGET_ROOT=$TMP_MOUNT_PATH run_d cleanup
     # Now remove the resolv.conf we created above
     sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
     # The we need to recreate it as a link
@@ -173,62 +166,6 @@ function compress_image () {
     qemu-img convert ${COMPRESS_IMAGE:+-c} $TMP_IMAGE_PATH -O qcow2 $TMP_IMAGE_PATH-new
     rm $TMP_IMAGE_PATH
     mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
-}
-
-function block_apt_translations () {
-# Configure APT not to fetch translations files
-sudo dd of=$TMP_MOUNT_PATH/etc/apt/apt.conf.d/95no-translations <<EOF
-APT::Acquire::Languages "none";
-EOF
-
-# And now make sure that we don't fall foul of Debian bug 641967
-find $TMP_MOUNT_PATH/var/lib/apt/lists/ -type f -name '*_i18n_Translation-*' -exec sudo rm -f {} \;
-}
-
-function block_daemons () {
-# Prevent package installs from starting daemons
-sudo mv $TMP_MOUNT_PATH/sbin/start-stop-daemon $TMP_MOUNT_PATH/sbin/start-stop-daemon.REAL
-sudo dd of=$TMP_MOUNT_PATH/sbin/start-stop-daemon <<EOF
-#!/bin/sh
-echo
-echo "Warning: Fake start-stop-daemon called, doing nothing"
-EOF
-sudo chmod 755 $TMP_MOUNT_PATH/sbin/start-stop-daemon
-
-sudo mv $TMP_MOUNT_PATH/sbin/initctl $TMP_MOUNT_PATH/sbin/initctl.REAL
-sudo dd of=$TMP_MOUNT_PATH/sbin/initctl <<EOF
-#!/bin/sh
-echo "initctl (tripleo 1.0)"
-echo "Warning: Fake initctl called, doing nothing"
-EOF
-sudo chmod 755 $TMP_MOUNT_PATH/sbin/initctl
-
-sudo mv $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d.REAL
-sudo dd of=$TMP_MOUNT_PATH/usr/sbin/invoke-rc.d <<EOF
-#!/bin/sh
-echo "invoke-rc.d (tripleo 1.0)"
-echo "Warning: Fake inovke-rc.d called, doing nothing"
-EOF
-sudo chmod 755 $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d
-}
-
-function unblock_daemons () {
-  sudo mv $TMP_MOUNT_PATH/sbin/start-stop-daemon.REAL $TMP_MOUNT_PATH/sbin/start-stop-daemon
-  sudo mv $TMP_MOUNT_PATH/sbin/initctl.REAL $TMP_MOUNT_PATH/sbin/initctl
-  sudo mv $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d.REAL $TMP_MOUNT_PATH/usr/sbin/invoke-rc.d
-}
-
-function do_pre_install () {
-  block_daemons
-  block_apt_translations
-  # Run pre-install scripts. These do things that prepare the chroot for package installs
-  run_d_in_target pre-install
-}
-
-function do_install () {
-  # Call install scripts to pull in the software users want.
-  run_d_in_target install
-  unblock_daemons
 }
 
 function do_extra_package_install () {

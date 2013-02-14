@@ -91,9 +91,17 @@ part of the process you need to customise:
   alternative distribution support is added, or customisations such as
   building on an existing image. If no element configures a root, the ubuntu
   element will be automatically invoked to obtain an Ubuntu image.
-  Runs outside the chroot on the host environment, so should cleanup after
-  itself using the root-finished.d hook.
-  NB: Only one element can use this at a time.
+  Runs outside the chroot on the host environment.
+  
+  Only one element can use this at a time unless particular care is taken not
+  to blindly overwrite but instead to adapt the context extracted by other
+  elements.
+
+ * inputs: $ARCH=i386|amd64 $TARGET\_ROOT=/path/to/target/workarea
+
+* cleanup.d: Perform cleanups of the root filesystem content. For instance,
+  temporary settings to use the image build environment HTTP proxy are removed
+  here in the dpkg element. Runs outside the chroot on the host environment.
 
  * inputs: $ARCH=i386|amd64 $TARGET\_ROOT=/path/to/target/workarea
 
