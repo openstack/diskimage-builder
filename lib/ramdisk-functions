@@ -57,7 +57,6 @@ function create_base () {
   mkdir -p "$TMP_MOUNT_PATH/bin"
   ln -s bin "$TMP_MOUNT_PATH/sbin"
   mkdir -p "$TMP_MOUNT_PATH/lib"
-  ln -s lib "$TMP_MOUNT_PATH/lib64"
   mkdir -p "$TMP_MOUNT_PATH/lib/modules"
   mkdir -p "$TMP_MOUNT_PATH/etc"
   mkdir -p "$TMP_MOUNT_PATH/etc/udev"
@@ -87,10 +86,52 @@ udev_log="no"
 EOF
 }
 
+function copy_required_libs() {
+  ldd_out=`ldd "$1"`
+  if [ $? -ne 0 ]; then
+    return
+  fi
+  local IFS="
+"
+
+  # Patterns of output of ldd
+  #
+  # 1. name to real path
+  #     libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f095e784000)
+  # 2. only path
+  #	    /lib64/ld-linux-x86-64.so.2 (0x00007f095ef79000)
+  # 3. path to path
+  #	    /lib64/ld-linux-x86-64.so.2 => /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 (0x00007facff857000)
+  # 4. name to empty (vdso)
+  #	    linux-vdso.so.1 =>  (0x00007fff0c5ff000)
+
+  for i in `echo "$ldd_out" | sed -e 's/^\t*//'`; do
+    local ref=$( echo "$i" | awk -F '[ ]' '{print $1}')
+    local real=$( echo "$i" | awk -F '[ ]' '$2 == "=>" {print $3}
+                                            $2 != "=>" {print $1}')
+    if [ -z "$real" ]; then
+      continue
+    fi
+    if [ "$ref" = "${ref#/}" ]; then
+      ref=/lib/$ref
+    fi
+    dest=/lib/`basename "$real"`
+    cp -Ln "$real" "$TMP_MOUNT_PATH/$dest"
+    # Create a symbolic link if the shared library is referred
+    # by the different name
+    if [ "$ref" != "$dest" ]; then
+      local link_path=$TMP_MOUNT_PATH/$ref
+      if ! [ -e "$link_path" -o -L "$link_path" ]; then
+        mkdir -p `dirname "$link_path"`
+        ln -s "$dest" "$link_path"
+      fi
+    fi
+  done
+}
+
 function populate_lib () {
   echo "Populating /lib"
 
-  libs=
   for i in "$BUSYBOX" "$LIB_UDEV/firmware" bash lsmod modprobe udevd udevadm wget reboot shutdown $BINARY_DEPS ; do
     if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
       continue
@@ -101,15 +142,8 @@ function populate_lib () {
       exit 1
     fi
     cp -L "$path" "$TMP_MOUNT_PATH/bin/"
-    if l=`ldd "$path"`; then
-      l=$( echo "$l" | grep '/' | tr "\t" " " )
-      l=$( echo "$l" | sed 's/^.* => \([^ ]*\).*$/\1/' )
-      l=$( echo "$l" | sed 's/^ *\([^ ]*\) *(0x[0-9a-f]*)/\1/' )
-      l=$( echo "$l" | tr " " "\n" )
-      libs=$( printf "%s\n%s\n" "$l" "$libs" | sort | uniq )
-    fi
+    copy_required_libs "$path"
   done
-  cp $libs "$TMP_MOUNT_PATH/lib/"
 
   cp -a "$MODULE_DIR" "$TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION"
   cp -a "$FIRMWARE_DIR" "$TMP_MOUNT_PATH/lib/firmware"
