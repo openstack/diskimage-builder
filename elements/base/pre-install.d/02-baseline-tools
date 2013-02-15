@@ -3,7 +3,8 @@
 
 set -e
 
-DISTRO=`lsb_release -si`
+# If lsb_release is missing, just do nothing.
+DISTRO=`lsb_release -si` || true
 
 case $DISTRO in
   'Ubuntu'|'Debian')
