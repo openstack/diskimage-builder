@@ -143,7 +143,10 @@ function prepare_first_boot () {
 set -e
 set -o xtrace
 
-run-parts /etc/first-boot.d
+touch /var/log/first-boot.d.log
+chmod 0600 /var/log/first-boot.d.log
+
+run-parts /etc/first-boot.d >> /var/log/first-boot.d.log 2>&1
 rm -fr /etc/first-boot.d
 mv /etc/rc.local.REAL /etc/rc.local
 exit 0
