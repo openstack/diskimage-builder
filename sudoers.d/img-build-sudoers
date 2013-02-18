@@ -24,6 +24,7 @@ ALL ALL=(root) NOPASSWD: /bin/mount -o remount\,ro\,bind /tmp/*/hooks /tmp/*/mnt
 ALL ALL=(root) NOPASSWD: /bin/mount -t proc none /tmp/*/mnt/proc
 ALL ALL=(root) NOPASSWD: /bin/mount -t sysfs none /tmp/*/mnt/sys
 ALL ALL=(root) NOPASSWD: /bin/mount /dev/nbd0* /tmp/*/mnt
+ALL ALL=(root) NOPASSWD: /bin/mount /dev/loop*p* /tmp/*/mnt
 ALL ALL=(root) NOPASSWD: /bin/mv /tmp/*/mnt/* /tmp/*/mnt/*
 ALL ALL=(root) NOPASSWD: /bin/rm -* /tmp/*/mnt/*
 ALL ALL=(root) NOPASSWD: /bin/rmdir /tmp/*/mnt/*
