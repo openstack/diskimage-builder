@@ -20,9 +20,8 @@ import sys
 
 
 def get_elements_dir():
-    if 'ELEMENTS_DIR' not in os.environ:
-        return os.path.abspath(
-            os.path.join(os.path.dirname(__file__), '..', 'elements'))
+    if not os.environ.get('ELEMENTS_DIR'):
+        raise Exception("$ELEMENTS_DIR must be set.")
     return os.environ['ELEMENTS_DIR']
 
 

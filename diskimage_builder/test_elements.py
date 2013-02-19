@@ -22,6 +22,7 @@ class StubPackage:
     pass
 
 
+# load all tests from /elements/*/tests/ dirs.
 # conceptually load_tests should be in __init__, but see
 # http://bugs.python.org/issue16662 instead. So, its here in test_elements.py
 def load_tests(loader, tests, pattern):
