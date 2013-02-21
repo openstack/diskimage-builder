@@ -1,0 +1,9 @@
+#!/bin/bash
+set -eux
+
+os-svc-install -n keystone -u keystone -r https://github.com/openstack/keystone.git
+os-svc-daemon keystone keystone /usr/local/bin/keystone-all "--config-dir /etc/keystone --log-config /etc/keystone/logging.conf"
+install -m 0755 -o keystone -g keystone -d /etc/keystone/ssl
+
+install -m 0755 -o root -g root $(dirname $0)/../post-configure \
+                                $(os-refresh-config --print-base)/post-configure.d/70-keystone
