@@ -8,6 +8,10 @@ install-packages git-core python-pip
 
 pip install git+https://github.com/tripleo/os-refresh-config.git
 
+for d in pre-configure.d configure.d migration.d post-configure.d; do
+  install -m 0755 -o root -g root -d /opt/stack/os-config-refresh/$d
+done
+
 cat > /etc/init/os-refresh-config.conf <<- eof
 start on runlevel [2345]
 task

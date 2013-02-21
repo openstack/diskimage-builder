@@ -1,0 +1,15 @@
+#!/bin/bash
+set -eu
+
+# TODO: resize volume group in response to config changes.
+# TODO: is there a safe way to shrink a volume group?
+vol_group=cinder-volumes
+vol_file=/var/run/cinder/$vol_group-backing-file
+size=$(os-config-applier --key cinder.volume_size_mb --type int)M
+
+if ! vgs $vol_group; then
+  [[ -f $vol_file ]] || truncate -s $size $vol_file
+  dev=`sudo losetup -f --show $vol_file`
+  if ! vgs $vol_group; then vgcreate $vol_group $dev; fi
+  mkdir -p /var/run/cinder/volumes
+fi

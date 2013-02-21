@@ -1,0 +1,3 @@
+#!/bin/bash
+set -eu
+use-config-templates $(dirname $0)/../config
