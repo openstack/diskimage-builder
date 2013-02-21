@@ -1,0 +1,32 @@
+#!/bin/bash
+set -eu
+
+
+function install_upstart {
+  local name=$1
+  local user=$2
+  local cmd=$3
+  shift; shift; shift
+  local args=$*
+  cat > /etc/init/$name.conf <<EOF
+start on runlevel [2345]
+stop on runlevel [016]
+
+pre-start script
+  mkdir -p /var/run/$user
+  chown -R $user:$user /var/run/$user
+end script
+
+respawn
+exec sudo -u $user $cmd $args
+EOF
+}
+
+if [ $# -lt 4 ]; then
+  echo "Usage: os-svc-daemon DAEMON_NAME USER COMMAND [ARG[ARG[...]]]"
+  exit 1
+fi
+
+# TODO: check what system we are on, and install
+#       systemv instead, if appropriate.
+install_upstart $*

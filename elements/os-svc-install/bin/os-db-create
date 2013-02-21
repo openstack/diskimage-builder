@@ -1,0 +1,19 @@
+#!/bin/bash
+set -eu
+
+function create_db {
+  local sql="
+    drop database if exists $1;
+    create database if not exists $1;
+    grant all on $1.* to '$2'@'localhost' identified by '$3';
+    grant all on $1.* to '$2'@'%'         identified by '$3';
+    flush privileges;"
+  echo "$sql" | mysql
+}
+
+if [ $# -lt 3 ]; then
+  echo "Usage: os-db-create DB_NAME DB_USER DB_PASS"
+  exit 1
+fi
+
+create_db $*

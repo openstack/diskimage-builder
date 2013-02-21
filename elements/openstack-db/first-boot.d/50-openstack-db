@@ -23,3 +23,4 @@ glance-manage db_sync
 
 create-os-db ovs_quantum quantum $db_pass
 
+

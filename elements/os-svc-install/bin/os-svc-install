@@ -1,0 +1,60 @@
+#!/bin/bash
+set -eux
+
+pypi_mirror=http://pypi.openstack.org/
+pip_install="pip install -i $pypi_mirror "
+
+function install-os-service() {
+  local user=$1
+  local repo=$2
+  local branch=$3
+
+  id $user || useradd $user --system -d /var/run/$user -s /bin/false
+
+  mkdir -p /etc/$user
+  chown -R $user:$user /etc/$user
+
+  local svc_root=/opt/stack/$user
+  if [ ! -e $svc_root ]; then
+    git clone --depth=1 -b $branch $repo $svc_root
+    [ -e $svc_root/tools/pip-requires ] && $pip_install -r $svc_root/tools/pip-requires
+    $pip_install $svc_root
+  else
+    expected_rev=$(git --git-dir $svc_root/.git rev-parse $branch)
+    actual_rev=$(git --git-dir $svc_root/.git show | head -1 | awk '{print $2}')
+    if [ "$expected_rev" -ne "$actual_rev" ]; then
+      echo "ERROR: $repo exists and is not on rev $branch"
+      exit 1
+    fi
+  fi
+}
+
+
+function usage() {
+  echo "options:"
+  echo "  -h   show usage and exit"
+  echo "  -r   service's git repo url"
+  echo "  -b   repo branch or ref (default 'master')"
+  echo "  -u   name of the service run-as user"
+  exit 0
+}
+
+while getopts r:u:c:n:h:b: opt; do
+  case "$opt" in
+    u)  user=$OPTARG;;
+    h)  usage;;
+    r)  repo=$OPTARG;;
+    b)  branch=$OPTARG;;
+    \?) usage;;
+  esac
+done
+
+branch=${branch:-master}
+
+if [[ -z "$user" || -z "$repo" ]]; then
+  echo "missing required parameter"
+  exit 1
+fi
+
+install-packages python-dev python-pip git-core python-setuptools gcc libc6-dev libxml2-dev libxslt-dev
+install-os-service "$user" "$repo" "$branch"
