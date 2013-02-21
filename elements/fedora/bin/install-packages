@@ -18,4 +18,8 @@
 set -e
 
 yum -y install $(map-packages "$@")
-
+for pkg in "$@"; do
+  if [[ "$pkg" == "python-pip" ]] ; then
+    alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
+  fi
+done
