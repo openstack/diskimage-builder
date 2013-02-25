@@ -77,9 +77,9 @@ class TestElementDeps(TestCase):
 
 class TestElements(TestCase):
     def test_depends_on_env(self):
-        self.useFixture(EnvironmentVariable('ELEMENTS_DIR', '/foo/bar'))
+        self.useFixture(EnvironmentVariable('ELEMENTS_PATH', '/foo/bar'))
         self.assertEquals('/foo/bar', get_elements_dir())
 
     def test_env_not_set(self):
-        self.useFixture(EnvironmentVariable('ELEMENTS_DIR', ''))
+        self.useFixture(EnvironmentVariable('ELEMENTS_PATH', ''))
         self.assertRaises(Exception, get_elements_dir, ())

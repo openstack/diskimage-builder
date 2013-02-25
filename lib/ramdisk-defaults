@@ -21,4 +21,4 @@ MODULE_ROOT=${MODULE_ROOT:-""}
 LIB_UDEV_ROOT=${LIB_UDEV_ROOT:-""}
 BUSYBOX=${BUSYBOX:-$(which busybox)}
 IMAGE_NAME=${IMAGE_NAME:-"ramdisk"}
-export ELEMENTS_DIR=$(dirname $0)/../elements
+export ELEMENTS_PATH=${ELEMENTS_PATH:-(dirname $0)/../elements}

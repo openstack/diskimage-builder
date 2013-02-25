@@ -20,9 +20,9 @@ import sys
 
 
 def get_elements_dir():
-    if not os.environ.get('ELEMENTS_DIR'):
-        raise Exception("$ELEMENTS_DIR must be set.")
-    return os.environ['ELEMENTS_DIR']
+    if not os.environ.get('ELEMENTS_PATH'):
+        raise Exception("$ELEMENTS_PATH must be set.")
+    return os.environ['ELEMENTS_PATH']
 
 
 def dependencies(element, elements_dir=None):
@@ -37,15 +37,21 @@ def dependencies(element, elements_dir=None):
     if elements_dir is None:
         elements_dir = get_elements_dir()
 
-    element_deps_path = os.path.join(elements_dir, element, 'element-deps')
-    try:
-        with open(element_deps_path) as element_deps:
-            return set([line.strip() for line in element_deps])
-    except IOError as e:
-        if e.errno == 2:
-            return set()
-        else:
-            raise
+    for path in elements_dir.split(':'):
+        element_deps_path = (os.path.join(path, element, 'element-deps'))
+        try:
+            with open(element_deps_path) as element_deps:
+                return set([line.strip() for line in element_deps])
+        except IOError as e:
+            if os.path.exists(os.path.join(path, element)) and e.errno == 2:
+                return set()
+            if e.errno == 2:
+                continue
+            else:
+                raise
+
+    sys.stderr.write("ERROR: Element %s doesn't exists\n" % (element, ))
+    exit(-1)
 
 
 def expand_dependencies(user_elements, elements_dir=None):

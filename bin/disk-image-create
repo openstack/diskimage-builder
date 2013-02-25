@@ -35,6 +35,8 @@ function show_options () {
     echo "    -c -- clear environment before starting work"
     echo "    -n skip the default inclusion of the 'base' element"
     echo "    -p package[,package,package] -- list of packages to install in the image"
+    echo
+    echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
     exit 0
 }
 

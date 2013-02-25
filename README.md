@@ -256,6 +256,11 @@ The scripts can generally just be run. Options can be set on the command line
 or by exporting variables to override those present in lib/img-defaults. -h to
 get help.
 
+
+Using the variable ELEMENTS_PATH will allow to specify multiple elements locations.
+It's a colon (:) separated path list, and it will work in a first path/element found,
+first served approach.
+
 Copyright
 =========
 
