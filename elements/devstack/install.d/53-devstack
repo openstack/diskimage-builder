@@ -8,4 +8,4 @@ install-packages git
 if [ -n "$http_proxy" ]; then
     sudo -Hiu stack git config --global http.proxy $http_proxy
 fi
-sudo -Hiu stack git clone -b baremetal-dev https://github.com/tripleo/devstack.git
+sudo -Hiu stack git clone https://github.com/openstack-dev/devstack.git
