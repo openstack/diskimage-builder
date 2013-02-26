@@ -1,0 +1,11 @@
+#!/bin/bash
+set -eu
+
+install-packages mysql-server python-mysqldb
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf
+
+os-svc-install -u keystone -r https://github.com/openstack/keystone.git
+os-svc-install -u cinder   -r https://github.com/openstack/cinder.git
+os-svc-install -u nova     -r https://github.com/openstack/nova.git
+os-svc-install -u glance   -r https://github.com/openstack/glance.git
+os-svc-install -u quantum  -r https://github.com/openstack/quantum.git
