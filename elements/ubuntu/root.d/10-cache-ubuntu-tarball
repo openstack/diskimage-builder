@@ -16,10 +16,10 @@ mkdir -p $IMG_PATH
 # TODO: don't cache -current forever.
 if [ ! -f $IMG_PATH/$BASE_IMAGE_FILE ] ; then
    echo "Fetching Base Image"
+   wget $SHA256SUMS -O $IMG_PATH/SHA256SUMS.ubuntu.$RELEASE.$ARCH
    wget $CLOUD_IMAGES/$RELEASE/current/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
-   wget $SHA256SUMS -O $IMG_PATH/SHA256SUMS
    pushd $IMG_PATH
-   awk "/$BASE_IMAGE_FILE/ { print \$0 \".tmp\" }" SHA256SUMS | sha256sum --check -
+   awk "/$BASE_IMAGE_FILE/ { print \$0 \".tmp\" }" SHA256SUMS.ubuntu.$RELEASE.$ARCH | sha256sum --check -
    popd
    mv $IMG_PATH/$BASE_IMAGE_FILE.tmp $IMG_PATH/$BASE_IMAGE_FILE
 fi
