@@ -14,3 +14,19 @@ it into one of the following directories:
 /opt/stack/os-refresh-config/migration.d
 /opt/stack/os-refresh-config/post-configure.d
 ```
+
+If you want to have os-refresh-config run on any updates to a particular
+Resource in the heat stack, you will need at the minimum the following snippet
+of json in this instance's Metadata:
+
+{
+  "OpenStack::Config": {
+    "heat":
+      "access_key_id": {"Ref": "ApiKeyResource"},
+      "secret_key": {"Fn::GetAtt": [ "ApiKeyResource", "SecretAccessKey" ]},
+      "refresh": [ {"resource": "SomeResource"} ],
+      "stack": {Ref: 'AWS::Stack'},
+      "region": {Ref: 'AWS::Region'}
+    }
+  }
+}
