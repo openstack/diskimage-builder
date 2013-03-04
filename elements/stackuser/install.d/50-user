@@ -12,13 +12,17 @@ stack
 EOF
 
 
-sudo_file=/etc/sudoers.d/stack
 cat > /etc/sudoers.d/stack <<eof
 # the stack user sometimes requires passwordless
 # sudo for scripted operations.
 stack ALL=(ALL) NOPASSWD:ALL
 eof
 
-chmod 0440 $sudo_file
-
+chmod 0440 /etc/sudoers.d/stack
 visudo -c
+
+if [ -e "/tmp/in_target.d/ssh-authorized-keys" ]; then
+  mkdir -p /home/stack/.ssh
+  cat /tmp/in_target.d/ssh-authorized-keys >> /home/stack/.ssh/authorized_keys
+  chown -R stack:stack /home/stack/.ssh
+fi

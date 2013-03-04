@@ -5,8 +5,6 @@
 set -e
 
 if [ -e "/tmp/in_target.d/ssh-authorized-keys" ]; then
-    if [ -d ~stack ]; then
-      sudo -u stack mkdir ~stack/.ssh
-      sudo -Hiu stack dd of=~stack/.ssh/authorized_keys oflag=append conv=notrunc if=/tmp/in_target.d/ssh-authorized-keys
-    fi
+  mkdir -p /root/.ssh
+  cat /tmp/in_target.d/ssh-authorized-keys >> /root/.ssh/authorized_keys
 fi
