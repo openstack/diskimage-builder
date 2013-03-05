@@ -1,0 +1,8 @@
+#!/bin/bash
+# Note that this relies on the detail that all elements share one dir
+# inside the chroot. This will copy all the files that elements have
+# added to element/os-config-applier into the appropriate location.
+set -eux
+TEMPLATE_ROOT=$(os-config-applier --print-templates)
+TEMPLATE_SOURCE=$(dirname $0)/../os-config-applier
+rsync -r $TEMPLATE_SOURCE/ $TEMPLATE_ROOT/

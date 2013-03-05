@@ -1,0 +1,14 @@
+#!/bin/bash
+set -eux
+
+install-packages git-core python-pip
+pip install -U git+https://github.com/tripleo/os-config-applier.git
+
+TEMPLATE_ROOT=$(os-config-applier --print-templates)
+mkdir -p $TEMPLATE_ROOT
+
+cat > /etc/init/os-config-applier.conf <<- eof
+start on runlevel [2345]
+task
+exec os-config-applier
+eof

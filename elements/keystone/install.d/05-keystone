@@ -1,4 +1,3 @@
 #!/bin/bash
 set -eux
 os-svc-install -n keystone -u keystone -r https://github.com/openstack/keystone.git -c "/opt/stack/keystone/bin/keystone-all"
-
