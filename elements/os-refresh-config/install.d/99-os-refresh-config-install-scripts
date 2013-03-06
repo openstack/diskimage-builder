@@ -1,0 +1,4 @@
+#!/bin/bash
+SCRIPT_BASE=$(os-refresh-config --print-base)
+SCRIPT_SOURCE=$(dirname $0)/../os-refresh-config
+rsync -r $SCRIPT_SOURCE/ $SCRIPT_BASE/
