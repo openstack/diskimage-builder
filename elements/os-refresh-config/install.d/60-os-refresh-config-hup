@@ -1,8 +1,0 @@
-#!/bin/bash
-# Note that this install.d script must be run after os-config-applier's
-# install script so that we can make use of os-config-apply
-set -eu
-script_home=$(dirname $0)
-template_home=$(os-config-applier --print-templates)/etc/cfn
-install -o root -g root -m 0644 -D $script_home/cfn-hup.conf $template_home/cfn-hup.conf
-install -o root -g root -m 0644 -D $script_home/hooks.conf $template_home/hooks.d/os-refresh-config.conf
