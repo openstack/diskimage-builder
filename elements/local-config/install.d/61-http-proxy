@@ -5,18 +5,32 @@
 set -e
 set -o xtrace
 
+if [ -d /etc/apt ] ; then
+  have_apt=1
+fi
+if [ -e /etc/yum.conf ] ; then
+  have_yum=1
+fi
+
 if [ -n "$http_proxy" ]; then
    if [ -d ~stack ]; then
       echo export http_proxy=$http_proxy >> ~stack/.profile
    fi
-   echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/61-use-http-proxy
+   if [ -n "$have_apt" ] ; then
+     echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/61-use-http-proxy
+   fi
+   if [ -n "$have_yum" ] ; then
+     sed -i -e "s,\[main\],[main]\nproxy=$http_proxy," /etc/yum.conf
+   fi
 fi
 
 if [ -n "$https_proxy" ]; then
    if [ -d ~stack ]; then
       echo export https_proxy=$https_proxy >> ~stack/.profile
    fi
-   echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/61-use-https-proxy
+   if [ -n "$have_apt" ] ; then
+     echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/61-use-https-proxy
+   fi
 fi
 
 if [ -n "$http_proxy" -o -n "$https_proxy" ]; then
