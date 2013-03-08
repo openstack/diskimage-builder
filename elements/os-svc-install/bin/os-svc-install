@@ -15,14 +15,24 @@ function install-os-service() {
   chown -R $user:$user /etc/$user
 
   local svc_root=/opt/stack/$user
+  local git_dir="--git-dir $svc_root/.git"
+
   if [ ! -e $svc_root ]; then
     git clone --depth=1 -b $branch $repo $svc_root
-    [ -e $svc_root/tools/pip-requires ] && $pip_install -r $svc_root/tools/pip-requires
+
+    [ -e $svc_root/tools/pip-requires ] && pip install -r $svc_root/tools/pip-requires
     $pip_install $svc_root
   else
-    expected_rev=$(git --git-dir $svc_root/.git rev-parse $branch)
-    actual_rev=$(git --git-dir $svc_root/.git show | head -1 | awk '{print $2}')
-    if [ "$expected_rev" -ne "$actual_rev" ]; then
+    if ! git $git_dir remote -v | grep $repo; then
+      echo "ERROR: $svc_root exists and did not come from $repo"
+      exit 1
+    fi
+
+    # raise an error unless existing repo is at expected git-rev
+    actual_rev=$(git $git_dir show | head -1 | awk '{print $2}')
+    git $git_dir checkout $branch
+    expected_rev=$(git $git_dir show | head -1 | awk '{print $2}')
+    if [ "$expected_rev" != "$actual_rev" ]; then
       echo "ERROR: $repo exists and is not on rev $branch"
       exit 1
     fi
