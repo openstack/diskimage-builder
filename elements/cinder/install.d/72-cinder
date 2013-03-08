@@ -2,7 +2,7 @@
 set -eux
 
 install-packages lvm2
-os-svc-install -n cinder -u cinder -r https://github.com/openstack/cinder.git
+os-svc-install -n cinder -u cinder -r https://github.com/openstack/cinder.git -c cinder-all
 
 os-svc-upstart cinder-api cinder /usr/local/bin/cinder-api "--config-dir /etc/cinder"
 os-svc-upstart cinder-volume cinder /usr/local/bin/cinder-volume "--config-dir /etc/cinder"
@@ -14,9 +14,3 @@ echo 'include /var/run/cinder/volumes/*' > /etc/tgt/conf.d/cinder_tgt.conf
 echo "cinder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/cinder
 chmod 0440 /etc/sudoers.d/cinder
 visudo -c
-
-os_refresh=$(os-refresh-config --print-base)
-
-for stage in pre-configure migration post-configure; do
-  install -m 0755 -o root -g root $(dirname $0)/../$stage $os_refresh/$stage.d/72-cinder
-done
