@@ -5,5 +5,6 @@
 set -e
 set -o xtrace
 
-#install-packages sysstat mytop percona-toolkit percona-server-server-5.5 percona-server-client-5.5
+install -D -m 0644 -o root -g root  $(dirname $0)/my.cnf /etc/mysql/my.cnf
+
 install-packages sysstat mytop percona-toolkit mysql-server-5.5 mysql-client-5.5
