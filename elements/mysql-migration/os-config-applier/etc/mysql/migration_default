@@ -1,0 +1,4 @@
+MIGRATION_HOST={{mysql-migration.bootstrap_host}}
+MIGRATION_USER={{mysql-migration.slave_user}}
+MIGRATION_PASSWORD={{mysql-migration.slave_password}}
+MIGRATION_DUMP_USER={{mysql-migration.users.dump.username}}
