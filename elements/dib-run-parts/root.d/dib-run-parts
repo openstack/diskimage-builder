@@ -47,8 +47,34 @@ fi
 # parallelized later
 targets=$(find $target_dir -type f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n)
 
+PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)
+
 for target in $targets ; do
     output "Running $target_dir/$target"
+    target_tag=${target//\//_}
+    date +%s.%N > $PROFILE_DIR/start_$target_tag
     $target_dir/$target
+    target_tag=${target//\//_}
+    date +%s.%N > $PROFILE_DIR/stop_$target_tag
     output "$target completed"
 done
+
+echo "----------------------- PROFILING -----------------------"
+echo ""
+echo "Target: $(basename $target_dir)"
+echo ""
+printf "%-40s %9s\n" Script Seconds
+printf "%-40s %9s\n" --------------------------------------- ----------
+echo ""
+pushd $PROFILE_DIR > /dev/null
+for target in start_* ; do
+    stop_file=stop_${target##start_}
+    start_seconds=$(cat $target)
+    stop_seconds=$(cat $stop_file)
+    duration=$(python -c "print $stop_seconds - $start_seconds")
+    printf "%-40s %10.3f\n" ${target##start_} $duration
+done
+popd > /dev/null
+rm -rf $PROFILE_DIR
+echo ""
+echo "--------------------- END PROFILING ---------------------"
