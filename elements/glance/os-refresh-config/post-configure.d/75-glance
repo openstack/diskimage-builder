@@ -1,0 +1,5 @@
+#!/bin/bash
+set -eu
+
+service glance-api restart
+service glance-reg restart

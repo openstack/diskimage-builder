@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eux
-
-os-svc-install -n glance-api -u glance -r https://github.com/openstack/glance.git -c "/opt/stack/glance/bin/glance-api"
