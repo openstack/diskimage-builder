@@ -4,9 +4,9 @@ set -eux
 install-packages lvm2
 os-svc-install -n cinder -u cinder -r https://github.com/openstack/cinder.git -c cinder-all
 
-os-svc-upstart cinder-api cinder /usr/local/bin/cinder-api "--config-dir /etc/cinder"
-os-svc-upstart cinder-volume cinder /usr/local/bin/cinder-volume "--config-dir /etc/cinder"
-os-svc-upstart cinder-scheduler cinder /usr/local/bin/cinder-scheduler "--config-dir /etc/cinder"
+os-svc-daemon cinder-api cinder cinder-api "--config-dir /etc/cinder"
+os-svc-daemon cinder-volume cinder cinder-volume "--config-dir /etc/cinder"
+os-svc-daemon cinder-scheduler cinder cinder-scheduler "--config-dir /etc/cinder"
 mkdir -p /etc/tgt/conf.d
 echo 'include /etc/tgt/conf.d/cinder_tgt.conf' > /etc/tgt/targets.conf
 echo 'include /var/run/cinder/volumes/*' > /etc/tgt/conf.d/cinder_tgt.conf
