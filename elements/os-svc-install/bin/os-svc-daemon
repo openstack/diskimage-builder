@@ -18,7 +18,10 @@ pre-start script
 end script
 
 respawn
-exec sudo -u $user $cmd $args
+
+script
+  exec sudo -u $user /opt/stack/venvs/$user/bin/$cmd $args
+end script
 EOF
 }
 
