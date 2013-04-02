@@ -16,9 +16,11 @@
 function mk_build_dir () {
   export TMP_BUILD_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
   [ $? -eq 0 ] || die "Failed to create tmp directory"
+  sudo mount -t tmpfs tmpfs $TMP_BUILD_DIR
+  sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR
   trap cleanup EXIT
   echo Building in $TMP_BUILD_DIR
-  export TMP_IMAGE_PATH=$TMP_BUILD_DIR/image
+  export TMP_IMAGE_PATH=$TMP_BUILD_DIR/image.raw
   export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
 }
 
@@ -30,7 +32,7 @@ function save_image () {
     fi
 
     cp $TMP_IMAGE_PATH $1
-    rm -r $TMP_BUILD_DIR
+    cleanup_dirs
     # All done!
     trap EXIT
     echo "Image file $1 created..."

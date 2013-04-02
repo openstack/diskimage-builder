@@ -94,22 +94,6 @@ echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoer
 ensure_nbd
 
 mk_build_dir
-eval_run_d block-device-size "DIB_IMAGE_SIZE="
-
-qemu-img create -f qcow2 -o preallocation=metadata $TMP_IMAGE_PATH ${DIB_IMAGE_SIZE}G
-
-# grab the next available /dev/nbdX and connect to it
-map_nbd $TMP_IMAGE_PATH
-echo "NBD Device: $NBD_DEV"
-
-export EXTRA_UNMOUNT="sudo qemu-nbd -d $NBD_DEV"
-export IMAGE_BLOCK_DEVICE=$NBD_DEV
-eval_run_d block-device "IMAGE_BLOCK_DEVICE="
-
-sudo mkfs -F -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
-
-mount_tmp_image ${IMAGE_BLOCK_DEVICE}
-
 create_base
 run_d extra-data
 # Run pre-install scripts. These do things that prepare the chroot for package installs
@@ -119,6 +103,27 @@ do_extra_package_install
 run_d_in_target install
 run_d_in_target post-install
 prepare_first_boot
+# Free up /mnt
+unmount_image
+mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
+# in kb*0.8 - underreport to get a slightly bigger device
+_NEEDED_SIZE=$(sudo du --block-size=800 -x -s ${TMP_BUILD_DIR}/built | awk ' { print $1 } ')
+truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
+LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
+export EXTRA_UNMOUNT="sudo losetup -d $LOOPDEV"
+export IMAGE_BLOCK_DEVICE=$LOOPDEV
+eval_run_d block-device "IMAGE_BLOCK_DEVICE="
+OPTS=""
+if [ "$FS_TYPE" = "ext4" ] ; then
+    # Very conservative to handle images being resized a lot
+    OPTS="-i 4096"
+fi
+sudo mkfs $OPTS -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
+mkdir $TMP_BUILD_DIR/mnt
+sudo mount ${IMAGE_BLOCK_DEVICE} $TMP_BUILD_DIR/mnt
+sudo mv -t $TMP_BUILD_DIR/mnt ${TMP_BUILD_DIR}/built/*
+mount_proc_dev_sys
+run_d_in_target finalise
 finalise_base
 unmount_image
 compress_image

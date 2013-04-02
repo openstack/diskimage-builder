@@ -13,4 +13,6 @@ sudo sfdisk $IMAGE_BLOCK_DEVICE << EOF
 0 0;
 EOF
 
+sudo partprobe $IMAGE_BLOCK_DEVICE
+
 echo "IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1"

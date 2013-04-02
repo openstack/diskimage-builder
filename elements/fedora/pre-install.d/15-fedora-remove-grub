@@ -2,12 +2,14 @@
 
 set -e
 
-GRUB_CFG=/boot/grub2/grub.cfg
+yum remove -y grub2-tools
 
-[ -f "$GRUB_CFG" ]
+#GRUB_CFG=/boot/grub2/grub.cfg
+
+#[ -f "$GRUB_CFG" ]
 
 # Update the config to have the search UUID of the image being built.
 # When partition staging is moved to a separate stage, this will need to happen
 # there. This generates a non-UUID config, which is irrelevant for booting with
 # hypervisor kernel + ramdisk, and fixed up by 51-grub for vm images.
-GRUB_DISABLE_LINUX_UUID=true grub2-mkconfig -o $GRUB_CFG
+#GRUB_DISABLE_LINUX_UUID=true grub2-mkconfig -o $GRUB_CFG

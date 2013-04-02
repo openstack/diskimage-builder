@@ -25,8 +25,8 @@ function unmount_image () {
     sleep 5
     # oh ya don't want to forget to unmount the image
     sudo umount -f $TMP_BUILD_DIR/mnt || true
-    # having disk corruption issues; one possibility is qemu-nbd not flush dirty
-    # pages on disconnect?
+    # having disk corruption issues; one possibility is qemu-nbd not flushing
+    # dirty pages on disconnect?
     sync
     if [ -n "$EXTRA_UNMOUNT" ]; then
         $EXTRA_UNMOUNT
@@ -35,6 +35,13 @@ function unmount_image () {
 
 function cleanup () {
     unmount_image
+    cleanup_dirs
+}
+
+function cleanup_dirs () {
+    sudo rm -rf $TMP_BUILD_DIR/built
+    sudo rm -rf $TMP_BUILD_DIR/mnt
+    sudo umount $TMP_BUILD_DIR
     rm -rf $TMP_BUILD_DIR
 }
 
@@ -52,14 +59,9 @@ function ensure_sudo () {
     sudo echo "Ensuring sudo is available"
 }
 
-function mount_tmp_image () {
-  mkdir $TMP_BUILD_DIR/mnt
-  sudo mount $@ $TMP_BUILD_DIR/mnt
-  [ $? -eq 0 ] || die "Failed to mount image"
-  export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
-}
-
 function create_base () {
+    mkdir $TMP_BUILD_DIR/mnt
+    export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
     # Copy data in to the root.
     TARGET_ROOT=$TMP_MOUNT_PATH run_d root
     if [ -z "$(ls $TMP_MOUNT_PATH | grep -v lost+found)" ] ; then
@@ -92,12 +94,14 @@ function create_base () {
     else
         echo nameserver 8.8.8.8 > $TMP_MOUNT_PATH/etc/resolv.conf
     fi
+    mount_proc_dev_sys
+}
 
+function mount_proc_dev_sys () {
     # supporting kernel file systems
     sudo mount -t proc none $TMP_MOUNT_PATH/proc
     sudo mount --bind /dev $TMP_MOUNT_PATH/dev
     sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
-
 }
 
 # Helper function to run a command inside the chroot
@@ -167,7 +171,7 @@ function finalise_base () {
 function compress_image () {
     # Recreate our image to throw away unnecessary data
     test $IMAGE_TYPE != qcow2 && COMPRESS_IMAGE=""
-    qemu-img convert ${COMPRESS_IMAGE:+-c} $TMP_IMAGE_PATH -O $IMAGE_TYPE $TMP_IMAGE_PATH-new
+    qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw $TMP_IMAGE_PATH -O $IMAGE_TYPE $TMP_IMAGE_PATH-new
     rm $TMP_IMAGE_PATH
     mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
 }

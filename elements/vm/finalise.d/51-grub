@@ -4,20 +4,25 @@
 # different distributions gracefully.
 
 set -e
+set -x
 
-# XXX: grub-probe on the nbd0 device returns nothing - workaround, manually
+install-packages grub-pc
+
+# XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
 # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
 GRUBNAME=`which grub-install` || echo "trying grub2-install"
 if [ -z "$GRUBNAME" ]; then
-    GRUBNAME=`which grub2-install`
+    GRUBNAME="bash -x `which grub2-install`"
 fi
 if [ -z "$GRUBNAME" ]; then
     echo "NO grub-install or grub2-install found"
     exit 1
 fi
-BOOT_DEV=/dev/nbd0
-PART_DEV=/dev/nbd0p1
-$GRUBNAME --modules="biosdisk part_msdos" $BOOT_DEV
+# FIXME:
+[ -n "$IMAGE_BLOCK_DEVICE" ]
+PART_DEV=$IMAGE_BLOCK_DEVICE
+BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's/p1//')
+$GRUBNAME --target=i386-pc --modules="biosdisk part_msdos" $BOOT_DEV
 # This might be better factored out into a per-distro 'install-bootblock'
 # helper.
 if [ -f "/boot/grub/grub.cfg" ] ; then
@@ -30,3 +35,6 @@ fi
 # NOTE: Updating the grub config by hand once deployed should work, its just
 # prepping it in a different environment that needs fiddling.
 sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
+sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
+sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
+

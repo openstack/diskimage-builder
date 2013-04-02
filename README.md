@@ -50,8 +50,10 @@ Images are built using a chroot and bind mounted /proc /sys and /dev. The goal
 of the image building process is to produce blank slate machines that have all
 the necessary bits to fulfill a specific purpose in the running of an Openstack
 cloud: e.g. a nova-compute node. Images produce either a filesystem image with
-a label of cloudimg-rootfs, or can be customised to produce disk images (but
-will still contain a filesystem labelled cloudimg-rootfs).
+a label of cloudimg-rootfs, or can be customised to produce whole disk images
+(but will still contain a filesystem labelled cloudimg-rootfs). Once the file
+system tree is assembled a loopback device with filesystem (or partition table
+and file system) is created and the tree copied into it.
 
 An element is a particular set of code that alters how the image is built, or
 runs within the chroot to prepare the image. E.g. the local-config element
@@ -83,7 +85,7 @@ contents can be modelled as three distinct portions:
   nova instance disk images, disk image cache. These would typically be stored
   on a dedicated partition and not overwritten when re-deploying the image.
 
-The goal of the image building tools is to create machine images that content
+The goal of the image building tools is to create machine images that contain
 the correct global content and are ready for 'last-mile' configuration by the
 nova metadata API, after which a configuration management system can take over
 (until the next deploy, when it all starts over from scratch). 
@@ -120,27 +122,27 @@ part of the process you need to customise:
 
  * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
 
-* cleanup.d: Perform cleanups of the root filesystem content. For instance,
-  temporary settings to use the image build environment HTTP proxy are removed
-  here in the dpkg element. Runs outside the chroot on the host environment.
+* finalise.d: Perform final tuning of the root filesystem. Runs in a chroot
+  after the root filesystem content has been copied into the mounted
+  filesystem: this is an appropriate place to reset SELinux metadata, install
+  grub bootloaders and so on. Because this happens inside the final image, it
+  is important to limit operations here to only those necessary to affect the
+  filesystem metadata and image itself. For most operations, post-install.d
+  is preferred.
+
+* cleanup.d: Perform cleanup of the root filesystem content. For
+  instance, temporary settings to use the image build environment HTTP proxy
+  are removed here in the dpkg element. Runs outside the chroot on the host
+  environment.
 
  * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
 
-* block-device-size.d: Alter the size (in GB) of the disk image. This is useful
-  when a particular element will require a certain minimum (or maximum) size.
-  You can either error and stop the build, or adjust the size to match.
-  NB: Due to the current simple implementation, the last output value wins
-  so this should be used rarely - only one element in a mix can reliably set
-  a size.
-
- * outputs: $IMAGE\_SIZE={size\_in\_GB}
- * inputs: $IMAGE\_SIZE={size\_in\_GB}
-
 * block-device.d: customise the block device that the image will be made on
-  (e.g. to make partitions).
+  (e.g. to make partitions). Runs outside the chroot, after the target tree
+  has been fully populated but before the cleanup hook runs.
 
  * outputs: $IMAGE\_BLOCK\_DEVICE={path}
- * inputs: $IMAGE\_BLOCK\_DEVICE={path}
+ * inputs: $IMAGE\_BLOCK\_DEVICE={path} $TARGET\_ROOT={path}
 
 * extra-data.d: pull in extra data from the host environment that hooks may
   need during image creation. This should copy any data (such as SSH keys,

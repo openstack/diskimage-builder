@@ -1,0 +1,8 @@
+#!/bin/bash
+# The grub post-kernel install hook will barf if the block device can't be
+# found (as happens in a chroot).
+# Temporarily remove grub, to avoid that confusion.
+
+set -e
+
+apt-get -y remove grub-pc grub2-common

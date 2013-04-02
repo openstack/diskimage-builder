@@ -21,6 +21,7 @@ import sys
 # distromatch or other rich data sources.
 # Debian name on the left, Fedora on the right.
 package_map = {
+    'grub-pc': 'grub2-tools grub2',
     'linux-image-generic': 'kernel',
     'open-iscsi': 'iscsi-initiator-utils',
     'vlan': 'vconfig',

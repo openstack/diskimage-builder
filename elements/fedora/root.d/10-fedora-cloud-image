@@ -43,3 +43,4 @@ if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR ] ; then
 fi
 # Extract the base image
 sudo tar -C $TARGET_ROOT -xzf $IMG_PATH/$BASE_IMAGE_TAR
+sudo rmdir $TARGET_ROOT/lost+found
