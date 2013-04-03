@@ -79,6 +79,8 @@ source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
 
+IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPE}}
+
 IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
 
 echo "Building elements: $IMAGE_ELEMENT"
