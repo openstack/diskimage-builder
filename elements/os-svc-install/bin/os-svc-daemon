@@ -23,7 +23,7 @@ exec start-stop-daemon --start -c $user --exec /opt/stack/venvs/$user/bin/$cmd $
 EOF
 }
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 3 ]; then
   echo "Usage: os-svc-daemon DAEMON_NAME USER COMMAND [ARG[ARG[...]]]"
   exit 1
 fi
