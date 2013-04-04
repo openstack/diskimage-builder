@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eux
+service quantum-server restart
+service quantum-openvswitch-agent restart
