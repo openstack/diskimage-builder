@@ -1,0 +1,55 @@
+#!/bin/bash
+set -eux
+
+function install_dnsmasq_upstart {
+  cat > /etc/init/nova-bm-dnsmasq.conf << eof
+start on runlevel [2345]
+stop on runlevel [016]
+pre-start script
+  mkdir -p /tftpboot
+  chown -R nova:nova /tftpboot
+  killall -9 dnsmasq || echo 'no dnsmasq running'
+end script
+task
+
+script
+  exec dnsmasq --conf-file= \\
+               --port=0 \\
+               --enable-tftp \\
+               --tftp-root=/tftpboot \\
+               --dhcp-boot=pxelinux.0 \\
+               --bind-interfaces \\
+               --pid-file=/var/run/dnsmasq.pid \\
+               --interface=eth0 \\
+               --dhcp-range=10.8.53.201,10.8.53.206,29
+end script
+eof
+}
+
+install-packages dnsmasq novnc dnsmasq-utils ebtables
+
+os-svc-install -n nova -u nova -r https://github.com/openstack/nova.git
+
+# for libvirt clouds only
+install-packages libvirt-bin python-libvirt kvm pm-utils syslinux
+usermod -a -G libvirtd nova
+
+mkdir -p /var/run/nova/keys && chown -R nova:nova /var/run/nova/keys
+os-svc-daemon nova-api              nova nova-api              "--config-dir /etc/nova"
+os-svc-daemon nova-rpc-zmq-receiver nova nova-rpc-zmq-receiver "--config-dir /etc/nova"
+os-svc-daemon nova-cert             nova nova-cert             "--config-dir /etc/nova"
+os-svc-daemon nova-scheduler        nova nova-scheduler        "--config-dir /etc/nova --debug"
+os-svc-daemon nova-consoleauth      nova nova-consoleauth      "--config-dir /etc/nova"
+os-svc-daemon nova-conductor        nova nova-conductor        "--config-dir /etc/nova"
+os-svc-daemon nova-compute          nova nova-compute          "--config-dir /etc/nova"
+os-svc-daemon nova-baremetal-deploy-helper \
+                                     nova nova-baremetal-deploy-helper "--config-dir /etc/nova"
+install_dnsmasq_upstart
+
+mkdir -p /tftpboot/pxelinux.cfg/
+cp /usr/lib/syslinux/pxelinux.0 /tftpboot/
+chown -R nova:nova /var/lib/misc/
+
+echo "nova ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/nova
+chmod 0440 /etc/sudoers.d/nova
+visudo -c
