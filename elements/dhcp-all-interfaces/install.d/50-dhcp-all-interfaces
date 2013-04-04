@@ -1,0 +1,9 @@
+#!/bin/sh -x
+
+# Prepare the target system for regenerating /etc/network/interfaces
+# on its first boot.
+
+SCRIPTDIR=$(dirname $0)
+
+install -D -g root -o root -m 0755 ${SCRIPTDIR}/generate-interfaces-file.sh /usr/local/sbin/generate-interfaces-file.sh
+install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.conf /etc/init/dhcp-all-interfaces.conf
