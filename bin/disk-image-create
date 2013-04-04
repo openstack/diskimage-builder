@@ -21,6 +21,10 @@ set -e
 # of $LANG varying between build hosts
 export LANG=C
 
+# Store our initial environment and command line args for later
+export DIB_ARGS="$@"
+export DIB_ENV=$(export)
+
 SCRIPTNAME=$(basename $0)
 SCRIPT_HOME=$(dirname $0)
 export _LIB=$(dirname $0)/../lib
