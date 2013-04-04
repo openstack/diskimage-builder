@@ -1,0 +1,10 @@
+{{#mysql-migration.users.root}}
+[client]
+user={{username}}
+password={{password}}
+{{/mysql-migration.users.root}}
+{{#mysql-migration.users.dump}}
+[mysqldump]
+user={{username}}
+password={{password}}
+{{/mysql-migration.users.dump}}
