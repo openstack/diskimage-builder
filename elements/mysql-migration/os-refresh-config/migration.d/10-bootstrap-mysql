@@ -16,6 +16,7 @@
 # under the License.
 
 set -eux
+set -o pipefail
 
 # Quietly go away unless a migration has been asked for
 DEFAULTS=/etc/mysql/migration_default
@@ -52,15 +53,16 @@ local_mysql -e 'SHOW GRANTS'
 if [ -n "$MIGRATION_HOST" ] ; then
     local_mysql -e 'STOP SLAVE' || :
     # If we are planning on setting up a full slave
+    SLAVE_OPTS=""
     if [ -n "$MIGRATION_USER" ] && [ -n "$MIGRATION_PASSWORD" ] ; then
         local_mysql -e "CHANGE MASTER TO master_host='${MIGRATION_HOST}', master_user='${MIGRATION_USER}', master_password='${MIGRATION_PASSWORD}'"
+        SLAVE_OPTS="--master-data"
     fi
     mysqldump --defaults-extra-file=/root/metadata.my.cnf \
-        -u $MIGRATION_DUMP_USER
+        -u $MIGRATION_DUMP_USER \
         --single-transaction \
         --all-databases \
-        --master-data \
-        -h $MIGRATION_HOST | local_mysql
+        $SLAVE_OPTS -h $MIGRATION_HOST | local_mysql
 
     # After this following command, our ~/.my.cnf may stop working as its 
     # password may change due to the dump loaded above.
