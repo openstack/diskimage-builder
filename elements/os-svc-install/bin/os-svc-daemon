@@ -19,9 +19,7 @@ end script
 
 respawn
 
-script
-  exec sudo -u $user /opt/stack/venvs/$user/bin/$cmd $args
-end script
+exec start-stop-daemon --start -c $user --exec /opt/stack/venvs/$user/bin/$cmd $args
 EOF
 }
 
