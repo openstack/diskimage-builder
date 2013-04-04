@@ -1,0 +1,2 @@
+#!/bin/bash
+exec os-config-applier -s OpenStack::Config

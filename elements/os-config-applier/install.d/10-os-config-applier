@@ -6,27 +6,3 @@ pip install -U git+https://github.com/stackforge/os-config-applier.git
 
 TEMPLATE_ROOT=$(os-config-applier --print-templates)
 mkdir -p $TEMPLATE_ROOT
-
-# Upstart
-if [ -d /etc/init ] ; then
-    cat > /etc/init/os-config-applier.conf <<eof
-start on runlevel [2345]
-task
-exec os-config-applier
-eof
-# Systemd
-elif [ -d /etc/systemd/system ] ; then
-    cat > /etc/systemd/system/os-config-applier.service <<eof
-[Unit]
-Description=Apply configs from Heat metadata
-
-[Service]
-ExecStart=os-config-applier
-
-[Install]
-WantedBy=multi-user.target
-eof
-else
-    echo "Only systems with systemd or upstart are supported."
-    exit 1
-fi
