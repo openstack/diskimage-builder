@@ -1,5 +1,0 @@
-set -e
-
-#List of plugins to install, comma separated list
-#full list of plugins available at: http://updates.jenkins-ci.org/download/plugins/
-#JENKINS_PLUGINS="github-oauth,ircbot,debian-package-builder"

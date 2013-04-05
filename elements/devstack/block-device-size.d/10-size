@@ -1,8 +1,0 @@
-#!/bin/bash
-# Add the stack user we recommend folk use.
-
-set -e
-
-if (( '16' '>' $IMAGE_SIZE )); then
-   echo IMAGE_SIZE=16
-fi

@@ -1,8 +1,0 @@
-#!/bin/bash
-# Regenerate host keys now. XXX: Really should be a cloud-init task, should get
-# that working.
-
-set -e
-set -o xtrace
-
-dpkg-reconfigure openssh-server

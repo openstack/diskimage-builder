@@ -1,8 +1,0 @@
-#!/bin/bash
-set -eu
-
-#   installation requires building a kernel module.
-# - TODO: use generic 'install-packages' instead of apt-get once
-#   it is available from first-boot scripts.
-DEBIAN_FRONTEND=noninteractive apt-get install --yes linux-headers-`uname -r`
-DEBIAN_FRONTEND=noninteractive apt-get install --yes iscsitarget iscsitarget-dkms openvswitch-datapath-dkms

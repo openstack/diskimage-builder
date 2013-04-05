@@ -1,8 +1,0 @@
-#!/bin/bash
-set -eux
-
-install-packages git-core python-pip
-pip install -U git+https://github.com/stackforge/os-config-applier.git
-
-TEMPLATE_ROOT=$(os-config-applier --print-templates)
-mkdir -p $TEMPLATE_ROOT

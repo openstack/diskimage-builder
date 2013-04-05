@@ -14,42 +14,18 @@ Jenkins
 * Grant jenkin builders sudo [may want lxc containers or cloud instances for
   security isolation]
 * Jobs to build:
- * bootstrap VM from-scratch (archive bootstrap.qcow2).
+ * base ubuntu VM.
 
-        disk-image-create vm base devstack -o bootstrap -a i386
+        disk-image-create vm base -o base -a i386
 
- * devstack nova-bm execution (archive the resulting image).
-   Chained off of the bootstrap vm build
-
-        ssh into the node, run demo/scripts/demo
-
- * bootstrap VM via image-build chain (archive bm-cloud.qcow2).
-
-        disk-image-create vm base glance nova-bm swift mysql haproxy-api \
-        haproxy-mysql cinder quantum rabbitmq -o bootstrap-prod
-
- * baremetal SPOF node build (archive the resulting image).
-
-        disk-image-create base mysql haproxy-mysql haproxy-api local-boot \
-        rabbitmq -o baremetal-spof
-
- * baremetal demo node build (archive the resulting image).
-
-        disk-image-create base vm glance nova-bm swift cinder quantum \
-        -o bootstrap-prod
-
- * ramdisk deploy image buil
+ * ramdisk deploy image build
 
         ramdisk-image-create deploy
         
- * Tempest w/baremetal using libvirt networking as the power API.
-   take a bootstrap baremetal devstack from above, N VM 'bare metal' nodes,
-   and run tempest in that environment.
-
 Copyright
 =========
 
-Copyright 2012 Hewlett-Packard Development Company, L.P.
+Copyright 2012, 2013 Hewlett-Packard Development Company, L.P.
 Copyright (c) 2012 NTT DOCOMO, INC. 
 
 All Rights Reserved.

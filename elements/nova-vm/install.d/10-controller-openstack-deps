@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Install controller openstack packages
-
-set -e
-set -o xtrace
-
-install-packages keystone glance nova-api nova-cert nova-common nova-scheduler python-nova python-novaclient nova-consoleauth novnc nova-novncproxy cinder-api cinder-scheduler cinder-volume iscsitarget open-iscsi iscsitarget-dkms python-cinderclient nova-network
-

@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# Install controller base requiered packages
-
-set -e
-set -o xtrace
-
-install-packages haproxy rabbitmq-server mysql-server ntp dkms

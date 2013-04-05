@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -e
-set -o xtrace
-
-install-packages salt-master
-

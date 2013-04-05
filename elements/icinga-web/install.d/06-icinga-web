@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# install icinga-web
-
-set -e
-set -o xtrace
-
-install-packages icinga-web icinga-cgi
-

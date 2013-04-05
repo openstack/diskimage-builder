@@ -1,5 +1,0 @@
-#!/bin/sh
-set -eux
-
-os-svc-install -n nova-api -u nova -r https://github.com/openstack/nova.git -c "/opt/stack/nova/bin/nova-api"
-
