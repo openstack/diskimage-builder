@@ -207,6 +207,10 @@ dependent upon specific element names.
 Debugging elements
 ------------------
 
+The build-time environment and command line arguments are captured by the
+'base' element and written to /etc/dib\_environment and /etc/dib\_arguments
+inside the image.
+
 Export 'break' to drop to a shell during the image build. Break points can be
 set either before or after any of the hook points by exporting
 "break=[before|after]-hook-name". Multiple break points can be specified as a
@@ -257,7 +261,7 @@ or by exporting variables to override those present in lib/img-defaults. -h to
 get help.
 
 
-Using the variable ELEMENTS_PATH will allow to specify multiple elements locations.
+Using the variable ELEMENTS\_PATH will allow to specify multiple elements locations.
 It's a colon (:) separated path list, and it will work in a first path/element found,
 first served approach.
 
