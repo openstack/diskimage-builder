@@ -22,4 +22,6 @@ IMAGE_NAME=${IMAGE_NAME:-image}
 export IMAGE_SIZE=${IMAGE_SIZE:-2} # N.B. This size is in GB
 # Set via the CLI normally.
 # IMAGE_ELEMENT=
-export ELEMENTS_PATH=${ELEMENTS_PATH:-$(dirname $0)/../elements}
+_BASE_ELEMENT_DIR=$(dirname $0)/../elements
+ELEMENTS_PATH=${ELEMENTS_PATH:+"$ELEMENTS_PATH:$_BASE_ELEMENT_DIR"}
+export ELEMENTS_PATH=${ELEMENTS_PATH:-$_BASE_ELEMENT_DIR}

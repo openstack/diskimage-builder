@@ -272,7 +272,8 @@ get help.
 
 Using the variable ELEMENTS\_PATH will allow to specify multiple elements locations.
 It's a colon (:) separated path list, and it will work in a first path/element found,
-first served approach.
+first served approach. The included elements tree is used when no path is supplied,
+and is added to the end of the path if a path is supplied.
 
 Copyright
 =========
