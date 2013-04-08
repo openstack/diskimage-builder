@@ -17,9 +17,12 @@ OpenStack itself. These live in the TripleO elements repository
 What tools are there?
 ---------------------
 
-* disk-image-create -o filename {element} [{element} ...] : Create an image of
-  element {element}, optionally mixing in other elements. You will usually want
-  to include the "base" element in your image.
+* disk-image-create [-a i386|amd64|armhf] -o filename {element} [{element} ...]
+  Create an image of element {element}, optionally mixing in other elements.
+  Element dependencies are automatically included. Support for other
+  architectures depends on your environment being able to run binaries of that 
+  platform. For instance, to enable armhf on Ubuntu install the qemu-user-static
+  package.
 
 * ramdisk-image-create -o filename {element} [{element} ...] : Create a kernel+
   ramdisk pair for running maintenance on bare metal machines (deployment,
@@ -108,13 +111,13 @@ part of the process you need to customise:
   to blindly overwrite but instead to adapt the context extracted by other
   elements.
 
- * inputs: $ARCH=i386|amd64 $TARGET\_ROOT=/path/to/target/workarea
+ * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
 
 * cleanup.d: Perform cleanups of the root filesystem content. For instance,
   temporary settings to use the image build environment HTTP proxy are removed
   here in the dpkg element. Runs outside the chroot on the host environment.
 
- * inputs: $ARCH=i386|amd64 $TARGET\_ROOT=/path/to/target/workarea
+ * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
 
 * block-device-size.d: Alter the size (in GB) of the disk image. This is useful
   when a particular element will require a certain minimum (or maximum) size.

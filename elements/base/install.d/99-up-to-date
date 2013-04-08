@@ -1,0 +1,7 @@
+#!/bin/bash
+# Fully upgrade everything on the system (if the package manager knows how to
+# do it).
+
+set -e
+
+install-packages -u

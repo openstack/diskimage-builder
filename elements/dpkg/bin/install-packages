@@ -18,21 +18,17 @@
 set -e
 
 # install-packages package [package ...]
-install_deb_packages() {
+
+install_deb_packages () {
   DEBIAN_FRONTEND=noninteractive \
     http_proxy=$http_proxy https_proxy=$https_proxy \
     no_proxy=$no_proxy \
-    apt-get --option "Dpkg::Options::=--force-confold" --assume-yes install "$@"
+    apt-get --option "Dpkg::Options::=--force-confold" --assume-yes "$@"
 }
 
-DISTRO=`lsb_release -si`
-
-case $DISTRO in
-  'Ubuntu'|'Debian')
-    install_deb_packages $@
-    ;;
-  *)
-    echo "Distribution not supported"
-    exit 1
-    ;;
-esac
+if [ "$1" = "-u" ] ; then
+  install_deb_packages dist-upgrade
+  exit 0
+else
+  install_deb_packages install $@
+fi

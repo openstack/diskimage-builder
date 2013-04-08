@@ -32,7 +32,7 @@ source $_LIB/die
 
 function show_options () {
     echo "Options:"
-    echo "    -a i386|amd64 -- set the architecture of the image"
+    echo "    -a i386|amd64|armhf -- set the architecture of the image"
     echo "    -o filename -- set the name of the output file"
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
