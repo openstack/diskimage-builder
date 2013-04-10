@@ -94,9 +94,9 @@ echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoer
 ensure_nbd
 
 mk_build_dir
-eval_run_d block-device-size "IMAGE_SIZE="
+eval_run_d block-device-size "DIB_IMAGE_SIZE="
 
-qemu-img create -f qcow2 -o preallocation=metadata $TMP_IMAGE_PATH ${IMAGE_SIZE}G
+qemu-img create -f qcow2 -o preallocation=metadata $TMP_IMAGE_PATH ${DIB_IMAGE_SIZE}G
 
 # Should have a grab-next-dev helper ?
 NBD_DEV=/dev/nbd0
