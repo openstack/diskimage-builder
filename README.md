@@ -98,6 +98,13 @@ of the element directory describing what it is for.
 Writing an element
 -----------------
 
+Conform to the following conventions:
+
+* Use the environment for overridable defaults, prefixing environment variable
+  names with "DIB\_". For example: DIB\_MYDEFAULT=${DIB\_MYDEFAULT:-default}
+  If you do not use the DIB\_ prefix you may find that your overrides are
+  discarded as the build environment is sanitised.
+
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise:
 
