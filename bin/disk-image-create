@@ -98,15 +98,10 @@ eval_run_d block-device-size "DIB_IMAGE_SIZE="
 
 qemu-img create -f qcow2 -o preallocation=metadata $TMP_IMAGE_PATH ${DIB_IMAGE_SIZE}G
 
-# Should have a grab-next-dev helper ?
-NBD_DEV=/dev/nbd0
-if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then
-  CACHE="--cache=writeback"
-else
-  echo "Warning: qemu-nbd without --cache=writeback is /slow/."
-  CACHE=""
-fi
-sudo qemu-nbd -c $NBD_DEV $CACHE $TMP_IMAGE_PATH
+# grab the next available /dev/nbdX and connect to it
+map_nbd $TMP_IMAGE_PATH
+echo "NBD Device: $NBD_DEV"
+
 export EXTRA_UNMOUNT="sudo qemu-nbd -d $NBD_DEV"
 export IMAGE_BLOCK_DEVICE=$NBD_DEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
