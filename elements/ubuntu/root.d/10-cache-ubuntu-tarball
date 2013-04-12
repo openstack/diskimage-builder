@@ -7,19 +7,19 @@ set -e
 [ -n "$TARGET_ROOT" ]
 
 IMG_PATH=~/.cache/image-create
-CLOUD_IMAGES=${CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
-RELEASE=${RELEASE:-quantal}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$RELEASE-server-cloudimg-$ARCH-root.tar.gz}
-SHA256SUMS=${SHA256SUMS:-https://cloud-images.ubuntu.com/$RELEASE/current/SHA256SUMS}
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
+DIB_RELEASE=${DIB_RELEASE:-quantal}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
+SHA256SUMS=${SHA256SUMS:-https://${DIB_CLOUD_IMAGES##http?(s)://}/$DIB_RELEASE/current/SHA256SUMS}
 
 mkdir -p $IMG_PATH
 # TODO: don't cache -current forever.
 if [ ! -f $IMG_PATH/$BASE_IMAGE_FILE ] ; then
    echo "Fetching Base Image"
-   wget $SHA256SUMS -O $IMG_PATH/SHA256SUMS.ubuntu.$RELEASE.$ARCH
-   wget $CLOUD_IMAGES/$RELEASE/current/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
+   wget $SHA256SUMS -O $IMG_PATH/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
+   wget $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
    pushd $IMG_PATH
-   awk "/$BASE_IMAGE_FILE/ { print \$0 \".tmp\" }" SHA256SUMS.ubuntu.$RELEASE.$ARCH | sha256sum --check -
+   awk "/$BASE_IMAGE_FILE/ { print \$0 \".tmp\" }" SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH | sha256sum --check -
    popd
    mv $IMG_PATH/$BASE_IMAGE_FILE.tmp $IMG_PATH/$BASE_IMAGE_FILE
 fi
