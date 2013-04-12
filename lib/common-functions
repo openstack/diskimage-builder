@@ -14,7 +14,7 @@
 # under the License.
 
 function mk_build_dir () {
-  export TMP_BUILD_DIR=$(mktemp -t -d image.XXXXXXXX)
+  export TMP_BUILD_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
   [ $? -eq 0 ] || die "Failed to create tmp directory"
   trap cleanup EXIT
   echo Building in $TMP_BUILD_DIR
