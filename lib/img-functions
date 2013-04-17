@@ -102,8 +102,9 @@ function create_base () {
 
 # Helper function to run a command inside the chroot
 function run_in_target() {
-   # -E to preserve http_proxy
-   sudo -E chroot $TMP_MOUNT_PATH "$@"
+    # Explicitly set PATH to prevent sudo from resetting it
+    # and -E to preserve http_proxy
+    sudo -E PATH=${PATH} chroot $TMP_MOUNT_PATH "$@"
 }
 
 # Helper function to run a directory of scripts inside the chroot
