@@ -6,6 +6,8 @@ set -e
 [ -n "$ARCH" ]
 [ -n "$TARGET_ROOT" ]
 
+shopt -s extglob
+
 IMG_PATH=~/.cache/image-create
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
 DIB_RELEASE=${DIB_RELEASE:-quantal}
