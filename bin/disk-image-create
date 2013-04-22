@@ -117,6 +117,7 @@ run_d_in_target pre-install
 do_extra_package_install
 # Call install scripts to pull in the software users want.
 run_d_in_target install
+run_d_in_target post-install
 prepare_first_boot
 finalise_base
 unmount_image

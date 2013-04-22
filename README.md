@@ -156,6 +156,12 @@ part of the process you need to customise:
   install packages, chain into configuration management tools or do other
   image specific operations.
 
+* post-install.d: Run code in the chroot. This is a good place to perform
+  tasks you want to handle after the OS/application install but before the
+  first boot of the image. Some examples of use would be: Run chkconfig
+  to disable unneeded services and clean the cache left by the package
+  manager to reduce the size of the image.
+
 * first-boot.d: Runs inside the image before rc.local. Scripts from here are
   good for doing per-instance configuration based on cloud metadata.
 
