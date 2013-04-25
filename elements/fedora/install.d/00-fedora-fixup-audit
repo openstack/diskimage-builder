@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# On a fresh Fedora 18 install you might have to update audit in order to
+# fix a conflict with a file from the glibc package.
+# https://bugzilla.redhat.com/show_bug.cgi?id=894307
+exec install-packages audit
