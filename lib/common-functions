@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+source $(dirname $(readlink -f $BASH_SOURCE))/img-functions
+
 function mk_build_dir () {
   export TMP_BUILD_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
   [ $? -eq 0 ] || die "Failed to create tmp directory"
