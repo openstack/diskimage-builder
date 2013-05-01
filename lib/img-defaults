@@ -19,7 +19,7 @@ if [ -f /etc/debian_version ]; then
 else
   _ARCH=$(uname -m)
 fi
-ARCH=${ARCH:-_ARCH}
+ARCH=${ARCH:-$_ARCH}
 
 case $ARCH in
   "x86_64")
@@ -32,6 +32,7 @@ case $ARCH in
     echo "WARNING: Unknown architecture: $ARCH"
     ;;
 esac
+export ARCH
 
 FS_TYPE=${FS_TYPE:-ext4}
 # Used to set the file extension only at this stage.
