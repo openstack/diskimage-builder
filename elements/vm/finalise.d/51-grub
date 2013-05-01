@@ -22,7 +22,11 @@ fi
 [ -n "$IMAGE_BLOCK_DEVICE" ]
 PART_DEV=$IMAGE_BLOCK_DEVICE
 BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's/p1//')
-$GRUBNAME --target=i386-pc --modules="biosdisk part_msdos" $BOOT_DEV
+GRUB_OPTS=${GRUB_OPTS:---modules="biosdisk part_msdos"}
+if [ $DIB_RELEASE != 'precise' ]; then
+    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+fi
+$GRUBNAME $GRUB_OPTS $BOOT_DEV
 # This might be better factored out into a per-distro 'install-bootblock'
 # helper.
 if [ -f "/boot/grub/grub.cfg" ] ; then
