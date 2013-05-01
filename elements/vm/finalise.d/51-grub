@@ -26,7 +26,7 @@ GRUB_OPTS=${GRUB_OPTS:---modules="biosdisk part_msdos"}
 if [ $DIB_RELEASE != 'precise' ]; then
     GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
 fi
-$GRUBNAME $GRUB_OPTS $BOOT_DEV
+$GRUBNAME "$GRUB_OPTS" $BOOT_DEV
 # This might be better factored out into a per-distro 'install-bootblock'
 # helper.
 if [ -f "/boot/grub/grub.cfg" ] ; then
