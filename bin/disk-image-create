@@ -25,11 +25,6 @@ export LANG=C
 export DIB_ARGS="$@"
 export DIB_ENV=$(export)
 
-# Fedora and others don't always have /usr/local/bin in $PATH
-if [[ ! "$PATH" == */usr/local/bin* ]] ; then
-  export PATH="${PATH}:/usr/local/bin/"
-fi
-
 SCRIPTNAME=$(basename $0)
 SCRIPT_HOME=$(dirname $0)
 export _LIB=$(dirname $0)/../lib
