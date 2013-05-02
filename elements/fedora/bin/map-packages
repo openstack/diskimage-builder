@@ -25,6 +25,21 @@ package_map = {
     'linux-image-generic': 'kernel',
     'open-iscsi': 'iscsi-initiator-utils',
     'vlan': 'vconfig',
+    'python-dev': 'python-devel',
+    'libc6-dev': 'glibc-devel',
+    'libxml2-dev': 'libxml2-devel',
+    'libxslt-dev': 'libxslt-devel',
+    'python-libvirt': 'libvirt-python',
+    'libvirt-bin': 'libvirt',
+    'python-xattr': 'pyxattr',
+    'python-memcache': 'python-memcached',
+    'tgt': 'scsi-target-utils',
+    'build-essential': 'make automake gcc gcc-c++ kernel-devel',
+    'python-mysqldb': 'MySQL-python',
+    'openvswitch-common': 'openvswitch',
+    'openvswitch-switch': 'openvswitch',
+    'python-numpy': 'numpy',
+    'libssl-dev': 'openssl-devel',
     }
 
 for arg in sys.argv[1:]:
