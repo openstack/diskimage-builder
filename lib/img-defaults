@@ -18,20 +18,19 @@ if [ -f /etc/debian_version ]; then
   _ARCH=$(dpkg --print-architecture)
 else
   _ARCH=$(uname -m)
+  case $_ARCH in
+    "x86_64")
+      _ARCH="amd64"
+      ;;
+    "armv"*)
+      _ARCH="armhf"
+      ;;
+    *)
+      echo "WARNING: Unknown architecture: $_ARCH"
+      ;;
+  esac
 fi
 ARCH=${ARCH:-$_ARCH}
-
-case $ARCH in
-  "x86_64")
-    ARCH="amd64"
-    ;;
-  "armv"*)
-    ARCH="armhf"
-    ;;
-  *)
-    echo "WARNING: Unknown architecture: $ARCH"
-    ;;
-esac
 export ARCH
 
 FS_TYPE=${FS_TYPE:-ext4}
