@@ -293,6 +293,19 @@ It's a colon (:) separated path list, and it will work in a first path/element f
 first served approach. The included elements tree is used when no path is supplied,
 and is added to the end of the path if a path is supplied.
 
+Requirements
+============
+
+If you have 4GB of available physical RAM\*, or more, diskimage-builder will
+create a tmpfs mount to build the image in. This will improve image build time
+by building in RAM. This can be disabled completely by passing --no-tmpfs to
+disk-image-create. ramdisk-image-create does not use a tmpfs mount. If tmpfs
+is not used, you will need enough room in /tmp to store two uncompressed
+cloud images. If you do have tmpfs, you will still need /tmp space for one
+uncompressed cloud image and about 20% of that for working files.
+
+\* As reported by /proc/meminfo MemTotal
+
 Copyright
 =========
 

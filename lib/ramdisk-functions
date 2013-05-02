@@ -25,6 +25,7 @@ function fullpath() {
 }
 
 function cleanup () {
+  sudo umount -f $TMP_BUILD_DIR || true
   rm -rf "$TMP_BUILD_DIR"
 }
 

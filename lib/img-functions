@@ -41,7 +41,7 @@ function cleanup () {
 function cleanup_dirs () {
     sudo rm -rf $TMP_BUILD_DIR/built
     sudo rm -rf $TMP_BUILD_DIR/mnt
-    sudo umount $TMP_BUILD_DIR
+    sudo umount -f $TMP_BUILD_DIR || true
     rm -rf $TMP_BUILD_DIR
 }
 

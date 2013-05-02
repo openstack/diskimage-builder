@@ -54,5 +54,5 @@ ALL ALL=(root) NOPASSWD: /sbin/losetup -d /dev/loop*
 ALL ALL=(root) NOPASSWD: /sbin/partprobe /dev/loop*
 ALL ALL=(root) NOPASSWD: /usr/bin/du --block-size=* -x -s /tmp/*/built
 ALL ALL=(root) NOPASSWD: /bin/mount -t tmpfs tmpfs /tmp/image.*
-ALL ALL=(root) NOPASSWD: /bin/umount /tmp/image.*
+ALL ALL=(root) NOPASSWD: /bin/umount -f /tmp/image.*
 ALL ALL=(root) NOPASSWD: /bin/chown *\:* /tmp/image.*

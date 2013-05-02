@@ -38,6 +38,7 @@ FS_TYPE=${FS_TYPE:-ext4}
 IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
 IMAGE_NAME=${IMAGE_NAME:-image}
 export DIB_IMAGE_SIZE=${DIB_IMAGE_SIZE:-2} # N.B. This size is in GB
+export DIB_NO_TMPFS=${DIB_NO_TMPFS:-0}
 # Set via the CLI normally.
 # IMAGE_ELEMENT=
 _BASE_ELEMENT_DIR=$(dirname $0)/../elements
