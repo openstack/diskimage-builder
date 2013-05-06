@@ -108,19 +108,27 @@ prepare_first_boot
 # Free up /mnt
 unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
-# in kb*0.8 - underreport to get a slightly bigger device
-_NEEDED_SIZE=$(sudo du --block-size=800 -x -s ${TMP_BUILD_DIR}/built | awk ' { print $1 } ')
-truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
+
+MKFS_OPTS=""
+
+if [ -n "$DIB_IMAGE_SIZE" ]; then
+  truncate -s${DIB_IMAGE_SIZE}G $TMP_IMAGE_PATH
+else
+  # in kb*0.8 - underreport to get a slightly bigger device
+  _NEEDED_SIZE=$(sudo du --block-size=800 -x -s ${TMP_BUILD_DIR}/built | awk ' { print $1 } ')
+  truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
+  if [ "$FS_TYPE" = "ext4" ] ; then
+    # Very conservative to handle images being resized a lot
+    MKFS_OPTS="-i 4096"
+  fi
+fi
+
+
 LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
 export EXTRA_UNMOUNT="sudo losetup -d $LOOPDEV"
 export IMAGE_BLOCK_DEVICE=$LOOPDEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
-OPTS=""
-if [ "$FS_TYPE" = "ext4" ] ; then
-    # Very conservative to handle images being resized a lot
-    OPTS="-i 4096"
-fi
-sudo mkfs $OPTS -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
+sudo mkfs $MKFS_OPTS -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
 mkdir $TMP_BUILD_DIR/mnt
 sudo mount ${IMAGE_BLOCK_DEVICE} $TMP_BUILD_DIR/mnt
 sudo mv -t $TMP_BUILD_DIR/mnt ${TMP_BUILD_DIR}/built/*
