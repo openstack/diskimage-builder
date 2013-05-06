@@ -141,3 +141,21 @@ function mount_qcow_image() {
        sudo mount ${NBD_DEV} $WORK_DIR
     fi
 }
+
+function cleanup_dirs () {
+    sudo rm -rf $TMP_BUILD_DIR/built
+    sudo rm -rf $TMP_BUILD_DIR/mnt
+    sudo umount $TMP_BUILD_DIR
+    rm -rf $TMP_BUILD_DIR
+}
+
+# Run a directory of hooks outside the target.
+function run_d() {
+    check_element
+    check_break before-$1 bash
+    if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
+      run-parts ${TMP_HOOKS_PATH}/$1.d
+    fi
+    check_break after-$1 bash
+}
+

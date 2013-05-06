@@ -38,13 +38,6 @@ function cleanup () {
     cleanup_dirs
 }
 
-function cleanup_dirs () {
-    sudo rm -rf $TMP_BUILD_DIR/built
-    sudo rm -rf $TMP_BUILD_DIR/mnt
-    sudo umount -f $TMP_BUILD_DIR || true
-    rm -rf $TMP_BUILD_DIR
-}
-
 function ensure_nbd () {
     NBD=`which qemu-nbd` || true
     if [ -z "$NBD" ];  then
@@ -105,13 +98,13 @@ function mount_proc_dev_sys () {
 }
 
 # Helper function to run a command inside the chroot
-function run_in_target() {
+function run_in_target () {
    # -E to preserve http_proxy
    sudo -E chroot $TMP_MOUNT_PATH "$@"
 }
 
 # Helper function to run a directory of scripts inside the chroot
-function run_d_in_target() {
+function run_d_in_target () {
     check_element
     # If we can find a directory of hooks to run in the target filesystem, bind
     # mount it into the target and then execute run-parts in a chroot
@@ -125,16 +118,6 @@ function run_d_in_target() {
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
       sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d
     fi
-}
-
-# Run a directory of hooks outside the target.
-function run_d() {
-    check_element
-    check_break before-$1 bash
-    if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
-      run-parts ${TMP_HOOKS_PATH}/$1.d
-    fi
-    check_break after-$1 bash
 }
 
 function prepare_first_boot () {
