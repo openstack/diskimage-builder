@@ -12,6 +12,5 @@ case $DISTRO in
     # need something like it, create a wrapper in dpkg/bin and fedora/bin.
     apt-get -y update
     install-packages python-software-properties
-    add-apt-repository -y ppa:tripleo/demo
     ;;
 esac
