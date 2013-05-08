@@ -92,8 +92,11 @@ EOF
 }
 
 function copy_required_libs() {
+  set +e
   ldd_out=`ldd "$1"`
-  if [ $? -ne 0 ]; then
+  local ret_code=$?
+  set -e
+  if [ $ret_code -ne 0 ]; then
     return
   fi
   local IFS="
