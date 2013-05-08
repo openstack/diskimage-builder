@@ -56,7 +56,6 @@ for arg do RAMDISK_ELEMENT="$RAMDISK_ELEMENT $arg" ; done
 
 source $_LIB/ramdisk-defaults
 source $_LIB/common-functions
-source $_LIB/img-functions
 source $_LIB/ramdisk-functions
 
 RAMDISK_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $RAMDISK_ELEMENT)
