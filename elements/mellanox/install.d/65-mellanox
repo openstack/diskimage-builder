@@ -1,0 +1,9 @@
+#!/bin/bash
+# Ensure we load the mellanox driver somehow
+
+set -e
+
+home=$(dirname $0)
+
+install -m 0644 -o root -g root $home/mellanox-rules.udev /etc/udev/rules.d/81-mellanox.rules
+install -m 0644 -o root -g root $home/mellanox.modprobe /etc/modprobe.d/mellanox.conf
