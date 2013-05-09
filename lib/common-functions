@@ -1,3 +1,4 @@
+# vim: syntax=sh ts=4 sts=4 sw=2:et
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # All Rights Reserved.
 #
@@ -159,3 +160,16 @@ function run_d() {
     check_break after-$1 bash
 }
 
+function detach_loopback() {
+    local loopdev=$1
+    # loopback dev may be tied up a bit by udev events triggered by partition events
+    for try in $(seq 10 -1 1) ; do
+        if sudo losetup -d $loopdev ; then
+            return 0
+        fi
+        echo $loopdev may be busy, sleeping up to $try more seconds...
+        sleep 1
+    done
+    echo Gave up trying to detach $loopdev
+    return 1
+}

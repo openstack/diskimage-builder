@@ -112,7 +112,7 @@ mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 _NEEDED_SIZE=$(sudo du --block-size=800 -x -s ${TMP_BUILD_DIR}/built | awk ' { print $1 } ')
 truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
 LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
-export EXTRA_UNMOUNT="sudo losetup -d $LOOPDEV"
+export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
 export IMAGE_BLOCK_DEVICE=$LOOPDEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
 OPTS=""
