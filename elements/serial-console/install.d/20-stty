@@ -1,0 +1,7 @@
+#!/bin/sh
+
+home=$(dirname $0)
+set -uex
+
+install -m 0644 -o root -g root $home/ttySx.conf /etc/init/ttySx.conf
+
