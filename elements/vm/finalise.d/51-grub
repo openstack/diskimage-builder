@@ -51,4 +51,5 @@ fi
 sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
 sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
 sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
-
+# Fedora sets up for root to have a label of "_/"
+sed -i "s%LABEL=_/%LABEL=cloudimg-rootfs%" /etc/fstab
