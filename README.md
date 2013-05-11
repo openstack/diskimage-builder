@@ -53,7 +53,9 @@ cloud: e.g. a nova-compute node. Images produce either a filesystem image with
 a label of cloudimg-rootfs, or can be customised to produce whole disk images
 (but will still contain a filesystem labelled cloudimg-rootfs). Once the file
 system tree is assembled a loopback device with filesystem (or partition table
-and file system) is created and the tree copied into it.
+and file system) is created and the tree copied into it. The file system
+created is an ext4 filesystem just large enough to hold the file system tree
+and can be resized up to 1PB in size.
 
 An element is a particular set of code that alters how the image is built, or
 runs within the chroot to prepare the image. E.g. the local-config element
