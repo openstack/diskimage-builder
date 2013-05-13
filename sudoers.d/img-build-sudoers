@@ -37,6 +37,7 @@ ALL ALL=(root) NOPASSWD: /bin/umount -f /tmp/*/mnt/dev
 ALL ALL=(root) NOPASSWD: /bin/umount -f /tmp/*/mnt/proc
 ALL ALL=(root) NOPASSWD: /bin/umount -f /tmp/*/mnt/sys
 ALL ALL=(root) NOPASSWD: /bin/umount -f /tmp/*/mnt/tmp/in_target.d
+ALL ALL=(root) NOPASSWD: /sbin/mkfs -t ext4 -L cloudimg-rootfs /dev/loop*
 ALL ALL=(root) NOPASSWD: /sbin/mkfs -i 4096 -t ext4 -L cloudimg-rootfs /dev/loop*
 ALL ALL=(root) NOPASSWD: /sbin/modprobe nbd max_part=16
 ALL ALL=(root) NOPASSWD: /sbin/sfdisk /dev/nbd*
