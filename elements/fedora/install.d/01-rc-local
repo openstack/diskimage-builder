@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ln -s /etc/rc.local /etc/rc.d/rc.local
+systemctl enable rc-local.service

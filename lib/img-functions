@@ -129,7 +129,9 @@ function prepare_first_boot () {
     check_break before-first-boot run_in_target bash
     if [ -d ${TMP_HOOKS_PATH}/first-boot.d ] ; then
       sudo cp -t $TMP_MOUNT_PATH/etc/ -a $TMP_HOOKS_PATH/first-boot.d
-      run_in_target mv /etc/rc.local /etc/rc.local.REAL
+      if [ -f $TMP_MOUNT_PATH/etc/rc.local ] ; then
+        run_in_target mv /etc/rc.local /etc/rc.local.REAL
+      fi
       sudo dd of=$TMP_MOUNT_PATH/etc/rc.local <<EOF
 #!/bin/bash
 set -e
@@ -140,7 +142,10 @@ chmod 0600 /var/log/first-boot.d.log
 
 run-parts /etc/first-boot.d >> /var/log/first-boot.d.log 2>&1
 rm -fr /etc/first-boot.d
-mv /etc/rc.local.REAL /etc/rc.local
+rm -f /etc/rc.local
+if [ -f /etc/rc.local.REAL ] ; then
+  mv /etc/rc.local.REAL /etc/rc.local
+fi
 exit 0
 EOF
       run_in_target chmod 755 /etc/rc.local
