@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+# If lsb_release is missing, just do nothing.
+DISTRO=`lsb_release -si` || true
+
+GRUBFILE=""
+
+case $DISTRO in
+  'Ubuntu'|'Debian')
+    sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nomodeset vga=normal"/' /etc/default/grub
+    ;;
+  'Fedora')
+    echo 'GRUB_CMDLINE_LINUX="nomodeset vga=normal"' >/etc/default/grub
+    sed -i -e 's/terminal_output gfxterm/terminal_output console/' /boot/grub2/grub.cfg
+    ;;
+esac
+
+echo 'GRUB_TERMINAL=console' >>/etc/default/grub
+
