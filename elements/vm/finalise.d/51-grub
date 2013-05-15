@@ -35,6 +35,8 @@ if [ -f "/boot/grub/grub.cfg" ] ; then
 elif [ -f "/boot/grub2/grub.cfg" ] ; then
   GRUB_CFG=/boot/grub2/grub.cfg
 fi
+DIST=`lsb_release -is`
+[ -n "$DIST" ]
 RELEASE=`lsb_release -cs`
 [ -n "$RELEASE" ]
 # grub-mkconfig generates a config with the device in it,
@@ -53,3 +55,7 @@ sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=r
 sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
 # Fedora sets up for root to have a label of "_/"
 sed -i "s%LABEL=_/%LABEL=cloudimg-rootfs%" /etc/fstab
+if [ $DIST = 'Fedora' ] ; then
+  # enable serial console
+  sed -i "s%LABEL=cloudimg-rootfs%LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200%" $GRUB_CFG
+fi
