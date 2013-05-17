@@ -1,6 +1,12 @@
 #!/bin/bash
 
+set -x
+
 # Without fixing selinux file labels, sshd will run in the kernel_t domain
 # instead of the sshd_t domain, making ssh connections fail with
 # "Unable to get valid context for <user>" error message
-touch /.autorelabel
+setfiles /etc/selinux/targeted/contexts/files/file_contexts /
+FIXFILES_LOG=$(mktemp)
+fixfiles -l $FIXFILES_LOG restore
+cat $FIXFILES_LOG
+rm $FIXFILES_LOG
