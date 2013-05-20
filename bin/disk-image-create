@@ -92,9 +92,6 @@ IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
 echo "Building elements: $IMAGE_ELEMENT"
 echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."
 
-# TODO: make into an element.
-ensure_nbd
-
 mk_build_dir
 create_base
 run_d extra-data
