@@ -68,6 +68,8 @@ source $_LIB/img-functions
 
 echo "Extracting kernel + ramdisk from $IMAGE_FILE and writing them to $OUT_DIR"
 
+ensure_nbd
+
 # sets WORK_DIR
 mount_qcow_image $IMAGE_FILE
 
