@@ -1,0 +1,75 @@
+#!/bin/bash
+
+set -e
+
+# Gets Repositories listed in the a repository file and places them in
+# the repository directory.
+# The format of the repository file is one or more lines matching
+# <name> <type> <destination> <location> [<ref>]
+function get_repos_for_element(){
+    local REPO_SOURCES=$1
+
+    local REGEX="^([^ ]+) (git|tar) (/[^ ]+) ([^ ]+) ?([^ ]*)$"
+    while read line ; do
+
+        # ignore blank lines and lines begining in '#'
+        [[ "$line" == \#* ]] || [[ -z "$line" ]] && continue
+
+        if [[ "$line" =~ $REGEX ]]  ; then
+            local REPONAME=${BASH_REMATCH[1]}
+            local REPOTYPE=${BASH_REMATCH[2]}
+            local REPOPATH=${BASH_REMATCH[3]}
+            local REPOLOCATION=${BASH_REMATCH[4]}
+            local REPOREF=${BASH_REMATCH[5]:-master}
+
+            local REPO_DIRECTORY=$TMP_MOUNT_PATH$REPOPATH
+            local REPO_SUB_DIRECTORY=$(dirname $REPO_DIRECTORY)
+
+            # REPOTYPE can be overridden with DIB_REPOTYPE_{name}
+            local REPOTYPE_OVERRIDE=DIB_REPOTYPE_${REPONAME/-/_}
+            REPOTYPE=${!REPOTYPE_OVERRIDE:-$REPOTYPE}
+
+            # REPOLOCATION can be overridden with DIB_REPOLOCATION_{name}
+            local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME/-/_}
+            REPOLOCATION=${!REPOLOCATION_OVERRIDE:-$REPOLOCATION}
+
+            # REPOREF can be overridden with DIB_REPOREF_{name}
+            local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME/-/_}
+            REPOREF=${!REPOREF_OVERRIDE:-$REPOREF}
+
+            case $REPOTYPE in
+            git)
+                sudo mkdir -p $REPO_SUB_DIRECTORY
+                sudo git clone $REPOLOCATION $REPO_DIRECTORY
+                pushd $REPO_DIRECTORY
+                sudo git reset --hard $REPOREF
+                popd
+                ;;
+            tar)
+                # The top level directory of the tarball mightn't have a fixed name i.e.
+                # it could contain version numbers etc... so we write it to a tmpdir
+                # the then move the contents into the directory we want it in, this does
+                # assume the tarball only contains a single top level directory
+                local tmpdir=$(mktemp --tmpdir=$TMP_MOUNT_PATH/tmp -d)
+                curl $REPOLOCATION | tar -C $tmpdir -xzf -
+                sudo mkdir -p $REPO_DIRECTORY
+                sudo mv $tmpdir/*/* $REPO_DIRECTORY
+                rm -rf $tmpdir
+                ;;
+            *)
+                echo "Unsupported repository type"
+                return 1
+                ;;
+            esac
+
+        else
+            echo "Couldn't parse '$line' as a source repository"
+            return 1
+        fi
+    done < $REPO_SOURCES
+}
+
+# Get source repositories for the target
+for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*") ; do
+    get_repos_for_element $_SOURCEREPO
+done

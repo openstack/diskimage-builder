@@ -57,3 +57,5 @@ ALL ALL=(root) NOPASSWD: /usr/bin/du --block-size=* -x -s /tmp/*/built
 ALL ALL=(root) NOPASSWD: /bin/mount -t tmpfs tmpfs /tmp/image.*
 ALL ALL=(root) NOPASSWD: /bin/umount -f /tmp/image.*
 ALL ALL=(root) NOPASSWD: /bin/chown *\:* /tmp/image.*
+ALL ALL=(root) NOPASSWD: /bin/git clone * /tmp/image.*
+ALL ALL=(root) NOPASSWD: /bin/git reset --hard *
