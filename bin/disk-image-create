@@ -111,8 +111,8 @@ MKFS_OPTS=""
 if [ -n "$DIB_IMAGE_SIZE" ]; then
   truncate -s${DIB_IMAGE_SIZE}G $TMP_IMAGE_PATH
 else
-  # in kb*0.8 - underreport to get a slightly bigger device
-  _NEEDED_SIZE=$(sudo du --block-size=800 -x -s ${TMP_BUILD_DIR}/built | awk ' { print $1 } ')
+  # in kb*0.75 - underreport to get a slightly bigger device
+  _NEEDED_SIZE=$(sudo du --block-size=750 -x -s ${TMP_BUILD_DIR}/built | awk ' { print $1 } ')
   truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
   if [ "$FS_TYPE" = "ext4" ] ; then
     # Very conservative to handle images being resized a lot
