@@ -120,7 +120,7 @@ else
   fi
 fi
 # allow up to 1PB of 4KB blocks.
-OPTS="$MKFS_OPTS -E resize=274877906944"
+MKFS_OPTS="$MKFS_OPTS -E resize=274877906944"
 
 LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
 export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
