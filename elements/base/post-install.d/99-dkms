@@ -7,6 +7,8 @@ kernels=$(ls /usr/src/linux-headers-*-*-* -d | sed -e 's|/usr/src/linux-headers-
 __ARCH=$ARCH
 unset ARCH
 
+install-packages dkms
+
 for module in $modules ; do
   for kernel in $kernels ; do
     dkms build $module -k $kernel
