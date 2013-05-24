@@ -1,0 +1,19 @@
+#!/bin/sh
+# Trigger a run of dkms for all the modules installed
+# to ensure we have valid modules build for all.
+
+modules=$(dkms status | tr ',:' ' ' | awk '{ print $1 "/" $2 }')
+kernels=$(ls /usr/src/linux-headers-*-*-* -d | sed -e 's|/usr/src/linux-headers-||')
+__ARCH=$ARCH
+unset ARCH
+
+for module in $modules ; do
+  for kernel in $kernels ; do
+    dkms build $module -k $kernel
+    dkms install $module -k $kernel
+  done
+done
+
+ARCH=$__ARCH
+
+dkms status
