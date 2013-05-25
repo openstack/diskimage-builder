@@ -12,7 +12,7 @@ fi
 IMG_PATH=~/.cache/image-create
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://mattdm.fedorapeople.org/cloud-images/}
 DIB_RELEASE=${DIB_RELEASE:-Fedora18}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-Cloud-$ARCH-latest.raw.tar.xz}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-Cloud-$ARCH-latest.qcow2}
 BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-latest.tgz
 
 mkdir -p $IMG_PATH
@@ -28,8 +28,10 @@ if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR ] ; then
     EACTION="rm -r $WORKING"
     trap "$EACTION" EXIT
     echo "Working in $WORKING"
-    tar -xJC $WORKING -f $IMG_PATH/$BASE_IMAGE_FILE
-    LOOPDEV=$(sudo losetup --show -r -f $WORKING/*.raw)
+    RAW_FILE=$(basename $BASE_IMAGE_FILE)
+    RAW_FILE=${RAW_FILE#.qcow2}.raw
+    qemu-img convert -f qcow2 -O raw $IMG_PATH/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
+    LOOPDEV=$(sudo losetup --show -r -f $WORKING/$RAW_FILE)
     EACTION="sudo losetup -d $LOOPDEV;$EACTION"
     trap "$EACTION" EXIT
     sudo partprobe $LOOPDEV
