@@ -31,12 +31,20 @@ if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR ] ; then
     RAW_FILE=$(basename $BASE_IMAGE_FILE)
     RAW_FILE=${RAW_FILE#.qcow2}.raw
     qemu-img convert -f qcow2 -O raw $IMG_PATH/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
-    LOOPDEV=$(sudo losetup --show -r -f $WORKING/$RAW_FILE)
-    EACTION="sudo losetup -d $LOOPDEV;$EACTION"
+    # WARNING: The mattdm image has the root filesystem on the second
+    #          partition (p2). If he changes the image the MAGIC_BIT
+    #          might also need to change.
+    MAGIC_BIT=p2
+    # XXX: Parsing stdout is dangerous, would like a better way to discover
+    #      the device used for the image.
+    # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
+    #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
+    #       least creates /dev/mapper/loop0p2.
+    LOOPDEV=$(sudo kpartx -avr $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+    EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
     trap "$EACTION" EXIT
-    sudo partprobe $LOOPDEV
     mkdir $WORKING/mnt
-    sudo mount ${LOOPDEV}p2 $WORKING/mnt
+    sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
     EACTION="sudo umount -f $WORKING/mnt;$EACTION"
     trap "$EACTION" EXIT
     # Chroot in so that we get the correct uid/gid
