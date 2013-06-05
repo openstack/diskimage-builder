@@ -1,0 +1,6 @@
+#!/bin/bash
+
+LAST_VERSION=$(basename `ls -1 /boot/vmlinuz*  | tail -1 | sed 's/vmlinuz-//g'`)
+INITRAMFS=`ls /boot/initramfs-$LAST_VERSION.img`
+
+dracut --force --add "network" $INITRAMFS $LAST_VERSION
