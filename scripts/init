@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2012 NTT DOCOMO, INC. 
+# Copyright (c) 2012 NTT DOCOMO, INC.
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 #
 # All Rights Reserved.
@@ -49,27 +49,43 @@ readonly DEPLOYMENT_KEY=$(get_kernel_parameter deployment_key)
 readonly ISCSI_TARGET_IQN=$(get_kernel_parameter iscsi_target_iqn)
 
 mount -t sysfs none /sys
-mount -t tmpfs none /dev
-ln -sf /proc/self/fd /dev/fd
-mknod /dev/null c 1 3
-mknod /dev/zero c 1 5
-mknod /dev/random c 1 8
-mknod /dev/urandom c 1 9
-mknod /dev/tty0 c 4 0
-mknod /dev/tty1 c 4 1
-mknod /dev/tty2 c 4 2
-mknod /dev/tty3 c 4 3
-mknod /dev/tty4 c 4 4
-mknod /dev/tty5 c 4 5
-mknod /dev/tty6 c 4 6
-mknod /dev/tty7 c 4 7
-mknod /dev/tty8 c 4 8
-mknod /dev/tty9 c 4 9
-mknod /dev/tty c 5 0
-mknod -m 0600 /dev/console c 5 1
-mknod -m 0666 /dev/ptmx c 5 2
-mkdir -p /dev/.udev
-mkdir -p /dev/.udev/data
+
+UDEVD=
+if [ -x "/bin/systemd-udevd" ]; then
+    UDEVD="systemd-udevd"
+else
+    UDEVD="udevd"
+fi
+
+if [ "$UDEVD" = "systemd-udevd" ]; then
+    # devtmpfs is required since udev 176
+    mount -t devtmpfs none /dev
+    mkdir -p /run
+    mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
+    mkdir -p /run/lock
+else
+    mount -t tmpfs none /dev
+    ln -sf /proc/self/fd /dev/fd
+    mknod /dev/null c 1 3
+    mknod /dev/zero c 1 5
+    mknod /dev/random c 1 8
+    mknod /dev/urandom c 1 9
+    mknod /dev/tty0 c 4 0
+    mknod /dev/tty1 c 4 1
+    mknod /dev/tty2 c 4 2
+    mknod /dev/tty3 c 4 3
+    mknod /dev/tty4 c 4 4
+    mknod /dev/tty5 c 4 5
+    mknod /dev/tty6 c 4 6
+    mknod /dev/tty7 c 4 7
+    mknod /dev/tty8 c 4 8
+    mknod /dev/tty9 c 4 9
+    mknod /dev/tty c 5 0
+    mknod -m 0600 /dev/console c 5 1
+    mknod -m 0666 /dev/ptmx c 5 2
+    mkdir -p /dev/.udev
+    mkdir -p /dev/.udev/data
+fi
 
 echo "starting syslogd"
 
@@ -78,7 +94,7 @@ syslogd
 klogd
 
 echo "starting udevd"
-udevd --daemon --resolve-names=never
+$UDEVD --daemon --resolve-names=never
 
 echo "load modules"
 load_modules_by_udev

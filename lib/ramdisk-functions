@@ -68,11 +68,14 @@ function create_base () {
   # cjk adding for discovery support
   mkdir -p "$TMP_MOUNT_PATH/var/lib/dhcp"
   mkdir -p "$TMP_MOUNT_PATH/var/run"
-
   mkdir -p "$TMP_MOUNT_PATH/lib/udev/rules.d"
   cp -a "$LIB_UDEV/rules.d/50-firmware.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
   cp -a "$LIB_UDEV/rules.d/80-drivers.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
-  cp -a "$LIB_UDEV/firmware" "$TMP_MOUNT_PATH/lib/udev"
+
+  if [ -a $LIB_UDEV/firmware ]; then
+    cp -a "$LIB_UDEV/firmware" "$TMP_MOUNT_PATH/lib/udev"
+  fi
+
   # cjk adding for hwdiscovery support
   cp "/sbin/dhclient-script" "$TMP_MOUNT_PATH/sbin"
 
@@ -89,6 +92,9 @@ udev_root="/dev"
 udev_rules="/lib/udev/rules.d"
 udev_log="no"
 EOF
+
+  generate_hooks
+  TARGET_ROOT=$TMP_MOUNT_PATH run_d root
 }
 
 function copy_required_libs() {
@@ -140,7 +146,25 @@ function copy_required_libs() {
 function populate_lib () {
   echo "Populating /lib"
 
-  for i in "$BUSYBOX" "$LIB_UDEV/firmware" bash lsmod modprobe udevd udevadm wget reboot shutdown $BINARY_DEPS ; do
+  # find udevd
+  UDEVD=
+  for f in /sbin/udevd /lib/udev/udevd /lib/systemd/systemd-udevd \
+          /usr/lib/systemd/systemd-udevd \
+          /usr/lib/udev/udevd; do
+      if [ -x "$f" ]; then
+          UDEVD="$f"
+          break
+      fi
+  done
+
+  UDEV_FIRMWARE=
+  if [ -a $LIB_UDEV/firmware ]; then
+     UDEV_FIRMWARE="$LIB_UDEV/firmware"
+  fi
+
+  for i in "$BUSYBOX" bash lsmod modprobe udevadm \
+           wget reboot shutdown $UDEVD $UDEV_FIRMWARE \
+           $BINARY_DEPS ; do
     if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
       continue
     fi
