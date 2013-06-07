@@ -40,6 +40,8 @@ package_map = {
     'openvswitch-switch': 'openvswitch',
     'python-numpy': 'numpy',
     'libssl-dev': 'openssl-devel',
+    'libz-dev': 'zlib-devel',
+    'qemu-utils': 'qemu-img',
     }
 
 for arg in sys.argv[1:]:
