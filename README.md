@@ -291,6 +291,8 @@ Installation
   {filename} to check that each one parses successfully on your machine, so you
   don't break your machine).
 
+* Make sure you have qemu-img and kpartx installed.
+
 Invocation
 ==========
 
