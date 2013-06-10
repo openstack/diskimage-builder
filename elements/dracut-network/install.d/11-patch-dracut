@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# If the patch doesn't apply just do nothing. This patch fix a small
+# issue in the script that writes the network configuration files from
+# the cmdline to the disk on FC18.
+patch /usr/lib/dracut/modules.d/45ifcfg/write-ifcfg.sh < $(dirname $0)/../dracut-write-ifcfg.patch || true
