@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Fedora sets up for root to have a label of "_/"
+sed -i "s%LABEL=_/%LABEL=cloudimg-rootfs%" /etc/fstab
