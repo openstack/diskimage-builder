@@ -67,7 +67,7 @@ printf "%-40s %9s\n" Script Seconds
 printf "%-40s %9s\n" --------------------------------------- ----------
 echo ""
 pushd $PROFILE_DIR > /dev/null
-for target in start_* ; do
+for target in $(find . -name 'start_*' -printf '%f\n') ; do
     stop_file=stop_${target##start_}
     start_seconds=$(cat $target)
     stop_seconds=$(cat $stop_file)
