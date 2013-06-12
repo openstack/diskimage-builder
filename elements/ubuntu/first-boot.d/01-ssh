@@ -1,4 +1,0 @@
-#!/bin/bash
-# NOTE: this file should be removed once cloud-init is properly generating hostkeys
-# https://bugs.launchpad.net/diskimage-builder/+bug/1124593
-dpkg-reconfigure openssh-server

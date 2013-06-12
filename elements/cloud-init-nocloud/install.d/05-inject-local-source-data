@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# without these files, cloud-init will not perform stock operations such as
+# generating sshd hostkeys.
+
+mkdir -p /var/lib/cloud/seed/nocloud
+touch /var/lib/cloud/seed/nocloud/user-data
+touch /var/lib/cloud/seed/nocloud/meta-data
