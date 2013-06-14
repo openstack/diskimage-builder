@@ -47,6 +47,7 @@ readonly DISK=$(get_kernel_parameter disk)
 readonly DEPLOYMENT_ID=$(get_kernel_parameter deployment_id)
 readonly DEPLOYMENT_KEY=$(get_kernel_parameter deployment_key)
 readonly ISCSI_TARGET_IQN=$(get_kernel_parameter iscsi_target_iqn)
+readonly TROUBLESHOOT=$(get_kernel_parameter troubleshoot)
 
 mount -t sysfs none /sys
 
@@ -110,8 +111,7 @@ while ! BOOT_INTERFACE=$(find_interface "$BOOT_MAC_ADDRESS"); do
 done
 if [ -z "$BOOT_INTERFACE" ]; then
 	echo "could not find an interface owns MAC=$BOOT_MAC_ADDRESS"
-	echo "Starting troubleshooting shell."
-	bash
+	troubleshoot
 fi
 
 readonly BOOT_INTERFACE
@@ -123,8 +123,7 @@ if [ $? -ne 0 ]; then
 	ifconfig "$BOOT_INTERFACE" up
 	if [ $? -ne 0 ]; then
 		echo "Failed to up $BOOT_INTERFACE"
-		echo "Starting troubleshooting shell."
-		bash
+		troubleshoot
 	fi
 fi
 ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"

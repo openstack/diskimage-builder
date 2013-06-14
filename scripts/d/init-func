@@ -188,4 +188,10 @@ function stop_iscsi_target() {
 	killall tgtd
 }
 
+function troubleshoot() {
+	if [ "$TROUBLESHOOT" == 1 ]; then
+		echo "Starting troubleshooting shell."
+		bash
+	fi
+}
 
