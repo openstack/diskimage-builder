@@ -4,11 +4,25 @@ if [ -z "$ISCSI_TARGET_IQN" ]; then
   bash
 fi
 
-target_disk=`find_disk "$DISK"`
+t=0
+while ! target_disk=$(find_disk "$DISK"); do
+  if [ $t -eq 10 ]; then
+    break
+  fi
+  t=$(($t + 1))
+  sleep 1
+done
+
+if [ -z "$target_disk" ]; then
+  echo "Could not find disk to use."
+  echo "Starting troubleshooting shell."
+  bash
+fi
+
 echo "start iSCSI target on $target_disk"
 start_iscsi_target "$ISCSI_TARGET_IQN" "$target_disk" ALL
 if [ $? -ne 0 ]; then
-  echo "Could not find disk to use."
+  echo "Failed to start iscsi target."
   echo "Starting troubleshooting shell."
   bash
 fi
