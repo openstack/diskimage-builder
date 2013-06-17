@@ -18,10 +18,20 @@ cache_url()
 {
     local url=$1
     local dest=$2
+
+    mkdir -p $(dirname $dest)
     local tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)
-    rcode=$(curl -o $tmp -z $dest -w '%{http_code}' $url)
+
+    if [ -f $dest ] ; then
+        time_cond="-z $dest"
+        success="Server copy has changed. Using server version of $url"
+    else
+        success="Downloaded and cached $url for the first time"
+    fi
+
+    rcode=$(curl -o $tmp -w '%{http_code}' $url $time_cond)
     if [ "$rcode"  == "200" ] ; then
-        echo "Server copy has changed. Using server version of $url"
+        echo $success
         mv $tmp $dest
     elif [ "$rcode" == "304" ] ; then
         echo "Server copy has not changed. Using locally cached $url"
