@@ -195,3 +195,33 @@ function troubleshoot() {
 	fi
 }
 
+function safe_url_encode() {
+	local str=$1
+	local out=""
+
+	for (( i=0; i<${#str}; i++ )); do
+		c=${str:$i:1}
+		case $c in
+		[a-zA-Z0-9.-_] )
+			out+="$c"
+			;;
+		' ' )
+			out+="+"
+			;;
+		*)
+			#skip it
+			;;
+		esac
+	done
+	echo "$out"
+
+}
+
+function err_msg() {
+	message=$1
+	if [ -z "$FIRST_ERR_MSG" ]; then
+		FIRST_ERR_MSG=$(safe_url_encode "$message")
+	fi
+	echo "$message"
+}
+
