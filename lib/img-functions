@@ -69,13 +69,8 @@ function create_base () {
 
     # Configure Image
     # Setup resolv.conf so we can chroot to install some packages
-    # XXXX: Should store the old state rather than unlink; then restore later.
-    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
-        sudo unlink $TMP_MOUNT_PATH/etc/resolv.conf
-    fi
-
-    if [ -f $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
-        sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
+    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
+        sudo mv $TMP_MOUNT_PATH/etc/resolv.conf $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
     fi
 
     # Recreate resolv.conf
@@ -136,10 +131,12 @@ function prepare_first_boot () {
 
 function finalise_base () {
     TARGET_ROOT=$TMP_MOUNT_PATH run_d cleanup
-    # Now remove the resolv.conf we created above
+    # Remove the resolv.conf we created above
     sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
-    # The we need to recreate it as a link
-    sudo ln -sf ../run/resolvconf/resolv.conf $TMP_MOUNT_PATH/etc/resolv.conf
+    # Move the original back
+    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] ; then
+        sudo mv $TMP_MOUNT_PATH/etc/resolv.conf.ORIG $TMP_MOUNT_PATH/etc/resolv.conf
+    fi
 }
 
 function compress_image () {
