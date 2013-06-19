@@ -16,12 +16,10 @@
 # under the License.
 
 # options for ramdisk-image-create
+export DIB_NO_TMPFS=${DIB_NO_TMPFS:-1}
+source $_LIB/common-defaults
 KERNEL_VERSION=${KERNEL_VERSION:-$(uname -r)}
 MODULE_ROOT=${MODULE_ROOT:-""}
 LIB_UDEV_ROOT=${LIB_UDEV_ROOT:-""}
 BUSYBOX=${BUSYBOX:-$(which busybox)}
 IMAGE_NAME=${IMAGE_NAME:-"ramdisk"}
-_BASE_ELEMENT_DIR=$(dirname $0)/../elements
-ELEMENTS_PATH=${ELEMENTS_PATH:+"$ELEMENTS_PATH:$_BASE_ELEMENT_DIR"}
-export ELEMENTS_PATH=${ELEMENTS_PATH:-$_BASE_ELEMENT_DIR}
-export DIB_NO_TMPFS=${DIB_NO_TMPFS:-1}

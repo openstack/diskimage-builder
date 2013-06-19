@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# XXX: Only portions of this are the NTT original, much is now HP work
-
 # Copyright (c) 2012 NTT DOCOMO, INC. 
+# Copyright 2013 Hewlett-Packard Development Company, L.P.
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -26,13 +25,15 @@ export _LIB=${_DIR}/../lib
 source $_LIB/die
 
 function show_options () {
-  echo "Options:"
-  echo "     -m PATH -- Path to find lib/modules. Default /"
-  echo "     -k VERSION -- Kernel version. Default $(uname -r)"
-  echo "     -h -- This help"
-  echo "     -o FILENAME -- Output file"
-  echo "     -x -- turn on tracing"
-  exit 0
+    echo "Options:"
+    echo "    -m PATH -- Path to find lib/modules. Default /"
+    echo "    -k VERSION -- Kernel version. Default $(uname -r)"
+    echo "    -h -- This help"
+    echo "    -o FILENAME -- Output file"
+    echo "    -x -- turn on tracing"
+    echo
+    echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
+    exit 0
 }
 
 TEMP=$(getopt -o m:k:ho:x -n $SCRIPTNAME -- "$@")
