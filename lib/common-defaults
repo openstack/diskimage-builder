@@ -13,10 +13,29 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-source $_LIB/common-defaults
 # options for create-baremetal-image.sh
+if [ -f /etc/debian_version ]; then
+  _ARCH=$(dpkg --print-architecture)
+else
+  _ARCH=$(uname -m)
+  case $_ARCH in
+    "x86_64")
+      _ARCH="amd64"
+      ;;
+    "armv"*)
+      _ARCH="armhf"
+      ;;
+    *)
+      echo "WARNING: Unknown architecture: $_ARCH"
+      ;;
+  esac
+fi
+ARCH=${ARCH:-$_ARCH}
+export ARCH
 
-FS_TYPE=${FS_TYPE:-ext4}
-# Used to set the file extension only at this stage.
-IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
-IMAGE_NAME=${IMAGE_NAME:-image}
+export DIB_NO_TMPFS=${DIB_NO_TMPFS:-0}
+# Set via the CLI normally.
+# IMAGE_ELEMENT=
+_BASE_ELEMENT_DIR=$(dirname $0)/../elements
+ELEMENTS_PATH=${ELEMENTS_PATH:+"$ELEMENTS_PATH:$_BASE_ELEMENT_DIR"}
+export ELEMENTS_PATH=${ELEMENTS_PATH:-$_BASE_ELEMENT_DIR}
