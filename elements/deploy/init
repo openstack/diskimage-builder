@@ -1,5 +1,5 @@
 if [ -z "$ISCSI_TARGET_IQN" ]; then
-  echo "iscsi_target_iqn is not defined"
+  err_msg "iscsi_target_iqn is not defined"
   troubleshoot
 fi
 
@@ -13,19 +13,19 @@ while ! target_disk=$(find_disk "$DISK"); do
 done
 
 if [ -z "$target_disk" ]; then
-  echo "Could not find disk to use."
+  err_msg "Could not find disk to use."
   troubleshoot
 fi
 
 echo "start iSCSI target on $target_disk"
 start_iscsi_target "$ISCSI_TARGET_IQN" "$target_disk" ALL
 if [ $? -ne 0 ]; then
-  echo "Failed to start iscsi target."
+  err_msg "Failed to start iscsi target."
   troubleshoot
 fi
 
 echo "request boot server to deploy image"
-d="i=$DEPLOYMENT_ID&k=$DEPLOYMENT_KEY&a=$BOOT_IP_ADDRESS&n=$ISCSI_TARGET_IQN"
+d="i=$DEPLOYMENT_ID&k=$DEPLOYMENT_KEY&a=$BOOT_IP_ADDRESS&n=$ISCSI_TARGET_IQN&e=$FIRST_ERR_MSG"
 wget --post-data "$d" "http://$BOOT_SERVER:10000"
 
 echo "waiting for notice of complete"
