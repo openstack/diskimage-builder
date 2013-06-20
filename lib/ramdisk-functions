@@ -31,7 +31,7 @@ function cleanup () {
 
 function ensure_binaries() {
   BINARY_DEPS="${BUSYBOX}"
-  for _FLVR in ${RAMDISK_ELEMENT} ; do
+  for _FLVR in ${IMAGE_ELEMENT} ; do
     for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
       [ -d $dir/$_FLVR ] || continue
       _FILE="${dir}/${_FLVR}/binary-deps"
@@ -202,7 +202,7 @@ function populate_init () {
   done
 
   # Append /init with any element fragments that are present
-  for _FLVR in ${RAMDISK_ELEMENT} ; do
+  for _FLVR in ${IMAGE_ELEMENT} ; do
     for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
       [ -d $dir/$_FLVR ] || continue
       _FILE="${dir}/${_FLVR}/init"
@@ -228,7 +228,7 @@ function finalise_image () {
 function populate_udev () {
   echo "Installing udev rules"
 
-  for _FLVR in ${RAMDISK_ELEMENT} ; do
+  for _FLVR in ${IMAGE_ELEMENT} ; do
     for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
       [ -d $dir/$_FLVR ] || continue
       _DIR="${dir}/${_FLVR}/udev"

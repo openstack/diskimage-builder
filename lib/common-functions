@@ -52,7 +52,7 @@ function save_image () {
 
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
-  for _ELEMENT in $IMAGE_ELEMENT $RAMDISK_ELEMENT ; do
+  for _ELEMENT in $IMAGE_ELEMENT ; do
     for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
        [ -d $dir/$_ELEMENT ] || continue
       cp -t $TMP_HOOKS_PATH -a $dir/$_ELEMENT/* ;
