@@ -3,11 +3,9 @@
 home=$(dirname $0)
 set -uex
 
-mkdir -p /opt/stack
-cd /opt/stack
-git clone https://github.com/tripleo/config-applier.git
-cd config-applier
-git checkout master
+install-packages python-pip
+
+cd /opt/stack/config-applier
 pip install -e . -U
 
 install -m 0644 -o root -g root $home/config-applier.upstart /etc/init/config-applier.conf
