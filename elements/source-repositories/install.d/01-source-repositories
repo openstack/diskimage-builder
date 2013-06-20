@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -uex
+
+# Git isn't a dependency of this element, but is a dependency of pbr
+# if you are doing pip install on a git cloned directoy, because this
+# looks to be a fairly common pattern it makes sense to have git on the
+# target image
+install-packages git
+
