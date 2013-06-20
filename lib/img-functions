@@ -53,46 +53,6 @@ function ensure_sudo () {
     sudo echo "Ensuring sudo is available"
 }
 
-function create_base () {
-    mkdir $TMP_BUILD_DIR/mnt
-    export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
-    # Copy data in to the root.
-    TARGET_ROOT=$TMP_MOUNT_PATH run_d root
-    if [ -z "$(ls $TMP_MOUNT_PATH | grep -v lost+found)" ] ; then
-        # Nothing copied in, use Ubuntu.
-	echo "Adding ubuntu element as / had no contents"
-        IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT ubuntu)
-	generate_hooks
-	echo "Now building: $IMAGE_ELEMENT"
-	TARGET_ROOT=$TMP_MOUNT_PATH run_d root
-    fi
-
-    # Configure Image
-    # Setup resolv.conf so we can chroot to install some packages
-    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
-        sudo mv $TMP_MOUNT_PATH/etc/resolv.conf $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
-    fi
-
-    # Recreate resolv.conf
-    sudo touch $TMP_MOUNT_PATH/etc/resolv.conf
-    sudo chmod 777 $TMP_MOUNT_PATH/etc/resolv.conf
-    # use system configured resolv.conf if available to support internal proxy resolving
-    if [ -e /etc/resolv.conf ]
-    then
-        cat /etc/resolv.conf > $TMP_MOUNT_PATH/etc/resolv.conf
-    else
-        echo nameserver 8.8.8.8 > $TMP_MOUNT_PATH/etc/resolv.conf
-    fi
-    mount_proc_dev_sys
-}
-
-function mount_proc_dev_sys () {
-    # supporting kernel file systems
-    sudo mount -t proc none $TMP_MOUNT_PATH/proc
-    sudo mount --bind /dev $TMP_MOUNT_PATH/dev
-    sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
-}
-
 # Helper function to run a command inside the chroot
 function run_in_target () {
     # Force the inclusion of /usr/local/bin in PATH, this is needed for some
