@@ -14,7 +14,6 @@
 # under the License.
 
 import argparse
-from errno import ENOENT
 import os
 import sys
 
