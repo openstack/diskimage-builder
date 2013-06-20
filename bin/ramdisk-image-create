@@ -53,15 +53,12 @@ while true ; do
         *) echo "Internal error!" ; exit 1 ;;
     esac
 done
-for arg do IMAGE_ELEMENT="$IMAGE_ELEMENT $arg" ; done
 
 source $_LIB/ramdisk-defaults
 source $_LIB/common-functions
 source $_LIB/ramdisk-functions
 
-IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
-
-echo "Building element(s): ${IMAGE_ELEMENT}"
+arg_to_elements "$@"
 
 echo "Discovering binary dependencies"
 ensure_binaries

@@ -75,22 +75,13 @@ if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   exec -c $0 "$@"
 fi
 
-for arg do IMAGE_ELEMENT="$IMAGE_ELEMENT $arg" ; done
-
-if [ "$SKIP_BASE" != "1" ]; then
-  IMAGE_ELEMENT="base $IMAGE_ELEMENT"
-fi
-
 source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
 
+arg_to_elements "$@"
+
 IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPE}}
-
-IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
-
-echo "Building elements: $IMAGE_ELEMENT"
-echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."
 
 mk_build_dir
 create_base
