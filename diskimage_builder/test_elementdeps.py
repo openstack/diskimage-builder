@@ -16,7 +16,7 @@
 import os
 
 from testtools import TestCase
-from fixtures import Fixture, EnvironmentVariable, TempDir
+from fixtures import EnvironmentVariable, TempDir
 
 from diskimage_builder.elements import expand_dependencies
 from diskimage_builder.elements import get_elements_dir
