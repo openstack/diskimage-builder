@@ -52,6 +52,10 @@ class TestElementDeps(TestCase):
                                      elements_dir=self.element_dir)
         self.assertEquals(set(['requires-foo', 'foo']), result)
 
+    def test_missing_deps(self):
+        self.assertRaises(SystemExit, expand_dependencies, ['fake'],
+                          self.element_dir)
+
     def test_transitive_deps(self):
         result = expand_dependencies(['requires-requires-foo'],
                                      elements_dir=self.element_dir)

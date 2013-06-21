@@ -50,7 +50,8 @@ def dependencies(element, elements_dir=None):
             else:
                 raise
 
-    sys.stderr.write("ERROR: Element %s doesn't exists\n" % (element, ))
+    sys.stderr.write("ERROR: Element '%s' not found in '%s'\n" %
+                     (element, elements_dir))
     exit(-1)
 
 
