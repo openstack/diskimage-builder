@@ -42,6 +42,7 @@ package_map = {
     'libssl-dev': 'openssl-devel',
     'libz-dev': 'zlib-devel',
     'qemu-utils': 'qemu-img',
+    'python-pyopenssl': 'pyOpenSSL',
     }
 
 for arg in sys.argv[1:]:
