@@ -87,7 +87,7 @@ TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
 
 echo "working in $TMP_MOUNT_PATH"
 
-create_base
+create_ramdisk_base
 populate_lib
 populate_busybox
 populate_init
