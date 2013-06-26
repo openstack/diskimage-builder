@@ -14,39 +14,9 @@ DIB_RELEASE=${DIB_RELEASE:-quantal}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
 SHA256SUMS=${SHA256SUMS:-https://${DIB_CLOUD_IMAGES##http?(s)://}/$DIB_RELEASE/current/SHA256SUMS}
 
-cache_url()
-{
-    local url=$1
-    local dest=$2
-
-    mkdir -p $(dirname $dest)
-    local tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)
-
-    if [ -f $dest ] ; then
-        time_cond="-z $dest"
-        success="Server copy has changed. Using server version of $url"
-    else
-        success="Downloaded and cached $url for the first time"
-    fi
-
-    rcode=$(curl -o $tmp -w '%{http_code}' $url $time_cond)
-    if [ "$rcode"  == "200" ] ; then
-        echo $success
-        mv $tmp $dest
-    elif [ "$rcode" == "304" ] ; then
-        echo "Server copy has not changed. Using locally cached $url"
-        rm -f $tmp
-    else
-        echo "Server returned an unexpected response code. [$rcode]"
-        rm -f $tmp
-        return 1
-    fi
-}
-
-mkdir -p $IMG_PATH
 echo "Fetching Base Image"
-cache_url $SHA256SUMS $IMG_PATH/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
-cache_url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
+$TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $IMG_PATH/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
+$TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
 pushd $IMG_PATH
 grep "$BASE_IMAGE_FILE" SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH | sha256sum --check -
 popd

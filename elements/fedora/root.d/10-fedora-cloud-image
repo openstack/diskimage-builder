@@ -15,14 +15,11 @@ DIB_RELEASE=${DIB_RELEASE:-Fedora18}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-Cloud-$ARCH-latest.qcow2}
 BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-latest.tgz
 
-mkdir -p $IMG_PATH
-# TODO: don't cache forever.
-if [ ! -f $IMG_PATH/$BASE_IMAGE_FILE ] ; then
-   echo "Fetching Base Image"
-   wget $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE -O $IMG_PATH/$BASE_IMAGE_FILE.tmp
-   mv $IMG_PATH/$BASE_IMAGE_FILE.tmp $IMG_PATH/$BASE_IMAGE_FILE
-fi
-if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR ] ; then
+echo "Fetching Base Image"
+$TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
+
+if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR -o \
+    $IMG_PATH/$BASE_IMAGE_FILE -nt $IMG_PATH/$BASE_IMAGE_TAR ] ; then
     echo "Repacking base image as tarball."
     WORKING=$(mktemp -d)
     EACTION="rm -r $WORKING"
