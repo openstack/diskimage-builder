@@ -43,6 +43,7 @@ package_map = {
     'libz-dev': 'zlib-devel',
     'qemu-utils': 'qemu-img',
     'python-pyopenssl': 'pyOpenSSL',
+    'libmysqlclient-dev': 'mysql-devel',
     }
 
 for arg in sys.argv[1:]:
