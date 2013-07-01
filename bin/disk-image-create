@@ -30,6 +30,11 @@ SCRIPT_HOME=$(dirname $0)
 export _LIB=$(dirname $0)/../lib
 source $_LIB/die
 
+IS_RAMDISK=0
+if [ "$SCRIPTNAME" == "ramdisk-image-create" ]; then
+  IS_RAMDISK=1
+fi
+
 function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image"
@@ -37,9 +42,11 @@ function show_options () {
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
-    echo "    -n skip the default inclusion of the 'base' element"
-    echo "    -p package[,package,package] -- list of packages to install in the image"
     echo "    --no-tmpfs -- do not use tmpfs to speed image build"
+    if [ "$IS_RAMDISK" == "0" ]; then
+        echo "    -n skip the default inclusion of the 'base' element"
+        echo "    -p package[,package,package] -- list of packages to install in the image"
+    fi
     echo
     echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
     exit 0
@@ -78,6 +85,11 @@ fi
 source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
+
+if [ "$IS_RAMDISK" == "1" ]; then
+  source $_LIB/ramdisk-defaults
+  source $_LIB/ramdisk-functions
+fi
 
 arg_to_elements "$@"
 
@@ -124,6 +136,12 @@ sudo mv -t $TMP_BUILD_DIR/mnt ${TMP_BUILD_DIR}/built/*
 mount_proc_dev_sys
 run_d_in_target finalise
 finalise_base
+
 unmount_image
-compress_image
-save_image $IMAGE_NAME.$IMAGE_TYPE
+
+if [ "$IS_RAMDISK" == "0" ]; then
+  compress_image
+  save_image $IMAGE_NAME.$IMAGE_TYPE
+else
+  remove_image
+fi

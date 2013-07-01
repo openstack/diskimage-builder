@@ -29,33 +29,6 @@ function cleanup () {
   rm -rf "$TMP_BUILD_DIR"
 }
 
-function ensure_binaries() {
-  BINARY_DEPS="${BUSYBOX}"
-  for _FLVR in ${IMAGE_ELEMENT} ; do
-    for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
-      [ -d $dir/$_FLVR ] || continue
-      _FILE="${dir}/${_FLVR}/binary-deps"
-      if [ -a $_FILE ]; then
-        for _LINE in $(cat $_FILE) ; do
-          BINARY_DEPS="${BINARY_DEPS} $_LINE"
-        done
-      fi
-      break
-    done
-  done
-
-  for _BIN in $BINARY_DEPS ; do
-    _LOCATION=$(which "$_BIN" || echo "")
-    if [ -z "$_LOCATION" ]; then
-      echo "$_BIN is not found in your PATH" 1>&2
-      echo "Please install it on your system"
-      exit 1
-    fi
-  done
-
-  export BINARY_DEPS
-}
-
 function create_ramdisk_base () {
   echo "Creating base system"
 
@@ -168,7 +141,7 @@ function populate_lib () {
 
   for i in "$BUSYBOX" bash lsmod modprobe udevadm \
            wget reboot shutdown $UDEVD $UDEV_FIRMWARE \
-           $BINARY_DEPS ; do
+           $(cat /etc/dib_binary_deps) ; do
     if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
       continue
     fi
@@ -206,18 +179,16 @@ function populate_init () {
   done
 
   # Append /init with any element fragments that are present
-  for _FLVR in ${IMAGE_ELEMENT} ; do
-    for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
-      [ -d $dir/$_FLVR ] || continue
-      _FILE="${dir}/${_FLVR}/init"
-      if [ -a $_FILE ]; then
-        cat >>$TMP_MOUNT_PATH/init <<EOF
-# init fragment from ${_FLVR}
+  TARGET_DIR="/tmp/in_target.d/"
+  for _ELEMENT in $(ls $TARGET_DIR/init.d/) ; do
+    _FILE="${TARGET_DIR}/init.d/${_ELEMENT}"
+    if [ -a $_FILE ]; then
+      cat >>$TMP_MOUNT_PATH/init <<EOF
+
+# init fragment from ${_ELEMENT}
 EOF
-        cat <$_FILE >>$TMP_MOUNT_PATH/init
-      fi
-      break
-    done
+      cat <$_FILE >>$TMP_MOUNT_PATH/init
+    fi
   done
 
   # Add our final steps to /init
@@ -232,16 +203,20 @@ function finalise_image () {
 function populate_udev () {
   echo "Installing udev rules"
 
-  for _FLVR in ${IMAGE_ELEMENT} ; do
-    for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
-      [ -d $dir/$_FLVR ] || continue
-      _DIR="${dir}/${_FLVR}/udev"
-      if [ -d $_DIR ]; then
-        find $_DIR -type f -exec cp -v {} $TMP_MOUNT_PATH/lib/udev/rules.d/ \;
-      fi
-      break
-    done
+  TARGET_DIR="/tmp/in_target.d/"
+  for _ELEMENT in $(ls $TARGET_DIR/udev.d/) ; do
+    _FILE="${TARGET_DIR}/udev.d/${_ELEMENT}"
+    if [ -a $_FILE ]; then
+      cp ${_FILE} $TMP_MOUNT_PATH/lib/udev/rules.d/
+    fi
   done
 }
 
-
+function find_kernel_version () {
+  _TMP=$(ls /boot/vmlinuz-* | sort | tail -1)
+  if [ "$_TMP" == "" ]; then
+    echo "Unable to find a suitable kernel" >>/dev/stderr
+    exit 1
+  fi
+  echo ${_TMP##/boot/vmlinuz-}
+}

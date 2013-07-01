@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e
+set -x
+
+_LIB="/tmp/ramdisk-build"
+
+source $_LIB/common-defaults
+source $_LIB/img-defaults
+source $_LIB/ramdisk-defaults
+
+source $_LIB/common-functions
+source $_LIB/img-functions
+source $_LIB/ramdisk-functions
+
+KERNEL_VERSION=${DIB_KERNEL_VERSION:-$(find_kernel_version)}
+MODULE_DIR=$MODULE_ROOT/lib/modules/$KERNEL_VERSION
+FIRMWARE_DIR=$MODULE_ROOT/lib/firmware
+LIB_UDEV=$LIB_UDEV_ROOT/lib/udev
+INIT="$_LIB/scripts/init"
+FUNCTIONS_D="$_LIB/scripts/d"
+
+mk_build_dir
+mkdir -p $TMP_BUILD_DIR/mnt
+TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
+
+echo "working in $TMP_MOUNT_PATH"
+
+create_ramdisk_base
+populate_lib
+populate_busybox
+populate_init
+populate_udev
+finalise_image
+save_image /tmp/ramdisk
+cp /boot/vmlinuz-${KERNEL_VERSION} /tmp/kernel
+chmod o+r /tmp/kernel

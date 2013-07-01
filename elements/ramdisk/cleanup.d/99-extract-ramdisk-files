@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -e
+set -x
+
+cp $TMP_MOUNT_PATH/tmp/ramdisk $IMAGE_NAME.initramfs
+cp $TMP_MOUNT_PATH/tmp/kernel $IMAGE_NAME.kernel

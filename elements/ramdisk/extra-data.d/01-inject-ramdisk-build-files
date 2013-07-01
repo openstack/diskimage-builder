@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+set -x
+
+export RAMDISK_BUILD_PATH="$TMP_MOUNT_PATH/tmp/ramdisk-build"
+mkdir -p $RAMDISK_BUILD_PATH
+
+for file in common-defaults common-functions ramdisk-defaults ramdisk-functions img-defaults img-functions ; do
+  cp $_LIB/$file $RAMDISK_BUILD_PATH
+done
+
+cp -r $(dirname $0)/scripts $RAMDISK_BUILD_PATH
+
