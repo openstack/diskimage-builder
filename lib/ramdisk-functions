@@ -69,7 +69,11 @@ function create_ramdisk_base () {
   mkdir -p "$TMP_MOUNT_PATH/var/lib/dhcp"
   mkdir -p "$TMP_MOUNT_PATH/var/run"
   mkdir -p "$TMP_MOUNT_PATH/lib/udev/rules.d"
-  cp -a "$LIB_UDEV/rules.d/50-firmware.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
+
+  if [ -e $LIB_UDEV/rules.d/50-firmware.rules ]; then
+    cp -a "$LIB_UDEV/rules.d/50-firmware.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
+  fi
+
   cp -a "$LIB_UDEV/rules.d/80-drivers.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
 
   if [ -a $LIB_UDEV/firmware ]; then
