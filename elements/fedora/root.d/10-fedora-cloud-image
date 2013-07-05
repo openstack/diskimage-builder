@@ -38,6 +38,10 @@ if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR -o \
     #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
     #       least creates /dev/mapper/loop0p2.
     LOOPDEV=$(sudo kpartx -avr $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+    if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
+        echo "Error: Could not find /dev/mapper/$LOOPDEV"
+        exit 1
+    fi
     EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
     trap "$EACTION" EXIT
     mkdir $WORKING/mnt
