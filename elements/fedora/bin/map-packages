@@ -44,6 +44,7 @@ package_map = {
     'qemu-utils': 'qemu-img',
     'python-pyopenssl': 'pyOpenSSL',
     'libmysqlclient-dev': 'mysql-devel',
+    'arping': 'iputils',
     }
 
 for arg in sys.argv[1:]:
