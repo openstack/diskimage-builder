@@ -1,7 +1,10 @@
-recursive-include lib
 include bin/disk-image-create
 include bin/disk-image-get-kernel
+include bin/element-info
 include bin/ramdisk-image-create
-recursive-include elements
+graft lib
+graft elements
+graft docs
+graft scripts
+graft sudoers.d
 include README.md
-recursive-include docs

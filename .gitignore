@@ -7,3 +7,7 @@
 dist
 *.qcow2
 *.raw
+build
+AUTHORS
+ChangeLog
+bin/diskimage_builder
