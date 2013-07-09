@@ -20,6 +20,7 @@ ALL ALL=(root) NOPASSWD: /bin/mkdir -p /tmp/*/mnt/*
 ALL ALL=(root) NOPASSWD: /bin/mkdir /tmp/*/mnt/*
 ALL ALL=(root) NOPASSWD: /bin/mount --bind /dev /tmp/*/mnt/dev
 ALL ALL=(root) NOPASSWD: /bin/mount --bind /tmp/*/hooks /tmp/*/mnt/tmp/in_target.d
+ALL ALL=(root) NOPASSWD: /bin/mount --bind */.cache/image-create/ccache /tmp/*/mnt/tmp/ccache
 ALL ALL=(root) NOPASSWD: /bin/mount -o remount\,ro\,bind /tmp/*/hooks /tmp/*/mnt/tmp/in_target.d
 ALL ALL=(root) NOPASSWD: /bin/mount -t proc none /tmp/*/mnt/proc
 ALL ALL=(root) NOPASSWD: /bin/mount -t sysfs none /tmp/*/mnt/sys

@@ -20,6 +20,7 @@ function unmount_image () {
     sudo umount -f $TMP_BUILD_DIR/mnt/proc || true
     sudo umount -f $TMP_BUILD_DIR/mnt/dev || true
     sudo umount -f $TMP_BUILD_DIR/mnt/tmp/in_target.d || true
+    sudo umount -f $TMP_BUILD_DIR/mnt/tmp/ccache || true
     # give it a second (ok really 5) to umount XXX - why? should instead track
     # the mount data / lsof etc.
     sleep 5
@@ -73,11 +74,16 @@ function run_d_in_target () {
       sudo mkdir $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
+      sudo mkdir -p $TMP_MOUNT_PATH/tmp/ccache
+      mkdir -p $DIB_CCACHE_DIR
+      sudo mount --bind $DIB_CCACHE_DIR $TMP_MOUNT_PATH/tmp/ccache
       check_break before-$1 run_in_target bash
       run_in_target dib-run-parts /tmp/in_target.d/$1.d
       check_break after-$1 run_in_target bash
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
       sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d
+      sudo umount -f $TMP_MOUNT_PATH/tmp/ccache || true
+      sudo rmdir $TMP_MOUNT_PATH/tmp/ccache
     fi
 }
 
