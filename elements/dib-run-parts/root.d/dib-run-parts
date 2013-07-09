@@ -49,6 +49,12 @@ targets=$(find $target_dir -type f -executable -printf '%f\n' | grep -E "$allowe
 
 PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)
 
+if [ -d /tmp/in_target.d/environment.d ] ; then
+    for env_file in /tmp/in_target.d/environment.d/* ; do
+        source $env_file
+    done
+fi
+
 for target in $targets ; do
     output "Running $target_dir/$target"
     target_tag=${target//\//_}

@@ -169,6 +169,9 @@ part of the process you need to customise:
 * first-boot.d: Runs inside the image before rc.local. Scripts from here are
   good for doing per-instance configuration based on cloud metadata.
 
+* environment.d: Bash script snippets that are sourced before running scripts
+  in each phase. Use this to set an environment variable for other hooks.
+
 * element-deps : A plain text, newline separated list of elements which will
   be added to the list of elements built into the image at image creation time.
 
