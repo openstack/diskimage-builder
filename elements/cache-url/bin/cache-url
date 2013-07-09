@@ -34,7 +34,7 @@ else
     success="Downloaded and cached $url for the first time"
 fi
 
-rcode=$(curl -o $tmp -w '%{http_code}' $url $time_cond)
+rcode=$(curl -L -o $tmp -w '%{http_code}' $url $time_cond)
 if [ "$rcode" = "200" ] ; then
     echo $success
     mv $tmp $dest
