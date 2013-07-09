@@ -26,8 +26,15 @@ diskimage-builder which can change the details registered by the element, these 
 for example if you would like diskimage-builder to get ironic from a local
 mirror you could set DIB_REPOLOCATION_ironic=git://localgitserver/ironic.git
 
+Alternatively if you would like to use the keystone element and build an image with
+keystone from a stable branch then you would set DIB_REPOREF_keystone=stable/grizzly
+
 Git sources will be cloned to \<destination\>
 
 Tarballs will be extracted to \<destination\>. Tarballs should contain a
 single topleval directory, regardless of the name of this top level directory
 it will be renamed to \<destination\>
+
+If mulitple elements register a source location with the same <destination>
+then source-repositories will exit with an error. Care should therefore be taken
+to only use elements together that download source to different locations.
