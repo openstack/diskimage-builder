@@ -202,14 +202,15 @@ possible approach to this would be to label elements as either a "driver",
 - An element that installs and configures Nova might be a bit more complex:
       elements/
          service-nova/
+            source-repository-nova - register a source repository
             pre-install.d/
-               50-my-ppa   - add a PPA
+               50-my-ppa           - add a PPA
             install.d/
-               10-user     - common Nova user accts
-               50-my-pack  - install packages from my PPA
-               60-nova     - install nova and some dependencies
+               10-user             - common Nova user accts
+               50-my-pack          - install packages from my PPA
+               60-nova             - install nova and some dependencies
             first-boot.d/
-               60-nova     - do some post-install config for nova
+               60-nova             - do some post-install config for nova
 
 - In the general case, configuration should probably be handled either by the
   meta-data service (eg, during first-boot.d) or via normal CM tools
@@ -235,6 +236,13 @@ to be deployed, an image would be composed of:
 It should be noted that this is merely a naming convention to assist in
 managing elements. Diskimage-builder is not, and should not be, functionally
 dependent upon specific element names.
+
+- diskimage-builder has the ability to retrieve source code for an element and
+  place it into a directory on the target image during the extra-data phase. The
+  default location/branch can then be overridden by the process running
+  diskimage-builder, making it possible to use the same element to track more
+  then one branch of a git repository or to get source for a local cache. See
+  elements/source-repositories/README.md for more information.
 
 Debugging elements
 ------------------
