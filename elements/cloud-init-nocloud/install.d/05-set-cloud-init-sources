@@ -1,6 +1,6 @@
 #!/bin/bash
 
-printf "%s\t%s\t%s\t%s\n" \
-    cloud-init cloud-init/datasources multiselect "NoCloud, None" | \
-        debconf-set-selections
-DEBIAN_FRONTEND=noninteractive dpkg-reconfigure cloud-init
+cat > /etc/cloud/cloud.cfg.d/91-local-metadata-only.cfg <<EOF
+# No cloud metadata available, use only what is in the image.
+datasource_list: [ NoCloud, None ]
+EOF
