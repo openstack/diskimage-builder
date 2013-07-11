@@ -45,6 +45,8 @@ package_map = {
     'python-pyopenssl': 'pyOpenSSL',
     'libmysqlclient-dev': 'mysql-devel',
     'arping': 'iputils',
+    'augeas-tools': 'augeas',
+    'openssh-client': 'openssh-clients',
     }
 
 for arg in sys.argv[1:]:
