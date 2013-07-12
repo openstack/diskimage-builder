@@ -180,6 +180,9 @@ function arg_to_elements() {
   if [ "$SKIP_BASE" != "1" ]; then
     IMAGE_ELEMENT="base $IMAGE_ELEMENT"
   fi
+  if [ "$IS_RAMDISK" == "1" ]; then
+    IMAGE_ELEMENT="ramdisk $IMAGE_ELEMENT"
+  fi
   echo "Building elements: $IMAGE_ELEMENT"
   echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."
 

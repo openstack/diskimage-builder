@@ -113,6 +113,11 @@ function compress_image () {
     mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
 }
 
+function remove_image () {
+  echo "Removing $TMP_IMAGE_PATH"
+  rm $TMP_IMAGE_PATH
+}
+
 function do_extra_package_install () {
   # Install any packages that were requested with the -p command line option
   if [ "$INSTALL_PACKAGES" != "" ]; then

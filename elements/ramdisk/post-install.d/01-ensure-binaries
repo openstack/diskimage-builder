@@ -1,0 +1,43 @@
+#!/bin/bash
+# Ensure that all binaries listed in ramdisk elements, exist
+
+set -e
+set -x
+
+export TARGET_DIR="/tmp/in_target.d/"
+
+if [ -z $TARGET_DIR ] ; then
+  echo "Target dir not specified"
+  exit 1
+fi
+
+if [ ! -d $TARGET_DIR ] ; then
+  echo "Unable to find specified directory in target: $TARGET_DIR"
+  bash
+  exit 1
+fi
+
+for _FILE in $(ls ${TARGET_DIR}/binary-deps.d/) ; do
+  _FILE="${TARGET_DIR}/binary-deps.d/${_FILE}"
+  if [ -a $_FILE ]; then
+    for _LINE in $(cat $_FILE) ; do
+      BINARY_DEPS="${BINARY_DEPS} $_LINE"
+    done
+  fi
+done
+
+for _BIN in $BINARY_DEPS ; do
+  _LOCATION=$(which "$_BIN" || echo "")
+  if [ -z "$_LOCATION" ]; then
+    echo "$_BIN is not found in PATH. Please ensure your elements install it"
+    exit 1
+  fi
+done
+
+if [ "$BINARY_DEPS" == "" ]; then
+  echo "No binary-deps found"
+else
+  DEPS_OUTPUT="/etc/dib_binary_deps"
+  echo "Creating binary_deps record at: ${DEPS_OUTPUT}"
+  echo "$BINARY_DEPS" >${DEPS_OUTPUT}
+fi

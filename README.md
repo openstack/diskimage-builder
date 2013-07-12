@@ -177,11 +177,14 @@ part of the process you need to customise:
 
 Ramdisk elements support the following files in their element directories:
 
-* binary-deps : executables required to be fed into the ramdisk. These need
-  to be present in your $PATH.
+* binary-deps.d : text files listing executables required to be fed into the 
+  ramdisk. These need to be present in $PATH in the build chroot (i.e. need to
+  be installed by your elements as described above).
 
-* init : a POSIX shell script fragment that will be appended to the default
-  script executed as the ramdisk is booted (/init)
+* init.d : POSIX shell script fragments that will be appended to the default
+  script executed as the ramdisk is booted (/init).
+
+* udev.d : udev rules files that will be copied into the ramdisk.
 
 Structure of an element
 -----------------------
