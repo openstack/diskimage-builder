@@ -35,6 +35,17 @@ if [ -f "/boot/grub/grub.cfg" ] ; then
 elif [ -f "/boot/grub2/grub.cfg" ] ; then
   GRUB_CFG=/boot/grub2/grub.cfg
 fi
+
+# If GRUB configuration file does not exist, generate one
+if [ ! $GRUB_CFG ]; then
+  if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+  elif [ -d /boot/grub ]; then
+    GRUB_CFG=/boot/grub/grub.cfg
+  fi
+  grub2-mkconfig -o $GRUB_CFG
+fi;
+
 DIST=`lsb_release -is`
 [ -n "$DIST" ]
 RELEASE=`lsb_release -cs`
