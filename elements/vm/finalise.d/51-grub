@@ -27,7 +27,40 @@ GRUB_OPTS=${GRUB_OPTS:""}
 # - --target=i386-pc is invalid for non-i386/amd64 architectures
 # - and for UEFI too.
 #    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+if [[ ! $GRUB_OPTS == *--target* ]]; then
+  # /sys/ comes from the host machine. If the host machine is using EFI
+  # but the image being built doesn't have EFI boot-images installed we
+  # should set the --target to use a BIOS-based boot-image.
+  #
+  # * --target tells grub what's the target platform
+  # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
+  # * i386-pc is used for BIOS-based machines
+  # http://www.gnu.org/software/grub/manual/grub.html#Installation
+  #
+  if [ -d /sys/firmware/efi ]; then
+    if [ ! -d /usr/lib/grub/*-efi ]; then
+      case $ARCH in
+        "x86_64"|"amd64")
+           GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+          ;;
+        "i386")
+           target=i386-pc
+           if [ -e /proc/device-tree ]; then
+             for x in /proc/device-tree/*; do
+               if [ -e "$x" ]; then
+                 target="i386-ieee1275"
+               fi
+             done
+           fi
+           GRUB_OPTS="$GRUB_OPTS --target=$target"
+          ;;
+      esac
+    fi
+  fi
+fi
+
 $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
+
 # This might be better factored out into a per-distro 'install-bootblock'
 # helper.
 if [ -f "/boot/grub/grub.cfg" ] ; then
