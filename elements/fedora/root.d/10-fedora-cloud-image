@@ -10,9 +10,9 @@ if [ 'amd64' = "$ARCH" ] ; then
 fi
 
 IMG_PATH=~/.cache/image-create
-DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://mattdm.fedorapeople.org/cloud-images/}
-DIB_RELEASE=${DIB_RELEASE:-Fedora18}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-Cloud-$ARCH-latest.qcow2}
+DIB_RELEASE=${DIB_RELEASE:-latest}
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.fedoraproject.org}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-fedora-$DIB_RELEASE.$ARCH.qcow2}
 BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-latest.tgz
 
 echo "Fetching Base Image"
@@ -31,7 +31,9 @@ if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR -o \
     # WARNING: The mattdm image has the root filesystem on the second
     #          partition (p2). If he changes the image the MAGIC_BIT
     #          might also need to change.
-    MAGIC_BIT=p2
+    # UPDATE to above warning alluding to Fedora18:
+    # F19 images have the rootfs partition on p1
+    MAGIC_BIT=p1
     # XXX: Parsing stdout is dangerous, would like a better way to discover
     #      the device used for the image.
     # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
