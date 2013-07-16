@@ -100,4 +100,7 @@ sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
 if [ $DIST = 'Fedora' ] ; then
   # enable serial console
   sed -i "s%LABEL=cloudimg-rootfs%LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200%" $GRUB_CFG
+  if [ $(lsb_release -rs) = '19' ]; then
+    sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=cloudimg-rootfs%" /etc/fstab
+  fi
 fi
