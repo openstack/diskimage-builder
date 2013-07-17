@@ -79,6 +79,21 @@ uncompressed cloud image and about 20% of that for working files.
 
 \* As reported by /proc/meminfo MemTotal
 
+Caches and offline mode
+=======================
+
+Since retrieving and transforming operating system image files, git
+repositories, Python or Ruby packages, and so on can be a significant overhead,
+we cache many of the inputs to the build process in ~/.cache/image-create/. The
+writing an element documention describes the interface within
+disk-image-builder for caching. When invoking disk-image-builder the --offline
+option will instruct disk-image-builder to not refresh cached resources.
+
+Note that we don't maintain operating system package caches, instead depending
+on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to 
+facilitate caching of that layer, so you need to arrange independently for
+offline mode.
+
 Design
 ======
 
@@ -221,6 +236,14 @@ Ramdisk elements support the following files in their element directories:
   script executed as the ramdisk is booted (/init).
 
 * udev.d : udev rules files that will be copied into the ramdisk.
+
+Global image-build variables
+----------------------------
+
+* DIB\_OFFLINE : this is always set. When not empty, any operations that
+  perform remote data access should avoid it if possible. If not possible
+  the operation should still be attempted as the user may have an external
+  cache able to keep the operation functional.
 
 Structure of an element
 -----------------------
