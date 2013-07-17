@@ -43,6 +43,42 @@ Why?
 Automation: While users and operators can manually script or put together ram
 disks and disk images, mature automation makes customisation and testing easier.
 
+Installation
+============
+
+* Clone the repository locally, then add bin to your path.
+
+* Copy sudoers.d/\* into your /etc/sudoers.d/. (Warning, use visudo -c -f
+  {filename} to check that each one parses successfully on your machine, so you
+  don't break your machine).
+
+* Make sure you have qemu-img and kpartx installed.
+
+Invocation
+==========
+
+The scripts can generally just be run. Options can be set on the command line
+or by exporting variables to override those present in lib/img-defaults. -h to
+get help.
+
+Using the variable ELEMENTS\_PATH will allow to specify multiple elements locations.
+It's a colon (:) separated path list, and it will work in a first path/element found,
+first served approach. The included elements tree is used when no path is supplied,
+and is added to the end of the path if a path is supplied.
+
+Requirements
+============
+
+If you have 4GB of available physical RAM\*, or more, diskimage-builder will
+create a tmpfs mount to build the image in. This will improve image build time
+by building in RAM. This can be disabled completely by passing --no-tmpfs to
+disk-image-create. ramdisk-image-create does not use a tmpfs mount. If tmpfs
+is not used, you will need enough room in /tmp to store two uncompressed
+cloud images. If you do have tmpfs, you will still need /tmp space for one
+uncompressed cloud image and about 20% of that for working files.
+
+\* As reported by /proc/meminfo MemTotal
+
 Design
 ======
 
@@ -295,42 +331,6 @@ Third party elements
 --------------------
 
 Pending implementation. The idea is to have a search path for elements.
-
-Installation
-============
-
-* Clone the repository locally, then add bin to your path.
-
-* Copy sudoers.d/\* into your /etc/sudoers.d/. (Warning, use visudo -c -f
-  {filename} to check that each one parses successfully on your machine, so you
-  don't break your machine).
-
-* Make sure you have qemu-img and kpartx installed.
-
-Invocation
-==========
-
-The scripts can generally just be run. Options can be set on the command line
-or by exporting variables to override those present in lib/img-defaults. -h to
-get help.
-
-Using the variable ELEMENTS\_PATH will allow to specify multiple elements locations.
-It's a colon (:) separated path list, and it will work in a first path/element found,
-first served approach. The included elements tree is used when no path is supplied,
-and is added to the end of the path if a path is supplied.
-
-Requirements
-============
-
-If you have 4GB of available physical RAM\*, or more, diskimage-builder will
-create a tmpfs mount to build the image in. This will improve image build time
-by building in RAM. This can be disabled completely by passing --no-tmpfs to
-disk-image-create. ramdisk-image-create does not use a tmpfs mount. If tmpfs
-is not used, you will need enough room in /tmp to store two uncompressed
-cloud images. If you do have tmpfs, you will still need /tmp space for one
-uncompressed cloud image and about 20% of that for working files.
-
-\* As reported by /proc/meminfo MemTotal
 
 Copyright
 =========
