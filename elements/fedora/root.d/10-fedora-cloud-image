@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 
 [ -n "$ARCH" ]
 [ -n "$TARGET_ROOT" ]
@@ -14,45 +14,50 @@ DIB_RELEASE=${DIB_RELEASE:-latest}
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.fedoraproject.org}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-fedora-$DIB_RELEASE.$ARCH.qcow2}
 BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-latest.tgz
+CACHED_TAR=$IMG_PATH/$BASE_IMAGE_TAR
 
-echo "Fetching Base Image"
-$TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
+if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
+    echo "Not checking freshness of cached $CACHED_TAR."
+else
+    echo "Fetching Base Image"
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
 
-if [ ! -f $IMG_PATH/$BASE_IMAGE_TAR -o \
-    $IMG_PATH/$BASE_IMAGE_FILE -nt $IMG_PATH/$BASE_IMAGE_TAR ] ; then
-    echo "Repacking base image as tarball."
-    WORKING=$(mktemp -d)
-    EACTION="rm -r $WORKING"
-    trap "$EACTION" EXIT
-    echo "Working in $WORKING"
-    RAW_FILE=$(basename $BASE_IMAGE_FILE)
-    RAW_FILE=${RAW_FILE#.qcow2}.raw
-    qemu-img convert -f qcow2 -O raw $IMG_PATH/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
-    # WARNING: The mattdm image has the root filesystem on the second
-    #          partition (p2). If he changes the image the MAGIC_BIT
-    #          might also need to change.
-    # UPDATE to above warning alluding to Fedora18:
-    # F19 images have the rootfs partition on p1
-    MAGIC_BIT=p1
-    # XXX: Parsing stdout is dangerous, would like a better way to discover
-    #      the device used for the image.
-    # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
-    #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
-    #       least creates /dev/mapper/loop0p2.
-    LOOPDEV=$(sudo kpartx -avr $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
-    if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
-        echo "Error: Could not find /dev/mapper/$LOOPDEV"
-        exit 1
+    if [ ! -f $CACHED_TAR -o \
+        $IMG_PATH/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
+        echo "Repacking base image as tarball."
+        WORKING=$(mktemp -d)
+        EACTION="rm -r $WORKING"
+        trap "$EACTION" EXIT
+        echo "Working in $WORKING"
+        RAW_FILE=$(basename $BASE_IMAGE_FILE)
+        RAW_FILE=${RAW_FILE#.qcow2}.raw
+        qemu-img convert -f qcow2 -O raw $IMG_PATH/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
+        # WARNING: The mattdm image has the root filesystem on the second
+        #          partition (p2). If he changes the image the MAGIC_BIT
+        #          might also need to change.
+        # UPDATE to above warning alluding to Fedora18:
+        # F19 images have the rootfs partition on p1
+        MAGIC_BIT=p1
+        # XXX: Parsing stdout is dangerous, would like a better way to discover
+        #      the device used for the image.
+        # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
+        #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
+        #       least creates /dev/mapper/loop0p2.
+        LOOPDEV=$(sudo kpartx -avr $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+        if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
+            echo "Error: Could not find /dev/mapper/$LOOPDEV"
+            exit 1
+        fi
+        EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
+        trap "$EACTION" EXIT
+        mkdir $WORKING/mnt
+        sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
+        EACTION="sudo umount -f $WORKING/mnt;$EACTION"
+        trap "$EACTION" EXIT
+        # Chroot in so that we get the correct uid/gid
+        sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
+        mv $WORKING/tmp.tar $IMG_PATH/$BASE_IMAGE_TAR
     fi
-    EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
-    trap "$EACTION" EXIT
-    mkdir $WORKING/mnt
-    sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
-    EACTION="sudo umount -f $WORKING/mnt;$EACTION"
-    trap "$EACTION" EXIT
-    # Chroot in so that we get the correct uid/gid
-    sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
-    mv $WORKING/tmp.tar $IMG_PATH/$BASE_IMAGE_TAR
 fi
 # Extract the base image
 sudo tar -C $TARGET_ROOT -xzf $IMG_PATH/$BASE_IMAGE_TAR
