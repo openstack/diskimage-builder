@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 
 # Gets Repositories listed in the a repository file and places them in
 # the repository directory.
@@ -20,6 +20,7 @@ function get_repos_for_element(){
             local REPOTYPE=${BASH_REMATCH[2]}
             local REPOPATH=${BASH_REMATCH[3]}
             local REPOLOCATION=${BASH_REMATCH[4]}
+            local REPO_ORIG_LOCATION=$REPOLOCATION
             local REPOREF=${BASH_REMATCH[5]:-master}
 
             local REPO_DIRECTORY=$TMP_MOUNT_PATH$REPOPATH
@@ -32,6 +33,14 @@ function get_repos_for_element(){
             # REPOLOCATION can be overridden with DIB_REPOLOCATION_{name}
             local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME/-/_}
             REPOLOCATION=${!REPOLOCATION_OVERRIDE:-$REPOLOCATION}
+            if [ "$REPOLOCATION" = "$REPO_ORIG_LOCATION" ] ; then
+                # We're pulling from the element specified repo, do caching for
+                # the user.
+                CACHE_NAME=$(echo $REPOLOCATION | sha1sum | awk '{ print $1 }' )
+                CACHE_PATH=~/.cache/image-create/repository-sources/$CACHE_NAME
+            else
+                CACHE_PATH=''
+            fi
 
             # REPOREF can be overridden with DIB_REPOREF_{name}
             local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME/-/_}
@@ -40,7 +49,18 @@ function get_repos_for_element(){
             case $REPOTYPE in
             git)
                 sudo mkdir -p $REPO_SUB_DIRECTORY
-                sudo git clone $REPOLOCATION $REPO_DIRECTORY
+                if [ -n "$CACHE_PATH" ] ; then
+                    if [ ! -e "$CACHE_PATH" ] ; then
+                        git clone $REPOLOCATION $CACHE_PATH.tmp
+                        mv ${CACHE_PATH}{.tmp,}
+                    elif [ -z "$DIB_OFFLINE" ] ; then
+                        git --git-dir=$CACHE_PATH/.git fetch
+                        git --git-dir=$CACHE_PATH/.git reset --hard origin/master
+                    fi
+                    sudo git clone $CACHE_PATH $REPO_DIRECTORY
+                else
+                    sudo git clone $REPOLOCATION $REPO_DIRECTORY
+                fi
                 pushd $REPO_DIRECTORY
                 sudo git reset --hard $REPOREF
                 popd
@@ -51,7 +71,14 @@ function get_repos_for_element(){
                 # the then move the contents into the directory we want it in, this does
                 # assume the tarball only contains a single top level directory
                 local tmpdir=$(mktemp --tmpdir=$TMP_MOUNT_PATH/tmp -d)
-                curl $REPOLOCATION | tar -C $tmpdir -xzf -
+                if [ -n "$CACHE_PATH" ] ; then
+                    if [ ! -f "$CACHE_PATH" -o -z "$DIB_OFFLINE" ] ; then
+                        $TMP_MOUNT_PATH/usr/local/bin/cache-url $REPOLOCATION $CACHE_PATH
+                    fi
+                    tar -C $tmpdir -xzf $CACHE_PATH
+                else
+                    curl $REPOLOCATION | tar -C $tmpdir -xzf -
+                fi
                 sudo mkdir -p $REPO_DIRECTORY
                 sudo mv $tmpdir/*/* $REPO_DIRECTORY
                 rm -rf $tmpdir
@@ -68,6 +95,8 @@ function get_repos_for_element(){
         fi
     done < $REPO_SOURCES
 }
+
+mkdir -p ~/.cache/image-create/repository-sources/
 
 # Get source repositories for the target
 for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*") ; do
