@@ -27,11 +27,11 @@ function get_repos_for_element(){
             local REPO_SUB_DIRECTORY=$(dirname $REPO_DIRECTORY)
 
             # REPOTYPE can be overridden with DIB_REPOTYPE_{name}
-            local REPOTYPE_OVERRIDE=DIB_REPOTYPE_${REPONAME/-/_}
+            local REPOTYPE_OVERRIDE=DIB_REPOTYPE_${REPONAME//-/_}
             REPOTYPE=${!REPOTYPE_OVERRIDE:-$REPOTYPE}
 
             # REPOLOCATION can be overridden with DIB_REPOLOCATION_{name}
-            local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME/-/_}
+            local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME//-/_}
             REPOLOCATION=${!REPOLOCATION_OVERRIDE:-$REPOLOCATION}
             if [ "$REPOLOCATION" = "$REPO_ORIG_LOCATION" ] ; then
                 # We're pulling from the element specified repo, do caching for
@@ -43,7 +43,7 @@ function get_repos_for_element(){
             fi
 
             # REPOREF can be overridden with DIB_REPOREF_{name}
-            local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME/-/_}
+            local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME//-/_}
             REPOREF=${!REPOREF_OVERRIDE:-$REPOREF}
 
             case $REPOTYPE in
