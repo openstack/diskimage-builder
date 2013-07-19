@@ -55,7 +55,7 @@ function get_repos_for_element(){
                         mv ${CACHE_PATH}{.tmp,}
                     elif [ -z "$DIB_OFFLINE" ] ; then
                         git --git-dir=$CACHE_PATH/.git fetch
-                        git --git-dir=$CACHE_PATH/.git reset --hard origin/master
+                        git --git-dir=$CACHE_PATH/.git --work-tree=$CACHE_PATH reset --hard origin/master
                     fi
                     sudo git clone $CACHE_PATH $REPO_DIRECTORY
                 else
