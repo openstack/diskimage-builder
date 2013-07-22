@@ -45,7 +45,9 @@ fi
 # We specifically only want to sort *by the numbers*.
 # Lexical sorting is not guaranteed, and identical numbers may be
 # parallelized later
-targets=$(find $target_dir -type f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n)
+# Note: -maxdepth 1 ensures only files in the target directory (but not
+# subdirectories) are run, which is the way run-parts behaves.
+targets=$(find $target_dir -maxdepth 1 -type f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n)
 
 PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)
 
