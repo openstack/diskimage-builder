@@ -1,8 +1,9 @@
 Image building tools for Openstack
 ==================================
 
-These tools are the components of TripleO (https://github.com/tripleo/incubator)
-umbrella project that do the plumbing involved in building disk images.
+These tools are the components of TripleO
+(https://github.com/openstack/tripleo-incubator) that are responsible for
+building disk images.
 
 This repository has the core functionality for building disk images, file
 system images and ramdisk images for use with OpenStack (both virtual and bare
