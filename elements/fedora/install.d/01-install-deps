@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Install any packages in this file that may not be in the fedora
+# image but could reasonably be expected by other elements
+
+install-packages which
