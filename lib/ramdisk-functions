@@ -26,7 +26,7 @@ function fullpath() {
 
 function cleanup () {
   sudo umount -f $TMP_BUILD_DIR || true
-  rm -rf "$TMP_BUILD_DIR"
+  rm -rf --one-file-system "$TMP_BUILD_DIR"
 }
 
 function create_ramdisk_base () {
