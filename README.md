@@ -53,7 +53,8 @@ Installation
   {filename} to check that each one parses successfully on your machine, so you
   don't break your machine).
 
-* Make sure you have qemu-img and kpartx installed.
+* Make sure you have qemu-img (qemu-utils package on Ubuntu/Debian,
+  qemu on Fedora/RHEL) and kpartx installed.
 
 Invocation
 ==========
