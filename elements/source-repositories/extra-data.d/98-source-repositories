@@ -99,6 +99,6 @@ function get_repos_for_element(){
 mkdir -p ~/.cache/image-create/repository-sources/
 
 # Get source repositories for the target
-for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*") ; do
+for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*" -not -name '*~'); do
     get_repos_for_element $_SOURCEREPO
 done
