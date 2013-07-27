@@ -1,0 +1,8 @@
+hacking>=0.5.3,<0.6
+
+coverage>=3.6
+discover
+testrepository>=0.0.13
+testtools>=0.9.27
+Babel>=0.9.6,<1.0
+argparse
