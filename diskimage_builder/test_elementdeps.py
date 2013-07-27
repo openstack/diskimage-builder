@@ -15,11 +15,10 @@
 
 import os
 
-from testtools import TestCase
-from fixtures import EnvironmentVariable, TempDir
+import fixtures
+import testtools
 
-from diskimage_builder.elements import expand_dependencies
-from diskimage_builder.elements import get_elements_dir
+from diskimage_builder import elements
 
 data_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'test-elements'))
@@ -33,11 +32,11 @@ def _populate_element(element_dir, element_name, element_deps=[]):
             deps_file.write("\n".join(element_deps))
 
 
-class TestElementDeps(TestCase):
+class TestElementDeps(testtools.TestCase):
 
     def setUp(self):
         super(TestElementDeps, self).setUp()
-        self.element_dir = self.useFixture(TempDir()).path
+        self.element_dir = self.useFixture(fixtures.TempDir()).path
         _populate_element(self.element_dir, 'requires-foo', ['foo'])
         _populate_element(self.element_dir, 'foo')
         _populate_element(self.element_dir,
@@ -48,42 +47,44 @@ class TestElementDeps(TestCase):
         _populate_element(self.element_dir, 'circular2', ['circular1'])
 
     def test_non_transitive_deps(self):
-        result = expand_dependencies(['requires-foo'],
-                                     elements_dir=self.element_dir)
+        result = elements.expand_dependencies(
+            ['requires-foo'],
+            elements_dir=self.element_dir)
         self.assertEquals(set(['requires-foo', 'foo']), result)
 
     def test_missing_deps(self):
-        self.assertRaises(SystemExit, expand_dependencies, ['fake'],
+        self.assertRaises(SystemExit, elements.expand_dependencies, ['fake'],
                           self.element_dir)
 
     def test_transitive_deps(self):
-        result = expand_dependencies(['requires-requires-foo'],
-                                     elements_dir=self.element_dir)
+        result = elements.expand_dependencies(
+            ['requires-requires-foo'], elements_dir=self.element_dir)
         self.assertEquals(set(['requires-requires-foo',
                                'requires-foo',
                                'foo']), result)
 
     def test_no_deps(self):
-        result = expand_dependencies(['foo'],
-                                     elements_dir=self.element_dir)
+        result = elements.expand_dependencies(
+            ['foo'], elements_dir=self.element_dir)
         self.assertEquals(set(['foo']), result)
 
     def test_self(self):
-        result = expand_dependencies(['self'],
-                                     elements_dir=self.element_dir)
+        result = elements.expand_dependencies(
+            ['self'], elements_dir=self.element_dir)
         self.assertEquals(set(['self']), result)
 
     def test_circular(self):
-        result = expand_dependencies(['circular1'],
-                                     elements_dir=self.element_dir)
+        result = elements.expand_dependencies(
+            ['circular1'], elements_dir=self.element_dir)
         self.assertEquals(set(['circular1', 'circular2']), result)
 
 
-class TestElements(TestCase):
+class TestElements(testtools.TestCase):
     def test_depends_on_env(self):
-        self.useFixture(EnvironmentVariable('ELEMENTS_PATH', '/foo/bar'))
-        self.assertEquals('/foo/bar', get_elements_dir())
+        self.useFixture(
+            fixtures.EnvironmentVariable('ELEMENTS_PATH', '/foo/bar'))
+        self.assertEquals('/foo/bar', elements.get_elements_dir())
 
     def test_env_not_set(self):
-        self.useFixture(EnvironmentVariable('ELEMENTS_PATH', ''))
-        self.assertRaises(Exception, get_elements_dir, ())
+        self.useFixture(fixtures.EnvironmentVariable('ELEMENTS_PATH', ''))
+        self.assertRaises(Exception, elements.get_elements_dir, ())

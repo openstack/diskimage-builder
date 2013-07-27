@@ -25,7 +25,8 @@ def get_elements_dir():
 
 
 def dependencies(element, elements_dir=None):
-    """ Return the non-transitive list of dependencies for a single element
+    """Return the non-transitive list of dependencies for a single element.
+
     :param user_elements: iterable enumerating elements a user has requested
     :param elements_dir: the elements dir to read from. If not supplied,
                          inferred by calling get_elements_dir().
@@ -55,7 +56,7 @@ def dependencies(element, elements_dir=None):
 
 
 def expand_dependencies(user_elements, elements_dir=None):
-    """ Expand user requested elements using element-deps files.
+    """Expand user requested elements using element-deps files.
 
     Arguments:
     :param user_elements: iterable enumerating the elements a user requested
