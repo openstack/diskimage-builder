@@ -43,6 +43,16 @@ function create_ramdisk_base () {
   mkdir -p "$TMP_MOUNT_PATH/var/run"
   mkdir -p "$TMP_MOUNT_PATH/lib/udev/rules.d"
 
+  DISTRO=`lsb_release -si` || true
+
+  if [[ "Fedora RedHatEnterpriseServer" =~ "$DISTRO" ]]; then
+    mkdir -p "$TMP_MOUNT_PATH/usr"
+    ln -s ../lib "$TMP_MOUNT_PATH/usr/lib"
+    if [ "`uname -m`" = "x86_64" ]; then
+        ln -s lib "$TMP_MOUNT_PATH/lib64"
+    fi
+  fi
+
   if [ -e $LIB_UDEV/rules.d/50-firmware.rules ]; then
     cp -a "$LIB_UDEV/rules.d/50-firmware.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
   fi
