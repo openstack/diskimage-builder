@@ -36,5 +36,8 @@ setuptools.setup(
         'Programming Language :: Python :: 2.7',
         'Environment :: Console',
     ],
-    scripts=['bin/element-info'],
+    scripts=['bin/disk-image-create',
+             'bin/disk-image-get-kernel',
+             'bin/element-info',
+             'bin/ramdisk-image-create'],
     py_modules=[])
