@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+[ -n "TARGET_ROOT" ]
+
+YUM_CACHE_DIR=~/.cache/image-create/yum
+mkdir -p $YUM_CACHE_DIR
+
+sudo mkdir -p $TMP_MOUNT_PATH/tmp/yum
+sudo mount --bind $YUM_CACHE_DIR $TMP_MOUNT_PATH/tmp/yum
