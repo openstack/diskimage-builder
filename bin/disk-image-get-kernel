@@ -18,7 +18,14 @@
 set -e
 
 SCRIPTNAME=$(basename $0)
-export _LIB=$(dirname $0)/../lib
+SCRIPT_HOME=$(dirname $0)
+if [ -d $SCRIPT_HOME/../share/diskimage-builder ]
+then
+    export _PREFIX=$SCRIPT_HOME/../share/diskimage-builder
+else
+    export _PREFIX=$SCRIPT_HOME/..
+fi
+export _LIB=$_PREFIX/lib
 source $_LIB/die
 
 function show_options () {
