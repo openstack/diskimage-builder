@@ -15,7 +15,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-set -e
+set -eE
 
 # Prevent perl from complaining a lot, but also remove any unexpected side-effects
 # of $LANG varying between build hosts

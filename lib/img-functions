@@ -78,7 +78,9 @@ function run_d_in_target () {
       mkdir -p $DIB_CCACHE_DIR
       sudo mount --bind $DIB_CCACHE_DIR $TMP_MOUNT_PATH/tmp/ccache
       check_break before-$1 run_in_target bash
+      trap "check_break after-error run_in_target bash" ERR
       run_in_target dib-run-parts /tmp/in_target.d/$1.d
+      trap - ERR
       check_break after-$1 run_in_target bash
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
       sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d

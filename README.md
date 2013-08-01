@@ -326,6 +326,8 @@ comma-delimited string. Some examples:
 * break=after-first-boot,before-pre-install will break after the first-boot
   hooks and before the pre-install hooks.
 
+* break=after-error will break after an error during a in target hookpoint.
+
 Images are built such that the Linux kernel is instructed not to switch into
 graphical consoles (i.e. it will not activate KMS). This maximises
 compatibility with remote console interception hardware, such as HP's iLO.
