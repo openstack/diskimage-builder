@@ -1,5 +1,6 @@
 #!/bin/bash
+
 home=$(dirname $0)
 exec sudo install -m 0755 -o root -g root -D \
-    $home/dib-run-parts \
+    $home/../bin/dib-run-parts \
     $TARGET_ROOT/usr/local/bin/dib-run-parts
