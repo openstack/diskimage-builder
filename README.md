@@ -162,6 +162,20 @@ Conform to the following conventions:
   If you do not use the DIB\_ prefix you may find that your overrides are
   discarded as the build environment is sanitised.
 
+* Consider that your element co-exists with many others and try to guard
+  against undefined behaviours. Some examples:
+
+  * Two elements use the source-repositories element, but use the same filename
+    for the source-repositories config file. Files such as these (and indeed the
+    scripts in the various .d directories listed below) should be named such
+    that they are unique. If they are not unique, when the combined tree is
+    created by disk-image-builder for injecting into the build environment, one
+    of the files will be overwritten.
+
+  * Two elements copy different scripts into /usr/local/bin with the same name.
+    If they both use set -e and cp -n then the conflict will be caught and cause
+    the build to fail.
+
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise:
 
