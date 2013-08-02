@@ -6,5 +6,4 @@ graft lib
 graft elements
 graft docs
 graft scripts
-graft sudoers.d
 include README.md
