@@ -96,6 +96,23 @@ on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to
 facilitate caching of that layer, so you need to arrange independently for
 offline mode.
 
+Base images
+-----------
+
+These are cached by the standard elements - ubuntu, fedora.
+
+source-repositories
+-------------------
+
+Git repositories and tarballs obtained via the source-repositories element will
+be cached.
+
+C and C++ compilation
+---------------------
+
+Ccache is configured by the base element. Any compilation that honours ccache
+will be cached.
+
 Design
 ======
 
