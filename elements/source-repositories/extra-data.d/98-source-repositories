@@ -88,7 +88,9 @@ function get_repos_for_element(){
                 return 1
                 ;;
             esac
-
+            # Capture the in-instance repository path for later review / other
+            # elements (like a pypi dependency cache).
+            echo "$REPOPATH" | sudo dd of=$TMP_MOUNT_PATH/etc/dib-source-repositories oflag=append conv=notrunc
         else
             echo "Couldn't parse '$line' as a source repository"
             return 1

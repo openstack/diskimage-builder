@@ -38,3 +38,7 @@ it will be renamed to \<destination\>
 If mulitple elements register a source location with the same <destination>
 then source-repositories will exit with an error. Care should therefore be taken
 to only use elements together that download source to different locations.
+
+The repository paths built into the image are stored in
+etc/dib-source-repositories, one repository per line. This permits later review
+of the repositories (by users or by other elements).
