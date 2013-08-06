@@ -49,10 +49,6 @@ Installation
 
 * Clone the repository locally, then add bin to your path.
 
-* Copy sudoers.d/\* into your /etc/sudoers.d/. (Warning, use visudo -c -f
-  {filename} to check that each one parses successfully on your machine, so you
-  don't break your machine).
-
 * Make sure you have qemu-img (qemu-utils package on Ubuntu/Debian,
   qemu on Fedora/RHEL) and kpartx installed.
 
@@ -62,6 +58,9 @@ Invocation
 The scripts can generally just be run. Options can be set on the command line
 or by exporting variables to override those present in lib/img-defaults. -h to
 get help.
+The image building scripts expect to be able to invoke commands with sudo, so if you
+want them to run non-interactively, you should either run them as root, with
+sudo -E, or allow your build user to run any sudo command without password.
 
 Using the variable ELEMENTS\_PATH will allow to specify multiple elements locations.
 It's a colon (:) separated path list, and it will work in a first path/element found,

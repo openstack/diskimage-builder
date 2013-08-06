@@ -185,7 +185,6 @@ function arg_to_elements() {
     IMAGE_ELEMENT="ramdisk $IMAGE_ELEMENT"
   fi
   echo "Building elements: $IMAGE_ELEMENT"
-  echo "If prompted for sudo, install sudoers.d/img-build-sudoers into /etc/sudoers.d and restart the build."
 
   IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
 
