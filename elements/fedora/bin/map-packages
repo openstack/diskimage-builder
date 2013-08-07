@@ -47,6 +47,8 @@ package_map = {
     'arping': 'iputils',
     'augeas-tools': 'augeas',
     'openssh-client': 'openssh-clients',
+    'qpidd': 'qpid-cpp-server',
+    'qpid-client': 'qpid-cpp-client',
     }
 
 for arg in sys.argv[1:]:
