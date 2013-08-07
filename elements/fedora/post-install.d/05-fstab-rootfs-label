@@ -1,4 +1,6 @@
 #!/bin/bash
 
-# Fedora sets up for root to have a label of "_/"
-sed -i "s%LABEL=_/%LABEL=cloudimg-rootfs%" /etc/fstab
+# Fedora 18 sets up for root to have a label of "_/"
+# Fedora 19 sets up for root to have a UUID
+# This regex will catch both
+sed -i "s%.*\s\/\s%LABEL=cloudimg-rootfs / %" /etc/fstab
