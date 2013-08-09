@@ -16,16 +16,14 @@
 function unmount_image () {
     # unmount from the chroot
     # Don't use TMP_MOUNT_PATH here, it might not have been set.
-    sudo umount -f $TMP_BUILD_DIR/mnt/sys || true
-    sudo umount -f $TMP_BUILD_DIR/mnt/proc || true
-    sudo umount -f $TMP_BUILD_DIR/mnt/dev || true
-    sudo umount -f $TMP_BUILD_DIR/mnt/tmp/in_target.d || true
-    sudo umount -f $TMP_BUILD_DIR/mnt/tmp/ccache || true
+    local MOUNTS
+    MOUNTS=$(grep < /proc/mounts " $TMP_BUILD_DIR/mnt" | awk '{ print $2 }' | sort -r)
+    for M in $MOUNTS; do
+        sudo umount -f $M || true
+    done
     # give it a second (ok really 5) to umount XXX - why? should instead track
     # the mount data / lsof etc.
     sleep 5
-    # oh ya don't want to forget to unmount the image
-    sudo umount -f $TMP_BUILD_DIR/mnt || true
     # having disk corruption issues; one possibility is qemu-nbd not flushing
     # dirty pages on disconnect?
     sync
@@ -84,8 +82,6 @@ function run_d_in_target () {
       check_break after-$1 run_in_target bash
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
       sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d
-      sudo umount -f $TMP_MOUNT_PATH/tmp/ccache || true
-      sudo rmdir $TMP_MOUNT_PATH/tmp/ccache
     fi
 }
 

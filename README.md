@@ -192,6 +192,11 @@ Conform to the following conventions:
     If they both use set -e and cp -n then the conflict will be caught and cause
     the build to fail.
 
+* If your element mounts anything into the image build tree ($TMP\_BUILD\_DIR)
+  then it will be automatically unmounted when the build tree is unmounted -
+  and not remounted into the filesystem image - if the mount point is needed
+  again, your element will need to remount it at that point.
+
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise:
 
