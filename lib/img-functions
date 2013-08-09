@@ -60,7 +60,10 @@ function run_in_target () {
     # will preserve the PATH syntax until after the sh command runs
     cmd="PATH=\$PATH:/usr/local/bin ; $@"
     # -E to preserve http_proxy
+    ORIG_HOME=$HOME
+    export HOME=/root
     sudo -E chroot $TMP_MOUNT_PATH sh -c "$cmd"
+    export HOME=$ORIG_HOME
 }
 
 # Helper function to run a directory of scripts inside the chroot
