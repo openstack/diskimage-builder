@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -eu
+
+PYPIURL=file:///tmp/pypi
+mkdir -p ~/.pip
+
+if [ -e ~/.pip/pip.conf ]; then
+    mv ~/.pip/pip.conf{,.orig}
+fi
+
+if [ -e ~/.pydistutils.cfg ]; then
+    mv ~/.pydistutils.cfg{,.orig}
+fi
+
+if [ -z $DIB_OFFLINE ]; then
+    ONLINE="extra-index-url = https://pypi.python.org/simple"
+else
+    ONLINE=""
+fi
+
+cat <<EOF > ~/.pip/pip.conf
+[global]
+index-url = $PYPIURL
+$ONLINE
+log = $HOME/pip.log
+EOF
+
+cat <<EOF > ~/.pydistutils.cfg
+[easy_install]
+index_url = $PYPIURL
+EOF

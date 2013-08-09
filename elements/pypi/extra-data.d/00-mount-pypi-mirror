@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -eu
+
+MIRROR_SOURCE=~/.cache/image-create/pypi/mirror/
+MIRROR_TARGET=$TMP_MOUNT_PATH/tmp/pypi
+
+sudo mkdir -p $MIRROR_TARGET
+sudo mount --bind $MIRROR_SOURCE $TMP_MOUNT_PATH/tmp/pypi

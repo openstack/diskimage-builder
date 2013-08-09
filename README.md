@@ -112,6 +112,12 @@ C and C++ compilation
 Ccache is configured by the base element. Any compilation that honours ccache
 will be cached.
 
+PyPI
+----
+
+The pypi element will bind mount a PyPI mirror from the cache dir and configure
+pip and easy-install to use it.
+
 Design
 ======
 
