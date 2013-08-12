@@ -16,7 +16,7 @@ partial PyPI mirror suitable for building images. For instance:
    libnspr4-dev pkg-config libsqlite3-dev libzmq-dev libffi-dev libldap2-dev \
    libsasl2-dev
 
- * pip install https://github.com/openstack-infra/jeepyb
+ * pip install git+https://github.com/openstack-infra/jeepyb
 
  * cat << EOF > mirror.yaml
    cache-root: /home/USER/.cache/image-create/pypi/download
@@ -26,6 +26,7 @@ partial PyPI mirror suitable for building images. For instance:
       projects:
         - https://github.com/openstack/requirements
       output: /home/USER/.cache/image-create/pypi/mirror
+   EOF
 
  * mkdir -p /home/USER/.cache/image-create/pypi/{download,mirror}
 
