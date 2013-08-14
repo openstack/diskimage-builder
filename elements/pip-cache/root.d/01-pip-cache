@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+PIP_CACHE_DIR=$HOME/.cache/image-create/pip
+mkdir -p $PIP_CACHE_DIR
+
+sudo mkdir -p $TMP_MOUNT_PATH/tmp/pip
+sudo mount --bind $PIP_CACHE_DIR $TMP_MOUNT_PATH/tmp/pip
