@@ -15,4 +15,17 @@ EOF
 
 sudo partprobe $IMAGE_BLOCK_DEVICE
 
-echo "IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1"
+# To ensure no race conditions exist from calling partprobe
+sudo udevadm settle
+
+# If the partition isn't under /dev/loop*p1, create it with kpartx
+if [ ! -e "${IMAGE_BLOCK_DEVICE}p1" ]; then
+    sudo kpartx -asv $TMP_IMAGE_PATH
+    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
+fi
+
+if [ -n "$DM" ]; then
+    echo "IMAGE_BLOCK_DEVICE=${DM}p1"
+else
+    echo "IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1"
+fi
