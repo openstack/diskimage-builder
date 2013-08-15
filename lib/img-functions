@@ -14,6 +14,12 @@
 # under the License.
 
 function unmount_image () {
+    # Calling sync before helps ensure the mount isn't busy when you unmount it.
+    # Previously observing having disk corruption issues; one possibility is
+    # qemu-nbd not flushing dirty pages on disconnect?
+    # https://bugs.launchpad.net/diskimage-builder/+bug/1214388
+    sync
+
     # unmount from the chroot
     # Don't use TMP_MOUNT_PATH here, it might not have been set.
     local MOUNTS
@@ -21,12 +27,6 @@ function unmount_image () {
     for M in $MOUNTS; do
         sudo umount -f $M || true
     done
-    # give it a second (ok really 5) to umount XXX - why? should instead track
-    # the mount data / lsof etc.
-    sleep 5
-    # having disk corruption issues; one possibility is qemu-nbd not flushing
-    # dirty pages on disconnect?
-    sync
     if [ -n "$EXTRA_UNMOUNT" ]; then
         $EXTRA_UNMOUNT
     fi
