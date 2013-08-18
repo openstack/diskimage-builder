@@ -13,7 +13,7 @@ ramdisks.
 
 The TripleO project also develops elements that can be used to deploy
 OpenStack itself. These live in the TripleO elements repository
-(https://github.com/stackforge/tripleo-image-elements).
+(https://github.com/openstack/tripleo-image-elements).
 
 What tools are there?
 ---------------------

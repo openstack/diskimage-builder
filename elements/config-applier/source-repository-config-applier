@@ -1,1 +1,1 @@
-config-applier git /opt/stack/config-applier https://github.com/stackforge/os-config-applier.git
+config-applier git /opt/stack/config-applier https://github.com/openstack/os-config-applier.git
