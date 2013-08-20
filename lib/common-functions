@@ -163,6 +163,16 @@ function run_d() {
 
 function detach_loopback() {
     local loopdev=$1
+
+    # Remove the map if it exists
+    # If setup on a rhel or derivative the map was created with kpartx not losetup
+    # and subsequently needs to be removed.
+    loopdev_name=$(echo $loopdev | sed 's/\/dev\///g')
+    mapper_name=$(sudo dmsetup ls | grep $loopdev_name | awk '{ print $1 }')
+    if [ "$mapper_name" ]; then
+        sudo dmsetup remove $mapper_name
+    fi
+
     # loopback dev may be tied up a bit by udev events triggered by partition events
     for try in $(seq 10 -1 1) ; do
         if sudo losetup -d $loopdev ; then
