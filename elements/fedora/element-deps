@@ -3,3 +3,4 @@ dracut-network
 cache-url
 dkms
 yum
+rpm-distro
