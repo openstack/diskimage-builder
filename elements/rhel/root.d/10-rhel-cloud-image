@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -eu
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+if [ 'amd64' = "$ARCH" ] ; then
+  ARCH="x86_64"
+fi
+
+IMG_PATH=~/.cache/image-create
+DIB_RELEASE=${DIB_RELEASE:-latest}
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://rhn.redhat.com}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-rhel-server-x86_64-kvm-6.4_20130130.0-4.qcow2}
+BASE_IMAGE_TAR=$DIB_RELEASE-rhel-server-$ARCH-latest.tgz
+CACHED_TAR=$IMG_PATH/$BASE_IMAGE_TAR
+
+if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
+    echo "Not checking freshness of cached $CACHED_TAR."
+else
+    echo "Fetching Base Image"
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
+
+    if [ ! -f $CACHED_TAR -o \
+        $IMG_PATH/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
+        echo "Repacking base image as tarball."
+        WORKING=$(mktemp -d)
+        EACTION="rm -r $WORKING"
+        trap "$EACTION" EXIT
+        RAW_FILE=$(basename $BASE_IMAGE_FILE)
+        RAW_FILE=${RAW_FILE#.qcow2}.raw
+        qemu-img convert -f qcow2 -O raw $IMG_PATH/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
+        MAGIC_BIT=p1
+        # NOTE: On RHEL, partprobe of /dev/loop0 does not create /dev/loop0p2,
+        # while kpartx at least creates /dev/mapper/loop0p2.
+        LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+        export LOOPDEV=$LOOPDEV
+        echo "Loop device is set to: $LOOPDEV"
+        if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
+            echo "Error: Could not find /dev/mapper/$LOOPDEV"
+            exit 1
+        fi
+        EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
+        trap "$EACTION" EXIT
+        mkdir $WORKING/mnt
+        sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
+        EACTION="sudo umount -f $WORKING/mnt;$EACTION"
+        trap "$EACTION" EXIT
+        # Chroot in so that we get the correct uid/gid
+        sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
+        mv $WORKING/tmp.tar $IMG_PATH/$BASE_IMAGE_TAR
+    fi
+fi
+# Extract the base image
+sudo tar -C $TARGET_ROOT -xzf $IMG_PATH/$BASE_IMAGE_TAR
+sudo rmdir $TARGET_ROOT/lost+found
