@@ -148,8 +148,7 @@ finalise_base
 unmount_image
 
 if [ "$IS_RAMDISK" == "0" ]; then
-  compress_image
-  save_image $IMAGE_NAME.$IMAGE_TYPE
+  compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
 else
   remove_image
 fi
