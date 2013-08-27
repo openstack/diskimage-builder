@@ -6,101 +6,158 @@
 set -e
 set -x
 
-install-packages grub-pc
-
-# XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
-# specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
-GRUBNAME=`which grub-install` || echo "trying grub2-install"
-if [ -z "$GRUBNAME" ]; then
-    GRUBNAME="bash -x `which grub2-install`"
-fi
-if [ -z "$GRUBNAME" ]; then
-    echo "NO grub-install or grub2-install found"
-    exit 1
-fi
 # FIXME:
 [ -n "$IMAGE_BLOCK_DEVICE" ]
 PART_DEV=$IMAGE_BLOCK_DEVICE
-BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's/p1//')
-GRUB_OPTS=${GRUB_OPTS:""}
-# XXX: This is buggy:
-# - --target=i386-pc is invalid for non-i386/amd64 architectures
-# - and for UEFI too.
-#    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-if [[ ! $GRUB_OPTS == *--target* ]]; then
-  # /sys/ comes from the host machine. If the host machine is using EFI
-  # but the image being built doesn't have EFI boot-images installed we
-  # should set the --target to use a BIOS-based boot-image.
-  #
-  # * --target tells grub what's the target platform
-  # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
-  # * i386-pc is used for BIOS-based machines
-  # http://www.gnu.org/software/grub/manual/grub.html#Installation
-  #
-  if [ -d /sys/firmware/efi ]; then
-    if [ ! -d /usr/lib/grub/*-efi ]; then
-      case $ARCH in
-        "x86_64"|"amd64")
-           GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-          ;;
-        "i386")
-           target=i386-pc
-           if [ -e /proc/device-tree ]; then
-             for x in /proc/device-tree/*; do
-               if [ -e "$x" ]; then
-                 target="i386-ieee1275"
-               fi
-             done
-           fi
-           GRUB_OPTS="$GRUB_OPTS --target=$target"
-          ;;
-      esac
+BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's#p1##' | sed -e 's#mapper/##')
+
+function install_extlinux {
+    install-packages extlinux
+
+    echo "Installing Extlinux..."
+
+    MBR=/usr/share/syslinux/mbr.bin
+    if [ ! -f $MBR ]; then
+        MBR=/usr/lib/syslinux/mbr.bin
+        if [ ! -f $MBR ]; then
+            echo "mbr.bin (from SYSLINUX) not found."
+            exit 1
+        fi
     fi
-  fi
-fi
 
-$GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
+    dd if=$MBR of=$BOOT_DEV
 
-# This might be better factored out into a per-distro 'install-bootblock'
-# helper.
-if [ -f "/boot/grub/grub.cfg" ] ; then
-  GRUB_CFG=/boot/grub/grub.cfg
-elif [ -f "/boot/grub2/grub.cfg" ] ; then
-  GRUB_CFG=/boot/grub2/grub.cfg
-fi
+    mkdir -p /boot/syslinux
+    extlinux --install /boot/syslinux
 
-# If GRUB configuration file does not exist, generate one
-if [ ! $GRUB_CFG ]; then
-  if [ -d /boot/grub2 ]; then
-    GRUB_CFG=/boot/grub2/grub.cfg
-  elif [ -d /boot/grub ]; then
-    GRUB_CFG=/boot/grub/grub.cfg
-  fi
-  grub2-mkconfig -o $GRUB_CFG
-fi;
+    if [ -f /etc/redhat-release ]; then
+        kernel=$(ls -1rv /boot/vmlinuz* | head -1)
+        initrd=$(ls -1rv /boot/initramfs* | head -1)
+    elif [ -f /etc/debian_version ]; then
+        kernel=$(ls -1rv /boot/vmlinuz*generic | head -1)
+        initrd=$(ls -1rv /boot/initrd*generic | head -1)
+    else
+        echo "Unable to find kernel and initram"
+        exit 1
+    fi
 
-DIST=`lsb_release -is`
-[ -n "$DIST" ]
-RELEASE=`lsb_release -cs`
-[ -n "$RELEASE" ]
-# grub-mkconfig generates a config with the device in it,
-# This shouldn't be needed, but old code has bugs
-if [ $RELEASE = 'precise' ] ; then
-  # Replace the search attempt with a hardcoded root as the Ubuntu reference
-  # images use.
-  sed -i "s%search --no.*%%" $GRUB_CFG
-  sed -i "s%set root=.*%set root=(hd0,1)%" $GRUB_CFG
-fi
-# force use of a LABEL:
-# NOTE: Updating the grub config by hand once deployed should work, its just
-# prepping it in a different environment that needs fiddling.
-sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
-sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
-sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
-if [ $DIST = 'Fedora' ] ; then
-  # enable serial console
-  sed -i "s%LABEL=cloudimg-rootfs%LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200%" $GRUB_CFG
-  if [ $(lsb_release -rs) = '19' ]; then
-    sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=cloudimg-rootfs%" /etc/fstab
-  fi
+    cat > /boot/syslinux/syslinux.cfg<<_EOF_
+DEFAULT linux
+
+LABEL linux
+  KERNEL $kernel
+  APPEND rw root=LABEL=cloudimg-rootfs
+  INITRD  $initrd
+_EOF_
+}
+
+function install_grub2 {
+
+    install-packages grub-pc
+
+    # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
+    # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
+    GRUBNAME=`which grub-install` || echo "trying grub2-install"
+    if [ -z "$GRUBNAME" ]; then
+        GRUBNAME="bash -x `which grub2-install`"
+    fi
+
+    # If no GRUB2 is found, fallback to extlinux
+    if [ -z "$GRUBNAME" ] || [ $($GRUBNAME --version | grep "0.97" | wc -l) -ne 0 ]; then
+        echo "No GRUB2 found. Fallback to Extlinux..."
+        install_extlinux
+        exit 0
+    fi
+
+    echo "Installing GRUB2..."
+
+    GRUB_OPTS=${GRUB_OPTS:""}
+    # XXX: This is buggy:
+    # - --target=i386-pc is invalid for non-i386/amd64 architectures
+    # - and for UEFI too.
+    #    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+    if [[ ! $GRUB_OPTS == *--target* ]]; then
+      # /sys/ comes from the host machine. If the host machine is using EFI
+      # but the image being built doesn't have EFI boot-images installed we
+      # should set the --target to use a BIOS-based boot-image.
+      #
+      # * --target tells grub what's the target platform
+      # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
+      # * i386-pc is used for BIOS-based machines
+      # http://www.gnu.org/software/grub/manual/grub.html#Installation
+      #
+      if [ -d /sys/firmware/efi ]; then
+        if [ ! -d /usr/lib/grub/*-efi ]; then
+          case $ARCH in
+            "x86_64"|"amd64")
+               GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+              ;;
+            "i386")
+               target=i386-pc
+               if [ -e /proc/device-tree ]; then
+                 for x in /proc/device-tree/*; do
+                   if [ -e "$x" ]; then
+                     target="i386-ieee1275"
+                   fi
+                 done
+               fi
+               GRUB_OPTS="$GRUB_OPTS --target=$target"
+              ;;
+          esac
+        fi
+      fi
+    fi
+
+    $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
+
+    # This might be better factored out into a per-distro 'install-bootblock'
+    # helper.
+    if [ -f "/boot/grub/grub.cfg" ] ; then
+      GRUB_CFG=/boot/grub/grub.cfg
+    elif [ -f "/boot/grub2/grub.cfg" ] ; then
+      GRUB_CFG=/boot/grub2/grub.cfg
+    fi
+
+    # If GRUB configuration file does not exist, generate one
+    if [ ! $GRUB_CFG ]; then
+      if [ -d /boot/grub2 ]; then
+        GRUB_CFG=/boot/grub2/grub.cfg
+      elif [ -d /boot/grub ]; then
+        GRUB_CFG=/boot/grub/grub.cfg
+      fi
+      grub2-mkconfig -o $GRUB_CFG
+    fi;
+
+    DIST=`lsb_release -is`
+    [ -n "$DIST" ]
+    RELEASE=`lsb_release -cs`
+    [ -n "$RELEASE" ]
+    # grub-mkconfig generates a config with the device in it,
+    # This shouldn't be needed, but old code has bugs
+    if [ $RELEASE = 'precise' ] ; then
+      # Replace the search attempt with a hardcoded root as the Ubuntu reference
+      # images use.
+      sed -i "s%search --no.*%%" $GRUB_CFG
+      sed -i "s%set root=.*%set root=(hd0,1)%" $GRUB_CFG
+    fi
+    # force use of a LABEL:
+    # NOTE: Updating the grub config by hand once deployed should work, its just
+    # prepping it in a different environment that needs fiddling.
+    sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
+    sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
+    sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
+    if [ $DIST = 'Fedora' ] ; then
+      # enable serial console
+      sed -i "s%LABEL=cloudimg-rootfs%LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200%" $GRUB_CFG
+      if [ $(lsb_release -rs) = '19' ]; then
+        sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=cloudimg-rootfs%" /etc/fstab
+      fi
+    fi
+}
+
+DIB_EXTLINUX=${DIB_EXTLINUX:-0}
+if [ "$DIB_EXTLINUX" != "0" ]; then
+    install_extlinux
+else
+    install_grub2
 fi
