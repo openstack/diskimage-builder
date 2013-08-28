@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+if [ -n $DIB_RHSM_USER ] && [ -n $DIB_RHSM_PASSWORD ]
+  then
+    subscription-manager register --user $DIB_RHSM_USER --password $DIB_RHSM_PASSWORD
+    # wait a second to ensure consumer certificate is finished writing to disk
+    sleep 1
+    if [ -z $DIB_RHSM_POOL ]; then
+      subscription-manager attach --auto
+    else
+      subscription-manager attach --pool $DIB_RHSM_POOL
+    fi
+    subscription-manager repos --enable rhel-6-server-optional-rpms
+fi
