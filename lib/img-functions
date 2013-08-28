@@ -106,12 +106,13 @@ function finalise_base () {
     fi
 }
 
-function compress_image () {
+function compress_and_save_image () {
     # Recreate our image to throw away unnecessary data
     test $IMAGE_TYPE != qcow2 && COMPRESS_IMAGE=""
-    qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw $TMP_IMAGE_PATH -O $IMAGE_TYPE $TMP_IMAGE_PATH-new
+    qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw $TMP_IMAGE_PATH -O $IMAGE_TYPE $1-new
     rm $TMP_IMAGE_PATH
-    mv $TMP_IMAGE_PATH-new $TMP_IMAGE_PATH
+
+    TMP_IMAGE_PATH=$1-new save_image $1
 }
 
 function remove_image () {
