@@ -50,6 +50,9 @@ package_map = {
     'qpidd': 'qpid-cpp-server',
     'qpid-client': 'qpid-cpp-client',
     'extlinux': 'syslinux-extlinux',
+    'mysql-client-5.5' : 'mariadb',
+    'mysql-server-5.5' : 'mariadb-server',
+    'libmysql-java' : 'mysql-connector-java',
     }
 
 for arg in sys.argv[1:]:
