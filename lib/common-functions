@@ -18,8 +18,11 @@ function tmpfs_check() {
   [ "$DIB_NO_TMPFS" == "0" ] || return 1
   [ -r /proc/meminfo ] || return 1
   total_kB=$(awk '/^MemTotal/ { print $2 }' /proc/meminfo)
-  [ $total_kB -lt $((4*1024*1024)) ] || return 0
-  echo "Not enough RAM to use tmpfs for build. ($total_kB < 4G)"
+  # tmpfs uses by default 50% of the available RAM, so the RAM should be at least
+  # the double of the minimum tmpfs size required
+  RAM_NEEDED=$[ $DIB_MIN_TMPFS * 2 ]
+  [ $total_kB -lt $(($RAM_NEEDED*1024*1024)) ] || return 0
+  echo "Not enough RAM to use tmpfs for build. ($total_kB < ${RAM_NEEDED}G)"
   return 1
 }
 
