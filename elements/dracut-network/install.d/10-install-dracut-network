@@ -2,4 +2,4 @@
 
 set -e
 
-install-packages dracut-network
+install-packages dracut-network patch
