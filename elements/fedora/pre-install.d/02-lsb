@@ -1,3 +1,5 @@
 #!/bin/bash
 
-exec install-packages redhat-lsb-core
+set -eu
+
+install -m 0755 -o root -g root /opt/stack/lsb-release/lsb_release /usr/local/bin
