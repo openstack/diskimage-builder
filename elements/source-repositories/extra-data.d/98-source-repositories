@@ -2,14 +2,16 @@
 
 set -eu
 
-# Gets Repositories listed in the a repository file and places them in
-# the repository directory.
+# Gets repositories or individual files listed in the a repository file
+# and places them in the specified destination path.
 # The format of the repository file is one or more lines matching
 # <name> <type> <destination> <location> [<ref>]
 function get_repos_for_element(){
     local REPO_SOURCES=$1
+    local CACHE_URL=$TMP_HOOKS_PATH/bin/cache-url
 
-    local REGEX="^([^ ]+) (git|tar) (/[^ ]+) ([^ ]+) ?([^ ]*)$"
+    local REGEX="^([^ ]+) (git|tar|file) (/[^ ]+) ([^ ]+) ?([^ ]*)$"
+
     while read line ; do
 
         # ignore blank lines and lines begining in '#'
@@ -23,8 +25,8 @@ function get_repos_for_element(){
             local REPO_ORIG_LOCATION=$REPOLOCATION
             local REPOREF=${BASH_REMATCH[5]:-master}
 
-            local REPO_DIRECTORY=$TMP_MOUNT_PATH$REPOPATH
-            local REPO_SUB_DIRECTORY=$(dirname $REPO_DIRECTORY)
+            local REPO_DEST=$TMP_MOUNT_PATH$REPOPATH
+            local REPO_SUB_DIRECTORY=$(dirname $REPO_DEST)
 
             # REPOTYPE can be overridden with DIB_REPOTYPE_{name}
             local REPOTYPE_OVERRIDE=DIB_REPOTYPE_${REPONAME//-/_}
@@ -57,11 +59,11 @@ function get_repos_for_element(){
                         git --git-dir=$CACHE_PATH/.git fetch
                         git --git-dir=$CACHE_PATH/.git --work-tree=$CACHE_PATH reset --hard origin/master
                     fi
-                    sudo git clone $CACHE_PATH $REPO_DIRECTORY
+                    sudo git clone $CACHE_PATH $REPO_DEST
                 else
-                    sudo git clone $REPOLOCATION $REPO_DIRECTORY
+                    sudo git clone $REPOLOCATION $REPO_DEST
                 fi
-                pushd $REPO_DIRECTORY
+                pushd $REPO_DEST
                 sudo git reset --hard $REPOREF
                 popd
                 ;;
@@ -73,15 +75,26 @@ function get_repos_for_element(){
                 local tmpdir=$(mktemp --tmpdir=$TMP_MOUNT_PATH/tmp -d)
                 if [ -n "$CACHE_PATH" ] ; then
                     if [ ! -f "$CACHE_PATH" -o -z "$DIB_OFFLINE" ] ; then
-                        $TMP_MOUNT_PATH/usr/local/bin/cache-url $REPOLOCATION $CACHE_PATH
+                        $CACHE_URL $REPOLOCATION $CACHE_PATH
                     fi
                     tar -C $tmpdir -xzf $CACHE_PATH
                 else
                     curl $REPOLOCATION | tar -C $tmpdir -xzf -
                 fi
-                sudo mkdir -p $REPO_DIRECTORY
-                sudo mv $tmpdir/*/* $REPO_DIRECTORY
+                sudo mkdir -p $REPO_DEST
+                sudo mv $tmpdir/*/* $REPO_DEST
                 rm -rf $tmpdir
+                ;;
+            file)
+                sudo mkdir -p $REPO_SUB_DIRECTORY
+                if [ -n "$CACHE_PATH" ] ; then
+                    if [ ! -f "$CACHE_PATH" -o -z "$DIB_OFFLINE" ] ; then
+                        $CACHE_URL $REPOLOCATION $CACHE_PATH
+                    fi
+                    sudo cp $CACHE_PATH $REPO_DEST
+                else
+                    sudo curl $REPOLOCATION -o $REPO_DEST
+                fi
                 ;;
             *)
                 echo "Unsupported repository type"
