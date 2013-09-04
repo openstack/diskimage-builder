@@ -17,13 +17,15 @@
 # under the License.
 
 allowed_regex=${RUN_PARTS_REGEX:-"^[0-9A-Za-z_-]+$"}
+show_list=
 
 set -ue
 
 name=$(basename $0)
 
 usage() {
-    echo "usage: $name scripts_directory" >&2
+    echo "usage: $name [OPTION] scripts_directory" >&2
+    echo "      --list  print names of all valid files" >&2
     exit 1
 }
 
@@ -33,6 +35,11 @@ output () {
 
 if [ $# -lt 1 ] ; then
     usage
+fi
+
+if [ "$1" == "--list" ] ; then
+    show_list="1"
+    shift
 fi
 
 target_dir=$1
@@ -48,6 +55,13 @@ fi
 # Note: -maxdepth 1 ensures only files in the target directory (but not
 # subdirectories) are run, which is the way run-parts behaves.
 targets=$(find $target_dir -maxdepth 1 -type f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n)
+
+if [ "$show_list" == "1" ] ; then
+  for target in $targets ; do
+    echo "${target_dir}/${target}"
+  done
+  exit 0
+fi
 
 PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)
 
