@@ -112,7 +112,9 @@ function compress_and_save_image () {
     qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw $TMP_IMAGE_PATH -O $IMAGE_TYPE $1-new
     rm $TMP_IMAGE_PATH
 
-    TMP_IMAGE_PATH=$1-new save_image $1
+    TMP_IMAGE_PATH=$1-new
+    save_image $1
+    remove_image
 }
 
 function remove_image () {
