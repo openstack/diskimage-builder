@@ -53,6 +53,7 @@ package_map = {
     'mysql-client-5.5' : 'mariadb',
     'mysql-server-5.5' : 'mariadb-server',
     'libmysql-java' : 'mysql-connector-java',
+    'default-jre' : 'java',
     }
 
 for arg in sys.argv[1:]:
