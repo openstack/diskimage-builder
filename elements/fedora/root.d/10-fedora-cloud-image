@@ -43,7 +43,7 @@ else
         # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
         #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
         #       least creates /dev/mapper/loop0p2.
-        LOOPDEV=$(sudo kpartx -avr $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+        LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
         if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
             echo "Error: Could not find /dev/mapper/$LOOPDEV"
             exit 1
