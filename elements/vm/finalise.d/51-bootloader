@@ -53,7 +53,12 @@ _EOF_
 
 function install_grub2 {
 
-    install-packages grub-pc
+    # Check for offline installation of grub
+    if [ -f "/tmp/grub/install" ] ; then
+        source /tmp/grub/install
+    else
+        install-packages grub-pc
+    fi
 
     # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
     # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
