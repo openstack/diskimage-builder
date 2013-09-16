@@ -27,7 +27,7 @@ dest=$2
 mkdir -p $(dirname $dest)
 tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)
 
-if [ -f $dest ] ; then
+if [ -f $dest -a -s $dest ] ; then
     time_cond="-z $dest"
     success="Server copy has changed. Using server version of $url"
 else
