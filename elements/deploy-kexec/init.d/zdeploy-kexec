@@ -1,0 +1,10 @@
+TFTP_MAC_ADDRESS="01-"`echo $BOOT_MAC_ADDRESS | sed 's/:/-/g' | tr "A-Z" "a-z"`
+tftp -r /tftpboot/pxelinux.cfg/${TFTP_MAC_ADDRESS} -g ${BOOT_SERVER}
+APPEND=$(tail -n1 ${TFTP_MAC_ADDRESS} | cut -f3- -d" ")
+
+KERNEL=$(get_kernel_parameter BOOT_IMAGE | sed 's/deploy_//g')
+RAMDISK=$(echo $KERNEL | sed 's/kernel/ramdisk/')
+
+tftp -r ${KERNEL} -g ${BOOT_SERVER}
+tftp -r ${RAMDISK} -g ${BOOT_SERVER}
+kexec -l kernel --append="${APPEND}" --initrd=ramdisk && kexec -e
