@@ -13,10 +13,8 @@ case $DISTRO in
     ;;
   'Fedora')
     # By default the F19 cloud image is using extlinux to boot the image
-    [[ ! -d /boot/grub2 ]] && exit 0
-
-    echo 'GRUB_CMDLINE_LINUX="nomodeset vga=normal"' >/etc/default/grub
     if [ -f /boot/grub2/grub.cfg ]; then
+      echo 'GRUB_CMDLINE_LINUX="nomodeset vga=normal"' >/etc/default/grub
       sed -i -e 's/terminal_output gfxterm/terminal_output console/' /boot/grub2/grub.cfg
     fi
     ;;
