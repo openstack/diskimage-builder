@@ -1,0 +1,35 @@
+#!/bin/bash
+# Ensure that all files listed in ramdisk elements, exist
+
+set -e
+set -x
+
+export TARGET_DIR="/tmp/in_target.d/"
+
+if [ -z $TARGET_DIR ] ; then
+  echo "Target dir not specified"
+  exit 1
+fi
+
+if [ ! -d $TARGET_DIR ] ; then
+  echo "Unable to find specified directory in target: $TARGET_DIR"
+  bash
+  exit 1
+fi
+
+for _FILE in $(ls ${TARGET_DIR}/file-deps.d/) ; do
+  _FILE="${TARGET_DIR}/file-deps.d/${_FILE}"
+  if [ -a $_FILE ]; then
+    for _LINE in $(cat $_FILE) ; do
+      FILE_DEPS="${FILE_DEPS} $_LINE"
+    done
+  fi
+done
+
+if [ "$FILE_DEPS" == "" ]; then
+  echo "No file-deps found"
+else
+  DEPS_OUTPUT="/etc/dib_file_deps"
+  echo "Creating file_deps record at: ${DEPS_OUTPUT}"
+  echo "$FILE_DEPS" >>${DEPS_OUTPUT}
+fi

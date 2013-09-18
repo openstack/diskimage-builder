@@ -29,6 +29,7 @@ echo "working in $TMP_MOUNT_PATH"
 create_ramdisk_base
 populate_lib
 populate_busybox
+populate_files
 populate_init
 populate_udev
 finalise_image

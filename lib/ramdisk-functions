@@ -180,6 +180,15 @@ function populate_busybox () {
   done
 }
 
+function populate_files (){
+  echo "YOU HAVE 60S ---------------------------------------------- GO"
+  sleep 60
+  for i in $(cat /etc/dib_file_deps) ; do
+    cp -L "$path" "$TMP_MOUNT_PATH/"
+  done
+
+}
+
 function populate_init () {
   echo "Installing init"
   cp "$INIT" "$TMP_MOUNT_PATH/init"
