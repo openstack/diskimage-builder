@@ -7,7 +7,7 @@ from git and pbr from a tarball would be
 
     #<name> <type> <destination> <location> [<ref>]
     # <ref> defaults to master if not specified
-    ironic git /usr/local/ironic git://github.com/openstack/ironic.git
+    ironic git /usr/local/ironic git://git.openstack.org/openstack/ironic.git
 
 *File : elements/custom-element/source-repository-pbr*
 
