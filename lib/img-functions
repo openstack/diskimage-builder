@@ -25,7 +25,7 @@ function unmount_image () {
     local MOUNTS
     MOUNTS=$(grep < /proc/mounts " $TMP_BUILD_DIR/mnt" | awk '{ print $2 }' | sort -r)
     for M in $MOUNTS; do
-        sudo umount -f $M || true
+        sudo umount -fl $M || true
     done
     if [ -n "$EXTRA_UNMOUNT" ]; then
         $EXTRA_UNMOUNT
