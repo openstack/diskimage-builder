@@ -2,7 +2,7 @@ Image building tools for Openstack
 ==================================
 
 These tools are the components of TripleO
-(https://github.com/openstack/tripleo-incubator) that are responsible for
+(https://wiki.openstack.org/wiki/TripleO) that are responsible for
 building disk images.
 
 This repository has the core functionality for building disk images, file
@@ -13,7 +13,7 @@ ramdisks.
 
 The TripleO project also develops elements that can be used to deploy
 OpenStack itself. These live in the TripleO elements repository
-(https://github.com/openstack/tripleo-image-elements).
+(https://git.openstack.org/cgit/openstack/tripleo-image-elements).
 
 What tools are there?
 ---------------------
