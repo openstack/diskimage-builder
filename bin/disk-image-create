@@ -48,6 +48,7 @@ function show_options () {
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
+    echo "    --image-cache directory -- location for cached images (~/.cache/image-create)"
     echo "    --min-tmpfs size -- minimum size in GB needed in tmpfs to build the image"
     echo "    --no-tmpfs -- do not use tmpfs to speed image build"
     echo "    --offline -- do not update cached resources"
@@ -78,6 +79,7 @@ while true ; do
         -c) shift ; export CLEAR_ENV=1;;
         -n) shift; export SKIP_BASE="1";;
         -p) IFS="," read -a INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES ; shift 2 ;;
+        --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --min-tmpfs) export DIB_MIN_TMPFS=$2; shift 2;;
         --no-tmpfs) shift; export DIB_NO_TMPFS=1;;
         --offline) shift; export DIB_OFFLINE=1;;
@@ -85,6 +87,8 @@ while true ; do
         *) echo "Internal error!" ; exit 1 ;;
     esac
 done
+
+export DIB_IMAGE_CACHE=${DIB_IMAGE_CACHE:-~/.cache/image-create}
 
 if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   echo "Re-execing to clear environment."

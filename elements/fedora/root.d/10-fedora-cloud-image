@@ -9,21 +9,20 @@ if [ 'amd64' = "$ARCH" ] ; then
   ARCH="x86_64"
 fi
 
-IMG_PATH=~/.cache/image-create
 DIB_RELEASE=${DIB_RELEASE:-latest}
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.fedoraproject.org}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-fedora-$DIB_RELEASE.$ARCH.qcow2}
 BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-latest.tgz
-CACHED_TAR=$IMG_PATH/$BASE_IMAGE_TAR
+CACHED_TAR=$DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
 
 if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
     echo "Not checking freshness of cached $CACHED_TAR."
 else
     echo "Fetching Base Image"
-    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $IMG_PATH/$BASE_IMAGE_FILE
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 
     if [ ! -f $CACHED_TAR -o \
-        $IMG_PATH/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
+        $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
         echo "Repacking base image as tarball."
         WORKING=$(mktemp -d)
         EACTION="rm -r $WORKING"
@@ -31,7 +30,7 @@ else
         echo "Working in $WORKING"
         RAW_FILE=$(basename $BASE_IMAGE_FILE)
         RAW_FILE=${RAW_FILE#.qcow2}.raw
-        qemu-img convert -f qcow2 -O raw $IMG_PATH/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
+        qemu-img convert -f qcow2 -O raw $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
         # WARNING: The mattdm image has the root filesystem on the second
         #          partition (p2). If he changes the image the MAGIC_BIT
         #          might also need to change.
@@ -56,9 +55,9 @@ else
         trap "$EACTION" EXIT
         # Chroot in so that we get the correct uid/gid
         sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
-        mv $WORKING/tmp.tar $IMG_PATH/$BASE_IMAGE_TAR
+        mv $WORKING/tmp.tar $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
     fi
 fi
 # Extract the base image
-sudo tar -C $TARGET_ROOT -xzf $IMG_PATH/$BASE_IMAGE_TAR
+sudo tar -C $TARGET_ROOT -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
 sudo rmdir $TARGET_ROOT/lost+found
