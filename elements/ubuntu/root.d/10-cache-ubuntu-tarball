@@ -8,23 +8,22 @@ set -eu
 
 shopt -s extglob
 
-IMG_PATH=~/.cache/image-create
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
 DIB_RELEASE=${DIB_RELEASE:-raring}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
 SHA256SUMS=${SHA256SUMS:-https://${DIB_CLOUD_IMAGES##http?(s)://}/$DIB_RELEASE/current/SHA256SUMS}
-CACHED_FILE=$IMG_PATH/$BASE_IMAGE_FILE
+CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 
 if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
     echo "Not checking freshness of cached $CACHED_FILE."
 else
   echo "Fetching Base Image"
-  $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $IMG_PATH/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
+  $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $DIB_IMAGE_CACHE/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
   $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
-  pushd $IMG_PATH
+  pushd $DIB_IMAGE_CACHE
   grep "$BASE_IMAGE_FILE" SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH | sha256sum --check -
   popd
 fi
 # Extract the base image
-sudo tar -C $TARGET_ROOT -xzf $IMG_PATH/$BASE_IMAGE_FILE
+sudo tar -C $TARGET_ROOT -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 sudo rmdir $TARGET_ROOT/lost+found
