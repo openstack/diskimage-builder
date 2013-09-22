@@ -2,7 +2,7 @@
 
 set -e
 
-if [ -n $DIB_RHSM_USER ] && [ -n $DIB_RHSM_PASSWORD ]
+if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]
   then
     subscription-manager register --user $DIB_RHSM_USER --password $DIB_RHSM_PASSWORD
     # wait a second to ensure consumer certificate is finished writing to disk
