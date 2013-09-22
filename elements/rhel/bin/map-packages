@@ -23,6 +23,7 @@ package_map = {
     'extlinux': 'syslinux-extlinux',
     'open-iscsi': 'iscsi-initiator-utils',
     'vlan': 'vconfig',
+    'default-jre': 'java-1.7.0-openjdk',
     }
 
 for arg in sys.argv[1:]:
