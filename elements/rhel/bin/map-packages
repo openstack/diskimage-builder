@@ -23,6 +23,7 @@ package_map = {
     'extlinux': 'syslinux-extlinux',
     'open-iscsi': 'iscsi-initiator-utils',
     'vlan': 'vconfig',
+    'augeas-tools': 'augeas',
     'default-jre': 'java-1.7.0-openjdk',
     }
 
