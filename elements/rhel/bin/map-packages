@@ -26,6 +26,7 @@ package_map = {
     'augeas-tools': 'augeas',
     'openssh-client': 'openssh-clients',
     'default-jre': 'java-1.7.0-openjdk',
+    'atftpd': 'tftp-server',
     }
 
 for arg in sys.argv[1:]:
