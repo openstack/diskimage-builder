@@ -54,11 +54,43 @@ function save_image () {
     echo "Image file $1 created..."
 }
 
+function element_pre_check() {
+    local element_dir=$1
+    [ -d $element_dir ] || return 1
+    if [ -d $element_dir/first-boot.d ] ; then
+      first_boot_deprecated_message $element_dir
+    fi
+}
+
+_DISPLAYED_FIRST_BOOT_DEPRECATED=0
+function first_boot_deprecated_message() {
+    local element_dir=$1
+    echo "WARNING: first-boot.d found in $element_dir"
+    if [ $_DISPLAYED_FIRST_BOOT_DEPRECATED -eq 1 ] ; then
+        return
+    fi
+    echo "***********************************************************"
+    echo "*                                                         *"
+    echo "*                                                         *"
+    echo "*                                                         *"
+    echo "*                                                         *"
+    echo "* WARNING: first-boot.d is DEPRECATED, it will be removed *"
+    echo "* from diskimage-builder in a future release.             *"
+    echo "*                                                         *"
+    echo "*                                                         *"
+    echo "*                                                         *"
+    echo "*                                                         *"
+    echo "***********************************************************"
+    echo Pausing 10 seconds....
+    sleep 10
+    _DISPLAYED_FIRST_BOOT_DEPRECATED=1
+}
+
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
   for _ELEMENT in $IMAGE_ELEMENT ; do
     for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
-       [ -d $dir/$_ELEMENT ] || continue
+      element_pre_check $dir/$_ELEMENT || continue
       cp -t $TMP_HOOKS_PATH -a $dir/$_ELEMENT/* ;
       break
     done

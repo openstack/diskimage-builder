@@ -260,14 +260,17 @@ part of the process you need to customise:
   to disable unneeded services and clean the cache left by the package
   manager to reduce the size of the image.
 
-* first-boot.d: Runs inside the image before rc.local. Scripts from here are
-  good for doing per-instance configuration based on cloud metadata.
-
 * environment.d: Bash script snippets that are sourced before running scripts
   in each phase. Use this to set an environment variable for other hooks.
 
 * element-deps : A plain text, newline separated list of elements which will
   be added to the list of elements built into the image at image creation time.
+
+* first-boot.d: **DEPRECATED** Runs inside the image before
+  rc.local. Scripts from here are good for doing per-instance
+  configuration based on cloud metadata. **This will be removed in a
+  future release of diskimage-builder. The os-refresh-config element in
+  tripleo-image-elements is recommended as a replacement.**
 
 Ramdisk elements support the following files in their element directories:
 
