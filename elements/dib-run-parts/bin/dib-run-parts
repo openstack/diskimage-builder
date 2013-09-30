@@ -94,7 +94,7 @@ for target in $(find . -name 'start_*' -printf '%f\n') ; do
     start_seconds=$(cat $target)
     stop_seconds=$(cat $stop_file)
     duration=$(python -c "print $stop_seconds - $start_seconds")
-    printf "%-40s %10.3f\n" ${target##start_} $duration
+    LC_NUMERIC=C printf "%-40s %10.3f\n" ${target##start_} $duration
 done
 popd > /dev/null
 rm -rf $PROFILE_DIR
