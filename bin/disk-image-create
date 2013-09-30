@@ -137,7 +137,9 @@ else
   truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
   if [ "$FS_TYPE" = "ext4" ] ; then
     # Very conservative to handle images being resized a lot
-    MKFS_OPTS="-i 4096"
+    # Without -J option specified, default journal size will be set to 32M
+    # and online resize will be failed with error of needs too many credits.
+    MKFS_OPTS="-i 4096 -J size=64"
   fi
 fi
 # allow up to 1PB of 4KB blocks.
