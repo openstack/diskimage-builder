@@ -28,7 +28,7 @@ for interface in $(ls /sys/class/net | grep -v ^lo$) ; do
       TRIES=$(( TRIES - 1 ))
     done
     if [ "$HAS_LINK" == "1" ] ; then
-      printf "auto $interface\r\niface $interface inet dhcp\r\n\r\n" >>$INTERFACES_FILE]
+      printf "auto $interface\r\niface $interface inet dhcp\r\n\r\n" >>$INTERFACES_FILE
       echo "Configured"
     else
       echo "No link detected, skipping"
