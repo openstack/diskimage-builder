@@ -1,3 +1,0 @@
-# /etc/modprobe.d/mellanox.conf
-# Attempt to force the mellanox driver to be loaded
-/sbin/modprobe mlx4_en
