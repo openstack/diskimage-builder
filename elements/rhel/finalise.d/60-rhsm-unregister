@@ -2,6 +2,6 @@
 
 set -e
 
-if [ -n $DIB_RHSM_USER ] && [ -n $DIB_RHSM_PASSWORD ]; then
+if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]; then
     subscription-manager unregister
 fi
