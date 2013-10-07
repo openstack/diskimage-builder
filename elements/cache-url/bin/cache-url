@@ -36,8 +36,16 @@ fi
 
 rcode=$(curl -L -o $tmp -w '%{http_code}' $url $time_cond)
 if [ "$rcode" = "200" ] ; then
-    echo $success
-    mv $tmp $dest
+    # In cases where servers ignore the Modified time,
+    # curl cancels the download, outputs a 200 and leaves
+    # the output file untouched, we don't want this empty file.
+    if [ -n "$time_cond" -a ! -s $tmp ] ; then
+        echo "Ignoring empty file returned by curl. Using locally cached $url"
+        rm -f $tmp
+    else
+        echo $success
+        mv $tmp $dest
+    fi
 elif [ "$rcode" = "304" ] ; then
     echo "Server copy has not changed. Using locally cached $url"
     rm -f $tmp
