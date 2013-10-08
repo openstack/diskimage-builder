@@ -75,9 +75,6 @@ function run_d_in_target () {
       sudo mkdir $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
-      sudo mkdir -p $TMP_MOUNT_PATH/tmp/ccache
-      mkdir -p $DIB_CCACHE_DIR
-      sudo mount --bind $DIB_CCACHE_DIR $TMP_MOUNT_PATH/tmp/ccache
       check_break before-$1 run_in_target bash
       trap "check_break after-error run_in_target bash" ERR
       run_in_target dib-run-parts /tmp/in_target.d/$1.d
