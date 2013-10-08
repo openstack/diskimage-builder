@@ -273,6 +273,7 @@ function mount_proc_dev_sys () {
     # supporting kernel file systems
     sudo mount -t proc none $TMP_MOUNT_PATH/proc
     sudo mount --bind /dev $TMP_MOUNT_PATH/dev
+    sudo mount --bind /dev/pts $TMP_MOUNT_PATH/dev/pts
     sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
 }
 
