@@ -58,6 +58,7 @@ else
         mv $WORKING/tmp.tar $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
     fi
 fi
-# Extract the base image
-sudo tar -C $TARGET_ROOT -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
+# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+# image tarball and host OS e.g. when building Fedora image on an openSUSE host)
+sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
 sudo rmdir $TARGET_ROOT/lost+found
