@@ -24,6 +24,7 @@ else
   grep "$BASE_IMAGE_FILE" SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH | sha256sum --check -
   popd
 fi
-# Extract the base image
-sudo tar -C $TARGET_ROOT -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+# image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
+sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 sudo rmdir $TARGET_ROOT/lost+found
