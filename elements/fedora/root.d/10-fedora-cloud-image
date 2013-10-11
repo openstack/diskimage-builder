@@ -19,7 +19,19 @@ if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
     echo "Not checking freshness of cached $CACHED_TAR."
 else
     echo "Fetching Base Image"
+
+    # There seems to be some bad Fedora mirrors returning http 404's for the cloud image.
+    # If the image fails to download due to a 404 we retry once.
+    set +e
     $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+    RV=$?
+    set -e
+
+    if [ "$RV" == "44" ] ; then
+        $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+    elif [ "$RV" != "0" ] ; then
+        exit 1
+    fi
 
     if [ ! -f $CACHED_TAR -o \
         $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
