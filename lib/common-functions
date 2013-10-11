@@ -241,8 +241,10 @@ function create_base () {
     export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
     # Copy data in to the root.
     TARGET_ROOT=$TMP_MOUNT_PATH run_d root
-    if [ -z "$(ls $TMP_MOUNT_PATH | grep -v lost+found)" ] ; then
-        # Nothing copied in, use Ubuntu.
+    if [ -z "$(ls $TMP_MOUNT_PATH | grep -v '^lost+found\|tmp$')" ] ; then
+        # Nothing copied in, use Ubuntu.  Note the test above allows
+        # root.d elements to put things in /tmp, and still have the
+        # automatic Ubuntu behaviour.
         echo "Adding ubuntu element as / had no contents"
         IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT ubuntu)
         generate_hooks

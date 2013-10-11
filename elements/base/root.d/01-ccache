@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+# Don't do anything if already mounted (if disk-image-create is invoked with
+# no elements specified, this hook actually fires twice, once during
+# `run_d root` for the base element, then again when `run_d root` is called
+# after automatically pulling in the Ubuntu element)
+grep " $TMP_MOUNT_PATH/tmp/ccache" /proc/mounts && exit
+
+DIB_CCACHE_DIR=${DIB_CCACHE_DIR:-$HOME/.cache/image-create/ccache}
+mkdir -p $DIB_CCACHE_DIR
+
+sudo mkdir -p $TMP_MOUNT_PATH/tmp/ccache
+sudo mount --bind $DIB_CCACHE_DIR $TMP_MOUNT_PATH/tmp/ccache
