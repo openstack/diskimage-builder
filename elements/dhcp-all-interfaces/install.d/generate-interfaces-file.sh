@@ -6,6 +6,12 @@
 
 INTERFACES_FILE="/etc/network/interfaces"
 
+# Serialize runs so that we don't miss hot-add interfaces
+FLOCK=${1:-}
+if [ -z "$FLOCK" ] ; then
+    exec flock -x $INTERFACES_FILE $0 flocked
+fi
+
 function get_if_link() {
   cat /sys/class/net/${1}/carrier
 }
