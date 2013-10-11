@@ -12,8 +12,9 @@ function get_if_link() {
 
 for interface in $(ls /sys/class/net | grep -v ^lo$) ; do
   echo -n "Inspecting interface: $interface..."
-  HAS_CONFIG=$(ifquery $interface >/dev/null 2>&1)
-  if [ "$HAS_CONFIG" == "" ]; then
+  if ifquery $interface >/dev/null 2>&1 ; then
+    echo "Has config, skipping."
+  else
     ip link set dev $interface up >/dev/null 2>&1
     HAS_LINK="$(get_if_link $interface)"
 
