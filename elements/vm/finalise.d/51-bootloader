@@ -33,6 +33,9 @@ function install_extlinux {
     if [ -f /etc/redhat-release ]; then
         kernel=$(ls -1rv /boot/vmlinuz* | head -1)
         initrd=$(ls -1rv /boot/initramfs* | head -1)
+    elif [ -f /etc/SuSE-release ]; then
+        kernel=$(ls -1rv /boot/vmlinuz* | head -1)
+        initrd=$(ls -1rv /boot/initrd* | head -1)
     elif [ -f /etc/debian_version ]; then
         kernel=$(ls -1rv /boot/vmlinuz*generic | head -1)
         initrd=$(ls -1rv /boot/initrd*generic | head -1)
@@ -151,7 +154,7 @@ function install_grub2 {
     sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
     sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
     sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
-    if [ $DIST = 'Fedora' ] ; then
+    if [ "$DIST" = 'Fedora' ] ; then
       # enable serial console
       sed -i "s%LABEL=cloudimg-rootfs%LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200%" $GRUB_CFG
       if [ $(lsb_release -rs) = '19' ]; then

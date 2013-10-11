@@ -1,0 +1,3 @@
+#!/bin/sh
+
+install -m 0755 -o root -g root $(dirname $0)/../bin/* /usr/local/bin

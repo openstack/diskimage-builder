@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+set -x
+
+export OPENSUSE_EXTRAS_PATH="$TMP_MOUNT_PATH/tmp/opensuse-extras"
+mkdir -p $OPENSUSE_EXTRAS_PATH
+
+for file in common-defaults img-defaults ; do
+  cp $_LIB/$file $OPENSUSE_EXTRAS_PATH
+done
+

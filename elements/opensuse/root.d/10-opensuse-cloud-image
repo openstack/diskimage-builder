@@ -1,0 +1,58 @@
+#!/bin/bash
+
+set -eu
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+if [ 'amd64' = "$ARCH" ] ; then
+    ARCH="x86_64"
+fi
+
+if [ 'i386' = "$ARCH" ] ; then
+    ARCH="i586"
+fi
+
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://download.opensuse.org/repositories/Cloud:/Images/images/}
+DIB_RELEASE=${DIB_RELEASE:-13.1}
+# FIXME: Hard coded build numbers, versions, etc.
+BASE_IMAGE_NAME=${BASE_IMAGE_NAME:-openSUSE-$DIB_RELEASE-OpenStack-Guest.$ARCH}
+
+if [ -z "$DIB_OFFLINE" ] ; then
+    # XXX: Try to extract the filename of the current built from the index
+    # page. As there is one built available in the repo at a given time, this
+    # should work. This is a tempoary workaround until the fix for
+    # https://bugzilla.novell.com/show_bug.cgi?id=853882 is deployed
+    echo "Looking up current built of Base Image ($BASE_IMAGE_NAME):"
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(curl $DIB_CLOUD_IMAGES | \
+            sed -n "s/^.*\<a\ href\=\"\($BASE_IMAGE_NAME.*\.tbz\)\".*$/\1/p")}
+    if [ -n "$BASE_IMAGE_FILE" ]; then
+        echo "Using base image: $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE"
+    else
+        echo -e "Failed to extract image file name from $DIB_CLOUD_IMAGES" \
+                "\nPlease set BASE_IMAGE_FILE manually and retry."
+        exit 1
+    fi
+else
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$BASE_IMAGE_NAME-0.0.1-Build6.1.tbz}
+fi
+
+# FIXME: either check the checksums into git or verify the signature
+# on the checksums. We should not be trusting checksums we download
+# over HTTP
+SHA256SUMS=${SHA256SUMS:-$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE.sha256}
+CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+
+if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
+    echo "Not checking freshness of cached $CACHED_FILE."
+else
+    echo "Fetching Base Image"
+    $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $DIB_IMAGE_CACHE/SHA256SUMS.openSUSE.$DIB_RELEASE.$ARCH
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
+    pushd $DIB_IMAGE_CACHE
+    grep "$BASE_IMAGE_FILE" SHA256SUMS.openSUSE.$DIB_RELEASE.$ARCH | sha256sum --check -
+    popd
+fi
+# Extract the base image (use --numeric-owner to avoid possible UID/GID mismatch
+# between image tarball and host OS)
+sudo tar -C $TARGET_ROOT --numeric-owner -xjf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
