@@ -5,5 +5,10 @@
 
 SCRIPTDIR=$(dirname $0)
 
-install -D -g root -o root -m 0755 ${SCRIPTDIR}/generate-interfaces-file.sh /usr/local/sbin/generate-interfaces-file.sh
-install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.conf /etc/init/dhcp-all-interfaces.conf
+# Currently only installed on Debian-derived distributions
+# Installing these on Fedora causes problems with os-svc-daemon
+# https://bugs.launchpad.net/tripleo/+bug/1239880
+if [ -d /etc/init ] ; then
+    install -D -g root -o root -m 0755 ${SCRIPTDIR}/generate-interfaces-file.sh /usr/local/sbin/generate-interfaces-file.sh
+    install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.conf /etc/init/dhcp-all-interfaces.conf
+fi
