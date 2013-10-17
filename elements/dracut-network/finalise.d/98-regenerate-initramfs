@@ -1,6 +1,15 @@
 #!/bin/bash
 
-LAST_VERSION=$(basename `ls -1 /boot/vmlinuz*  | tail -1 | sed 's/vmlinuz-//g'`)
-INITRAMFS=`ls /boot/initramfs-$LAST_VERSION.img`
+# Prioritize PAE if present
+KERNEL=$(basename `ls -1rv /boot/vmlinuz*  | grep PAE | grep -v debug | head -1`)
+if [ ! $KERNEL ]; then
+    KERNEL=$(basename `ls -1rv /boot/vmlinuz* | grep -v debug | head -1`)
+    if [ ! $KERNEL ]; then
+        echo "No suitable kernel found."
+        exit 1
+    fi
+fi
+KERNEL_VERSION=`echo $KERNEL | sed 's/vmlinuz-//g'`
+RAMDISK=/boot/initramfs-$KERNEL_VERSION.img
 
-dracut --force --add "network" $INITRAMFS $LAST_VERSION
+dracut --force --add "network" $RAMDISK $KERNEL_VERSION
