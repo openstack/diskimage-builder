@@ -87,9 +87,9 @@ RAMDISK=
 if [ -f $WORK_DIR/etc/redhat-release ]; then
 
     # Prioritize PAE if present
-    KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1`)
+    KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1` || /bin/true)
     if [ ! $KERNEL ]; then
-        KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1`)
+        KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1` || /bin/true)
         if [ ! $KERNEL ]; then
             echo "No suitable kernel found."
             exit 1
