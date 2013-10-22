@@ -54,5 +54,9 @@ elif [ "$rcode" = "304" -o "$rcode" = "213" ] ; then
 else
     echo "Server returned an unexpected response code. [$rcode]"
     rm -f $tmp
+    # expose some error codes so the calling process might know what happened
+    if [ "$rcode" = "404" ] ; then
+        exit 44
+    fi
     exit 1
 fi
