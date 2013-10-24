@@ -55,6 +55,7 @@ package_map = {
     'libmysql-java' : 'mysql-connector-java',
     'default-jre' : 'java',
     'atftpd' : 'tftp-server',
+    'tftpd-hpa' : 'tftp-server',
     'apache2': 'httpd',
     'libapache2-mod-wsgi': 'mod_wsgi',
     }
