@@ -54,4 +54,6 @@ fi
 # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
 # image tarball and host OS e.g. when building RHEL image on an openSUSE host)
 sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
-sudo rmdir $TARGET_ROOT/lost+found
+if [ -e "$TARGET_ROOT/lost+found" ]; then
+  sudo rmdir $TARGET_ROOT/lost+found
+fi
