@@ -50,7 +50,7 @@ class TestElementDeps(testtools.TestCase):
         result = elements.expand_dependencies(
             ['requires-foo'],
             elements_dir=self.element_dir)
-        self.assertEquals(set(['requires-foo', 'foo']), result)
+        self.assertEqual(set(['requires-foo', 'foo']), result)
 
     def test_missing_deps(self):
         self.assertRaises(SystemExit, elements.expand_dependencies, ['fake'],
@@ -59,31 +59,31 @@ class TestElementDeps(testtools.TestCase):
     def test_transitive_deps(self):
         result = elements.expand_dependencies(
             ['requires-requires-foo'], elements_dir=self.element_dir)
-        self.assertEquals(set(['requires-requires-foo',
-                               'requires-foo',
-                               'foo']), result)
+        self.assertEqual(set(['requires-requires-foo',
+                              'requires-foo',
+                              'foo']), result)
 
     def test_no_deps(self):
         result = elements.expand_dependencies(
             ['foo'], elements_dir=self.element_dir)
-        self.assertEquals(set(['foo']), result)
+        self.assertEqual(set(['foo']), result)
 
     def test_self(self):
         result = elements.expand_dependencies(
             ['self'], elements_dir=self.element_dir)
-        self.assertEquals(set(['self']), result)
+        self.assertEqual(set(['self']), result)
 
     def test_circular(self):
         result = elements.expand_dependencies(
             ['circular1'], elements_dir=self.element_dir)
-        self.assertEquals(set(['circular1', 'circular2']), result)
+        self.assertEqual(set(['circular1', 'circular2']), result)
 
 
 class TestElements(testtools.TestCase):
     def test_depends_on_env(self):
         self.useFixture(
             fixtures.EnvironmentVariable('ELEMENTS_PATH', '/foo/bar'))
-        self.assertEquals('/foo/bar', elements.get_elements_dir())
+        self.assertEqual('/foo/bar', elements.get_elements_dir())
 
     def test_env_not_set(self):
         self.useFixture(fixtures.EnvironmentVariable('ELEMENTS_PATH', ''))
