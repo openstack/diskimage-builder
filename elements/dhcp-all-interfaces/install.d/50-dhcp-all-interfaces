@@ -1,4 +1,6 @@
-#!/bin/sh -x
+#!/bin/bash
+
+set -x
 
 # Prepare the target system for regenerating /etc/network/interfaces
 # on its first boot.

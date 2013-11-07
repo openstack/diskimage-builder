@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # zeroconf should not be activated or it will add a 169.254.0.0
 # route. The route will interfere with access to the nova metadata

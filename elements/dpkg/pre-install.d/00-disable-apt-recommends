@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Prevent apt from installing recommended packages
 
 dd of=/etc/apt/apt.conf.d/95disable-recommends << _EOF_
