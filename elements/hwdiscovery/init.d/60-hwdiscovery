@@ -11,13 +11,54 @@ function ram() {
 }
 
 function pxe_mac() {
-  # XXX: This is making all sorts of risky assumptions. Firstly that the underlying drivers correctly report link. Secondly that only the primary
-  # XXX: NIC is wired up. Without a backend service on the DHCP/PXE server which could examine all of our detected MACs, there really is no good
-  # XXX: way to solve this in Linux.
-  _info1=$(hwinfo --network|grep -B2 "Link detected: yes"|grep -C1 "HW Address:")
-  _info2=$(echo "${_info1}"|awk '/Device File: (vlan*|br*)/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}')
-  _dev=$(echo "${_info1}" | grep "Device File:"|awk -F':' {'print $2'}|tr -d ' ')
-  _mac=$(echo "${_info2}" | grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' ')
+  local bootif_re='BOOTIF=([^ ]+)' _mac
+  if [[ $(cat /proc/cmdline) =~ $bootif_re ]]; then
+      # If we were booted using pxelinux and its config file has the
+      # IPAPPEND 2 stanza under the entry we booted from, then pxelinux
+      # will have appended a BOOTIF argument to the kernel parameters telling
+      # us what MAC address we are booting with.  From that, we can derive the
+      # boot interface with no problems.
+      _mac="${BASH_REMATCH[1]//-/:}"
+      _mac="${_mac#*:}"
+  elif [[ -d /sys/firmware/efi ]] && which efibootmgr &>/dev/null; then
+      # Likewise, if we booted via the network while running in UEFI mode, and
+      # efibootmgr is installed, we can determine the MAC address of the nic we
+      # booted from.  It would be good to have code that can also do this using
+      # efivars or parsing the stuff under /sys/firmware/efi/efivars directly,
+      # but that is a trickier thing to do.
+      local -A boot_entries
+      local bootent_re='^Boot([0-9]{4})'
+      local efimac_re='MAC\(([0-9a-f]+)'
+      local k v current_bootent
+      while read line; do
+          k="${line%% *}"
+          v="${line#* }"
+          if [[ $k = BootCurrent:* ]]; then
+              current_bootent="${line##BootCurrent: }"
+          elif [[ $k =~ $bootent_re ]]; then
+              boot_entries["${BASH_REMATCH[1]}"]="$v"
+          fi
+      done < <(efibootmgr -v)
+
+      if [[ ${boot_entries["$current_bootent"]} =~ $efimac_re ]]; then
+          _mac=''
+          for o in 0 2 4 6 8 10; do
+              _mac+="${BASH_REMATCH[1]:$o:2}:"
+          done
+          _mac=${_mac%:}
+      fi
+  fi
+  if [[ ! $_mac ]]; then
+      # If none of the exact methods worked, fall back on the heuristic
+      # method and just return the mac addresses of all the interfaces
+      # that have a link.  Hopefully whatever consumes this info is smarter
+      # than we are.
+      local _info1 _info2 _dev
+      _info1=$(hwinfo --network|grep -B2 "Link detected: yes"|grep -C1 "HW Address:")
+      _info2=$(echo "${_info1}"|awk '/Device File: (vlan*|br*)/{for(x=NR-2;x<=NR+2;x++)d[x];}{a[NR]=$0}END{for(i=1;i<=NR;i++)if(!(i in d))print a[i]}')
+      _dev=$(echo "${_info1}" | grep "Device File:"|awk -F':' {'print $2'}|tr -d ' ')
+      _mac=$(echo "${_info2}" | grep "HW Address:"|awk -F'ss:' {'print $2'}|tr -d ' ')
+  fi
   echo $_mac
   export HW_DISCOVERY_BOOT_IFACE="$_mac"
 }
