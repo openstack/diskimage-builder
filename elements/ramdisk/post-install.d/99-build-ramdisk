@@ -19,6 +19,7 @@ FIRMWARE_DIR=$MODULE_ROOT/lib/firmware
 LIB_UDEV=$LIB_UDEV_ROOT/lib/udev
 INIT="$_LIB/scripts/init"
 FUNCTIONS_D="$_LIB/scripts/d"
+BUSYBOX=${BUSYBOX:-$(which busybox)}
 
 mk_build_dir
 mkdir -p $TMP_BUILD_DIR/mnt

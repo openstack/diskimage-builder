@@ -21,4 +21,3 @@ export DIB_MIN_TMPFS=${DIB_MIN_TMPFS:-1}
 source $_LIB/common-defaults
 MODULE_ROOT=${DIB_MODULE_ROOT:-""}
 LIB_UDEV_ROOT=${DIB_LIB_UDEV_ROOT:-""}
-BUSYBOX=${BUSYBOX:-$(which busybox)}
