@@ -30,7 +30,7 @@ def load_tests(loader, tests, pattern):
         # http://bugs.python.org/issue11218
         pattern = "test*.py"
     this_dir = os.path.dirname(__file__)
-    elements_dir = os.path.join(this_dir, "..", "elements")
+    elements_dir = os.path.join(this_dir, "..", "..", "elements")
     # Make a fake elements top level package, as discovery doesn't let us
     # override the python path.
     package = StubPackage()
