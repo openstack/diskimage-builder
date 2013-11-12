@@ -27,6 +27,7 @@ package_map = {
     'openssh-client': 'openssh-clients',
     'default-jre': 'java-1.7.0-openjdk',
     'tftpd-hpa' : 'tftp-server',
+    'libffi-dev': 'libffi-devel',
     }
 
 for arg in sys.argv[1:]:
