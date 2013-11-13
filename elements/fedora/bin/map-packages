@@ -57,6 +57,7 @@ package_map = {
     'tftpd-hpa' : 'tftp-server',
     'apache2': 'httpd',
     'libapache2-mod-wsgi': 'mod_wsgi',
+    'libffi-dev': 'libffi-devel',
     }
 
 for arg in sys.argv[1:]:
