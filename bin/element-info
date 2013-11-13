@@ -17,7 +17,7 @@
 import os
 import sys
 
-from diskimage_builder.elements import main
+from diskimage_builder.element_dependencies import main
 
 
 sys.exit(main(sys.argv))

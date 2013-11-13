@@ -18,7 +18,7 @@ import os
 import fixtures
 import testtools
 
-from diskimage_builder import elements
+from diskimage_builder import element_dependencies
 
 data_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'test-elements'))
@@ -47,34 +47,35 @@ class TestElementDeps(testtools.TestCase):
         _populate_element(self.element_dir, 'circular2', ['circular1'])
 
     def test_non_transitive_deps(self):
-        result = elements.expand_dependencies(
+        result = element_dependencies.expand_dependencies(
             ['requires-foo'],
             elements_dir=self.element_dir)
         self.assertEqual(set(['requires-foo', 'foo']), result)
 
     def test_missing_deps(self):
-        self.assertRaises(SystemExit, elements.expand_dependencies, ['fake'],
+        self.assertRaises(SystemExit,
+                          element_dependencies.expand_dependencies, ['fake'],
                           self.element_dir)
 
     def test_transitive_deps(self):
-        result = elements.expand_dependencies(
+        result = element_dependencies.expand_dependencies(
             ['requires-requires-foo'], elements_dir=self.element_dir)
         self.assertEqual(set(['requires-requires-foo',
                               'requires-foo',
                               'foo']), result)
 
     def test_no_deps(self):
-        result = elements.expand_dependencies(
+        result = element_dependencies.expand_dependencies(
             ['foo'], elements_dir=self.element_dir)
         self.assertEqual(set(['foo']), result)
 
     def test_self(self):
-        result = elements.expand_dependencies(
+        result = element_dependencies.expand_dependencies(
             ['self'], elements_dir=self.element_dir)
         self.assertEqual(set(['self']), result)
 
     def test_circular(self):
-        result = elements.expand_dependencies(
+        result = element_dependencies.expand_dependencies(
             ['circular1'], elements_dir=self.element_dir)
         self.assertEqual(set(['circular1', 'circular2']), result)
 
@@ -83,8 +84,8 @@ class TestElements(testtools.TestCase):
     def test_depends_on_env(self):
         self.useFixture(
             fixtures.EnvironmentVariable('ELEMENTS_PATH', '/foo/bar'))
-        self.assertEqual('/foo/bar', elements.get_elements_dir())
+        self.assertEqual('/foo/bar', element_dependencies.get_elements_dir())
 
     def test_env_not_set(self):
         self.useFixture(fixtures.EnvironmentVariable('ELEMENTS_PATH', ''))
-        self.assertRaises(Exception, elements.get_elements_dir, ())
+        self.assertRaises(Exception, element_dependencies.get_elements_dir, ())
