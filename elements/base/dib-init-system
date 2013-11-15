@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eu
+
+if [ -f /sbin/initctl ]; then
+    echo "upstart"
+elif [ -f /usr/bin/systemctl ]; then
+    echo "systemd"
+elif [ -f /sbin/init ]; then
+    if [ -f /bin/systemd ]; then
+        echo "systemd"
+    else
+        echo "sysv"
+    fi
+else
+    echo "Unknown init system"
+    exit 1
+fi
