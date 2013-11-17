@@ -1,0 +1,42 @@
+echo "starting network $BOOT_MAC_ADDRESS"
+t=0
+while ! BOOT_INTERFACE=$(find_interface "$BOOT_MAC_ADDRESS"); do
+	t=`expr "$t" + 5`
+	if [ "$t" -gt 10 ]; then
+		break
+	fi
+	sleep 5
+done
+if [ -z "$BOOT_INTERFACE" ]; then
+	err_msg "Could not find an interface that owns MAC: $BOOT_MAC_ADDRESS"
+	troubleshoot
+fi
+
+readonly BOOT_INTERFACE
+
+ifconfig lo 127.0.0.1 up
+ifconfig "$BOOT_INTERFACE" up
+if [ $? -ne 0 ]; then
+	sleep 10
+	ifconfig "$BOOT_INTERFACE" up
+	if [ $? -ne 0 ]; then
+		err_msg "Failed to ifconfig up $BOOT_INTERFACE"
+		troubleshoot
+	fi
+fi
+ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"
+route add default gw $BOOT_GATEWAY
+
+echo "pinging to boot server $BOOT_SERVER"
+w=30
+while [ $w -gt 0 ]; do
+	ping -c 5 -q "$BOOT_SERVER" > /dev/null
+	if [ $? -eq 0 ]; then
+		break
+	fi
+	sleep 1
+	w=`expr $w - 5`
+done
+
+echo "network ready"
+
