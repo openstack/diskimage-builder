@@ -189,6 +189,21 @@ function stop_iscsi_target() {
 }
 
 function troubleshoot() {
+    if [ "$TROUBLESHOOT" != 1 ]; then
+        _DO_TROUBLESHOOT=""
+        _t=0
+        echo -n "Troubleshooting required, press t to launch shell."
+        while [ $_t -lt 10 ]; do
+            read -n 1 -t 1 _DO_TROUBLESHOOT
+            _t=$(($_t + 1))
+            if [ "$_DO_TROUBLESHOOT" == "t" ]; then
+                export TROUBLESHOOT=1
+                break
+            fi
+            echo -n "."
+        done
+        echo ""
+    fi
 	if [ "$TROUBLESHOOT" == 1 ]; then
 		echo "Starting troubleshooting shell."
 		bash
