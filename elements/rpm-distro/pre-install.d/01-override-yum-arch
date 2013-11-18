@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "i386" = "$ARCH" ]; then
   basearch=i386

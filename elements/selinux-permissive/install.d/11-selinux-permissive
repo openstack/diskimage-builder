@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "SELINUX=permissive" > /etc/selinux/config
 echo "SELINUXTYPE=targeted" >> /etc/selinux/config

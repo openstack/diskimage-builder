@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Trigger a run of dkms for all the modules installed
 # to ensure we have valid modules build for all.
 
