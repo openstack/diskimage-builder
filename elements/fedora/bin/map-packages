@@ -58,6 +58,7 @@ package_map = {
     'apache2': 'httpd',
     'libapache2-mod-wsgi': 'mod_wsgi',
     'libffi-dev': 'libffi-devel',
+    'gearman-job-server': 'gearmand',
     }
 
 for arg in sys.argv[1:]:
