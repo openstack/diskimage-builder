@@ -13,13 +13,16 @@ echo "Warning: Fake start-stop-daemon called, doing nothing"
 EOF
 sudo chmod 755 $TARGET_ROOT/sbin/start-stop-daemon
 
-sudo mv $TARGET_ROOT/sbin/initctl $TARGET_ROOT/sbin/initctl.REAL
-sudo dd of=$TARGET_ROOT/sbin/initctl <<EOF
+if [ -f $TARGET_ROOT/sbin/initctl ]
+then
+    sudo mv $TARGET_ROOT/sbin/initctl $TARGET_ROOT/sbin/initctl.REAL
+    sudo dd of=$TARGET_ROOT/sbin/initctl <<EOF
 #!/bin/sh
 echo "initctl (tripleo 1.0)"
 echo "Warning: Fake initctl called, doing nothing"
 EOF
-sudo chmod 755 $TARGET_ROOT/sbin/initctl
+    sudo chmod 755 $TARGET_ROOT/sbin/initctl
+fi
 
 sudo mv $TARGET_ROOT/usr/sbin/invoke-rc.d $TARGET_ROOT/usr/sbin/invoke-rc.d.REAL
 sudo dd of=$TARGET_ROOT/usr/sbin/invoke-rc.d <<EOF
