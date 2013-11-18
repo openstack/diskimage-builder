@@ -381,6 +381,11 @@ console so nova's console-log command can function. There is an element in the
 tripleo-image-elements repository called "remove-serial-console" which will
 force all boot messages to appear on the main console.
 
+Ramdisk images can be debugged at run-time by passing "troubleshoot" as a
+kernel command line argument, or by pressing "t" when an error is reached. This
+will spawn a shell on the console (this can be extremely useful when network
+interfaces or disks are not detected correctly).
+
 Testing Elements
 ----------------
 
