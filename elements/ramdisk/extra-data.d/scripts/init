@@ -47,7 +47,7 @@ readonly DISK=$(get_kernel_parameter disk)
 readonly DEPLOYMENT_ID=$(get_kernel_parameter deployment_id)
 readonly DEPLOYMENT_KEY=$(get_kernel_parameter deployment_key)
 readonly ISCSI_TARGET_IQN=$(get_kernel_parameter iscsi_target_iqn)
-readonly TROUBLESHOOT=$(get_kernel_parameter troubleshoot)
+TROUBLESHOOT=$(get_kernel_parameter troubleshoot)
 FIRST_ERR_MSG=
 
 mount -t sysfs none /sys
