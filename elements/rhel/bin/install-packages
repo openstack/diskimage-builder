@@ -33,6 +33,8 @@ do
   fi
 done
 if [ -n "$WHITELIST" ]; then
-  rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+  if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
+    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+  fi
   yum -y install $(map-packages $WHITELIST)
 fi
