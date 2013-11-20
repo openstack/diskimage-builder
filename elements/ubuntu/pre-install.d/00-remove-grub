@@ -5,4 +5,10 @@
 
 set -e
 
-apt-get -y remove grub-pc grub2-common
+if dpkg-query -W grub-pc; then
+  apt-get -y remove grub-pc
+fi
+
+if dpkg-query -W grub2-common; then
+  apt-get -y remove grub2-common
+fi
