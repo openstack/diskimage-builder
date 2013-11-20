@@ -59,13 +59,18 @@ else
     UDEVD="udevd"
 fi
 
-if [ "$UDEVD" = "systemd-udevd" ]; then
-    # devtmpfs is required since udev 176
+# udev versions 176 and newer require a different on-disk setup
+UDEVD_VERSION=$($UDEVD --version)
+
+if [ "$UDEVD_VERSION" != "" -a $UDEVD_VERSION -gt 175 ]; then
+    echo "Using new-style udevd setup"
     mount -t devtmpfs none /dev
     mkdir -p /run
     mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
     mkdir -p /run/lock
+    mkdir -p /run/udev
 else
+    echo "Using old-style udevd setup"
     mount -t tmpfs none /dev
     ln -sf /proc/self/fd /dev/fd
     mknod /dev/null c 1 3
