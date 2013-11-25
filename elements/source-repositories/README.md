@@ -35,7 +35,7 @@ Tarballs will be extracted to \<destination\>. Tarballs should contain a
 single topleval directory, regardless of the name of this top level directory
 it will be renamed to \<destination\>
 
-If mulitple elements register a source location with the same <destination>
+If multiple elements register a source location with the same <destination>
 then source-repositories will exit with an error. Care should therefore be taken
 to only use elements together that download source to different locations.
 
