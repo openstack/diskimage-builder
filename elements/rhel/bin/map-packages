@@ -29,6 +29,7 @@ package_map = {
     'tftpd-hpa' : 'tftp-server',
     'libffi-dev': 'libffi-devel',
     'gearman-job-server': 'gearmand',
+    'tgt': 'scsi-target-utils',
     }
 
 for arg in sys.argv[1:]:
