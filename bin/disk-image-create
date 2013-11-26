@@ -63,6 +63,8 @@ function show_options () {
     echo
     echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
     echo
+    echo "NOTE: At least one distribution root element must be specified."
+    echo
     echo "Examples:"
     echo "    ${SCRIPTNAME} -a amd64 -o ubuntu-amd64 vm ubuntu"
     echo "    export ELEMENTS_PATH=~/source/tripleo-image-elements/elements"
