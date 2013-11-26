@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# The version of openssl shipped in the fedora cloud image is no longer
+# compatible with new python environments installed by virtualenv, so we need
+# to update it first.
+# See https://bugs.launchpad.net/diskimage-builder/+bug/1254879
+install-packages openssl
