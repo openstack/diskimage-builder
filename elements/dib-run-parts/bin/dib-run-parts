@@ -24,10 +24,15 @@ set -ue
 name=$(basename $0)
 
 usage() {
-    echo "usage: $name [OPTION] scripts_directory" >&2
-    echo "      --list  print names of all valid files" >&2
+    echo "Usage: $name [OPTION] scripts_directory"
+    echo "Option:"
+    echo "      --list  print names of all valid files"
+    echo
+    echo "Examples:"
+    echo "      dib-run-parts --list /opt/stack/os-config-refresh/configure.d/"
+    echo "      dib-run-parts /opt/stack/os-config-refresh/configure.d/"
     exit 1
-}
+} >&2
 
 output () {
     echo $name $(date) $* >&2
@@ -42,10 +47,10 @@ if [ "$1" == "--list" ] ; then
     shift
 fi
 
-target_dir=$1
+target_dir="${1:-}"
 
-if ! [ -d $target_dir ] ; then
-    output $target_dir must exist and be a directory
+if ! [ -d "$target_dir" ] ; then
+    output "Scripts directory [$target_dir] must exist and be a directory"
     usage
 fi
 
