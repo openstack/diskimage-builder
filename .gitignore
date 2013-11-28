@@ -1,6 +1,6 @@
 *~
 .testrepository
-*.swp
+*.sw?
 *.pyc
 .tox
 *.egg
