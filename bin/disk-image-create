@@ -23,7 +23,7 @@ export LANG=C
 
 # Store our initial environment and command line args for later
 export DIB_ARGS="$@"
-export DIB_ENV=$(export)
+export DIB_ENV=$(export | grep ' DIB_.*=')
 
 SCRIPTNAME=$(basename $0)
 SCRIPT_HOME=$(dirname $0)
