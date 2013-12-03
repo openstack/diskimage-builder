@@ -1,0 +1,51 @@
+readonly IRONIC_API_URL=$(get_kernel_parameter ironic_api_url)
+
+if [ -z "$ISCSI_TARGET_IQN" ]; then
+  err_msg "iscsi_target_iqn is not defined"
+  troubleshoot
+fi
+
+t=0
+while ! target_disk=$(find_disk "$DISK"); do
+  if [ $t -eq 10 ]; then
+    break
+  fi
+  t=$(($t + 1))
+  sleep 1
+done
+
+if [ -z "$target_disk" ]; then
+  err_msg "Could not find disk to use."
+  troubleshoot
+fi
+
+echo "start iSCSI target on $target_disk"
+start_iscsi_target "$ISCSI_TARGET_IQN" "$target_disk" ALL
+if [ $? -ne 0 ]; then
+  err_msg "Failed to start iscsi target."
+  troubleshoot
+fi
+
+TOKEN_FILE=token-$DEPLOYMENT_ID
+
+if tftp -r /tftpboot/$TOKEN_FILE -g $BOOT_SERVER
+then TOKEN_HEADER="-H 'X-Auth-Token: `cat $TOKEN_FILE`'"
+else TOKEN_HEADER=""
+fi
+
+DATA="'{\"address\":\"$BOOT_IP_ADDRESS\",\"key\":\"$DEPLOYMENT_KEY\",\"iqn\":\"$ISCSI_TARGET_IQN\",\"error\":\"$FIRST_ERR_MSG\"}'"
+
+echo "request Ironic API to deploy image"
+curl \
+ -X POST \
+ -H 'Content-Type: application/json' \
+ $TOKEN_HEADER \
+ -d $DATA \
+ $IRONIC_API_URL/nodes/$DEPLOYMENT_ID/vendor_passthru/pass_deploy_info
+
+echo "waiting for notice of complete"
+nc -l -p 10000
+
+echo "stop iSCSI target on $target_disk"
+
+stop_iscsi_target
