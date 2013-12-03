@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sed -i "s%^\(SELINUX=\s*\).*$%SELINUX=disabled%" /etc/selinux/config
+config=/etc/selinux/config
+[ -e $config ] && sed -i "s%^\(SELINUX=\s*\).*$%SELINUX=disabled%" $config
