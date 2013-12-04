@@ -50,8 +50,10 @@ function get_repos_for_element(){
 
             case $REPOTYPE in
             git)
+                echo "Fetching $REPONAME git repository from $REPOLOCATION($REPOREF)"
                 sudo mkdir -p $REPO_SUB_DIRECTORY
                 if [ -n "$CACHE_PATH" ] ; then
+                    echo "Caching $REPONAME source repository in $CACHE_PATH"
                     if [ ! -e "$CACHE_PATH" ] ; then
                         git clone $REPOLOCATION $CACHE_PATH.tmp
                         mv ${CACHE_PATH}{.tmp,}
@@ -74,11 +76,13 @@ function get_repos_for_element(){
                 # assume the tarball only contains a single top level directory
                 local tmpdir=$(mktemp --tmpdir=$TMP_MOUNT_PATH/tmp -d)
                 if [ -n "$CACHE_PATH" ] ; then
+                    echo "Caching $REPONAME tarball from $REPOLOCATION in $CACHE_PATH"
                     if [ ! -f "$CACHE_PATH" -o -z "$DIB_OFFLINE" ] ; then
                         $CACHE_URL $REPOLOCATION $CACHE_PATH
                     fi
                     tar -C $tmpdir -xzf $CACHE_PATH
                 else
+                    echo "Fetching $REPONAME tarball from $REPOLOCATION"
                     curl $REPOLOCATION | tar -C $tmpdir -xzf -
                 fi
                 sudo mkdir -p $REPO_DEST
@@ -88,11 +92,13 @@ function get_repos_for_element(){
             file)
                 sudo mkdir -p $REPO_SUB_DIRECTORY
                 if [ -n "$CACHE_PATH" ] ; then
+                    echo "Caching $REPONAME file from $REPOLOCATION in $CACHE_PATH"
                     if [ ! -f "$CACHE_PATH" -o -z "$DIB_OFFLINE" ] ; then
                         $CACHE_URL $REPOLOCATION $CACHE_PATH
                     fi
                     sudo cp $CACHE_PATH $REPO_DEST
                 else
+                    echo "Fetching $REPONAME file from $REPOLOCATION"
                     sudo curl $REPOLOCATION -o $REPO_DEST
                 fi
                 ;;
