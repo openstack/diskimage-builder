@@ -3,5 +3,7 @@
 set -e
 set -x
 
+IMAGE_NAME=${IMAGE_NAME:-'image'}
+
 cp $TMP_MOUNT_PATH/tmp/ramdisk $IMAGE_NAME.initramfs
 cp $TMP_MOUNT_PATH/tmp/kernel $IMAGE_NAME.kernel
