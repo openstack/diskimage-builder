@@ -66,9 +66,14 @@ function show_options () {
     echo "NOTE: At least one distribution root element must be specified."
     echo
     echo "Examples:"
-    echo "    ${SCRIPTNAME} -a amd64 -o ubuntu-amd64 vm ubuntu"
-    echo "    export ELEMENTS_PATH=~/source/tripleo-image-elements/elements"
-    echo "    ${SCRIPTNAME} -a amd64 -o fedora-amd64-heat-cfntools vm fedora heat-cfntools"
+    if [ "$IS_RAMDISK" == "0" ]; then
+        echo "    ${SCRIPTNAME} -a amd64 -o ubuntu-amd64 vm ubuntu"
+        echo "    export ELEMENTS_PATH=~/source/tripleo-image-elements/elements"
+        echo "    ${SCRIPTNAME} -a amd64 -o fedora-amd64-heat-cfntools vm fedora heat-cfntools"
+    else
+        echo "    ${SCRIPTNAME} -a amd64 -o fedora-deploy deploy fedora"
+        echo "    ${SCRIPTNAME} -a amd64 -o ubuntu-ramdisk ramdisk ubuntu"
+    fi
 }
 
 INSTALL_PACKAGES=""
