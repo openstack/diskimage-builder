@@ -152,7 +152,7 @@ function populate_lib () {
   for i in "$BUSYBOX" bash lsmod modprobe udevadm \
            wget reboot shutdown $UDEVD $UDEV_FIRMWARE \
            $(cat /etc/dib_binary_deps) ; do
-    if "$BUSYBOX" --list | grep "^$i\$" >/dev/null; then
+    if busybox_list | grep "^$i\$" >/dev/null; then
       continue
     fi
     path=`which $i 2>/dev/null` || path=$i
@@ -170,10 +170,18 @@ function populate_lib () {
   cp -a "$FIRMWARE_DIR" "$TMP_MOUNT_PATH/lib/firmware"
 }
 
+function busybox_list () {
+    # busybox supports --list option since version 1.18
+    "$BUSYBOX" --list 2> /dev/null && return
+    # for busybox under 1.18 we parse command list from --help output
+    scrlet='{ if (go) { print } } /Currently defined functions:/ { go=1 }'
+    "$BUSYBOX" --help | awk "$scrlet" | tr ',' '\n' | xargs -n1 echo
+}
+
 function populate_busybox () {
   echo "Creating symlinks for busybox binaries"
 
-  for i in $( "$BUSYBOX" --list ); do
+  for i in $( busybox_list ); do
     if [ -f "$TMP_MOUNT_PATH/bin/$i" ]; then
       echo "skip $i"
       continue
