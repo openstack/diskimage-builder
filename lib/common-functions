@@ -131,7 +131,7 @@ function eval_run_d () {
 # Usage: map_nbd $image
 # Returns nbd device path
 function map_nbd {
-    (lsmod | grep '^nbd ') || sudo modprobe nbd max_part=16
+    (lsmod | grep '^nbd ' >/dev/null) || sudo modprobe nbd max_part=16
 
     if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then
         CACHE="--cache=writeback"
@@ -161,7 +161,7 @@ function map_nbd {
 # Delete and unmount the working dir used in extracting kernel/initrd
 function unmount_qcow_image () {
     sudo umount $WORK_DIR || true
-    sudo qemu-nbd -d $NBD_DEV || true
+    sudo qemu-nbd -d $NBD_DEV >/dev/null || true
     sudo rm -rf $WORK_DIR
 
     trap - SIGHUP SIGINT SIGTERM EXIT

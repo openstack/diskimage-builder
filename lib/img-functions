@@ -45,7 +45,7 @@ function ensure_nbd () {
         exit 1
     fi
     # prep nbd for mounting
-    (lsmod | grep '^nbd ') || sudo modprobe nbd max_part=16
+    (lsmod | grep '^nbd ' >/dev/null) || sudo modprobe nbd max_part=16
 }
 
 function ensure_sudo () {
