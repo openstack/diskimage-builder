@@ -20,7 +20,3 @@ Notes:
   hooks.  The exceptions are 01-install-bin, which has been copied to
   this element, and 01-override-zypp-arch (which is something that
   could probably be jammed into the base image...).
-* We might want to use the local-config element (after updating that element to
-  inject http\_proxy properly for openSUSE, of course).
-  (https://bugs.launchpad.net/diskimage-builder/+bug/1256982)
-

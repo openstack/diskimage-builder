@@ -11,6 +11,9 @@ fi
 if [ -e /etc/yum.conf ] ; then
   have_yum=1
 fi
+if [ -d /etc/zypp ] ; then
+  have_zypper=1
+fi
 
 if [ -n "$http_proxy" ]; then
    if [ -d ~stack ]; then
@@ -22,6 +25,9 @@ if [ -n "$http_proxy" ]; then
    if [ -n "$have_yum" ] ; then
      sed -i -e "s,\[main\],[main]\nproxy=$http_proxy," /etc/yum.conf
    fi
+   if [ -n "$have_zypper" ] ; then
+     sed -i -e "s,^HTTP_PROXY=.*$,HTTP_PROXY=\"$http_proxy\"," /etc/sysconfig/proxy
+   fi
 fi
 
 if [ -n "$https_proxy" ]; then
@@ -31,10 +37,17 @@ if [ -n "$https_proxy" ]; then
    if [ -n "$have_apt" ] ; then
      echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/61-use-https-proxy
    fi
+   if [ -n "$have_zypper" ] ; then
+     sed -i -e "s,^HTTPS_PROXY=.*$,HTTPS_PROXY=\"$https_proxy\"," /etc/sysconfig/proxy
+   fi
 fi
 
 if [ -n "$http_proxy" -o -n "$https_proxy" ]; then
    if [ -d ~stack ]; then
       echo export no_proxy=192.0.2.1 >> ~stack/.profile
+   fi
+   if [ -n "$have_zypper" ] ; then
+      sed -i -e "s,^PROXY_ENABLED=.*$,PROXY_ENABLED=\"yes\"," \
+             -e "s,^\(NO_PROXY=.*\)\"$,\1\, 192.0.2.1\"," /etc/sysconfig/proxy
    fi
 fi
