@@ -2,7 +2,7 @@
 
 set -e
 
-[ -n "TARGET_ROOT" ]
+[ -n "$TARGET_ROOT" ]
 
 YUM_CACHE_DIR=~/.cache/image-create/yum
 mkdir -p $YUM_CACHE_DIR

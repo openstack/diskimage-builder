@@ -2,7 +2,5 @@
 
 set -e
 
-[ -n "TARGET_ROOT" ]
-
-sudo sed -i 's/keepcache=0/keepcache=1/' $TARGET_ROOT/etc/yum.conf
-sudo sed -i 's/cachedir=\/var\/cache\/yum/cachedir=\/tmp\/yum/' $TARGET_ROOT/etc/yum.conf
+sudo sed -i 's/keepcache=0/keepcache=1/' /etc/yum.conf
+sudo sed -i 's/cachedir=\/var\/cache\/yum/cachedir=\/tmp\/yum/' /etc/yum.conf
