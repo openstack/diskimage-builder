@@ -16,7 +16,3 @@ Notes:
   /tmp/in\_target.d/finalise.d/51-bootloader: line 14: 16286 Segmentation fault
   extlinux --install /boot/syslinux
   (https://bugzilla.novell.com/show_bug.cgi?id=852856)
-* This element doesn't need half of the rpm-distro element's pre-install
-  hooks.  The exceptions are 01-install-bin, which has been copied to
-  this element, and 01-override-zypp-arch (which is something that
-  could probably be jammed into the base image...).
