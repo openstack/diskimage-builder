@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+# Enable caching packages for all repositories
+sudo zypper modifyrepo --all --keep-packages

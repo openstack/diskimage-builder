@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+[ -n "$TARGET_ROOT" ]
+
+ZYPPER_CACHE_DIR=~/.cache/image-create/zypper
+mkdir -p $ZYPPER_CACHE_DIR
+
+sudo mount --bind $ZYPPER_CACHE_DIR $TMP_MOUNT_PATH/var/cache/zypp
