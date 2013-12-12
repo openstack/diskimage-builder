@@ -120,24 +120,31 @@ function install_grub2 {
 
     # This might be better factored out into a per-distro 'install-bootblock'
     # helper.
-    if [ -f "/boot/grub/grub.cfg" ] ; then
-      GRUB_CFG=/boot/grub/grub.cfg
-    elif [ -f "/boot/grub2/grub.cfg" ] ; then
+    if [ -d /boot/grub2 ]; then
       GRUB_CFG=/boot/grub2/grub.cfg
+    elif [ -d /boot/grub ]; then
+      GRUB_CFG=/boot/grub/grub.cfg
     fi
-
-    # If GRUB configuration file does not exist, generate one
-    if [ ! $GRUB_CFG ]; then
-      if [ -d /boot/grub2 ]; then
-        GRUB_CFG=/boot/grub2/grub.cfg
-      elif [ -d /boot/grub ]; then
-        GRUB_CFG=/boot/grub/grub.cfg
-      fi
-      grub2-mkconfig -o $GRUB_CFG
-    fi;
 
     DIST=`lsb_release -is`
     [ -n "$DIST" ]
+    echo 'GRUB_TERMINAL=console' >>/etc/default/grub
+    echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
+    GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
+    case $DIST in
+      'Ubuntu'|'Debian')
+        sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
+        GRUB_MKCONFIG=update-grub
+        ;;
+      'Fedora')
+        echo 'GRUB_CMDLINE_LINUX="nofb nomodeset vga=normal"' >>/etc/default/grub
+        ;;
+      'openSUSE project')
+        sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
+        ;;
+    esac
+    $GRUB_MKCONFIG
+
     RELEASE=`lsb_release -cs`
     [ -n "$RELEASE" ]
     # grub-mkconfig generates a config with the device in it,
