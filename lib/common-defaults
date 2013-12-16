@@ -43,8 +43,14 @@ export ELEMENTS_PATH=${ELEMENTS_PATH:-$_BASE_ELEMENT_DIR}
 export DIB_OFFLINE=${DIB_OFFLINE:-''}
 
 # /sbin and friends aren't automatically included in $PATH when running sudo
-# on SUSE Linux which breaks various pieces of this script in exciting ways,
-# so inject them into the current $PATH if they're not there.
-if ! [[ "$PATH" =~ "/sbin" ]] ; then
-  export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
+# on Fedora/RHEL/SUSE Linux which breaks various pieces of this script in
+# exciting ways, so inject them into the current $PATH if they're not there.
+if ! [[ ":$PATH" =~ ":/sbin" ]] ; then
+  export PATH=$PATH:/sbin
+fi
+if ! [[ ":$PATH" =~ ":/usr/sbin" ]] ; then
+  export PATH=$PATH:/usr/sbin
+fi
+if ! [[ ":$PATH" =~ ":/usr/local/sbin" ]] ; then
+  export PATH=$PATH:/usr/local/sbin
 fi
