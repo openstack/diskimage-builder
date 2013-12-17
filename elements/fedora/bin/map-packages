@@ -31,6 +31,7 @@ package_map = {
     'libxslt-dev': 'libxslt-devel',
     'python-libvirt': 'libvirt-python',
     'libvirt-bin': 'libvirt',
+    'libvirt-dev': 'libvirt-devel',
     'python-xattr': 'pyxattr',
     'python-memcache': 'python-memcached',
     'tgt': 'scsi-target-utils',
