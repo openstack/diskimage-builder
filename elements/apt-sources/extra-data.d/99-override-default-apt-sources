@@ -1,0 +1,25 @@
+#!/bin/bash
+# Override the default /etc/apt/sources.list with $DIB_APT_SOURCES
+
+set -e
+
+# get the cloudimg version
+source $TMP_MOUNT_PATH/etc/lsb-release
+echo "Current cloudimg codename is: $DISTRIB_DESCRIPTION $DISTRIB_CODENAME"
+
+# exit directly if DIB_APT_SOURCES is not defined properly
+if [ -z "$DIB_APT_SOURCES" ] ; then
+    echo "DIB_APT_SOURCES must be set to the location of a sources.list file you wish to use"
+    exit 1
+elif [ ! -f "$DIB_APT_SOURCES" -o ! -s "$DIB_APT_SOURCES" ] ; then
+    echo "$DIB_APT_SOURCES  is not a valid sources.list file."
+    echo "You should assign proper sources.list file in DIB_APT_SOURCES"
+    exit 1
+fi
+
+DIB_APT_SOURCES=`readlink -f $DIB_APT_SOURCES`
+
+# copy the sources.list to cloudimg
+pushd $TMP_MOUNT_PATH/etc/apt/
+sudo cp -f $DIB_APT_SOURCES sources.list
+popd
