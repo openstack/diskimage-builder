@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+sed -i -e "s,^USERGROUPS_ENAB.*$,USERGROUPS_ENAB yes," /etc/login.defs
