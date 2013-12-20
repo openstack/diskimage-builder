@@ -101,7 +101,7 @@ function get_repos_for_element(){
                 fi
                 ;;
             *)
-                echo "Unsupported repository type"
+                echo "Unsupported repository type: $REPOTYPE"
                 return 1
                 ;;
             esac
