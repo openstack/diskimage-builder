@@ -35,38 +35,36 @@ function get_repos_for_element(){
             # REPOLOCATION can be overridden with DIB_REPOLOCATION_{name}
             local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME//-/_}
             REPOLOCATION=${!REPOLOCATION_OVERRIDE:-$REPOLOCATION}
-            if [ "$REPOLOCATION" = "$REPO_ORIG_LOCATION" ] ; then
-                # We're pulling from the element specified repo, do caching for
-                # the user.
-                CACHE_NAME=$(echo $REPOLOCATION | sha1sum | awk '{ print $1 }' )
-                CACHE_PATH=~/.cache/image-create/repository-sources/$CACHE_NAME
-            else
-                CACHE_PATH=''
-            fi
 
             # REPOREF can be overridden with DIB_REPOREF_{name}
             local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME//-/_}
             REPOREF=${!REPOREF_OVERRIDE:-$REPOREF}
 
+            # Determine a unique cache path for this repo
+            CACHE_NAME=$(echo "${REPOTYPE}_${REPOLOCATION}" | sha1sum | awk '{ print $1 }' )
+            CACHE_PATH=~/.cache/image-create/repository-sources/$CACHE_NAME
+
             case $REPOTYPE in
             git)
-                echo "Fetching $REPONAME git repository from $REPOLOCATION($REPOREF)"
                 sudo mkdir -p $REPO_SUB_DIRECTORY
-                if [ -n "$CACHE_PATH" ] ; then
-                    echo "Caching $REPONAME source repository in $CACHE_PATH"
-                    if [ ! -e "$CACHE_PATH" ] ; then
-                        git clone $REPOLOCATION $CACHE_PATH.tmp
-                        mv ${CACHE_PATH}{.tmp,}
-                    elif [ -z "$DIB_OFFLINE" ] ; then
-                        git --git-dir=$CACHE_PATH/.git fetch
-                        git --git-dir=$CACHE_PATH/.git --work-tree=$CACHE_PATH reset --hard origin/master
-                    fi
-                    sudo git clone $CACHE_PATH $REPO_DEST
-                else
-                    sudo git clone $REPOLOCATION $REPO_DEST
+
+                if [ ! -e "$CACHE_PATH" ] ; then
+                    echo "Caching $REPONAME from $REPOLOCATION in $CACHE_PATH"
+                    git clone $REPOLOCATION $CACHE_PATH.tmp
+                    mv ${CACHE_PATH}{.tmp,}
                 fi
+
+                HAS_REF=$(git --git-dir=$CACHE_PATH/.git show-ref $REPOREF || true)
+                if [ -z "$DIB_OFFLINE" -o -z "$HAS_REF" ] ; then
+                    echo "Updating cache of $REPOLOCATION in $CACHE_PATH with ref $REPOREF"
+                    git --git-dir=$CACHE_PATH/.git fetch --update-head-ok $REPOLOCATION ${REPOREF}:${REPOREF}
+                fi
+
+                echo "Cloning from $REPONAME cache and applying ref $REPOREF"
+                sudo git clone $CACHE_PATH $REPO_DEST
                 pushd $REPO_DEST
-                sudo git reset --hard $REPOREF
+                sudo git fetch $CACHE_PATH $REPOREF
+                sudo git reset --hard FETCH_HEAD
                 popd
                 ;;
             tar)

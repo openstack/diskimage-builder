@@ -29,6 +29,13 @@ mirror you could set DIB_REPOLOCATION_ironic=git://localgitserver/ironic.git
 Alternatively if you would like to use the keystone element and build an image with
 keystone from a stable branch then you would set DIB_REPOREF_keystone=stable/grizzly
 
+If you wish to build an image using code from a gerrit review, you can set 
+DIB_REPOLOCATION_<name> and DIB_REPOREF_<name> to the values given by gerrit in the
+fetch/pull section of a review. For example:
+
+    DIB_REPOLOCATION_nova=https://review.openstack.org/openstack/nova
+    DIB_REPOREF_nova=refs/changes/72/61972/8
+
 Git sources will be cloned to \<destination\>
 
 Tarballs will be extracted to \<destination\>. Tarballs should contain a
