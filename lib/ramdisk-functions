@@ -25,7 +25,14 @@ function fullpath() {
 }
 
 function cleanup () {
-  sudo umount -f $TMP_BUILD_DIR || true
+  unmount_dir "$TMP_BUILD_DIR/mnt"
+  if [ -f "$TMP_IMAGE_PATH" ]; then
+    loopdev=`sudo losetup -j "$TMP_IMAGE_PATH" | cut -d: -f1`
+    if [ -n "$loopdev" ]; then
+      detach_loopback "$loopdev"
+    fi
+  fi
+  unmount_dir "$TMP_BUILD_DIR"
   rm -rf --one-file-system "$TMP_BUILD_DIR"
 }
 

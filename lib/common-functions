@@ -275,3 +275,12 @@ function mount_proc_dev_sys () {
     sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
 }
 
+function unmount_dir () {
+    local pattern="$1" mnts=""
+    if [ -n "$pattern" ]; then
+        mnts=`awk '{print $2}' < /proc/mounts | grep "^$pattern" | sort -r`
+    fi
+    if [ -n "$mnts" ]; then
+        sudo umount -fl $mnts || true
+    fi
+}
