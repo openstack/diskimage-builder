@@ -49,6 +49,9 @@ else
         # UPDATE to above warning alluding to Fedora18:
         # F19 images have the rootfs partition on p1
         MAGIC_BIT=p1
+        # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
+        # loop device and creates it if it doesn't exist
+        sudo losetup -f
         # XXX: Parsing stdout is dangerous, would like a better way to discover
         #      the device used for the image.
         # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
