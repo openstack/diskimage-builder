@@ -10,7 +10,7 @@ function get_repos_for_element(){
     local REPO_SOURCES=$1
     local CACHE_URL=$TMP_HOOKS_PATH/bin/cache-url
 
-    local REGEX="^([^ ]+) (git|tar|file) (/[^ ]+) ([^ ]+) ?([^ ]*)$"
+    local REGEX="^([^ ]+) (git|tar|file|package) ?(/[^ ]+)? ?([^ ]+)? ?([^ ]*)$"
 
     while read line ; do
 
@@ -100,6 +100,9 @@ function get_repos_for_element(){
                     sudo curl $REPOLOCATION -o $REPO_DEST
                 fi
                 ;;
+            package)
+                echo "$REPONAME set to package source type"
+                ;;
             *)
                 echo "Unsupported repository type: $REPOTYPE"
                 return 1
@@ -108,6 +111,9 @@ function get_repos_for_element(){
             # Capture the in-instance repository path for later review / other
             # elements (like a pypi dependency cache).
             echo "$REPOPATH" | sudo dd of=$TMP_MOUNT_PATH/etc/dib-source-repositories oflag=append conv=notrunc
+            # Save the $REPOTYPE used so that it can be used later by install.d
+            mkdir -p $TMP_HOOKS_PATH/environment.d
+            echo "export DIB_REPOTYPE_${REPONAME//-/_}=$REPOTYPE" >> $TMP_HOOKS_PATH/environment.d/01-source-repositories-environment
         else
             echo "Couldn't parse '$line' as a source repository"
             return 1
