@@ -8,7 +8,4 @@ boot.
 
 The script /usr/local/sbin/generate-interfaces-file.sh will be called
 early in each boot and will scan available network interfaces and
-ensure they are all present in /etc/network/interfaces.
-
-Note that this element is only expected to be useful on Debian-derived
-distributions, currently.
+ensure they are configured properly before networking services are started.
