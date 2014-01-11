@@ -144,11 +144,11 @@ MKFS_OPTS=""
 if [ -n "$DIB_IMAGE_SIZE" ]; then
   truncate -s${DIB_IMAGE_SIZE}G $TMP_IMAGE_PATH
 else
-  # in kb*0.70 - underreport to get a slightly bigger device
+  # in kb*0.60 - underreport to get a slightly bigger device
   # Rounding down size so that is is a multiple of 64, works around a bug in
   # qemu-img that may occur when compressing raw images that aren't a multiple
   # of 64k. https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1180021
-  _NEEDED_SIZE=$(sudo du --block-size=700 -x -s ${TMP_BUILD_DIR}/built | \
+  _NEEDED_SIZE=$(sudo du --block-size=600 -x -s ${TMP_BUILD_DIR}/built | \
                  awk ' { print $1  - ( $1 % 64) } ')
   truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
   if [ "$FS_TYPE" = "ext4" ] ; then
