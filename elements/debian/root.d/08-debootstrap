@@ -1,0 +1,34 @@
+#!/bin/sh
+set -eu
+DIB_RELEASE=${DIB_RELEASE:-unstable}
+DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DIB_RELEASE}-${ARCH}.tar.gz
+DIB_DEBIAN_MIRROR=${DIB_DEBIAN_MIRROR:-http://http.debian.net/debian}
+http_proxy=${http_proxy:-}
+
+set -x
+if [ -n "$DIB_OFFLINE" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
+    echo $DEBOOTSTRAP_TARBALL found in cache. Using.
+    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
+else
+    echo Building new tarball for Debian $DIB_RELEASE ARCH=$ARCH
+    ADD_PACKAGES=cloud-init,cloud-utils,cloud-initramfs-growroot,sudo,adduser,locales,openssh-server,file,less,kbd,curl,bash-completion,linux-image-amd64
+    sudo sh -c "http_proxy=$http_proxy debootstrap --verbose \
+        --arch=${ARCH} \
+        --include=${ADD_PACKAGES} \
+        $DIB_RELEASE \
+        $TARGET_ROOT \
+        $DIB_DEBIAN_MIRROR"
+    echo "Customizing result for cloud use"
+    sudo sed -i "s/PermitRootLogin yes/PermitRootLogin without-password/" $TARGET_ROOT/etc/ssh/sshd_config
+    sudo chroot ${TARGET_ROOT} adduser --gecos Debian-cloud-init-user --disabled-password --quiet debian
+    sudo install -d -m 0755 -o root -g root ${TARGET_ROOT}/etc/sudoers.d
+    sudo sh -c "echo 'debian ALL=(ALL) NOPASSWD:ALL' > ${TARGET_ROOT}/etc/sudoers.d/debian-cloud-init"
+    sudo chmod 0440 ${TARGET_ROOT}/etc/sudoers.d/debian-cloud-init
+    sudo sh -c "echo 'proc /proc proc nodev,noexec,nosuid 0 0
+LABEL=cloudimg-rootfs / ext4 errors=remount-ro 0 1
+' > ${TARGET_ROOT}/etc/fstab"
+    sudo sh -c "echo 'blacklist pcspkr' > ${TARGET_ROOT}/etc/modprobe.d/blacklist.conf"
+    sudo sh -c "echo 'debian' > ${TARGET_ROOT}/etc/hostname"
+    echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
+    sudo tar -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL .
+fi
