@@ -3,5 +3,10 @@
 home=$(dirname $0)
 set -uex
 
-install -m 0644 -o root -g root $home/ttySx.conf /etc/init/ttySx.conf
-
+DIB_INIT_SYSTEM=$(dib-init-system)
+if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
+    install -m 0644 -o root -g root $home/ttySx.conf /etc/init/ttySx.conf
+elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
+    ln -s /usr/lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@ttyS0.service
+    ln -s /usr/lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@ttyS1.service
+fi
