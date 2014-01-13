@@ -1,7 +1,12 @@
 #!/bin/sh
 set -eu
+if [ -f ${TARGET_ROOT}/.distro-name ] ; then
+    DISTRO_NAME=$(cat ${TARGET_ROOT}/.distro-name)
+else
+    DISTRO_NAME=debian
+fi
 DIB_RELEASE=${DIB_RELEASE:-unstable}
-DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DIB_RELEASE}-${ARCH}.tar.gz
+DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
 DIB_DEBIAN_MIRROR=${DIB_DEBIAN_MIRROR:-http://http.debian.net/debian}
 http_proxy=${http_proxy:-}
 
@@ -12,6 +17,9 @@ if [ -n "$DIB_OFFLINE" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
 else
     echo Building new tarball for Debian $DIB_RELEASE ARCH=$ARCH
     ADD_PACKAGES=cloud-init,cloud-utils,cloud-initramfs-growroot,sudo,adduser,locales,openssh-server,file,less,kbd,curl,bash-completion,linux-image-amd64
+    if [ -f ${TARGET_ROOT}/.extra-packages ] ; then
+        ADD_PACKAGES=${ADD_PACKAGES},$(cat ${TARGET_ROOT}/.extra-packages)
+    fi
     sudo sh -c "http_proxy=$http_proxy debootstrap --verbose \
         --arch=${ARCH} \
         --include=${ADD_PACKAGES} \
