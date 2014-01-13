@@ -1,0 +1,3 @@
+#!/bin/bash
+set -eux
+sudo rm -f ${TARGET_ROOT}/.distro-name ${TARGET_ROOT}/.extra-packages
