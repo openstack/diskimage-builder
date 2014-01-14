@@ -36,12 +36,12 @@ fi
 DATA="'{\"address\":\"$BOOT_IP_ADDRESS\",\"key\":\"$DEPLOYMENT_KEY\",\"iqn\":\"$ISCSI_TARGET_IQN\",\"error\":\"$FIRST_ERR_MSG\"}'"
 
 echo "request Ironic API to deploy image"
-curl \
- -X POST \
- -H 'Content-Type: application/json' \
- $TOKEN_HEADER \
- -d $DATA \
- $IRONIC_API_URL/nodes/$DEPLOYMENT_ID/vendor_passthru/pass_deploy_info
+eval curl -i -X POST \
+     "$TOKEN_HEADER" \
+     "-H 'Accept: application/json'" \
+     "-H 'Content-Type: application/json'" \
+     -d "$DATA" \
+     $IRONIC_API_URL/nodes/$DEPLOYMENT_ID/vendor_passthru/pass_deploy_info
 
 echo "waiting for notice of complete"
 nc -l -p 10000
