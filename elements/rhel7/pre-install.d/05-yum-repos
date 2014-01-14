@@ -1,0 +1,21 @@
+#!/bin/bash
+
+cat << EOF > /etc/yum.repos.d/rhel7.repo
+[rhel7]
+name=RHEL7
+failovermethod=priority
+baseurl=http://ftp.redhat.com/redhat/rhel/beta/7/x86_64/os/
+enabled=1
+metadata_expire=7d
+gpgcheck=0
+EOF
+
+cat << EOF > /etc/yum.repos.d/epel.repo
+[epel]
+name=epel
+failovermethod=priority
+baseurl=http://download-i2.fedoraproject.org/pub/epel/beta/7/x86_64/
+enabled=1
+metadata_expire=7d
+gpgcheck=0
+EOF
