@@ -58,7 +58,7 @@ for interface in $(ls /sys/class/net | grep -v ^lo$) ; do
     ip link set dev $interface up >/dev/null 2>&1
     HAS_LINK="$(get_if_link $interface)"
 
-    TRIES=3
+    TRIES=10
     while [ "$HAS_LINK" == "0" -a $TRIES -gt 0 ]; do
       HAS_LINK="$(get_if_link $interface)"
       if [ "$HAS_LINK" == "1" ]; then
