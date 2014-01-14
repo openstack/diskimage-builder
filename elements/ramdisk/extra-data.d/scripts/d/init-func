@@ -167,6 +167,30 @@ function find_disk() {
 	return 0
 }
 
+function check_tgtd_socket() {
+	echo -n "waiting for tgtd socket..."
+	if [ -e /var/run/tgtd.ipc_abstract_namespace.0 ]; then
+		echo "found"
+		return 0
+	else
+		echo "not found"
+		return 1
+	fi
+}
+
+wait_for(){
+	LOOPS=$1
+	SLEEPTIME=$2
+	shift ; shift
+	i=0
+	while [ $i -lt $LOOPS ] ; do
+		i=$((i + 1))
+		eval "$@" && return 0 || true
+		sleep $SLEEPTIME
+	done
+	return 1
+}
+
 function start_iscsi_target() {
 	local iqn=$1
 	local dev=$2
@@ -176,6 +200,7 @@ function start_iscsi_target() {
 	mkdir -p /var/run
 
 	tgtd
+	wait_for 10 0.5 check_tgtd_socket
 
 	tgtadm --lld iscsi --mode target --op new --tid 1 --targetname "$iqn"
 	tgtadm --lld iscsi --mode logicalunit --op new --tid 1 --lun 1 --backing-store "$dev"
