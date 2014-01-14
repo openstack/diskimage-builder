@@ -1,8 +1,0 @@
-start on runlevel [2345]
-
-task
-
-author "Clint Byrum <clint@fewbar.com>"
-description "Config Applier"
-
-exec config-applier

@@ -1,1 +1,0 @@
-config-applier git /opt/stack/config-applier https://git.openstack.org/openstack/os-apply-config.git
