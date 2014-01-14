@@ -1,4 +1,4 @@
-With this element other elements can register source code repositories by
+With this element other elements can register their installation source by
 placing their details in the file source-repository-\*. An example
 of an element "custom-element" that wants to retrieve the ironic source
 from git and pbr from a tarball would be
@@ -42,6 +42,9 @@ Tarballs will be extracted to \<destination\>. Tarballs should contain a
 single topleval directory, regardless of the name of this top level directory
 it will be renamed to \<destination\>
 
+The package type indicates the element should install from packages onto the
+root filesystem of the image build during the install.d phase.
+
 If multiple elements register a source location with the same <destination>
 then source-repositories will exit with an error. Care should therefore be taken
 to only use elements together that download source to different locations.
@@ -49,3 +52,7 @@ to only use elements together that download source to different locations.
 The repository paths built into the image are stored in
 etc/dib-source-repositories, one repository per line. This permits later review
 of the repositories (by users or by other elements).
+
+The repository names and types are written to an environment.d hook script at
+01-source-repositories-environment. This allows later hook scripts during the
+install.d phase to know which install type to use for the element.
