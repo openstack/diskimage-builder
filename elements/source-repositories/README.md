@@ -45,6 +45,31 @@ it will be renamed to \<destination\>
 The package type indicates the element should install from packages onto the
 root filesystem of the image build during the install.d phase.
 
+Git and Tarballs are treated as source installs.  If the element provides an
+<element-name>-source-install directory under it's install.d hook directory,
+symlinks to the scripts in that directory will be created under install.d for
+the image build.  Alternatively for the package install type, if the element
+provides an <element-name>-package-install directory, symlinks will be created
+for those scripts instead.
+
+For example, the nova element would provide:
+
+    nova/install.d/nova-package-install/74-nova
+    nova/install.d/nova-source-install/74-nova
+
+source-repositories will create the following symlink for the package install
+type:
+
+    install.d/74-nova -> nova-package-install/74-nova
+
+Or, for the source install type:
+
+    install.d/74-nova -> nova-source-install/74-nova
+
+All other scripts that exist under install.d for an element will be executed as
+normal. This allows common install code to live in a script outside of
+<element-name>-package-install or <element-name>-source-install.
+
 If multiple elements register a source location with the same <destination>
 then source-repositories will exit with an error. Care should therefore be taken
 to only use elements together that download source to different locations.

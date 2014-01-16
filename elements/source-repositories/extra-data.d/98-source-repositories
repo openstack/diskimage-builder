@@ -108,12 +108,25 @@ function get_repos_for_element(){
                 return 1
                 ;;
             esac
+
             # Capture the in-instance repository path for later review / other
             # elements (like a pypi dependency cache).
             echo "$REPOPATH" | sudo dd of=$TMP_MOUNT_PATH/etc/dib-source-repositories oflag=append conv=notrunc
+
             # Save the $REPOTYPE used so that it can be used later by install.d
-            mkdir -p $TMP_HOOKS_PATH/environment.d
-            echo "export DIB_REPOTYPE_${REPONAME//-/_}=$REPOTYPE" >> $TMP_HOOKS_PATH/environment.d/01-source-repositories-environment
+            if [ "$REPOTYPE" = "package" ]; then
+                REPOINSTALLTYPE="package"
+            else
+                REPOINSTALLTYPE="source"
+            fi
+
+            # Create symlink for correct install type
+            pushd $TMP_HOOKS_PATH/install.d
+            if [ -e $REPONAME-$REPOINSTALLTYPE-install ]; then
+                ln -sf $REPONAME-$REPOINSTALLTYPE-install/* .
+            fi
+            popd
+
         else
             echo "Couldn't parse '$line' as a source repository"
             return 1
