@@ -4,5 +4,3 @@ coverage>=3.6
 discover
 testrepository>=0.0.17
 testtools>=0.9.32
-Babel>=1.3
-argparse
