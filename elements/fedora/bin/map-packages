@@ -25,13 +25,9 @@ package_map = {
     'linux-image-generic': 'kernel',
     'open-iscsi': 'iscsi-initiator-utils',
     'vlan': 'vconfig',
-    'python-dev': 'python-devel',
     'libc6-dev': 'glibc-devel',
-    'libxml2-dev': 'libxml2-devel',
-    'libxslt-dev': 'libxslt-devel',
     'python-libvirt': 'libvirt-python',
     'libvirt-bin': 'libvirt',
-    'libvirt-dev': 'libvirt-devel',
     'python-xattr': 'pyxattr',
     'python-memcache': 'python-memcached',
     'tgt': 'scsi-target-utils',
@@ -58,10 +54,13 @@ package_map = {
     'tftpd-hpa' : 'tftp-server',
     'apache2': 'httpd',
     'libapache2-mod-wsgi': 'mod_wsgi',
-    'libffi-dev': 'libffi-devel',
     'gearman-job-server': 'gearmand',
     }
 
 for arg in sys.argv[1:]:
-    print(package_map.get(arg, arg))
+    if arg not in package_map and arg.endswith('-dev'):
+        # convert -dev into devel
+        print('%s%s' % (arg, 'el'))
+    else:
+        print(package_map.get(arg, arg))
 sys.exit(0)
