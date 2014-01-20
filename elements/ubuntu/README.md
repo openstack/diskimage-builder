@@ -6,3 +6,5 @@ Overrides:
    use the environment variable DIB\_CLOUD\_IMAGES
  * To download a non-default release of Ubuntu cloud images, use the
    environment variable DIB\_RELEASE
+ * To use a different mirror rather than archive.ubuntu.com, use the
+   environment variable DIB\_DISTRIBUTION\_MIRROR
