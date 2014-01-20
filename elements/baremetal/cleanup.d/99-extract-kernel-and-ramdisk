@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+set -e
+
+[ -n "$TARGET_ROOT" ]
+
+# Dig up the initrd and kernel to use.
+BOOTDIR="$TARGET_ROOT/boot"
+KERNEL=
+RAMDISK=
+if [ -f $TARGET_ROOT/etc/redhat-release ]; then
+
+    # Prioritize PAE if present
+    KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1)
+    if [ ! $KERNEL ]; then
+        KERNEL=$(ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1)
+        if [ ! $KERNEL ]; then
+            echo "No suitable kernel found."
+            exit 1
+        fi
+    fi
+
+    KERNEL=$(basename $KERNEL)
+    KERNEL_VERSION=`echo $KERNEL | sed 's/vmlinuz-//g'`
+
+    RAMDISK=$(basename `ls $BOOTDIR/initramfs-$KERNEL_VERSION.img`)
+    if [ ! $RAMDISK ]; then
+        echo "Can't find an initramfs for the $KERNEL_VERSION version of the kernel."
+        exit 1
+    fi
+
+elif [ -f $TARGET_ROOT/etc/debian_version ]; then
+    KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz*generic | head -1`)
+    RAMDISK=$(basename `ls -1rv $BOOTDIR/initrd*generic | head -1`)
+else
+    echo "ERROR: Unable to detect operating system"
+    exit 1
+fi
+
+sudo cp $BOOTDIR/$KERNEL ${IMAGE_NAME}.vmlinuz
+sudo cp $BOOTDIR/$RAMDISK ${IMAGE_NAME}.initrd
+sudo chmod a+r ${IMAGE_NAME}.vmlinuz
+sudo chmod a+r ${IMAGE_NAME}.initrd

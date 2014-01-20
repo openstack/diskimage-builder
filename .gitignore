@@ -8,6 +8,8 @@
 dist
 *.qcow2
 *.raw
+*.initrd
+*.vmlinuz
 build
 AUTHORS
 ChangeLog

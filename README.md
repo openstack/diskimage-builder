@@ -31,8 +31,9 @@ What tools are there?
 
     ramdisk-image-create -o deploy.ramdisk deploy
 
-* disk-image-get-kernel filename : Extract the appropriate kernel and ramdisk
-  to use when doing PXE boot using filename as the image for a machine.
+* disk-image-get-kernel filename : **DEPRECATED** Extract the appropriate
+  kernel and ramdisk to use when doing PXE boot using filename as the image
+  for a machine. Consider using the `baremetal` element, rather than this tool.
 
 * elements can be found in the top level elements directory.
 

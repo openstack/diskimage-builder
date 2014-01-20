@@ -41,6 +41,9 @@ function show_options () {
     exit 0
 }
 
+echo 'DEPRECATED: Please consider using the `baremetal` element.'
+echo
+
 TEMP=`getopt -o hd:i:o:x -n $SCRIPTNAME -- "$@"`
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
