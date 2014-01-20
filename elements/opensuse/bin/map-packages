@@ -43,8 +43,8 @@ package_map = {
     'augeas-tools': 'augeas',
     'openssh-client': 'openssh',
     'extlinux': 'syslinux',
-    'mysql-client': 'mariadb-client',
-    'mysql-server': 'mariadb',
+    'mysql-client-5.5': 'mariadb-client',
+    'mysql-server-5.5': 'mariadb',
     'libmysql-java': 'mysql-connector-java',
     'default-jre': 'java',  # Will match 'java' as capability
     'tftpd-hpa': 'atftp',
