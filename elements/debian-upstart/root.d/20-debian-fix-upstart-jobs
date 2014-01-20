@@ -1,0 +1,11 @@
+#!/bin/bash
+set -eux
+# Working around bug in Debian cloud-init packages with upstart
+# where startpar will wait forever for these because they are tasks
+# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=735204
+for sysv_script in cloud-init cloud-init-local cloud-config cloud-final ; do
+    sudo rm -f ${TARGET_ROOT}/etc/rc2.d/??${sysv_script} ${TARGET_ROOT}/etc/init.d/${sysv_script}
+done
+# And working around upstart job bug in Debian where cloud-config will never run
+# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=735207
+sudo sed -i -e 's/start on .*/start on started rc RUNLEVEL=[2345]/' ${TARGET_ROOT}/etc/init/cloud-config.conf
