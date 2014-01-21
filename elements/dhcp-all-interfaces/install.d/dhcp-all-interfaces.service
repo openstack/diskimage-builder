@@ -6,7 +6,7 @@ Before=network.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/generate-interfaces-file.sh
+ExecStart=/usr/local/sbin/dhcp-all-interfaces.sh
 RemainAfterExit=yes
 
 [Install]
