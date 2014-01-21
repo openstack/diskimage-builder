@@ -10,9 +10,11 @@ Certificate-based Red Hat Subscription Managment (RHSM) is the default registrat
 
 * Set DIB_RHSM_USER and DIB_RHSM_PASSWORD to register the system with RHSM during the image building process. This will apply the associated Red Hat Enterprise Linux Server subscription so the latest package updates can be applied. At the end of the image building process, the system will be unregistered from RHSM.
 * Set DIB_RHSM_POOL to a subscription pool if you do not want the system to use the `--auto-attach` feature of `subscription-manager`.
+* Set DIB_RHSM_REPOS to a space-separated list of Red Hat repositories to enable.
 
 ## Red Hat Network (RHN)
 
 Set `DIB_REG_TYPE=rhn` for Red Hat Network (RHN classic) registration. The image building process will register the system to RHN and apply the associated Red Hat Enterprise Linux Server subscription so the latest package updates can be applied. At the end of the image building process, the system will be unregistered from RHN.
 
 * For RHN username/password authentication set DIB_RHSM_USER and DIB_RHSM_PASSWORD.
+* Set DIB_RHN_CHANNELS to a space-separated list of RHN channels to add. Example: `DIB_RHN_CHANNELS=rhel-x86_64-server-6 rhel-x86_64-server-6-rhscl-1`. 
