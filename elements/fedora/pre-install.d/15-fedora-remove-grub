@@ -13,7 +13,7 @@ find /tmp/yum/$basearch -regex ".*/grub2-[0-9].*\.rpm" -exec rm -f {} \;
 install-packages -d grub2
 
 # Copy grub2 rpm out of mounted yum cache for install during finalise
-mkdir /tmp/grub
+mkdir -p /tmp/grub
 cp $(find /tmp/yum/$basearch -regex ".*/grub2-[0-9].*\.rpm") /tmp/grub
 echo "rpm -i /tmp/grub/*.rpm" > /tmp/grub/install
 
