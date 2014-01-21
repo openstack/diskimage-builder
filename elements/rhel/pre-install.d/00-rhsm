@@ -4,13 +4,26 @@ set -e
 
 if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]
   then
-    subscription-manager register --user $DIB_RHSM_USER --password $DIB_RHSM_PASSWORD
-    # wait a second to ensure consumer certificate is finished writing to disk
-    sleep 1
-    if [ -z $DIB_RHSM_POOL ]; then
-      subscription-manager attach --auto
+    opts="--force --username ${DIB_RHSM_USER} --password ${DIB_RHSM_PASSWORD}"
+    if [[ "$DIB_REG_TYPE" == "rhn" ]]; then
+      rhnreg_ks $opts --norhnsd
+      sleep 1
+      # optional channel required for diskimage-builder dependency
+      channels="-a -c rhel-x86_64-server-optional-6"
+      rhn-channel --user=$DIB_RHSM_USER --password=$DIB_RHSM_PASSWORD $channels
+      rhn-channel -l
     else
-      subscription-manager attach --pool $DIB_RHSM_POOL
+      subscription-manager register $opts
+      # wait a second to ensure consumer certificate is finished writing to disk
+      sleep 1
+      if [ -z $DIB_RHSM_POOL ]; then
+        subscription-manager attach --auto
+      else
+        subscription-manager attach --pool $DIB_RHSM_POOL
+      fi
+      # optional repo required for diskimage-builder dependency
+      repos="--enable rhel-6-server-optional-rpms"
+      subscription-manager repos $repos
+      subscription-manager repos --list
     fi
-    subscription-manager repos --enable rhel-6-server-optional-rpms
 fi

@@ -1,10 +1,18 @@
-Overrides:
+# Overrides:
+
+## General
 * Set DIB_CLOUD_IMAGES to a URL for downloading base Red Hat Enterprise Linux cloud image.
 * Set DIB_CLOUD_RELEASE to a use a non-default name for the Red Hat Enterprise Linux cloud image.
-* Set DIB_RHSM_USER and DIB_RHSM_PASSOWRD for the RHN user to be used for a subscription registration.
-  If these are set, the image building process will register the system with RHN
-  and apply the associated Red Hat Enterprise Linux Server subscription so the
-  latest package updates can be applied. At the end of the image building
-  process, the system will be unregistered from RHN.
-* Set DIB_RHSM_POOL to a subscription pool if you want the system to not use
-  the auto attach feature of subscription-manager
+
+## Red Hat Subscription Manager (RHSM)
+
+Certificate-based Red Hat Subscription Managment (RHSM) is the default registration type.
+
+* Set DIB_RHSM_USER and DIB_RHSM_PASSWORD to register the system with RHSM during the image building process. This will apply the associated Red Hat Enterprise Linux Server subscription so the latest package updates can be applied. At the end of the image building process, the system will be unregistered from RHSM.
+* Set DIB_RHSM_POOL to a subscription pool if you do not want the system to use the `--auto-attach` feature of `subscription-manager`.
+
+## Red Hat Network (RHN)
+
+Set `DIB_REG_TYPE=rhn` for Red Hat Network (RHN classic) registration. The image building process will register the system to RHN and apply the associated Red Hat Enterprise Linux Server subscription so the latest package updates can be applied. At the end of the image building process, the system will be unregistered from RHN.
+
+* For RHN username/password authentication set DIB_RHSM_USER and DIB_RHSM_PASSWORD.
