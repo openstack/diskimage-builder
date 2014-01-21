@@ -16,5 +16,6 @@ Certificate-based Red Hat Subscription Managment (RHSM) is the default registrat
 
 Set `DIB_REG_TYPE=rhn` for Red Hat Network (RHN classic) registration. The image building process will register the system to RHN and apply the associated Red Hat Enterprise Linux Server subscription so the latest package updates can be applied. At the end of the image building process, the system will be unregistered from RHN.
 
-* For RHN username/password authentication set DIB_RHSM_USER and DIB_RHSM_PASSWORD.
-* Set DIB_RHN_CHANNELS to a space-separated list of RHN channels to add. Example: `DIB_RHN_CHANNELS=rhel-x86_64-server-6 rhel-x86_64-server-6-rhscl-1`. 
+* For RHN username/password authentication set DIB_RHSM_USER and DIB_RHSM_PASSWORD. To use a Satellite server activation key set DIB_SAT_KEY. If adding RHN channels username and password must be set.
+* When registering to Satellite set DIB_SAT_URL to the Satellite server URL and DIB_SAT_CERT_RPM_URL to the Satellite certificate.
+* Set DIB_RHN_CHANNELS to a space-separated list of RHN channels to add. Example: `DIB_RHN_CHANNELS=rhel-x86_64-server-6 rhel-x86_64-server-6-rhscl-1`. RHN username/password is required for this.

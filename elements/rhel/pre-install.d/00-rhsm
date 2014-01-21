@@ -4,7 +4,22 @@ set -e
 
 if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]
   then
-    opts="--force --username ${DIB_RHSM_USER} --password ${DIB_RHSM_PASSWORD}"
+    opts="--force"
+    if [[ -n "$DIB_SAT_KEY" ]]; then
+      opts="$opts --activationkey ${DIB_SAT_KEY}"
+    else
+      opts="$opts --username ${DIB_RHSM_USER} --password ${DIB_RHSM_PASSWORD}"
+    fi
+    if [[ -n "$DIB_SAT_URL" ]]; then
+      if [[ "$DIB_REG_TYPE" == "rhn" ]]; then
+        opts="$opts --serverUrl ${DIB_SAT_URL}"
+      else
+        opts="$opts --serverurl ${DIB_SAT_URL} --sslCACert /usr/share/rhn/RHN-ORG-TRUSTED-SSL-CERT"
+      fi
+    fi
+    if [[ -n "$DIB_SAT_CERT_RPM_URL" ]]; then
+      yum install -y ${DIB_SAT_CERT_RPM_URL}
+    fi
     if [[ "$DIB_REG_TYPE" == "rhn" ]]; then
       rhnreg_ks $opts --norhnsd
       sleep 1
