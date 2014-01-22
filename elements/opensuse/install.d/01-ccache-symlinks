@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+# Setup ccache symlinks, as openSUSE's ccache package doesn't
+# include them.
+mkdir -p /usr/lib/ccache
+for tool in cc gcc; do
+    ln -s /usr/bin/ccache /usr/lib/ccache/$tool
+done
