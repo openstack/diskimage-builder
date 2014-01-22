@@ -3,5 +3,9 @@
 set -e
 
 if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]; then
+  if [[ "$DIB_REG_TYPE" == "rhn" ]]; then
+    rm -rf /etc/sysconfig/rhn/systemid
+  else
     subscription-manager unregister
+  fi
 fi
