@@ -3,7 +3,7 @@ set -x
 
 SCRIPTDIR=$(dirname $0)
 
-install -D -g root -o root -m 0755 ${SCRIPTDIR}/generate-interfaces-file.sh /usr/local/sbin/generate-interfaces-file.sh
+install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.sh /usr/local/sbin/dhcp-all-interfaces.sh
 
 DIB_INIT_SYSTEM=$(dib-init-system)
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
