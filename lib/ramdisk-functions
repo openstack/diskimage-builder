@@ -112,12 +112,14 @@ function copy_required_libs() {
   #	    /lib64/ld-linux-x86-64.so.2 => /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 (0x00007facff857000)
   # 4. name to empty (vdso)
   #	    linux-vdso.so.1 =>  (0x00007fff0c5ff000)
+  #    or, in some setups:
+  #	    linux-vdso.so.1 (0x00007fff0c5ff000)
 
   for i in `echo "$ldd_out" | sed -e 's/^\t*//'`; do
     local ref=$( echo "$i" | awk -F '[ ]' '{print $1}')
     local real=$( echo "$i" | awk -F '[ ]' '$2 == "=>" {print $3}
                                             $2 != "=>" {print $1}')
-    if [ -z "$real" ]; then
+    if [ -z "$real" ] || [[ "$real" != /* ]]; then
       continue
     fi
     if [ "$ref" = "${ref#/}" ]; then
