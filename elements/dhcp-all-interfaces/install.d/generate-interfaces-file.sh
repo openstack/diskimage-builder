@@ -51,10 +51,14 @@ function disable_interface() {
 }
 
 for interface in $(ls /sys/class/net | grep -v ^lo$) ; do
+  MAC_ADDR_TYPE="$(cat /sys/class/net/${interface}/addr_assign_type)"
+
   echo -n "Inspecting interface: $interface..."
   if ifquery $interface >/dev/null 2>&1 ; then
     echo "Has config, skipping."
-  else
+  elif [ "$MAC_ADDR_TYPE" != "0" ]; then
+    echo "Device has generated MAC, skipping."
+   else
     ip link set dev $interface up >/dev/null 2>&1
     HAS_LINK="$(get_if_link $interface)"
 
