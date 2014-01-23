@@ -47,6 +47,9 @@ if [ -f $TARGET_ROOT/etc/redhat-release ]; then
 elif [ -f $TARGET_ROOT/etc/debian_version ]; then
     KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz*generic | head -1`)
     RAMDISK=$(basename `ls -1rv $BOOTDIR/initrd*generic | head -1`)
+elif [ -f $TARGET_ROOT/etc/SuSE-release ]; then
+    KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz`)
+    RAMDISK=$(basename `ls -1rv $BOOTDIR/initrd`)
 else
     echo "ERROR: Unable to detect operating system"
     exit 1
