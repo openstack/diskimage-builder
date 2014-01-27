@@ -47,7 +47,7 @@ package_map = {
     'mysql-server-5.5': 'mariadb',
     'libmysql-java': 'mysql-connector-java',
     'default-jre': 'java',  # Will match 'java' as capability
-    'tftpd-hpa': 'atftp',
+    'tftpd-hpa': 'tftp',
     'openvswitch-datapath-dkms': 'openvswitch-kmp',
     }
 
