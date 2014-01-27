@@ -52,7 +52,7 @@ function create_ramdisk_base () {
 
   DISTRO=`lsb_release -si` || true
 
-  if [[ "Fedora RedHatEnterpriseServer" =~ "$DISTRO" ]]; then
+  if [[ "Fedora RedHatEnterpriseServer \"openSUSE project\"" =~ "$DISTRO" ]]; then
     mkdir -p "$TMP_MOUNT_PATH/usr"
     ln -s ../lib "$TMP_MOUNT_PATH/usr/lib"
     if [ "`uname -m`" = "x86_64" ]; then
