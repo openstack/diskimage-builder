@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # Copyright 2014 Red Hat, Inc.
@@ -44,7 +44,7 @@ for arg in sys.argv[1:]:
     # source vs. packages. So, if the requested service file already exists,
     # just use that.
     if os.path.exists('/lib/systemd/system/%s.service' % arg):
-        print arg
+        print(arg)
     else:
         print(service_map.get(arg, arg))
 sys.exit(0)
