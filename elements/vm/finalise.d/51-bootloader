@@ -49,7 +49,7 @@ DEFAULT linux
 
 LABEL linux
   KERNEL $kernel
-  APPEND rw root=LABEL=cloudimg-rootfs
+  APPEND ro root=LABEL=cloudimg-rootfs
   INITRD  $initrd
 _EOF_
 }
