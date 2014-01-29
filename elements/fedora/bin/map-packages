@@ -55,6 +55,7 @@ package_map = {
     'apache2': 'httpd',
     'libapache2-mod-wsgi': 'mod_wsgi',
     'gearman-job-server': 'gearmand',
+    'stunnel4': 'stunnel',
     }
 
 for arg in sys.argv[1:]:
