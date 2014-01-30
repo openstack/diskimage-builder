@@ -2,11 +2,20 @@
 
 set -x
 
-# Without fixing selinux file labels, sshd will run in the kernel_t domain
-# instead of the sshd_t domain, making ssh connections fail with
-# "Unable to get valid context for <user>" error message
-setfiles /etc/selinux/targeted/contexts/files/file_contexts /
-FIXFILES_LOG=$(mktemp)
-fixfiles -l $FIXFILES_LOG restore
-cat $FIXFILES_LOG
-rm $FIXFILES_LOG
+CONFIGURED_SELINUX=$(grep ^SELINUX= /etc/selinux/config | awk -F = '{print $2}')
+
+if [ "$CONFIGURED_SELINUX" == "enforcing" ]; then
+    # Without fixing selinux file labels, sshd will run in the kernel_t domain
+    # instead of the sshd_t domain, making ssh connections fail with
+    # "Unable to get valid context for <user>" error message
+    setfiles /etc/selinux/targeted/contexts/files/file_contexts /
+    FIXFILES_LOG=$(mktemp)
+    fixfiles -l $FIXFILES_LOG restore
+    cat $FIXFILES_LOG
+    rm $FIXFILES_LOG
+else
+    echo "Skipping SELinux relabel, since it is not Enforcing."
+    echo "To relabel once the image is running, use:"
+    echo "setfiles /etc/selinux/targeted/contexts/files/file_contexts /"
+    echo "fixfiles restore"
+fi
