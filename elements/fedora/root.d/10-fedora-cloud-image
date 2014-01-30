@@ -9,32 +9,50 @@ if [ 'amd64' = "$ARCH" ] ; then
   ARCH="x86_64"
 fi
 
-DIB_RELEASE=${DIB_RELEASE:-20}
-DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.fedoraproject.org}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-fedora-$DIB_RELEASE.$ARCH.qcow2}
-BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-$DIB_RELEASE.tgz
+DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-""}
+
+if [ -n "$DIB_LOCAL_IMAGE" ]; then
+    IMAGE_LOCATION=$DIB_LOCAL_IMAGE
+    # No need to copy a local image into the cache directory, so just specify
+    # the cached path as the original path.
+    CACHED_IMAGE=$IMAGE_LOCATION
+    BASE_IMAGE_FILE=`basename $DIB_LOCAL_IMAGE`
+    BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
+else
+    DIB_RELEASE=${DIB_RELEASE:-20}
+    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.fedoraproject.org}
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-fedora-$DIB_RELEASE.$ARCH.qcow2}
+    BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-$DIB_RELEASE.tgz
+    IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
+    CACHED_IMAGE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+
+fi
+
 CACHED_TAR=$DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
 
 if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
     echo "Not checking freshness of cached $CACHED_TAR."
 else
-    echo "Fetching Base Image"
 
-    # There seems to be some bad Fedora mirrors returning http 404's for the cloud image.
-    # If the image fails to download due to a 404 we retry once.
-    set +e
-    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
-    RV=$?
-    set -e
+    if [ -z "$DIB_LOCAL_IMAGE" ]; then
+        echo "Fetching Base Image"
 
-    if [ "$RV" == "44" ] ; then
-        $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
-    elif [ "$RV" != "0" ] ; then
-        exit 1
+        # There seems to be some bad Fedora mirrors returning http 404's for the cloud image.
+        # If the image fails to download due to a 404 we retry once.
+        set +e
+        $TMP_HOOKS_PATH/bin/cache-url $IMAGE_LOCATION $CACHED_IMAGE
+        RV=$?
+        set -e
+
+        if [ "$RV" == "44" ] ; then
+            $TMP_HOOKS_PATH/bin/cache-url $IMAGE_LOCATION $CACHED_IMAGE
+        elif [ "$RV" != "0" ] ; then
+            exit 1
+        fi
     fi
 
     if [ ! -f $CACHED_TAR -o \
-        $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
+        $CACHED_IMAGE -nt $CACHED_TAR ] ; then
         echo "Repacking base image as tarball."
         WORKING=$(mktemp -d)
         EACTION="rm -r $WORKING"
@@ -42,7 +60,7 @@ else
         echo "Working in $WORKING"
         RAW_FILE=$(basename $BASE_IMAGE_FILE)
         RAW_FILE=${RAW_FILE#.qcow2}.raw
-        qemu-img convert -f qcow2 -O raw $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
+        qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $WORKING/$RAW_FILE
         # WARNING: The mattdm image has the root filesystem on the second
         #          partition (p2). If he changes the image the MAGIC_BIT
         #          might also need to change.
@@ -70,12 +88,16 @@ else
         trap "$EACTION" EXIT
         # Chroot in so that we get the correct uid/gid
         sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
-        mv $WORKING/tmp.tar $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
+        mv $WORKING/tmp.tar $CACHED_TAR
+    else
+        echo "Using cached tar from $CACHED_TAR"
     fi
+
 fi
 # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
 # image tarball and host OS e.g. when building Fedora image on an openSUSE host)
-sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
+echo "Extracting base root image from $CACHED_TAR"
+sudo tar -C $TARGET_ROOT --numeric-owner -xzf $CACHED_TAR
 if [ -e "$TARGET_ROOT/lost+found" ]; then
   sudo rmdir $TARGET_ROOT/lost+found
 fi
