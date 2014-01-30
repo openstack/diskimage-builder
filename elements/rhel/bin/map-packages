@@ -30,6 +30,7 @@ package_map = {
     'libffi-dev': 'libffi-devel',
     'gearman-job-server': 'gearmand',
     'tgt': 'scsi-target-utils',
+    'stunnel4': 'stunnel',
     }
 
 for arg in sys.argv[1:]:
