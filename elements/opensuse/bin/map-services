@@ -24,6 +24,29 @@ import sys
 # Debian name on the left, openSUSE on the right.
 service_map = {
         'mysqld': 'mysql',
+        # openstack mapping
+        'cinder-api': 'openstack-cinder-api',
+        'cinder-scheduler': 'openstack-cinder-scheduler',
+        'cinder-volume': 'openstack-cinder-volume',
+        'glance-api': 'openstack-glance-api',
+        'glance-reg': 'openstack-glance-registry',
+        'heat-api-cfn': 'openstack-heat-api-cfn',
+        'heat-api-cloudwatch': 'openstack-heat-api-cloudwatch',
+        'heat-api': 'openstack-heat-api',
+        'heat-engine': 'openstack-heat-engine',
+        'keystone': 'openstack-keystone',
+        'neutron-dhcp-agent': 'openstack-neutron-dhcp-agent',
+        'neutron-l3-agent': 'openstack-neutron-l3-agent',
+        'neutron-metadata-agent': 'openstack-neutron-metadata-agent',
+        'neutron-ovs-cleanup': 'openstack-neutron-ovs-cleanup',
+        'neutron-server': 'openstack-neutron',
+        'nova-api': 'openstack-nova-api',
+        'nova-cert': 'openstack-nova-cert',
+        'nova-compute': 'openstack-nova-compute',
+        'nova-conductor': 'openstack-nova-conductor',
+        'nova-consoleauth': 'openstack-nova-console',
+        'nova-novncproxy': 'openstack-nova-novncproxy',
+        'nova-scheduler': 'openstack-nova-scheduler',
     }
 
 for arg in sys.argv[1:]:

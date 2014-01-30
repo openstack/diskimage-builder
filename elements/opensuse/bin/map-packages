@@ -49,6 +49,10 @@ package_map = {
     'default-jre': 'java',  # Will match 'java' as capability
     'tftpd-hpa': 'tftp',
     'openvswitch-datapath-dkms': 'openvswitch-kmp',
+    # openstack related package remappings
+    'openstack-heat-common': 'openstack-heat',
+    'openstack-neutron-openvswitch': 'openstack-neutron-openvswitch-agent',
+    'openstack-neutron-ml2': 'openstack-neutron',
     }
 
 for arg in sys.argv[1:]:
