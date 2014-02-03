@@ -37,6 +37,12 @@ service_map = {
         'nova-consoleauth': 'openstack-nova-consoleauth',
         'nova-compute': 'openstack-nova-compute',
         'swift-proxy': 'openstack-swift-proxy',
+        'swift-account': 'openstack-swift-account',
+        'swift-container': 'openstack-swift-container',
+        'swift-object': 'openstack-swift-object',
+        'cinder-api': 'openstack-cinder-api',
+        'cinder-scheduler': 'openstack-cinder-scheduler',
+        'cinder-volume': 'openstack-cinder-volume',
     }
 
 for arg in sys.argv[1:]:
