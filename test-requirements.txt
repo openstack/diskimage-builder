@@ -3,4 +3,4 @@ hacking>=0.8.0,<0.9
 coverage>=3.6
 discover
 testrepository>=0.0.17
-testtools>=0.9.32
+testtools>=0.9.34
