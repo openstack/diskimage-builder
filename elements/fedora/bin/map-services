@@ -30,6 +30,7 @@ service_map = {
         'heat-api-cloudwatch': 'openstack-heat-api-cloudwatch',
         'heat-engine': 'openstack-heat-engine',
         'keystone': 'openstack-keystone',
+        'mysql': 'mysqld',
         'nova-conductor': 'openstack-nova-conductor',
         'nova-api': 'openstack-nova-api',
         'nova-cert': 'openstack-nova-cert',
