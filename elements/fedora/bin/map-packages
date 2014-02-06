@@ -60,6 +60,8 @@ package_map = {
     'snmp-mibs-downloader': '',
     'lm-sensors': 'lm_sensors',
     'nagios-plugins-basic': 'nagios-plugins-all',
+    # openstack mappings
+    'openstack-neutron-dhcp-agent': 'openstack-neutron',
     }
 
 for arg in sys.argv[1:]:
