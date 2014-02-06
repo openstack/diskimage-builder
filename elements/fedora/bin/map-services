@@ -44,6 +44,7 @@ service_map = {
         'cinder-api': 'openstack-cinder-api',
         'cinder-scheduler': 'openstack-cinder-scheduler',
         'cinder-volume': 'openstack-cinder-volume',
+        'tgt': 'tgtd',
     }
 
 for arg in sys.argv[1:]:
