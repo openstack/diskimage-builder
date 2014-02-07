@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# remove softlink to /dev/null which disables these rules
+NET_NAME_SLOT_FILE="/etc/udev/rules.d/80-net-name-slot.rules"
+if [ -h $NET_NAME_SLOT_FILE ]; then
+    rm $NET_NAME_SLOT_FILE
+fi
+
+install-packages biosdevname
+
+# Fedora/RHEL cloud images may hard code the eth0 interface
+# so it boots w/ DHCP. We remove this file here so it
+# doesn't interfere w/ stable interface naming
+IFCFG_NETSCRIPT="/etc/sysconfig/network-interfaces/ifcfg-eth0"
+if [ -f $IFCFG_NETSCRIPT ]; then
+    rm $IFCFG_NETSCRIPT
+fi
+
+# Ubuntu may hard code the eth0 interface for DHCP
+# We remove this file here so it doesn't interfere w/
+# stable interface naming
+ENI_ETH0_CFG="/etc/network/interfaces.d/eth0.cfg"
+if [ -f $ENI_ETH0_CFG ]; then
+    rm $ENI_ETH0_CFG
+fi
