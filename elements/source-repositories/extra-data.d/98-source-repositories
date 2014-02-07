@@ -14,7 +14,7 @@ function get_repos_for_element(){
 
     while read line ; do
 
-        # ignore blank lines and lines begining in '#'
+        # ignore blank lines and lines beginning in '#'
         [[ "$line" == \#* ]] || [[ -z "$line" ]] && continue
 
         if [[ "$line" =~ $REGEX ]]  ; then

@@ -6,7 +6,7 @@
 
 ## Red Hat Subscription Manager (RHSM)
 
-Certificate-based Red Hat Subscription Managment (RHSM) is the default registration type.
+Certificate-based Red Hat Subscription Management (RHSM) is the default registration type.
 
 * Set DIB_RHSM_USER and DIB_RHSM_PASSWORD to register the system with RHSM during the image building process. This will apply the associated Red Hat Enterprise Linux Server subscription so the latest package updates can be applied. At the end of the image building process, the system will be unregistered from RHSM.
 * Set DIB_RHSM_POOL to a subscription pool if you do not want the system to use the `--auto-attach` feature of `subscription-manager`.
