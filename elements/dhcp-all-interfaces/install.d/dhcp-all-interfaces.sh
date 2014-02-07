@@ -50,11 +50,24 @@ function disable_interface() {
   fi
 }
 
+function config_exists() {
+    local interface=$1
+    if [ "$CONF_TYPE" == "netscripts" ]; then
+        if [ -f "/etc/sysconfig/network-scripts/ifcfg-$interface" ]; then
+            return 0
+        else
+            return 1
+        fi
+    else
+        return ifquery $interface >/dev/null 2>&1
+    fi
+}
+
 for interface in $(ls /sys/class/net | grep -v ^lo$) ; do
   MAC_ADDR_TYPE="$(cat /sys/class/net/${interface}/addr_assign_type)"
 
   echo -n "Inspecting interface: $interface..."
-  if ifquery $interface >/dev/null 2>&1 ; then
+  if config_exists $interface; then
     echo "Has config, skipping."
   elif [ "$MAC_ADDR_TYPE" != "0" ]; then
     echo "Device has generated MAC, skipping."
