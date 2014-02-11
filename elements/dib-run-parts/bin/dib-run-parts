@@ -70,8 +70,10 @@ fi
 
 PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)
 
-if [ -d /tmp/in_target.d/environment.d ] ; then
-    for env_file in /tmp/in_target.d/environment.d/* ; do
+ENVIRONMENT_D_DIR=$target_dir/../environment.d
+
+if [ -d $ENVIRONMENT_D_DIR ] ; then
+    for env_file in $ENVIRONMENT_D_DIR/* ; do
         source $env_file
     done
 fi
