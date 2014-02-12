@@ -1,8 +1,8 @@
 CI needs for image building
 ===========================
 
-Eventually, if/when TripleO becomes an official Openstack project, all CI for
-it should be on Openstack systems. Until then we still need CI.
+Eventually, if/when TripleO becomes an official OpenStack project, all CI for
+it should be on OpenStack systems. Until then we still need CI.
 
 Jenkins
 -------

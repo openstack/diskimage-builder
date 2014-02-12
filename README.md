@@ -1,4 +1,4 @@
-Image building tools for Openstack
+Image building tools for OpenStack
 ==================================
 
 These tools are the components of TripleO
@@ -124,7 +124,7 @@ Design
 
 Images are built using a chroot and bind mounted /proc /sys and /dev. The goal
 of the image building process is to produce blank slate machines that have all
-the necessary bits to fulfill a specific purpose in the running of an Openstack
+the necessary bits to fulfill a specific purpose in the running of an OpenStack
 cloud: e.g. a nova-compute node. Images produce either a filesystem image with
 a label of cloudimg-rootfs, or can be customised to produce whole disk images
 (but will still contain a filesystem labelled cloudimg-rootfs). Once the file
