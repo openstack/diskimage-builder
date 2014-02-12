@@ -35,7 +35,7 @@ else
 fi
 
 rcode=$(curl -L -o $tmp -w '%{http_code}' $url $time_cond)
-if [ "$rcode" = "200" ] ; then
+if [ "$rcode" == "200" -o "${url:0:7}" == "file://" ] ; then
     # In cases where servers ignore the Modified time,
     # curl cancels the download, outputs a 200 and leaves
     # the output file untouched, we don't want this empty file.
