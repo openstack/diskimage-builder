@@ -1,9 +1,6 @@
 #!/bin/bash
 
-INTERFACE=$1 #optional, if not specified configure all available interfaces
 ENI_FILE="/etc/network/interfaces"
-
-PATH=/bin:/sbin:$PATH
 
 if [ -d "/etc/network" ]; then
     CONF_TYPE="eni"
@@ -66,17 +63,16 @@ function config_exists() {
     fi
 }
 
-function inspect_interface() {
-  local interface=$1
-  local mac_addr_type="$(cat /sys/class/net/${interface}/addr_assign_type)"
+for interface in $(ls /sys/class/net | grep -v ^lo$) ; do
+  MAC_ADDR_TYPE="$(cat /sys/class/net/${interface}/addr_assign_type)"
 
   echo -n "Inspecting interface: $interface..."
   if config_exists $interface; then
     echo "Has config, skipping."
-  elif [ "$mac_addr_type" != "0" ]; then
+  elif [ "$MAC_ADDR_TYPE" != "0" ]; then
     echo "Device has generated MAC, skipping."
-  else
-    ip link set dev $interface up &>/dev/null
+   else
+    ip link set dev $interface up >/dev/null 2>&1
     HAS_LINK="$(get_if_link $interface)"
 
     TRIES=10
@@ -95,13 +91,4 @@ function inspect_interface() {
       disable_interface "$interface"
     fi
   fi
-
-}
-
-if [ -n "$INTERFACE" ]; then
-    inspect_interface $INTERFACE
-else
-    for iface in $(ls /sys/class/net | grep -v ^lo$); do
-        inspect_interface $iface
-    done
-fi
+done
