@@ -1,1 +1,0 @@
-SUBSYSTEM=="net", ACTION=="add", RUN+="/usr/local/sbin/dhcp-all-interfaces.sh $name", RUN+="/sbin/ifup $name"

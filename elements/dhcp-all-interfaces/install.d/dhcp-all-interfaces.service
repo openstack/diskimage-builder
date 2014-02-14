@@ -1,0 +1,14 @@
+[Unit]
+Description=DHCP All Interfaces Service
+Wants=local-fs.target systemd-udev-settle.service
+After=local-fs.target systemd-udev-settle.service
+Before=network.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/dhcp-all-interfaces.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+Alias=dhcp-all-interfaces.service
