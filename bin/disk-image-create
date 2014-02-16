@@ -52,6 +52,12 @@ function show_options () {
     echo "    -c -- clear environment before starting work"
     echo "    --image-size size -- image size in GB for the created image"
     echo "    --image-cache directory -- location for cached images(default ~/.cache/image-create)"
+    echo "    --max-online-resize size -- max number of filesystem blocks to support when resizing."
+    echo "       Useful if you want a really large root partition when the image is deployed."
+    echo "       Using a very large value may run into a known bug in resize2fs."
+    echo "       Setting the value to 274877906944 will get you a 1PB root file system."
+    echo "       Making this value unnecessarily large will consume extra disk space "
+    echo "       on the root partition with extra file system inodes."
     echo "    --min-tmpfs size -- minimum size in GB needed in tmpfs to build the image"
     echo "    --no-tmpfs -- do not use tmpfs to speed image build"
     echo "    --offline -- do not update cached resources"
@@ -78,7 +84,7 @@ function show_options () {
 
 INSTALL_PACKAGES=""
 COMPRESS_IMAGE="true"
-TEMP=`getopt -o a:ho:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -96,6 +102,7 @@ while true ; do
         -p) IFS="," read -a INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES ; shift 2 ;;
         --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
+        --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
         --min-tmpfs) export DIB_MIN_TMPFS=$2; shift 2;;
         --no-tmpfs) shift; export DIB_NO_TMPFS=1;;
         --offline) shift; export DIB_OFFLINE=1;;
@@ -158,8 +165,10 @@ else
     MKFS_OPTS="-i 4096 -J size=64"
   fi
 fi
-# allow up to 1PB of 4KB blocks.
-MKFS_OPTS="$MKFS_OPTS -E resize=274877906944"
+
+if [ -n "$MAX_ONLINE_RESIZE" ]; then
+    MKFS_OPTS="$MKFS_OPTS -E resize=$MAX_ONLINE_RESIZE"
+fi
 
 LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
 export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
