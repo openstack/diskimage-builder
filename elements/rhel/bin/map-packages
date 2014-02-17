@@ -26,12 +26,12 @@ package_map = {
     'augeas-tools': 'augeas',
     'openssh-client': 'openssh-clients',
     'default-jre': 'java-1.7.0-openjdk',
-    'tftpd-hpa' : 'tftp-server',
+    'tftpd-hpa': 'tftp-server',
     'libffi-dev': 'libffi-devel',
     'gearman-job-server': 'gearmand',
     'tgt': 'scsi-target-utils',
     'stunnel4': 'stunnel',
-    }
+}
 
 for arg in sys.argv[1:]:
     print(package_map.get(arg, arg))
