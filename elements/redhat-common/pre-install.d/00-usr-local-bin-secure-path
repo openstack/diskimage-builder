@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sed -i '/secure_path/ s/$/:\/usr\/local\/bin/' /etc/sudoers
