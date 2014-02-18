@@ -1,6 +1,7 @@
-dib-run-parts
 cache-url
+dib-run-parts
 dkms
-yum
+redhat-common
 rpm-distro
 source-repositories
+yum
