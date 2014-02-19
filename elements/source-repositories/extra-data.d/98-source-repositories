@@ -46,6 +46,16 @@ function get_repos_for_element(){
 
             case $REPOTYPE in
             git)
+                if [ -z "${!REPOLOCATION_OVERRIDE:-""}" -a -n "${DIB_GITREPOBASE:-""}" ] ; then
+                    # Transform the current repo base to the new one
+                    local NEW_REPOLOCATION=$(echo $REPOLOCATION |\
+                        sed "s,^[^:]\+://[^/]\+/\(~[^/]\+\)\?\(.*\)$,${DIB_GITREPOBASE}\2,g")
+                    echo "Transformed ${REPOLOCATION} to ${NEW_REPOLOCATION}"
+                    REPOLOCATION=$NEW_REPOLOCATION
+                    # Also update the cache location
+                    CACHE_NAME=$(echo "${REPOTYPE}_${REPOLOCATION}" | sha1sum | awk '{ print $1 }' )
+                    CACHE_PATH=~/.cache/image-create/repository-sources/$CACHE_NAME
+                fi
                 sudo mkdir -p $REPO_SUB_DIRECTORY
 
                 if [ ! -e "$CACHE_PATH" ] ; then
