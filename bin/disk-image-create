@@ -78,7 +78,7 @@ function show_options () {
 
 INSTALL_PACKAGES=""
 COMPRESS_IMAGE="true"
-TEMP=`getopt -o a:ho:xucnp: -l no-tmpfs,offline,help,min-tmpfs,image-size: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
