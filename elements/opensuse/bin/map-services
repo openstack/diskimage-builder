@@ -23,6 +23,7 @@ import sys
 # distromatch or other rich data sources.
 # Debian name on the left, openSUSE on the right.
 service_map = {
+<<<<<<< HEAD
     # openstack mapping
     'cinder-api': 'openstack-cinder-api',
     'cinder-scheduler': 'openstack-cinder-scheduler',
@@ -48,6 +49,7 @@ service_map = {
     'nova-baremetal-deploy-helper': 'openstack-nova-baremetal-deploy-helper',
     'nova-novncproxy': 'openstack-nova-novncproxy',
     'nova-scheduler': 'openstack-nova-scheduler',
+    'libvirt-bin': 'libvirtd',
 }
 
 for arg in sys.argv[1:]:

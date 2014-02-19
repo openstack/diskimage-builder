@@ -31,6 +31,7 @@ package_map = {
     'gearman-job-server': 'gearmand',
     'tgt': 'scsi-target-utils',
     'stunnel4': 'stunnel',
+    'libvirt-bin': 'libvirtd',
 }
 
 for arg in sys.argv[1:]:

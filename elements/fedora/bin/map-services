@@ -45,6 +45,7 @@ service_map = {
     'cinder-scheduler': 'openstack-cinder-scheduler',
     'cinder-volume': 'openstack-cinder-volume',
     'tgt': 'tgtd',
+    'libvirt-bin': 'libvirtd',
 }
 
 for arg in sys.argv[1:]:
