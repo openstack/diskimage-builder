@@ -6,5 +6,5 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
 [ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
 
-sudo sed -ie "s&http://archive.ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&" \
+sudo sed -ie "s&http://\(archive\|security\).ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&" \
     /etc/apt/sources.list
