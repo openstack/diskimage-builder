@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -eux
+
+# Workaround for:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1066983
+install-packages vim-minimal
