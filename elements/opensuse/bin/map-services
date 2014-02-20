@@ -23,7 +23,6 @@ import sys
 # distromatch or other rich data sources.
 # Debian name on the left, openSUSE on the right.
 service_map = {
-<<<<<<< HEAD
     # openstack mapping
     'cinder-api': 'openstack-cinder-api',
     'cinder-scheduler': 'openstack-cinder-scheduler',
