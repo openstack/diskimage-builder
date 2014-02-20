@@ -23,7 +23,12 @@ else
 fi
 DIB_RELEASE=${DIB_RELEASE:-unstable}
 DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
-DIB_DEBIAN_MIRROR=${DIB_DEBIAN_MIRROR:-http://http.debian.net/debian}
+if [ -n "$DIB_DEBIAN_MIRROR" ]; then
+    echo "Use of DIB_DEBIAN_MIRROR environment variable to configure mirror is deprecated."
+    echo "Please use DIB_DISTRIBUTION_MIRROR instead."
+    DIB_DISTRIBUTION_MIRROR=$DIB_DEBIAN_MIRROR
+fi
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://http.debian.net/debian}
 http_proxy=${http_proxy:-}
 
 set -x
@@ -41,7 +46,7 @@ else
         --include=${ADD_PACKAGES} \
         $DIB_RELEASE \
         $TARGET_ROOT \
-        $DIB_DEBIAN_MIRROR"
+        $DIB_DISTRIBUTION_MIRROR"
     echo "Customizing result for cloud use"
     sudo sed -i "s/PermitRootLogin yes/PermitRootLogin without-password/" $TARGET_ROOT/etc/ssh/sshd_config
     sudo chroot ${TARGET_ROOT} adduser --gecos Debian-cloud-init-user --disabled-password --quiet debian
