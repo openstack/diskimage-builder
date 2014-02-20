@@ -53,7 +53,7 @@ package_map = {
     'openstack-heat-common': 'openstack-heat',
     'openstack-neutron-openvswitch': 'openstack-neutron-openvswitch-agent',
     'openstack-neutron-ml2': 'openstack-neutron',
-    }
+}
 
 for arg in sys.argv[1:]:
     print(package_map.get(arg, arg))

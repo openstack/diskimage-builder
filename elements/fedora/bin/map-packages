@@ -47,11 +47,11 @@ package_map = {
     'qpidd': 'qpid-cpp-server',
     'qpid-client': 'qpid-cpp-client',
     'extlinux': 'syslinux-extlinux',
-    'mysql-client-5.5' : 'mariadb',
-    'mysql-server-5.5' : 'mariadb-server',
-    'libmysql-java' : 'mysql-connector-java',
-    'default-jre' : 'java',
-    'tftpd-hpa' : 'tftp-server',
+    'mysql-client-5.5': 'mariadb',
+    'mysql-server-5.5': 'mariadb-server',
+    'libmysql-java': 'mysql-connector-java',
+    'default-jre': 'java',
+    'tftpd-hpa': 'tftp-server',
     'apache2': 'httpd',
     'libapache2-mod-wsgi': 'mod_wsgi',
     'gearman-job-server': 'gearmand',
@@ -62,7 +62,7 @@ package_map = {
     'nagios-plugins-basic': 'nagios-plugins-all',
     # openstack mappings
     'openstack-neutron-dhcp-agent': 'openstack-neutron',
-    }
+}
 
 for arg in sys.argv[1:]:
     if arg not in package_map and arg.endswith('-dev'):
