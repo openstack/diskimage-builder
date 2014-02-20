@@ -26,7 +26,7 @@ RAMDISK=
 if [ -f $TARGET_ROOT/etc/redhat-release ]; then
 
     # Prioritize PAE if present
-    KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1)
+    KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep -i PAE | grep -v debug | head -1)
     if [ ! $KERNEL ]; then
         KERNEL=$(ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1)
         if [ ! $KERNEL ]; then
