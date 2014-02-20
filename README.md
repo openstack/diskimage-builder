@@ -206,20 +206,58 @@ Conform to the following conventions:
   and not remounted into the filesystem image - if the mount point is needed
   again, your element will need to remount it at that point.
 
+### Phase Subdirectories ###
+
 Make as many of the following subdirectories as you need, depending on what
-part of the process you need to customise:
+part of the process you need to customise.  The subdirectories are executed in
+the order given here. Scripts within the subdirectories should be named with a
+two-digit numeric prefix, and are executed in numeric order.
 
 * root.d: Create or adapt the initial root filesystem content. This is where
   alternative distribution support is added, or customisations such as
   building on an existing image. 
 
-  Runs outside the chroot on the host environment.
-  
   Only one element can use this at a time unless particular care is taken not
   to blindly overwrite but instead to adapt the context extracted by other
   elements.
 
+ * runs: outside chroot
  * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
+
+* extra-data.d: pull in extra data from the host environment that hooks may
+  need during image creation. This should copy any data (such as SSH keys,
+  http proxy settings and the like) somewhere under $TMP\_HOOKS\_PATH.
+
+ * runs: outside chroot
+ * inputs: $TMP\_HOOKS\_PATH
+ * outputs: None
+
+* pre-install.d: Run code in the chroot before customisation or packages are
+  installed. A good place to add apt repositories.
+
+ * runs: in chroot
+
+* install.d: Runs after pre-install.d in the chroot. This is a good place to
+  install packages, chain into configuration management tools or do other
+  image specific operations.
+
+ * runs: in chroot
+
+* post-install.d: Run code in the chroot. This is a good place to perform
+  tasks you want to handle after the OS/application install but before the
+  first boot of the image. Some examples of use would be: Run chkconfig
+  to disable unneeded services and clean the cache left by the package
+  manager to reduce the size of the image.
+
+ * runs: in chroot
+
+* block-device.d: customise the block device that the image will be made on
+  (e.g. to make partitions). Runs after the target tree has been fully
+  populated but before the cleanup hook runs.
+
+ * runs: outside chroot
+ * inputs: $IMAGE\_BLOCK\_DEVICE={path} $TARGET\_ROOT={path}
+ * outputs: $IMAGE\_BLOCK\_DEVICE={path}
 
 * finalise.d: Perform final tuning of the root filesystem. Runs in a chroot
   after the root filesystem content has been copied into the mounted
@@ -229,51 +267,37 @@ part of the process you need to customise:
   filesystem metadata and image itself. For most operations, post-install.d
   is preferred.
 
+ * runs: in chroot
+
 * cleanup.d: Perform cleanup of the root filesystem content. For
   instance, temporary settings to use the image build environment HTTP proxy
-  are removed here in the dpkg element. Runs outside the chroot on the host
-  environment.
+  are removed here in the dpkg element.
 
+ * runs: outside chroot
  * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
 
-* block-device.d: customise the block device that the image will be made on
-  (e.g. to make partitions). Runs outside the chroot, after the target tree
-  has been fully populated but before the cleanup hook runs.
+### Environment Variables ###
 
- * outputs: $IMAGE\_BLOCK\_DEVICE={path}
- * inputs: $IMAGE\_BLOCK\_DEVICE={path} $TARGET\_ROOT={path}
+To set environment variables for other hooks, add a file to environment.d.
+This directory contains bash script snippets that are sourced before running
+scripts in each phase.
 
-* extra-data.d: pull in extra data from the host environment that hooks may
-  need during image creation. This should copy any data (such as SSH keys,
-  http proxy settings and the like) somewhere under $TMP\_HOOKS\_PATH.
 
- * outputs: None
- * inputs: $TMP\_HOOKS\_PATH
+### Dependencies ###
 
-* pre-install.d: Run code in the chroot before customisation or packages are
-  installed. A good place to add apt repositories.
+Each element has a file named element-deps: a plain text, newline separated
+list of elements which will be added to the list of elements built into the
+image at image creation time.
 
-* install.d: Runs after pre-install.d in the chroot. This is a good place to
-  install packages, chain into configuration management tools or do other
-  image specific operations.
-
-* post-install.d: Run code in the chroot. This is a good place to perform
-  tasks you want to handle after the OS/application install but before the
-  first boot of the image. Some examples of use would be: Run chkconfig
-  to disable unneeded services and clean the cache left by the package
-  manager to reduce the size of the image.
-
-* environment.d: Bash script snippets that are sourced before running scripts
-  in each phase. Use this to set an environment variable for other hooks.
-
-* element-deps : A plain text, newline separated list of elements which will
-  be added to the list of elements built into the image at image creation time.
+### First-boot files ###
 
 * first-boot.d: **DEPRECATED** Runs inside the image before
   rc.local. Scripts from here are good for doing per-instance
   configuration based on cloud metadata. **This will be removed in a
   future release of diskimage-builder. The os-refresh-config element in
   tripleo-image-elements is recommended as a replacement.**
+
+### Ramdisk Elements ###
 
 Ramdisk elements support the following files in their element directories:
 
@@ -304,13 +328,16 @@ possible approach to this would be to label elements as either a "driver",
 
 - Driver-specific elements should only contain the necessary bits for that
   driver:
+
       elements/
          driver-mellanox/
             init           - modprobe line
             install.d/
                10-mlx      - package installation
 
-- An element that installs and configures Nova might be a bit more complex:
+- An element that installs and configures Nova might be a bit more complex,
+  containing several scripts across several phases:
+
       elements/
          service-nova/
             source-repository-nova - register a source repository
@@ -329,6 +356,7 @@ possible approach to this would be to label elements as either a "driver",
   set of elements which express a distinct configuration of the same software
   components. For example, if one were to bake a region-specific SSL cert into
   the images deployed in each region, one might express it like this:
+
       elements/
          config-az1/
             first-boot.d/
@@ -340,20 +368,20 @@ possible approach to this would be to label elements as either a "driver",
 In this way, depending on the hardware and in which availability zone it is
 to be deployed, an image would be composed of:
 
-  zero or more driver-elements
-  one or more service-elements
-  zero or more config-elements
+ * zero or more driver-elements
+ * one or more service-elements
+ * zero or more config-elements
 
 It should be noted that this is merely a naming convention to assist in
 managing elements. Diskimage-builder is not, and should not be, functionally
 dependent upon specific element names.
 
-- diskimage-builder has the ability to retrieve source code for an element and
-  place it into a directory on the target image during the extra-data phase. The
-  default location/branch can then be overridden by the process running
-  diskimage-builder, making it possible to use the same element to track more
-  then one branch of a git repository or to get source for a local cache. See
-  elements/source-repositories/README.md for more information.
+diskimage-builder has the ability to retrieve source code for an element and
+place it into a directory on the target image during the extra-data phase. The
+default location/branch can then be overridden by the process running
+diskimage-builder, making it possible to use the same element to track more
+then one branch of a git repository or to get source for a local cache. See
+elements/source-repositories/README.md for more information.
 
 Debugging elements
 ------------------
