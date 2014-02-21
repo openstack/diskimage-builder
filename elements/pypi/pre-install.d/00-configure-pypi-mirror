@@ -2,7 +2,7 @@
 
 set -eu
 
-PYPIURL=file:///tmp/pypi
+PYPIURL=${PYPI_MIRROR_URL:-'file:///tmp/pypi'}
 mkdir -p ~/.pip
 
 if [ -e ~/.pip/pip.conf ]; then
