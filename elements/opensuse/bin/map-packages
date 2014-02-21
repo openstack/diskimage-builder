@@ -28,6 +28,7 @@ package_map = {
     'extlinux': 'syslinux',
     'grub-pc': 'grub2',
     'libc6-dev': 'glibc-devel',
+    'libffi-dev': 'libffi-devel',
     'libmysql-java': 'mysql-connector-java',
     'libmysqlclient-dev': 'libmysqlclient-devel',
     'libssl-dev': 'openssl-devel',
