@@ -37,7 +37,7 @@ if [ -n "$DIB_OFFLINE" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
 else
     echo Building new tarball for Debian $DIB_RELEASE ARCH=$ARCH
-    ADD_PACKAGES=cloud-init,cloud-utils,cloud-initramfs-growroot,sudo,adduser,locales,openssh-server,file,less,kbd,curl,bash-completion,linux-image-amd64
+    ADD_PACKAGES=cloud-init,cloud-utils,cloud-initramfs-growroot,sudo,adduser,locales,openssh-server,file,less,kbd,curl,rsync,bash-completion,linux-image-amd64
     if [ -f ${TARGET_ROOT}/.extra-packages ] ; then
         ADD_PACKAGES=${ADD_PACKAGES},$(cat ${TARGET_ROOT}/.extra-packages)
     fi
