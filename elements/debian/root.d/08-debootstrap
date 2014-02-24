@@ -23,7 +23,7 @@ else
 fi
 DIB_RELEASE=${DIB_RELEASE:-unstable}
 DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
-if [ -n "$DIB_DEBIAN_MIRROR" ]; then
+if [ -n "${DIB_DEBIAN_MIRROR:-}" ]; then
     echo "Use of DIB_DEBIAN_MIRROR environment variable to configure mirror is deprecated."
     echo "Please use DIB_DISTRIBUTION_MIRROR instead."
     DIB_DISTRIBUTION_MIRROR=$DIB_DEBIAN_MIRROR
