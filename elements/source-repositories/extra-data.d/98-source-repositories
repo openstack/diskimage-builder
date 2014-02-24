@@ -42,7 +42,18 @@ function get_repos_for_element(){
 
             # Determine a unique cache path for this repo
             CACHE_NAME=$(echo "${REPOTYPE}_${REPOLOCATION}" | sha1sum | awk '{ print $1 }' )
-            CACHE_PATH=~/.cache/image-create/repository-sources/$CACHE_NAME
+            OLD_CACHE_PATH=${CACHE_BASE}/${CACHE_NAME}
+            # Add the repo name to the sha1sum for readability
+            CACHE_NAME=${REPONAME//-/_}_${CACHE_NAME}
+            CACHE_PATH=${CACHE_BASE}/$CACHE_NAME
+            # If the old cache name exists, move it to the new cache name
+            if [ -e "$OLD_CACHE_PATH" ] ; then
+                if [ ! -e "$CACHE_PATH" ] ; then
+                    mv -n $OLD_CACHE_PATH $CACHE_PATH
+                else
+                    echo "Not replacing new cache location with old cache" && return 1
+                fi
+            fi
 
             case $REPOTYPE in
             git)
@@ -134,7 +145,17 @@ function get_repos_for_element(){
     done < $REPO_SOURCES
 }
 
-mkdir -p ~/.cache/image-create/repository-sources/
+CACHE_BASE=~/.cache/image-create/source-repositories
+OLD_CACHE_BASE=~/.cache/image-create/repository-sources
+# If the old cache name exists, move it to the new cache name
+if [ -e "$OLD_CACHE_BASE" ] ; then
+    if [ ! -e "$CACHE_BASE" ] ; then
+        mv -n $OLD_CACHE_BASE $CACHE_BASE
+    else
+        echo "Not replacing new cache location with old cache" && return 1
+    fi
+fi
+mkdir -p $CACHE_BASE
 
 # Get source repositories for the target
 for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*" -not -name '*~'); do
