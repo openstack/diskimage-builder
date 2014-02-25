@@ -36,6 +36,9 @@ fetch/pull section of a review. For example:
     DIB_REPOLOCATION_nova=https://review.openstack.org/openstack/nova
     DIB_REPOREF_nova=refs/changes/72/61972/8
 
+Additionally, the lines in the source-repository scripts are eval'd, so they
+may contain environment variables.
+
 Git sources will be cloned to \<destination\>
 
 Tarballs will be extracted to \<destination\>. Tarballs should contain a

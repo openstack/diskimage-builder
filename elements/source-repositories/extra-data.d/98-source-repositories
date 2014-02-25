@@ -12,7 +12,9 @@ function get_repos_for_element(){
 
     local REGEX="^([^ ]+) (git|tar|file|package) ?(/[^ ]+)? ?([^ ]+)? ?([^ ]*)$"
 
-    while read line ; do
+    while read line; do
+        # expand variables
+        line=$(eval echo $line)
 
         # ignore blank lines and lines beginning in '#'
         [[ "$line" == \#* ]] || [[ -z "$line" ]] && continue
