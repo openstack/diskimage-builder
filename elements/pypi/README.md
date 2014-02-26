@@ -11,14 +11,14 @@ the mirror is used - be warned that a stale mirror will cause build failures.
 
 To use an arbitrary mirror set PYPI\_MIRROR\_URL=http[s]://somevalue/
 
-[jeepyb](https://git.openstack.org/cgit/openstack-infra/jeepyb) can be useful in making a
+[pypi-mirror](https://git.openstack.org/cgit/openstack-infra/pypi-mirror) can be useful in making a
 partial PyPI mirror suitable for building images. For instance:
 
  * sudo apt-get install  libxml2-dev libxslt-dev libmysqlclient-dev libpq-dev \
    libnspr4-dev pkg-config libsqlite3-dev libzmq-dev libffi-dev libldap2-dev \
    libsasl2-dev
 
- * pip install git+https://git.openstack.org/openstack-infra/jeepyb
+ * pip install git+https://git.openstack.org/openstack-infra/pypi-mirror
 
  * cat << EOF > mirror.yaml
    cache-root: /home/USER/.cache/image-create/pypi/download
