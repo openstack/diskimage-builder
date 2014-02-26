@@ -1,5 +1,5 @@
 #!/bin/bash
-# Save the HTTP if one is available.
+# Save the HTTP/[S] and noproxy settings if available.
 # XXX: Obviously not suitable for downloadable images.
 
 set -e
@@ -20,7 +20,7 @@ if [ -n "$http_proxy" ]; then
       echo export http_proxy=$http_proxy >> ~stack/.profile
    fi
    if [ -n "$have_apt" ] ; then
-     echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/61-use-http-proxy
+     echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/02-use-http-proxy
    fi
    if [ -n "$have_yum" ] ; then
      sed -i -e "s,\[main\],[main]\nproxy=$http_proxy," /etc/yum.conf
@@ -35,19 +35,31 @@ if [ -n "$https_proxy" ]; then
       echo export https_proxy=$https_proxy >> ~stack/.profile
    fi
    if [ -n "$have_apt" ] ; then
-     echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/61-use-https-proxy
+     echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/02-use-https-proxy
    fi
    if [ -n "$have_zypper" ] ; then
      sed -i -e "s,^HTTPS_PROXY=.*$,HTTPS_PROXY=\"$https_proxy\"," /etc/sysconfig/proxy
    fi
 fi
 
-if [ -n "$http_proxy" -o -n "$https_proxy" ]; then
+no_proxy=${no_proxy:+"$no_proxy,192.0.2.1"}
+no_proxy=${no_proxy:-"192.0.2.1"}
+if [ -n "$no_proxy" ]; then
    if [ -d ~stack ]; then
-      echo export no_proxy=192.0.2.1 >> ~stack/.profile
+      echo export no_proxy=$no_proxy >> ~stack/.profile
+   fi
+   if [ -n "$have_apt" ] ; then
+     for host in $(sed 's/,/ /g' <<<$no_proxy); do
+       echo "Acquire::http::Proxy::$host \"DIRECT\";" >> /etc/apt/apt.conf.d/02-no-proxy
+     done
    fi
    if [ -n "$have_zypper" ] ; then
-      sed -i -e "s,^PROXY_ENABLED=.*$,PROXY_ENABLED=\"yes\"," \
-             -e "s,^\(NO_PROXY=.*\)\"$,\1\, 192.0.2.1\"," /etc/sysconfig/proxy
+      sed -i -e "s,^\(NO_PROXY=.*\)\"$,\1\, $no_proxy\"," /etc/sysconfig/proxy
+   fi
+fi
+
+if [ -n "$http_proxy" -o -n "$https_proxy" -o -n "$no_proxy" ]; then
+   if [ -n "$have_zypper" ] ; then
+      sed -i -e "s,^PROXY_ENABLED=.*$,PROXY_ENABLED=\"yes\"," /etc/sysconfig/proxy
    fi
 fi
