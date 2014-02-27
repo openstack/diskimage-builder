@@ -79,7 +79,7 @@ function install_grub2 {
 
     echo "Installing GRUB2..."
 
-    GRUB_OPTS=${GRUB_OPTS:""}
+    GRUB_OPTS=${GRUB_OPTS:-""}
     # XXX: This is buggy:
     # - --target=i386-pc is invalid for non-i386/amd64 architectures
     # - and for UEFI too.
