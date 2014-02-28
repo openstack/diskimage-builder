@@ -23,6 +23,9 @@ import sys
 # distromatch or other rich data sources.
 # TripleO service name on the left, Fedora on the right.
 service_map = {
+    'cinder-api': 'openstack-cinder-api',
+    'cinder-scheduler': 'openstack-cinder-scheduler',
+    'cinder-volume': 'openstack-cinder-volume',
     'glance-api': 'openstack-glance-api',
     'glance-reg': 'openstack-glance-registry',
     'heat-api': 'openstack-heat-api',
@@ -30,6 +33,7 @@ service_map = {
     'heat-api-cloudwatch': 'openstack-heat-api-cloudwatch',
     'heat-engine': 'openstack-heat-engine',
     'keystone': 'openstack-keystone',
+    'libvirt-bin': 'libvirtd',
     'mysql': 'mysqld',
     'nova-conductor': 'openstack-nova-conductor',
     'nova-api': 'openstack-nova-api',
@@ -41,11 +45,7 @@ service_map = {
     'swift-account': 'openstack-swift-account',
     'swift-container': 'openstack-swift-container',
     'swift-object': 'openstack-swift-object',
-    'cinder-api': 'openstack-cinder-api',
-    'cinder-scheduler': 'openstack-cinder-scheduler',
-    'cinder-volume': 'openstack-cinder-volume',
     'tgt': 'tgtd',
-    'libvirt-bin': 'libvirtd',
 }
 
 for arg in sys.argv[1:]:
