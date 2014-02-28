@@ -1,0 +1,17 @@
+#!/bin/bash
+# Override the default /etc/apt/apt.conf with $DIB_APT_CONF
+
+set -eu
+
+# exit directly if DIB_APT_CONF is not defined properly
+if [ -z "$DIB_APT_CONF" ] ; then
+    echo "DIB_APT_CONF is not set - no apt.conf will be copied in"
+    exit 0
+elif [ ! -f "$DIB_APT_CONF" ] ; then
+    echo "$DIB_APT_CONF is not a valid apt.conf file."
+    echo "You should assign a proper apt.conf file in DIB_APT_CONF"
+    exit 1
+fi
+
+# copy the apt.conf to cloudimg
+sudo cp -L -f $DIB_APT_CONF $TMP_MOUNT_PATH/etc/apt/apt.conf
