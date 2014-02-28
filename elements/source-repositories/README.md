@@ -81,3 +81,11 @@ of the repositories (by users or by other elements).
 The repository names and types are written to an environment.d hook script at
 01-source-repositories-environment. This allows later hook scripts during the
 install.d phase to know which install type to use for the element.
+
+The base url for all git repositories can be set by use of:
+
+    DIB_GITREPOBASE
+
+So setting DIB\_GITREPOBASE=https://github.com/ when the repo location is set
+to http://git.openstack.org/openstack/nova.git will result in use of the
+https://github.com/openstack/nova.git repository.
