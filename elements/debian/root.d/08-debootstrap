@@ -58,6 +58,10 @@ LABEL=cloudimg-rootfs / ext4 errors=remount-ro 0 1
 ' > ${TARGET_ROOT}/etc/fstab"
     sudo sh -c "echo 'blacklist pcspkr' > ${TARGET_ROOT}/etc/modprobe.d/blacklist.conf"
     sudo sh -c "echo 'debian' > ${TARGET_ROOT}/etc/hostname"
+
+    # specify a hostname so that cloud-init does not default to (None)
+    echo "hostname: debian" > ${TARGET_ROOT}/etc/cloud/cloud.cfg.d/01_hostname.cfg
+
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
     sudo tar -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL .
 fi
