@@ -29,6 +29,7 @@ package_map = {
     'extlinux': 'syslinux-extlinux',
     'gearman-job-server': 'gearmand',
     'grub-pc': 'grub2-tools grub2',
+    'libaio1': 'libaio',
     'libapache2-mod-wsgi': 'mod_wsgi',
     'libc6-dev': 'glibc-devel',
     'libmysql-java': 'mysql-connector-java',
