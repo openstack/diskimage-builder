@@ -1,8 +1,10 @@
 # Overrides:
 
 ## General
-* Set DIB_CLOUD_IMAGES to a URL for downloading base Red Hat Enterprise Linux cloud image.
-* Set DIB_CLOUD_RELEASE to a use a non-default name for the Red Hat Enterprise Linux cloud image.
+* Downloading the Red Hat Enterprise Linux cloud image requires a valid Red Hat Network login and a subscription to Red Hat Enterprise Linux 6 Server product.
+* diskimage-builder does not integrate directly with RHN, so a manual download is required.  Please visit https://rhn.redhat.com/rhn/software/channel/downloads/Download.do?cid=16952 to download the qcow2 file.
+* Set DIB_CLOUD_IMAGES to "file:///download_path"
+* Overriding of DIB_RELEASE is necessary when a new version of the RHEL qcow2 image is available and the default image has not yet been updated in diskimage-builder.
 
 ## Red Hat Subscription Manager (RHSM)
 
