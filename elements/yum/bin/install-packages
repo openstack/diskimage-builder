@@ -41,7 +41,7 @@ if [ -n "$WHITELIST" ]; then
   if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
     rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
   fi
-  yum -y install $(map-packages $WHITELIST)
+  yum -y install $EXTRA_ARGS $(map-packages $WHITELIST)
   for pkg in "$@"; do
     if [ "$pkg" = "python-pip" ] ; then
       alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
