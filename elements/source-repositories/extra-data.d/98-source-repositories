@@ -53,7 +53,7 @@ function get_repos_for_element(){
                 if [ ! -e "$CACHE_PATH" ] ; then
                     mv -n $OLD_CACHE_PATH $CACHE_PATH
                 else
-                    echo "Not replacing new cache location with old cache" && return 1
+                    echo "Not replacing new cache location with old cache"
                 fi
             fi
 
@@ -164,7 +164,7 @@ if [ -e "$OLD_CACHE_BASE" ] ; then
     if [ ! -e "$CACHE_BASE" ] ; then
         mv -n $OLD_CACHE_BASE $CACHE_BASE
     else
-        echo "Not replacing new cache location with old cache" && return 1
+        echo "Not replacing new cache location with old cache"
     fi
 fi
 mkdir -p $CACHE_BASE
