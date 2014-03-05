@@ -34,6 +34,7 @@ service_map = {
     'heat-api': 'openstack-heat-api',
     'heat-engine': 'openstack-heat-engine',
     'keystone': 'openstack-keystone',
+    'libvirt-bin': 'libvirtd',
     'neutron-dhcp-agent': 'openstack-neutron-dhcp-agent',
     'neutron-openvswitch-agent': 'openstack-neutron-openvswitch-agent',
     'neutron-l3-agent': 'openstack-neutron-l3-agent',
@@ -48,7 +49,6 @@ service_map = {
     'nova-baremetal-deploy-helper': 'openstack-nova-baremetal-deploy-helper',
     'nova-novncproxy': 'openstack-nova-novncproxy',
     'nova-scheduler': 'openstack-nova-scheduler',
-    'libvirt-bin': 'libvirtd',
 }
 
 for arg in sys.argv[1:]:
