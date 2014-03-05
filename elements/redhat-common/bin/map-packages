@@ -32,6 +32,7 @@ package_map = {
     'libaio1': 'libaio',
     'libapache2-mod-wsgi': 'mod_wsgi',
     'libc6-dev': 'glibc-devel',
+    'libmariadb-dev': 'mariadb-devel',
     'libmysql-java': 'mysql-connector-java',
     'libmysqlclient-dev': 'mysql-devel',
     'libssl-dev': 'openssl-devel',
