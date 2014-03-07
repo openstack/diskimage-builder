@@ -31,7 +31,7 @@ function mk_build_dir () {
   [ $? -eq 0 ] || die "Failed to create tmp directory"
   export TMP_BUILD_DIR
   if tmpfs_check ; then
-    sudo mount -t tmpfs tmpfs $TMP_BUILD_DIR
+    sudo mount -t tmpfs tmpfs -o size=$(($DIB_MIN_TMPFS*2))G $TMP_BUILD_DIR
   fi
   sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR
   trap cleanup EXIT
