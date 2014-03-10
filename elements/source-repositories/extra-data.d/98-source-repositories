@@ -2,6 +2,21 @@
 
 set -eu
 
+# If the old cache exists, move it to the new name
+function make_new_cache(){
+    local OLD_CACHE_BASE=$1
+    local CACHE_BASE=$2
+
+    # If the old cache name exists, move it to the new cache name
+    if [ -e "$OLD_CACHE_BASE" ] ; then
+        if [ ! -e "$CACHE_BASE" ] ; then
+            mv -n $OLD_CACHE_BASE $CACHE_BASE
+        else
+            echo "Not replacing new cache location with old cache"
+        fi
+    fi
+}
+
 # Gets repositories or individual files listed in the a repository file
 # and places them in the specified destination path.
 # The format of the repository file is one or more lines matching
@@ -48,14 +63,7 @@ function get_repos_for_element(){
             # Add the repo name to the sha1sum for readability
             CACHE_NAME=${REPONAME//-/_}_${CACHE_NAME}
             CACHE_PATH=${CACHE_BASE}/$CACHE_NAME
-            # If the old cache name exists, move it to the new cache name
-            if [ -e "$OLD_CACHE_PATH" ] ; then
-                if [ ! -e "$CACHE_PATH" ] ; then
-                    mv -n $OLD_CACHE_PATH $CACHE_PATH
-                else
-                    echo "Not replacing new cache location with old cache"
-                fi
-            fi
+            make_new_cache $OLD_CACHE_PATH $CACHE_PATH
 
             case $REPOTYPE in
             git)
@@ -159,14 +167,7 @@ function get_repos_for_element(){
 
 CACHE_BASE=~/.cache/image-create/source-repositories
 OLD_CACHE_BASE=~/.cache/image-create/repository-sources
-# If the old cache name exists, move it to the new cache name
-if [ -e "$OLD_CACHE_BASE" ] ; then
-    if [ ! -e "$CACHE_BASE" ] ; then
-        mv -n $OLD_CACHE_BASE $CACHE_BASE
-    else
-        echo "Not replacing new cache location with old cache"
-    fi
-fi
+make_new_cache $OLD_CACHE_BASE $CACHE_BASE
 mkdir -p $CACHE_BASE
 
 # Get source repositories for the target
