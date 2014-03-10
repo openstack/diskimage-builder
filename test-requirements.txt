@@ -2,5 +2,5 @@ hacking>=0.8.0,<0.9
 
 coverage>=3.6
 discover
-testrepository>=0.0.17
+testrepository>=0.0.18
 testtools>=0.9.34
