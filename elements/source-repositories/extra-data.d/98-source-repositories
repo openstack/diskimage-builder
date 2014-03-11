@@ -46,7 +46,7 @@ function get_repos_for_element(){
             CACHE_NAME=$(echo "${REPOTYPE}_${REPOLOCATION}" | sha1sum | awk '{ print $1 }' )
             OLD_CACHE_PATH=${CACHE_BASE}/${CACHE_NAME}
             # Add the repo name to the sha1sum for readability
-            CACHE_NAME=${REPONAME//-/_}_${CACHE_NAME}
+            CACHE_NAME=${REPONAME//[^A-Za-z0-9]/_}_${CACHE_NAME}
             CACHE_PATH=${CACHE_BASE}/$CACHE_NAME
             # If the old cache name exists, move it to the new cache name
             if [ -e "$OLD_CACHE_PATH" ] ; then
