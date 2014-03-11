@@ -31,15 +31,15 @@ function get_repos_for_element(){
             local REPO_SUB_DIRECTORY=$(dirname $REPO_DEST)
 
             # REPOTYPE can be overridden with DIB_REPOTYPE_{name}
-            local REPOTYPE_OVERRIDE=DIB_REPOTYPE_${REPONAME//-/_}
+            local REPOTYPE_OVERRIDE=DIB_REPOTYPE_${REPONAME//[^A-Za-z0-9]/_}
             REPOTYPE=${!REPOTYPE_OVERRIDE:-$REPOTYPE}
 
             # REPOLOCATION can be overridden with DIB_REPOLOCATION_{name}
-            local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME//-/_}
+            local REPOLOCATION_OVERRIDE=DIB_REPOLOCATION_${REPONAME//[^A-Za-z0-9]/_}
             REPOLOCATION=${!REPOLOCATION_OVERRIDE:-$REPOLOCATION}
 
             # REPOREF can be overridden with DIB_REPOREF_{name}
-            local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME//-/_}
+            local REPOREF_OVERRIDE=DIB_REPOREF_${REPONAME//[^A-Za-z0-9]/_}
             REPOREF=${!REPOREF_OVERRIDE:-$REPOREF}
 
             # Determine a unique cache path for this repo
