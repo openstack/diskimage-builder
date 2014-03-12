@@ -81,41 +81,7 @@ ensure_nbd
 # sets WORK_DIR
 mount_qcow_image $IMAGE_FILE
 
-# Dig up the initrd and kernel to use.
-BOOTDIR="$WORK_DIR/boot"
-KERNEL=
-RAMDISK=
-if [ -f $WORK_DIR/etc/redhat-release ]; then
-
-    # Prioritize PAE if present
-    KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1)
-    if [ ! $KERNEL ]; then
-        KERNEL=$(ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1)
-        if [ ! $KERNEL ]; then
-            echo "No suitable kernel found."
-            exit 1
-        fi
-    fi
-
-    KERNEL=$(basename $KERNEL)
-    KERNEL_VERSION=`echo $KERNEL | sed 's/vmlinuz-//g'`
-
-    RAMDISK=$(basename `ls $BOOTDIR/initramfs-$KERNEL_VERSION.img`)
-    if [ ! $RAMDISK ]; then
-        echo "Can't find an initramfs for the $KERNEL_VERSION version of the kernel."
-        exit 1
-    fi
-
-elif [ -f $WORK_DIR/etc/debian_version ]; then
-    KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz*generic | head -1`)
-    RAMDISK=$(basename `ls -1rv $BOOTDIR/initrd*generic | head -1`)
-elif [ -f $WORK_DIR/etc/SuSE-release ]; then
-    KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz`)
-    RAMDISK=$(basename `ls -1rv $BOOTDIR/initrd`)
-else
-    echo "ERROR: Unable to detect operating system"
-    exit 1
-fi
+select_boot_kernel_initrd $WORK_DIR
 
 sudo cp $BOOTDIR/$KERNEL $OUT_DIR/$OUT_PFX-vmlinuz
 sudo cp $BOOTDIR/$RAMDISK $OUT_DIR/$OUT_PFX-initrd
