@@ -39,6 +39,10 @@ function install_extlinux {
     elif [ -f /etc/debian_version ]; then
         kernel=$(ls -1rv /boot/vmlinuz*generic | head -1)
         initrd=$(ls -1rv /boot/initrd*generic | head -1)
+
+        # in case files with "generic" suffix were not found, fall back to default
+        kernel=${kernel:-$(ls -1rv /boot/vmlinuz* | head -1)}
+        initrd=${initrd:-$(ls -1rv /boot/initrd* | head -1)}
     else
         echo "Unable to find kernel and initram"
         exit 1
