@@ -28,7 +28,7 @@ fi
 
 TOKEN_FILE=token-$DEPLOYMENT_ID
 
-if tftp -r /tftpboot/$TOKEN_FILE -g $BOOT_SERVER
+if tftp -r $TOKEN_FILE -g $BOOT_SERVER
 then TOKEN_HEADER="-H 'X-Auth-Token: `cat $TOKEN_FILE`'"
 else TOKEN_HEADER=""
 fi
