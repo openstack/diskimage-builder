@@ -27,6 +27,7 @@ package_map = {
     'default-jre': 'java',
     'extlinux': 'syslinux',
     'grub-pc': 'grub2',
+    'libapache2-mod-wsgi': 'apache2-mod_wsgi',
     'libc6-dev': 'glibc-devel',
     'libmysql-java': 'mysql-connector-java',
     'libmysqlclient-dev': 'libmysqlclient-devel',
