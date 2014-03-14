@@ -130,7 +130,7 @@ fi
 
 arg_to_elements "$@"
 
-IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPE}}
+export IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPE}}
 
 mk_build_dir
 create_base
