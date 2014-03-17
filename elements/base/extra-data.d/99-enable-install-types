@@ -1,0 +1,71 @@
+#!/bin/bash
+# Copyright 2014 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+set -eux
+
+declare -a SPECIFIED_ELEMS
+
+# Add a blank first element to the array, since we're running with -u, we don't
+# want an unbound variable error if no element install types were specified.
+SPECIFIED_ELEMS[0]=""
+
+# List of all env vars to set install types
+PREFIX="DIB_INSTALLTYPE_"
+INSTALL_TYPE_VARS=$(env | grep ^$PREFIX | cut -d'=' -f1)
+
+for _install_type_var in $INSTALL_TYPE_VARS; do
+
+    # Get the element name and its install type
+    INSTALLDIRPREFIX=${_install_type_var:${#PREFIX}}
+    INSTALLDIRPREFIX=${INSTALLDIRPREFIX//_/-}
+    eval INSTALLTYPE=\$$_install_type_var
+
+    # Create symlink for correct install type
+    pushd $TMP_HOOKS_PATH/install.d
+    if [ -d $INSTALLDIRPREFIX-$INSTALLTYPE-install ]; then
+        ln -sf $INSTALLDIRPREFIX-$INSTALLTYPE-install/* .
+    fi
+    popd
+
+    SPECIFIED_ELEMS+=($INSTALLDIRPREFIX)
+
+done
+
+# For any existing *-source-install directory under install.d, if an
+# environment variable setting a different install type was not seen, enable
+# the source install type.
+source_install_dirs=$(ls -d $TMP_HOOKS_PATH/install.d/*-source-install || true)
+for _source_install_dir in $source_install_dirs; do
+    SUFFIX="-source-install"
+    _source_install_dir=$(basename $_source_install_dir)
+    INSTALLDIRPREFIX=${_source_install_dir%$SUFFIX}
+
+    found=0
+    for specified in ${SPECIFIED_ELEMS[@]}; do
+        if [ "$specified" = "$INSTALLDIRPREFIX" ]; then
+            found=1
+            break
+        fi
+    done
+
+    # install type not specified, assume source
+    if [ "$found" = "0" ]; then
+        pushd $TMP_HOOKS_PATH/install.d
+        ln -sf $_source_install_dir/* .
+        popd
+    fi
+done

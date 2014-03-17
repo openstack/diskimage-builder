@@ -65,6 +65,14 @@ function get_repos_for_element(){
             CACHE_PATH=${CACHE_BASE}/$CACHE_NAME
             make_new_cache $OLD_CACHE_PATH $CACHE_PATH
 
+            # Return if install type is not source
+            local INSTALL_TYPE_VAR=DIB_INSTALLTYPE_${REPONAME//[^A-Za-z0-9]/_}
+            local INSTALL_TYPE=${!INSTALL_TYPE_VAR:-source}
+            if [ ! $INSTALL_TYPE = "source" ]; then
+                echo "$REPONAME install type not set to source"
+                continue
+            fi
+
             case $REPOTYPE in
             git)
                 if [ -z "${!REPOLOCATION_OVERRIDE:-""}" -a -n "${DIB_GITREPOBASE:-""}" ] ; then
@@ -136,9 +144,6 @@ function get_repos_for_element(){
                     sudo curl $REPOLOCATION -o $REPO_DEST
                 fi
                 ;;
-            package)
-                echo "$REPONAME set to package source type"
-                ;;
             *)
                 echo "Unsupported repository type: $REPOTYPE"
                 return 1
@@ -148,20 +153,6 @@ function get_repos_for_element(){
             # Capture the in-instance repository path for later review / other
             # elements (like a pypi dependency cache).
             echo "$REPOPATH" | sudo dd of=$TMP_MOUNT_PATH/etc/dib-source-repositories oflag=append conv=notrunc
-
-            # Save the $REPOTYPE used so that it can be used later by install.d
-            if [ "$REPOTYPE" = "package" ]; then
-                REPOINSTALLTYPE="package"
-            else
-                REPOINSTALLTYPE="source"
-            fi
-
-            # Create symlink for correct install type
-            pushd $TMP_HOOKS_PATH/install.d
-            if [ -e $REPONAME-$REPOINSTALLTYPE-install ]; then
-                ln -sf $REPONAME-$REPOINSTALLTYPE-install/* .
-            fi
-            popd
 
         else
             echo "Couldn't parse '$line' as a source repository"
