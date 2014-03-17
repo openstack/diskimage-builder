@@ -9,6 +9,5 @@ DIB_INIT_SYSTEM=$(dib-init-system)
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.conf /etc/init/dhcp-all-interfaces.conf
 elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
-    install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.service /usr/lib/systemd/system/dhcp-all-interfaces.service
-    systemctl enable dhcp-all-interfaces.service
+    install -D -g root -o root -m 0644 ${SCRIPTDIR}/udev.rules /etc/udev/rules.d/99-dhcp-all-interfaces.rules
 fi
