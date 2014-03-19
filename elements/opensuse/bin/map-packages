@@ -29,6 +29,7 @@ package_map = {
     'grub-pc': 'grub2',
     'libapache2-mod-wsgi': 'apache2-mod_wsgi',
     'libc6-dev': 'glibc-devel',
+    'libffi-dev': 'libffi-devel',
     'libmysql-java': 'mysql-connector-java',
     'libmysqlclient-dev': 'libmysqlclient-devel',
     'libssl-dev': 'openssl-devel',
