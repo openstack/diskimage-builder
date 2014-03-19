@@ -1,12 +1,10 @@
 #!/bin/bash
-
-home=$(dirname $0)
 set -uex
+SCRIPTDIR=$(dirname $0)
 
 DIB_INIT_SYSTEM=$(dib-init-system)
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
-    install -m 0644 -o root -g root $home/ttySx.conf /etc/init/ttySx.conf
+    install -m 0644 -o root -g root ${SCRIPTDIR}/ttySx.conf /etc/init/ttySx.conf
 elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
-    ln -s /usr/lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@ttyS0.service
-    ln -s /usr/lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@ttyS1.service
+    install -D -g root -o root -m 0644 ${SCRIPTDIR}/serial-console-udev.rules /etc/udev/rules.d/99-serial-console.rules
 fi
