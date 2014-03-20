@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# Intended to be called from the root.d cloud-image script as follows:
+# $TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_LOCATION $CACHED_IMAGE
+
+
+set -eu
+
+BASE_IMAGE_FILE=$1
+BASE_IMAGE_TAR=$2
+IMAGE_LOCATION=$3
+CACHED_IMAGE=$4
+
+CACHED_TAR=$DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
+DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-""}
+
+if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
+    echo "Not checking freshness of cached $CACHED_TAR."
+else
+
+    if [ -z "$DIB_LOCAL_IMAGE" ]; then
+        echo "Fetching Base Image"
+
+        # There seems to be some bad Fedora mirrors returning http 404's for the cloud image.
+        # If the image fails to download due to a 404 we retry once.
+        set +e
+        $TMP_HOOKS_PATH/bin/cache-url $IMAGE_LOCATION $CACHED_IMAGE
+        RV=$?
+        set -e
+
+        if [ "$RV" == "44" ] ; then
+            $TMP_HOOKS_PATH/bin/cache-url $IMAGE_LOCATION $CACHED_IMAGE
+        elif [ "$RV" != "0" ] ; then
+            exit 1
+        fi
+    fi
+
+    if [ ! -f $CACHED_TAR -o \
+        $CACHED_IMAGE -nt $CACHED_TAR ] ; then
+        echo "Repacking base image as tarball."
+        WORKING=$(mktemp -d)
+        EACTION="rm -r $WORKING"
+        trap "$EACTION" EXIT
+        echo "Working in $WORKING"
+        RAW_FILE=$(basename $BASE_IMAGE_FILE)
+        RAW_FILE=${RAW_FILE#.qcow2}.raw
+        qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $WORKING/$RAW_FILE
+        # WARNING: The mattdm image has the root filesystem on the second
+        #          partition (p2). If he changes the image the MAGIC_BIT
+        #          might also need to change.
+        # UPDATE to above warning alluding to Fedora18:
+        # F19 images have the rootfs partition on p1
+        MAGIC_BIT=p1
+        # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
+        # loop device and creates it if it doesn't exist
+        sudo losetup -f
+        # XXX: Parsing stdout is dangerous, would like a better way to discover
+        #      the device used for the image.
+        # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
+        #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
+        #       least creates /dev/mapper/loop0p2.
+        LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+        if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
+            echo "Error: Could not find /dev/mapper/$LOOPDEV"
+            exit 1
+        fi
+        EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
+        trap "$EACTION" EXIT
+        mkdir $WORKING/mnt
+        sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
+        EACTION="sudo umount -f $WORKING/mnt;$EACTION"
+        trap "$EACTION" EXIT
+        # Chroot in so that we get the correct uid/gid
+        sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
+        mv $WORKING/tmp.tar $CACHED_TAR
+    else
+        echo "Using cached tar from $CACHED_TAR"
+    fi
+
+fi
+# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+# image tarball and host OS e.g. when building Fedora image on an openSUSE host)
+echo "Extracting base root image from $CACHED_TAR"
+sudo tar -C $TARGET_ROOT --numeric-owner -xzf $CACHED_TAR
+if [ -e "$TARGET_ROOT/lost+found" ]; then
+  sudo rmdir $TARGET_ROOT/lost+found
+fi

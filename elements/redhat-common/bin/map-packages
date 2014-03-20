@@ -19,7 +19,7 @@ import sys
 
 # Manually maintained for brevity; consider making this compiled from
 # distromatch or other rich data sources.
-# Debian name on the left, Fedora on the right.
+# Debian name on the left, Fedora/RHEL on the right.
 package_map = {
     'apache2': 'httpd',
     'arping': 'iputils',
