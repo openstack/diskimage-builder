@@ -114,10 +114,10 @@ Install types permit elements to be installed from different sources, such as
 git repositories, distribution packages, or pip.
 
 Many elements expose different install types. The different implementations
-live under <install-dir-prefix>-<install-type>-install directories under an
+live under `<install-dir-prefix>-<install-type>-install` directories under an
 element's install.d. The base element enables the chosen install type by
 symlinking the correct hook scripts under install.d directly.
-<install-dir-prefix> can be a string of alphanumeric and '-' characters, but
+`<install-dir-prefix>` can be a string of alphanumeric and '-' characters, but
 typically corresponds to the element name.
 
 For example, the nova element would provide:
@@ -134,13 +134,17 @@ Or, for the source install type:
     install.d/74-nova -> nova-source-install/74-nova
 
 All other scripts that exist under install.d for an element will be executed as
-normal. This allows common install code to live in a script outside of
-<install-dir-prefix>-package-install or <install-dir-prefix>-source-install.
+normal. This allows common install code to live in a script under install.d.
 
 To set the install type for an element define an environment variable
-DIB_INSTALLTYPE_<install_dir_prefx>. Note that if you used '-' characters in
-your install directory prefix, those need to be replaced with '_' in the
+`DIB_INSTALLTYPE_<install_dir_prefx>`. Note that if you used `-` characters in
+your install directory prefix, those need to be replaced with `_` in the
 environment variable.
+
+For example, to enable the package install type for the set of nova elements
+that use `nova` as the install type prefix, define the following:
+
+    export DIB_INSTALLTYPE_nova=package
 
 
 C and C++ compilation
