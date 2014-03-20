@@ -19,12 +19,27 @@
 # common mistakes and exits with a non-zero status if it finds any.
 
 rc=0
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
 for i in $(find elements -type f); do
     # Check that files starting with a shebang are +x
     firstline=$(head -n 1 "$i")
     if [ ! -x "$i" ] && [ "${firstline:0:2}" = "#!" ]; then
         echo "ERROR: $i is not executable"
         rc=1
+    fi
+
+    # Check alphabetical ordering of element-deps
+    if [ $(basename $i) = "element-deps" ]; then
+        UNSORTED=${TMPDIR}/element-deps.unsorted
+        SORTED=${TMPDIR}/element-deps.sorted
+        grep -v '^#' $i > ${UNSORTED}
+        sort ${UNSORTED} > ${SORTED}
+        diff -c ${UNSORTED} ${SORTED}
+        if [ $? -ne 0 ]; then
+            echo "ERROR: $i is not sorted alphabetically"
+            rc=1
+        fi
     fi
 done
 exit $rc
