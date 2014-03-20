@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Install any packages in this file that may not be in the fedora
-# image but could reasonably be expected
-
-install-packages which tcpdump traceroute lsof
