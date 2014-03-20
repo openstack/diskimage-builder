@@ -18,6 +18,9 @@
 # This script checks all files in the "elements" directory for some
 # common mistakes and exits with a non-zero status if it finds any.
 
+set -eu
+set -o pipefail
+
 parse_exclusions() {
     # Exclusions are currently only read on a per-file basis
     local filename=$1
@@ -60,6 +63,24 @@ for i in $(find elements -type f); do
         if [ $? -ne 0 ]; then
             echo "ERROR: $i is not sorted alphabetically"
             rc=1
+        fi
+    fi
+
+    # Check that all scripts are set -e
+    # NOTE(bnemec): This doesn't verify that the set call occurs high
+    # enough in the file to be useful, but hopefully nobody will be
+    # sticking set calls at the end of their file to trick us.  And if
+    # they are, that's easy enough to catch in reviews.
+    # Also, this is only going to check bash scripts - we've decided to
+    # explicitly require bash for any scripts that don't have a specific
+    # need to run under other shells, and any exceptions to that rule
+    # may not want these checks either.
+    if [ -n "$(echo $firstline | grep '#!/bin/bash')" ]; then
+        if ! excluded sete; then
+            if [ -z "$(grep "^set -[^ ]*e" $i)" ]; then
+                echo "ERROR: $i is not set -e"
+                rc=1
+            fi
         fi
     fi
 done

@@ -16,6 +16,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+# NOTE(bnemec): We don't want this script to exit on failures because if init
+# dies then we get a kernel panic on ramdisk boot.
+# dib-lint: disable=sete setu setpipefail
+
 echo "init"
 
 source /init-func
