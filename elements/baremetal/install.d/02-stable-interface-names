@@ -11,7 +11,7 @@ install-packages biosdevname
 # Fedora/RHEL cloud images may hard code the eth0 interface
 # so it boots w/ DHCP. We remove this file here so it
 # doesn't interfere w/ stable interface naming
-IFCFG_NETSCRIPT="/etc/sysconfig/network-interfaces/ifcfg-eth0"
+IFCFG_NETSCRIPT="/etc/sysconfig/network-scripts/ifcfg-eth0"
 if [ -f $IFCFG_NETSCRIPT ]; then
     rm $IFCFG_NETSCRIPT
 fi
