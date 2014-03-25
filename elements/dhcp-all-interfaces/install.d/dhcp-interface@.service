@@ -1,0 +1,15 @@
+[Unit]
+Description=DHCP interface %I
+After=network.service network.target
+
+ConditionPathExists=!/etc/sysconfig/network-scripts/ifcfg-%I
+
+[Service]
+Type=oneshot
+User=root
+ExecStartPre=/usr/local/sbin/dhcp-all-interfaces.sh %I
+ExecStart=/sbin/ifup %I
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
