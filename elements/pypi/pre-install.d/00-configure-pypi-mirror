@@ -1,32 +1,45 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-set -eu
+import os.path
 
-PYPIURL=${PYPI_MIRROR_URL:-'file:///tmp/pypi'}
-mkdir -p ~/.pip
+def main():
+    home = os.path.expanduser("~")
+    backup_configs(home)
+    indices = []
+    if os.environ.get('PYPI_MIRROR_URL'):
+        candidates = [k for k in os.environ if k.startswith('PYPI_MIRROR_URL')]
+        indices = list(map(os.environ.get, sorted(candidates)))
+    else:
+        indices = ['file:///tmp/pypi']
+    easy_index = indices[-1]
+    use_pypi_python_org = True
+    if os.environ.get('DIB_OFFLINE'):
+        use_pypi_python_org = False
+    if os.environ.get('DIB_NO_PYPI_PIP'):
+        use_pypi_python_org = False
+    if use_pypi_python_org:
+        indices.append('https://pypi.python.org/simple')
+    with file(home + '/.pip/pip.conf', 'wt') as output:
+        output.write('[global]\n')
+        output.write('log = %s/pip.log\n' % (home,))
+        output.write('index-url = %s\n' % (indices[0],))
+        for index in indices[1:]:
+            output.write('extra-index-url = %s\n' % (index,))
+    with file(home + '/.pydistutils.cfg', 'wt') as output:
+        output.write('[easy_install]\n')
+        output.write('index_url = %s\n' % (easy_index,))
 
-if [ -e ~/.pip/pip.conf ]; then
-    mv ~/.pip/pip.conf{,.orig}
-fi
 
-if [ -e ~/.pydistutils.cfg ]; then
-    mv ~/.pydistutils.cfg{,.orig}
-fi
+def backup_configs(home):
+    pip_dir = home + '/.pip'
+    if not os.path.exists(pip_dir):
+        os.mkdir(pip_dir)
+    if os.path.exists(pip_dir + '/pip.conf'):
+        os.rename(pip_dir + '/pip.conf', pip_dir + '/pip.conf.orig')
+    if os.path.exists(home + '/.pydistutils.cfg'):
+        os.rename(home + '/.pydistutils.cfg', home + '/.pydistutils.cfg.orig')
 
-if [ -z $DIB_OFFLINE ]; then
-    ONLINE="extra-index-url = https://pypi.python.org/simple"
-else
-    ONLINE=""
-fi
 
-cat <<EOF > ~/.pip/pip.conf
-[global]
-index-url = $PYPIURL
-$ONLINE
-log = $HOME/pip.log
-EOF
+if __name__ == '__main__':
+    main()
 
-cat <<EOF > ~/.pydistutils.cfg
-[easy_install]
-index_url = $PYPIURL
-EOF
