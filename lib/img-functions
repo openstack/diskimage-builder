@@ -106,13 +106,7 @@ function compress_and_save_image () {
     rm $TMP_IMAGE_PATH
 
     TMP_IMAGE_PATH=$1-new
-    save_image $1
-    remove_image
-}
-
-function remove_image () {
-  echo "Removing $TMP_IMAGE_PATH"
-  rm $TMP_IMAGE_PATH
+    finish_image $1
 }
 
 function do_extra_package_install () {

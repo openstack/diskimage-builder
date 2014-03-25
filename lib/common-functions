@@ -40,6 +40,14 @@ function mk_build_dir () {
   export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
 }
 
+function finish_image () {
+    mv $TMP_IMAGE_PATH $1
+    cleanup_dirs
+    # All done!
+    trap EXIT
+    echo "Image file $1 created..."
+}
+
 function save_image () {
     # TODO: this really should rename the old file
     if [ -f  $1 ] ; then
