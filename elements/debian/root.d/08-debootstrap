@@ -37,7 +37,7 @@ if [ -n "$DIB_OFFLINE" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
 else
     echo Building new tarball for Debian $DIB_RELEASE ARCH=$ARCH
-    ADD_PACKAGES=cloud-init,cloud-utils,cloud-initramfs-growroot,sudo,adduser,locales,openssh-server,file,less,kbd,curl,rsync,bash-completion,linux-image-amd64
+    ADD_PACKAGES=sudo,adduser,locales,openssh-server,file,less,kbd,curl,rsync,bash-completion,linux-image-amd64
     if [ -f ${TARGET_ROOT}/.extra-packages ] ; then
         ADD_PACKAGES=${ADD_PACKAGES},$(cat ${TARGET_ROOT}/.extra-packages)
     fi
@@ -48,6 +48,16 @@ else
         $TARGET_ROOT \
         $DIB_DISTRIBUTION_MIRROR"
     echo "Customizing result for cloud use"
+
+    CLOUD_INIT_PACKAGES="cloud-init cloud-utils cloud-initramfs-growroot"
+    if [ "$DIB_RELEASE" = "wheezy" ]; then
+        sudo sh -c "echo deb $DIB_DISTRIBUTION_MIRROR wheezy-backports main >> ${TARGET_ROOT}/etc/apt/sources.list"
+        sudo chroot ${TARGET_ROOT} apt-get update
+        sudo chroot ${TARGET_ROOT} apt-get install -y -t wheezy-backports $CLOUD_INIT_PACKAGES
+    else # unstable
+        sudo chroot ${TARGET_ROOT} apt-get install -y $CLOUD_INIT_PACKAGES
+    fi
+
     sudo sed -i "s/PermitRootLogin yes/PermitRootLogin without-password/" $TARGET_ROOT/etc/ssh/sshd_config
     sudo chroot ${TARGET_ROOT} adduser --gecos Debian-cloud-init-user --disabled-password --quiet debian
     sudo install -d -m 0755 -o root -g root ${TARGET_ROOT}/etc/sudoers.d
