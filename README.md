@@ -325,9 +325,17 @@ scripts in each phase.
 
 ### Dependencies ###
 
-Each element has a file named element-deps: a plain text, newline separated
-list of elements which will be added to the list of elements built into the
-image at image creation time.
+Each element can use the following files to define or affect dependencies:
+
+* element-deps: a plain text, newline separated list of elements which will
+  be added to the list of elements built into the image at image creation time.
+
+* element-provides: A plain text, newline separated list of elements which
+  are provided by this element. These elements will be excluded from elements
+  built into the image at image creation time. For example if element A depends
+  on element B and element C includes element B in its "element-provides"
+  file and A and C are included when building an image, then B is not used.
+
 
 ### First-boot files ###
 

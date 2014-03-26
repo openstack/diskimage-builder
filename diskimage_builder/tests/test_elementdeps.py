@@ -24,12 +24,15 @@ data_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'test-elements'))
 
 
-def _populate_element(element_dir, element_name, element_deps=[]):
+def _populate_element(element_dir, element_name, element_deps=[], provides=[]):
         element_home = os.path.join(element_dir, element_name)
         os.mkdir(element_home)
         deps_path = os.path.join(element_home, 'element-deps')
         with open(deps_path, 'w') as deps_file:
             deps_file.write("\n".join(element_deps))
+        provides_path = os.path.join(element_home, 'element-provides')
+        with open(provides_path, 'w') as provides_file:
+            provides_file.write("\n".join(provides))
 
 
 class TestElementDeps(testtools.TestCase):
@@ -43,6 +46,12 @@ class TestElementDeps(testtools.TestCase):
                           'requires-requires-foo',
                           ['requires-foo'])
         _populate_element(self.element_dir, 'self', ['self'])
+        _populate_element(self.element_dir,
+                          'provides_virtual',
+                          [],
+                          ['virtual'])
+        _populate_element(self.element_dir, 'requires_virtual', ['virtual'])
+        _populate_element(self.element_dir, 'virtual', [])
         _populate_element(self.element_dir, 'circular1', ['circular2'])
         _populate_element(self.element_dir, 'circular2', ['circular1'])
 
@@ -78,6 +87,18 @@ class TestElementDeps(testtools.TestCase):
         result = element_dependencies.expand_dependencies(
             ['circular1'], elements_dir=self.element_dir)
         self.assertEqual(set(['circular1', 'circular2']), result)
+
+    def test_provide(self):
+        result = element_dependencies.expand_dependencies(
+            ['requires_virtual', 'provides_virtual'],
+            elements_dir=self.element_dir)
+        self.assertEqual(set(['requires_virtual', 'provides_virtual']), result)
+
+    def test_provide_conflict(self):
+        self.assertRaises(SystemExit,
+                          element_dependencies.expand_dependencies,
+                          ['virtual', 'provides_virtual'],
+                          self.element_dir)
 
 
 class TestElements(testtools.TestCase):

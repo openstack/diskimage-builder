@@ -24,21 +24,12 @@ def get_elements_dir():
     return os.environ['ELEMENTS_PATH']
 
 
-def dependencies(element, elements_dir=None):
-    """Return the non-transitive list of dependencies for a single element.
-
-    :param user_elements: iterable enumerating elements a user has requested
-    :param elements_dir: the elements dir to read from. If not supplied,
-                         inferred by calling get_elements_dir().
-
-    :return: a set just containing all elements that the specified element
-             depends on.
-    """
+def _get_set(element, fname, elements_dir=None):
     if elements_dir is None:
         elements_dir = get_elements_dir()
 
     for path in elements_dir.split(':'):
-        element_deps_path = (os.path.join(path, element, 'element-deps'))
+        element_deps_path = (os.path.join(path, element, fname))
         try:
             with open(element_deps_path) as element_deps:
                 return set([line.strip() for line in element_deps])
@@ -55,6 +46,32 @@ def dependencies(element, elements_dir=None):
     exit(-1)
 
 
+def provides(element, elements_dir=None):
+    """Return the set of elements provided by the specified element.
+
+    :param element: name of a single element
+    :param elements_dir: the elements dir to read from. If not supplied,
+                         inferred by calling get_elements_dir().
+
+    :return: a set just containing all elements that the specified element
+             provides.
+    """
+    return _get_set(element, 'element-provides', elements_dir)
+
+
+def dependencies(element, elements_dir=None):
+    """Return the non-transitive set of dependencies for a single element.
+
+    :param element: name of a single element
+    :param elements_dir: the elements dir to read from. If not supplied,
+                         inferred by calling get_elements_dir().
+
+    :return: a set just containing all elements that the specified element
+             depends on.
+    """
+    return _get_set(element, 'element-deps', elements_dir)
+
+
 def expand_dependencies(user_elements, elements_dir=None):
     """Expand user requested elements using element-deps files.
 
@@ -68,14 +85,24 @@ def expand_dependencies(user_elements, elements_dir=None):
     """
     final_elements = set(user_elements)
     check_queue = list(user_elements)
+    provided = set()
 
     while check_queue:
         element = check_queue.pop()
+        if element in provided:
+            continue
         deps = dependencies(element, elements_dir)
-        check_queue.extend(deps - final_elements)
+        provided.update(provides(element, elements_dir))
+        check_queue.extend(deps - (final_elements | provided))
         final_elements.update(deps)
 
-    return final_elements
+    conflicts = set(user_elements) & provided
+    if conflicts:
+        sys.stderr.write("ERROR: Following elements were explicitly required "
+                         "but are provided by other included elements: %s\n" %
+                         ", ".join(conflicts))
+        exit(-1)
+    return final_elements - provided
 
 
 def main(argv):
