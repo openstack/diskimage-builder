@@ -6,3 +6,7 @@ HTTP proxy when installing packages. These customisations live here, where they
 can be used by any dpkg based element.
 
 The dpkg specific version of install-packages is also kept here.
+
+If an extra or updated apt key is needed then define DIB\_ADD\_APT\_KEYS with
+the path to a folder. Any key files inside will be added to the key ring before
+any apt-get commands take place.
