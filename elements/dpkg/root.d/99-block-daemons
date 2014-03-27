@@ -24,10 +24,10 @@ EOF
     sudo chmod 755 $TARGET_ROOT/sbin/initctl
 fi
 
-sudo mv $TARGET_ROOT/usr/sbin/invoke-rc.d $TARGET_ROOT/usr/sbin/invoke-rc.d.REAL
-sudo dd of=$TARGET_ROOT/usr/sbin/invoke-rc.d <<EOF
+sudo dd of=$TARGET_ROOT/usr/sbin/policy-rc.d <<EOF
 #!/bin/sh
-echo "invoke-rc.d (tripleo 1.0)"
-echo "Warning: Fake invoke-rc.d called, doing nothing"
+# 101 Action not allowed. The requested action will not be performed because
+#     of runlevel or local policy constraints.
+exit 101
 EOF
-sudo chmod 755 $TARGET_ROOT/usr/sbin/invoke-rc.d
+sudo chmod 755 $TARGET_ROOT/usr/sbin/policy-rc.d

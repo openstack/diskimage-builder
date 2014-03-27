@@ -5,8 +5,10 @@ set -e
 [ -n "$TARGET_ROOT" ]
 
 sudo mv $TARGET_ROOT/sbin/start-stop-daemon.REAL $TARGET_ROOT/sbin/start-stop-daemon
+
 if [ -f $TARGET_ROOT/sbin/initctl.REAL ]
 then
     sudo mv $TARGET_ROOT/sbin/initctl.REAL $TARGET_ROOT/sbin/initctl
 fi
-sudo mv $TARGET_ROOT/usr/sbin/invoke-rc.d.REAL $TARGET_ROOT/usr/sbin/invoke-rc.d
+
+sudo rm $TARGET_ROOT/usr/sbin/policy-rc.d
