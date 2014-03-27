@@ -48,6 +48,8 @@ package_map = {
     'libz-dev': 'zlib-devel',
     'linux-image-generic': 'kernel',
     'lm-sensors': 'lm_sensors',
+    'mariadb-galera-server': 'MariaDB-Galera-server',
+    'mariadb-client': 'MariaDB-client',
     'mysql-client-5.5': 'mariadb',
     'mysql-server-5.5': 'mariadb-server',
     'nagios-plugins-basic': 'nagios-plugins-all',
