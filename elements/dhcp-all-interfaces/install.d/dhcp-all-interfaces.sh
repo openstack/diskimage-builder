@@ -58,12 +58,11 @@ function config_exists() {
     if [ "$CONF_TYPE" == "netscripts" ]; then
         if [ -f "/etc/sysconfig/network-scripts/ifcfg-$interface" ]; then
             return 0
-        else
-            return 1
         fi
     else
-        return ifquery $interface >/dev/null 2>&1
+        ifquery $interface >/dev/null 2>&1 && return 0
     fi
+    return 1
 }
 
 function inspect_interface() {
