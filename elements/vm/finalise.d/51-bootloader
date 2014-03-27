@@ -88,7 +88,7 @@ function install_grub2 {
     # - --target=i386-pc is invalid for non-i386/amd64 architectures
     # - and for UEFI too.
     #    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-    if [[ ! $GRUB_OPTS == *--target* ]]; then
+    if [[ ! $GRUB_OPTS == *--target* ]] && [[ $($GRUBNAME --version) =~ ' 2.' ]]; then
       # /sys/ comes from the host machine. If the host machine is using EFI
       # but the image being built doesn't have EFI boot-images installed we
       # should set the --target to use a BIOS-based boot-image.
@@ -153,9 +153,7 @@ function install_grub2 {
     [ -n "$RELEASE" ]
     # grub-mkconfig generates a config with the device in it,
     # This shouldn't be needed, but old code has bugs
-    if [ $RELEASE = 'precise' ] ; then
-      # Replace the search attempt with a hardcoded root as the Ubuntu reference
-      # images use.
+    if [ $RELEASE = 'precise' ] || [ $RELEASE = 'wheezy' ]; then
       sed -i "s%search --no.*%%" $GRUB_CFG
       sed -i "s%set root=.*%set root=(hd0,1)%" $GRUB_CFG
     fi
