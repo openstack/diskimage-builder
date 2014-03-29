@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # without these files, cloud-init will not perform stock operations such as
 # generating sshd hostkeys.
 

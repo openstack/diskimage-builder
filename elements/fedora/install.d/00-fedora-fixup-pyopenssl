@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # FIXME: To avoid conflict between the pyOpenSSL installed via python-pip
 # and pyOpenSSL installed via yum, we are going to sort it out installing
 # it earlier at the beginning of the image building process. Pyhton-pip

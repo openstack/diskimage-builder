@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 cat << EOF > /etc/yum.repos.d/rhel7.repo
 [rhel7]
 name=RHEL7

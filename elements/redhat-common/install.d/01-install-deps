@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # Install any packages in this file that may not be in the base cloud
 # image but could reasonably be expected
 

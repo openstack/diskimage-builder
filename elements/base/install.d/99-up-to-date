@@ -2,6 +2,7 @@
 # Fully upgrade everything on the system (if the package manager knows how to
 # do it).
 
-set -e
+set -eu
+set -o pipefail
 
 install-packages -u

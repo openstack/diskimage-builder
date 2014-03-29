@@ -1,4 +1,7 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 config=/etc/selinux/config
 [ -e $config ] && sed -i "s%^\(SELINUX=\s*\).*$%SELINUX=disabled%" $config

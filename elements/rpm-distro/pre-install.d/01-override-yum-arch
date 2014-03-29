@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 if [ "i386" = "$ARCH" ]; then
   basearch=i386
   arch=i686
