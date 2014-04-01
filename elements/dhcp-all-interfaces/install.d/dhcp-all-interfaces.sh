@@ -14,13 +14,17 @@ else
     exit 1
 fi
 
-if [ "$CONF_TYPE" == "eni" ]; then
-    # Serialize runs so that we don't miss hot-add interfaces
-    FLOCKED=${FLOCKED:-}
-    if [ -z "$FLOCKED" ] ; then
-        FLOCKED=true exec flock -x $ENI_FILE $0
-    fi
-fi
+ARGS="$0 $@"
+
+function serialize_me() {
+  if [ "$CONF_TYPE" == "eni" ]; then
+      # Serialize runs so that we don't miss hot-add interfaces
+      FLOCKED=${FLOCKED:-}
+      if [ -z "$FLOCKED" ] ; then
+          FLOCKED=true exec flock -x $ENI_FILE $ARGS
+      fi
+  fi
+}
 
 function get_if_link() {
   cat /sys/class/net/${1}/carrier
@@ -29,6 +33,7 @@ function get_if_link() {
 function enable_interface() {
   local interface=$1
 
+  serialize_me
   if [ "$CONF_TYPE" == "eni" ]; then
       printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
   elif [ "$CONF_TYPE" == "netscripts" ]; then
@@ -41,6 +46,7 @@ function enable_interface() {
 function disable_interface() {
   local interface=$1
 
+  serialize_me
   if [ "$CONF_TYPE" == "netscripts" ]; then
       local IFCFG_FILE="/etc/sysconfig/network-scripts/ifcfg-$interface"
       if [ -f "$IFCFG_FILE" ]; then
