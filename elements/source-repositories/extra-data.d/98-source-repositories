@@ -96,7 +96,7 @@ function get_repos_for_element(){
                 HAS_REF=$(git --git-dir=$CACHE_PATH/.git name-rev $REPOREF 2>/dev/null || true)
                 if [ -z "$DIB_OFFLINE" -o -z "$HAS_REF" ] ; then
                     echo "Updating cache of $REPOLOCATION in $CACHE_PATH with ref $REPOREF"
-                    git --git-dir=$CACHE_PATH/.git fetch --update-head-ok $REPOLOCATION ${REPOREF}:${REPOREF}
+                    git --git-dir=$CACHE_PATH/.git fetch --update-head-ok $REPOLOCATION +refs/heads/*:refs/heads/*
                 fi
 
                 echo "Cloning from $REPONAME cache and applying ref $REPOREF"
