@@ -60,7 +60,7 @@ else
 fi
 
 # udev versions 176 and newer require a different on-disk setup
-UDEVD_VERSION=$($UDEVD --version)
+UDEVD_VERSION=$(udevadm --version)
 
 if [ "$UDEVD_VERSION" != "" -a $UDEVD_VERSION -gt 175 ]; then
     echo "Using new-style udevd setup"

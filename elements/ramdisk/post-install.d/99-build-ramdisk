@@ -20,6 +20,9 @@ LIB_UDEV=$LIB_UDEV_ROOT/lib/udev
 INIT="$_LIB/scripts/init"
 FUNCTIONS_D="$_LIB/scripts/d"
 BUSYBOX=${BUSYBOX:-$(which busybox)}
+# NOTE(bnemec): IMAGE_ELEMENT is normally set in disk-image-create, but we're
+# not using that to build the image here.
+IMAGE_ELEMENT=
 
 mk_build_dir
 mkdir -p $TMP_BUILD_DIR/mnt

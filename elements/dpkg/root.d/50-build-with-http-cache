@@ -5,7 +5,7 @@ set -e
 [ -n "$TARGET_ROOT" ]
 
 # If we have a network proxy, use it.
-if [ -n "$http_proxy" ] ; then
+if [ -n "${http_proxy:-}" ] ; then
     sudo dd of=$TARGET_ROOT/etc/apt/apt.conf.d/60img-build-proxy << _EOF_
 Acquire::http::Proxy "$http_proxy";
 _EOF_

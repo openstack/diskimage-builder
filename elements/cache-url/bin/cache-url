@@ -23,6 +23,7 @@ set -e
 
 url=$1
 dest=$2
+time_cond=
 
 mkdir -p $(dirname $dest)
 tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)

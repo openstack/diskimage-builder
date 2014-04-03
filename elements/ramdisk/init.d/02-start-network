@@ -15,16 +15,19 @@ fi
 readonly BOOT_INTERFACE
 
 ifconfig lo 127.0.0.1 up
-ifconfig "$BOOT_INTERFACE" up
-if [ $? -ne 0 ]; then
+rv=0
+ifconfig "$BOOT_INTERFACE" up || rv=1
+if [ rv -ne 0 ]; then
 	sleep 10
-	ifconfig "$BOOT_INTERFACE" up
+	rv=0
+	ifconfig "$BOOT_INTERFACE" up || rv=1
 	if [ $? -ne 0 ]; then
 		err_msg "Failed to ifconfig up $BOOT_INTERFACE"
 		troubleshoot
 	fi
 fi
 ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"
+route del default || true
 route add default gw $BOOT_GATEWAY
 
 echo "pinging to boot server $BOOT_SERVER"

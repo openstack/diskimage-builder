@@ -17,6 +17,8 @@
 
 set -e
 
+EXTRA_ARGS=
+
 if [ "$1" = "-u" ] ; then
   yum -y update
   exit 0

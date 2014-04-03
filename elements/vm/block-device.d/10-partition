@@ -19,6 +19,7 @@ sudo partprobe $IMAGE_BLOCK_DEVICE
 sudo udevadm settle
 
 # If the partition isn't under /dev/loop*p1, create it with kpartx
+DM=
 if [ ! -e "${IMAGE_BLOCK_DEVICE}p1" ]; then
     sudo kpartx -asv $TMP_IMAGE_PATH
     DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}

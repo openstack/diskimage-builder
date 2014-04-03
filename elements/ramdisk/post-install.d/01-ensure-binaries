@@ -17,6 +17,8 @@ if [ ! -d $TARGET_DIR ] ; then
   exit 1
 fi
 
+BINARY_DEPS=
+
 for _FILE in $(ls ${TARGET_DIR}/binary-deps.d/) ; do
   _FILE="${TARGET_DIR}/binary-deps.d/${_FILE}"
   if [ -a $_FILE ]; then
