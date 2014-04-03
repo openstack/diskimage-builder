@@ -2,7 +2,8 @@
 # Save the HTTP/[S] and noproxy settings if available.
 # XXX: Obviously not suitable for downloadable images.
 
-set -e
+set -eu
+set -o pipefail
 set -o xtrace
 
 have_apt=

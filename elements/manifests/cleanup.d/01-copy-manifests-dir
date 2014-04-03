@@ -15,6 +15,7 @@
 # under the License.
 #
 set -eux
+set -o pipefail
 
 if [ -d $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR} ]; then
     # Move the dib_environment and dib_arguments files into the manifests dir

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -eux
+set -o pipefail
 # Working around bug in Debian cloud-init packages with upstart
 # where startpar will wait forever for these because they are tasks
 # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=735204

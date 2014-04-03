@@ -1,5 +1,6 @@
 #!/bin/bash
 set -uex
+set -o pipefail
 SCRIPTDIR=$(dirname $0)
 
 DIB_INIT_SYSTEM=$(dib-init-system)

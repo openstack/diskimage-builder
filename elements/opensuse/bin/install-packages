@@ -14,7 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-set -e
+set -eu
+set -o pipefail
 
 function run_zypper() {
   # TODO: Uncertain if this can ever block wanting input from user

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Install baseline packages and tools.
 
-set -e
+set -eu
+set -o pipefail
 
 # If lsb_release is missing, just do nothing.
 DISTRO=`lsb_release -si` || true

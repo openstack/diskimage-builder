@@ -2,7 +2,9 @@
 # Save user SSH public key if available.
 # (Obviously not suitable for downloadable images).
 
-set -e
+set -eu
+set -o pipefail
+
 source $_LIB/die
 [ -n "$TMP_HOOKS_PATH" ] || die "Temp hook path not set"
 

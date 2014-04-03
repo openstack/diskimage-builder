@@ -2,6 +2,7 @@
 # Override the default /etc/apt/apt.conf with $DIB_APT_CONF
 
 set -ue
+set -o pipefail
 
 # exit directly if DIB_APT_CONF is not defined properly
 if [ -z "${DIB_APT_CONF:-}" ] ; then

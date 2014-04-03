@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+set -o pipefail
 
 PYPI_MIRROR_URL=${PYPI_MIRROR_URL:-''}
 if [ -n "$PYPI_MIRROR_URL" ]; then

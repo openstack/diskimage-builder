@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 
 INTERFACE=${1:-} #optional, if not specified configure all available interfaces
 ENI_FILE="/etc/network/interfaces"
@@ -68,7 +69,7 @@ function config_exists() {
             return 0
         fi
     else
-        ifquery $interface >/dev/null 2>&1 && return 0
+        ifquery $interface >/dev/null 2>&1 && return 0 || return 1
     fi
     return 1
 }

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Override the default /etc/apt/sources.list with $DIB_APT_SOURCES
 
-set -e
+set -eu
+set -o pipefail
 
 # exit directly if DIB_APT_SOURCES is not defined properly
 if [ -z "$DIB_APT_SOURCES" ] ; then

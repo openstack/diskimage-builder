@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e
-set -x
+set -eux
+set -o pipefail
 
 export RAMDISK_BUILD_PATH="$TMP_MOUNT_PATH/tmp/ramdisk-build"
 mkdir -p $RAMDISK_BUILD_PATH

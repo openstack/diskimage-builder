@@ -15,6 +15,7 @@
 # under the License.
 #
 set -eu
+set -o pipefail
 if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
     . ${TARGET_ROOT}/.extra_settings
 fi

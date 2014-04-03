@@ -2,6 +2,7 @@
 # These are useful, or at worst not harmful, for all images we build.
 
 set -eu
+set -o pipefail
 
 [ -n "$ARCH" ]
 [ -n "$TARGET_ROOT" ]

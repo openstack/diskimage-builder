@@ -1,5 +1,7 @@
 #!/bin/bash
 set -eux
+set -o pipefail
+
 cat > ${TARGET_ROOT}/.extra_settings << EOF
 DIB_DEBIAN_ALT_INIT_PACKAGE=upstart
 EOF

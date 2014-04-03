@@ -1,5 +1,6 @@
 #!/bin/bash
-set -ex
+set -eux
+set -o pipefail
 
 MODULES_LIST=${DIB_MODPROBE_BLACKLIST:?"Please set DIB_MODPROBE_BLACKLIST."}
 
