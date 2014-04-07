@@ -51,9 +51,17 @@ class TestElementDeps(testtools.TestCase):
                           [],
                           ['virtual'])
         _populate_element(self.element_dir, 'requires_virtual', ['virtual'])
-        _populate_element(self.element_dir, 'virtual', [])
+        _populate_element(self.element_dir, 'virtual', ['extra_dependency'])
+        _populate_element(self.element_dir, 'extra_dependency', [])
         _populate_element(self.element_dir, 'circular1', ['circular2'])
         _populate_element(self.element_dir, 'circular2', ['circular1'])
+        _populate_element(self.element_dir,
+                          'provides_new_virtual',
+                          [],
+                          ['new_virtual'])
+        _populate_element(self.element_dir,
+                          'requires_new_virtual',
+                          ['new_virtual'])
 
     def test_non_transitive_deps(self):
         result = element_dependencies.expand_dependencies(
@@ -90,7 +98,7 @@ class TestElementDeps(testtools.TestCase):
 
     def test_provide(self):
         result = element_dependencies.expand_dependencies(
-            ['requires_virtual', 'provides_virtual'],
+            ['provides_virtual', 'requires_virtual'],
             elements_dir=self.element_dir)
         self.assertEqual(set(['requires_virtual', 'provides_virtual']), result)
 
@@ -99,6 +107,13 @@ class TestElementDeps(testtools.TestCase):
                           element_dependencies.expand_dependencies,
                           ['virtual', 'provides_virtual'],
                           self.element_dir)
+
+    def test_provide_virtual_ordering(self):
+        result = element_dependencies.expand_dependencies(
+            ['requires_new_virtual', 'provides_new_virtual'],
+            elements_dir=self.element_dir)
+        self.assertEqual(set(['requires_new_virtual', 'provides_new_virtual']),
+                         result)
 
 
 class TestElements(testtools.TestCase):
