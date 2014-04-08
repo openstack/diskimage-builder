@@ -14,6 +14,7 @@
 # under the License.
 
 import argparse
+import collections
 import os
 import sys
 
@@ -84,11 +85,13 @@ def expand_dependencies(user_elements, elements_dir=None):
              including any transitive dependencies.
     """
     final_elements = set(user_elements)
-    check_queue = list(user_elements)
+    check_queue = collections.deque(user_elements)
     provided = set()
 
     while check_queue:
-        element = check_queue.pop()
+        # bug #1303911 - run through the provided elements first to avoid
+        # adding unwanted dependencies and looking for virtual elements
+        element = check_queue.popleft()
         if element in provided:
             continue
         deps = dependencies(element, elements_dir)
