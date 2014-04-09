@@ -46,7 +46,6 @@ function string_contains() {
 }
 
 function load_modules_by_udev() {
-	depmod
 	udevadm trigger --action=add
 	udevadm settle
 }
