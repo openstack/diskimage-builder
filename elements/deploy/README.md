@@ -1,2 +1,1 @@
-A ramdisk that will expose the machine primary disk over iSCSI and reboot
-once baremetal-deploy-helper signals it is finished.
+Temporary element to include deploy-baremetal from the name deploy whilst renaming the element.
