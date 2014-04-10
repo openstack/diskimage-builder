@@ -54,6 +54,9 @@ else
         sudo sh -c "echo deb $DIB_DISTRIBUTION_MIRROR wheezy-backports main >> ${TARGET_ROOT}/etc/apt/sources.list"
         sudo chroot ${TARGET_ROOT} apt-get update
         sudo chroot ${TARGET_ROOT} apt-get install -y -t wheezy-backports $CLOUD_INIT_PACKAGES
+        cat << EOF | sudo tee -a ${TARGET_ROOT}/etc/network/interfaces
+source-directory /etc/interfaces.d
+EOF
     else # unstable
         sudo chroot ${TARGET_ROOT} apt-get install -y $CLOUD_INIT_PACKAGES
     fi
@@ -71,6 +74,14 @@ LABEL=cloudimg-rootfs / ext4 errors=remount-ro 0 1
 
     # specify a hostname so that cloud-init does not default to (None)
     sudo sh -c "echo 'hostname: debian' > ${TARGET_ROOT}/etc/cloud/cloud.cfg.d/01_hostname.cfg"
+
+    # cloud images expect eth0 to use dhcp.
+    sudo mkdir -p ${TARGET_ROOT}/etc/network/interfaces.d
+    cat << EOF | sudo tee ${TARGET_ROOT}/etc/network/interfaces.d/eth0
+# The primary network interface
+auto eth0
+iface eth0 inet dhcp
+EOF
 
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
     sudo tar -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL .
