@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Cloud images may hard code the eth0 interfaces so they
+# boots w/ DHCP.
+
+# Fedora
+IFCFG_NETSCRIPT="/etc/sysconfig/network-scripts/ifcfg-eth0"
+if [ -f $IFCFG_NETSCRIPT ]; then
+    rm $IFCFG_NETSCRIPT
+fi
+
+# Ubuntu
+ENI_ETH0_CFG="/etc/network/interfaces.d/eth0.cfg"
+if [ -f $ENI_ETH0_CFG ]; then
+    rm $ENI_ETH0_CFG
+fi
