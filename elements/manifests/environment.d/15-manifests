@@ -15,13 +15,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
-set -eux
+set -eu
 
-MANIFEST_DIR=/etc/dib-manifests
-DPKG_MANIFEST_NAME=dib-manifest-dpkg-$(basename ${IMAGE_NAME})
-
-if [ -f $TMP_MOUNT_PATH/${MANIFEST_DIR}/${DPKG_MANIFEST_NAME} ]; then
-    mkdir -p ${IMAGE_NAME}-manifests
-    cp --no-preserve=ownership -v $TMP_MOUNT_PATH/${MANIFEST_DIR}/${DPKG_MANIFEST_NAME} \
-        ${IMAGE_NAME}-manifests/
-fi
+export DIB_MANIFEST_IMAGE_DIR=${DIB_MANIFEST_IMAGE_DIR:-/etc/dib-manifests}
+export DIB_MANIFEST_SAVE_DIR=${DIB_MANIFEST_SAVE_DIR:-${IMAGE_NAME}.d/}

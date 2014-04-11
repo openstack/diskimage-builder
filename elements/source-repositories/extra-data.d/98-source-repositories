@@ -166,7 +166,7 @@ OLD_CACHE_BASE=~/.cache/image-create/repository-sources
 make_new_cache $OLD_CACHE_BASE $CACHE_BASE
 mkdir -p $CACHE_BASE
 # Use the IMAGE_NAME from the calling script, and make it unique with the temporary path
-GIT_MANIFEST_NAME=dib-git-manifest-$(basename ${IMAGE_NAME})
+GIT_MANIFEST_NAME=dib-manifest-git-$(basename ${IMAGE_NAME})
 GIT_MANIFEST_CACHE_NAME=${GIT_MANIFEST_NAME}_$(dirname ${TMP_MOUNT_PATH##*.})
 GIT_MANIFEST=$CACHE_BASE/${GIT_MANIFEST_CACHE_NAME}
 rm -f $GIT_MANIFEST
@@ -178,6 +178,5 @@ done
 
 # Copy the manifest into the image if it exists (there may be no git repositories used)
 if [ -e "$GIT_MANIFEST" ] ; then
-    sudo cp $GIT_MANIFEST $TMP_MOUNT_PATH/etc/$GIT_MANIFEST_NAME
-    sudo mv $GIT_MANIFEST $(dirname ${IMAGE_NAME})/$GIT_MANIFEST_NAME
+    sudo cp $GIT_MANIFEST $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR}/$GIT_MANIFEST_NAME
 fi
