@@ -66,7 +66,7 @@ for i in $(find elements -type f); do
         fi
     fi
 
-    # Check that all scripts are set -e
+    # Check that all scripts are set -eu
     # NOTE(bnemec): This doesn't verify that the set call occurs high
     # enough in the file to be useful, but hopefully nobody will be
     # sticking set calls at the end of their file to trick us.  And if
@@ -79,6 +79,12 @@ for i in $(find elements -type f); do
         if ! excluded sete; then
             if [ -z "$(grep "^set -[^ ]*e" $i)" ]; then
                 echo "ERROR: $i is not set -e"
+                rc=1
+            fi
+        fi
+        if ! excluded setu; then
+            if [ -z "$(grep "^set -[^ ]*u" $i)" ]; then
+                echo "ERROR: $i is not set -u"
                 rc=1
             fi
         fi
