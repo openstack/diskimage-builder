@@ -50,6 +50,7 @@ package_map = {
     'lm-sensors': 'lm_sensors',
     'mariadb-galera-server': 'MariaDB-Galera-server',
     'mariadb-client': 'MariaDB-client',
+    'mariadb-rdo-galera-server': 'mariadb-galera-server',
     'mysql-client-5.5': 'mariadb',
     'mysql-server-5.5': 'mariadb-server',
     'nagios-plugins-basic': 'nagios-plugins-all',
