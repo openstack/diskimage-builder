@@ -178,5 +178,5 @@ done
 
 # Copy the manifest into the image if it exists (there may be no git repositories used)
 if [ -e "$GIT_MANIFEST" ] ; then
-    sudo cp $GIT_MANIFEST $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR}/$GIT_MANIFEST_NAME
+    sudo mv $GIT_MANIFEST $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR}/$GIT_MANIFEST_NAME
 fi
