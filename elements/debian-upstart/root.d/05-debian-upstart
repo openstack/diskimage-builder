@@ -1,4 +1,5 @@
 #!/bin/bash
 set -eux
-echo upstart >> ${TARGET_ROOT}/.extra-packages
-echo debian-upstart >> ${TARGET_ROOT}/.distro-name
+cat > ${TARGET_ROOT}/.extra_settings << EOF
+DIB_DEBIAN_ALT_INIT_PACKAGE=upstart
+EOF
