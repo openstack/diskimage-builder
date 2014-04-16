@@ -21,9 +21,48 @@ set -o pipefail
 # Download a URL to a local cache
 # e.g. cache-url http://.../foo ~/.cache/image-create/foo
 
+SCRIPT_NAME=$(basename $0)
+SCRIPT_HOME=$(dirname $0)
+FORCE_REVALIDATE=0
+
+function show_options () {
+    echo "Usage: $SCRIPT_NAME [options] <url> <destination_file>"
+    echo
+    echo "Download a URL and cache it to a specified location."
+    echo "Subsequent requests will compare the last modified date"
+    echo "of the upstream file to determine whether it needs to be"
+    echo "downloaded again."
+    echo
+    echo "Options:"
+    echo "      -f          -- force upstream caches to fetch a new copy of the file"
+    echo "      -h          -- show this help"
+    echo
+    exit $1
+}
+
+TEMP=$(getopt -o hf -n $SCRIPT_NAME -- "$@")
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        -h|"-?") show_options 0;;
+        -f) FORCE_REVALIDATE=1; shift 1;;
+        --) shift; break;;
+        *) echo "Error: unsupported option $1." ; exit 1 ;;
+    esac
+done
+
 url=$1
 dest=$2
 time_cond=
+curl_opts=""
+
+if [ -z $url -o -z $dest ] ; then
+    show_options 1
+fi
 
 if [ -p $dest ]; then
     type="fifo"
@@ -34,14 +73,17 @@ else
     tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)
 fi
 
-if [ -f $dest -a -s $dest ] ; then
+if [ "$FORCE_REVALIDATE" = "1" ]; then
+    curl_opts="-H 'Pragma: no-cache, must-revalidate' -H 'Cache-Control: no-cache, must-revalidate'"
+    success="Downloaded and cached $url, having forced upstream caches to revalidate"
+elif [ -f $dest -a -s $dest ] ; then
     time_cond="-z $dest"
     success="Server copy has changed. Using server version of $url"
 else
     success="Downloaded and cached $url for the first time"
 fi
 
-rcode=$(curl -L -o $tmp -w '%{http_code}' $url $time_cond)
+rcode=$(eval curl -v -L -o $tmp -w '%{http_code}' $curl_opts $url $time_cond)
 if [ "$rcode" == "200" -o "${url:0:7}" == "file://" ] ; then
     # In cases where servers ignore the Modified time,
     # curl cancels the download, outputs a 200 and leaves
