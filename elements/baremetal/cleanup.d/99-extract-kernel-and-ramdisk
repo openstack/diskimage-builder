@@ -26,9 +26,9 @@ RAMDISK=
 if [ -f $TARGET_ROOT/etc/redhat-release ]; then
 
     # Prioritize PAE if present
-    KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1)
+    KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1 || echo "")
     if [ ! $KERNEL ]; then
-        KERNEL=$(ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1)
+        KERNEL=$(ls -1rv $BOOTDIR/vmlinuz* | grep -v debug | head -1 || echo "")
         if [ ! $KERNEL ]; then
             echo "No suitable kernel found."
             exit 1
@@ -38,7 +38,7 @@ if [ -f $TARGET_ROOT/etc/redhat-release ]; then
     KERNEL=$(basename $KERNEL)
     KERNEL_VERSION=`echo $KERNEL | sed 's/vmlinuz-//g'`
 
-    RAMDISK=$(basename `ls $BOOTDIR/initramfs-$KERNEL_VERSION.img`)
+    RAMDISK=$(basename `ls $BOOTDIR/initramfs-$KERNEL_VERSION.img` || echo "")
     if [ ! $RAMDISK ]; then
         echo "Can't find an initramfs for the $KERNEL_VERSION version of the kernel."
         exit 1

@@ -25,7 +25,7 @@ SPECIFIED_ELEMS[0]=""
 
 # List of all env vars to set install types
 PREFIX="DIB_INSTALLTYPE_"
-INSTALL_TYPE_VARS=$(env | grep ^$PREFIX | cut -d'=' -f1)
+INSTALL_TYPE_VARS=$(env | grep ^$PREFIX | cut -d'=' -f1 || echo "")
 
 for _install_type_var in $INSTALL_TYPE_VARS; do
 

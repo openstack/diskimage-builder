@@ -3,7 +3,14 @@
 # to ensure we have valid modules build for all.
 
 modules=$(dkms status | tr ',:' ' ' | awk '{ print $1 "/" $2 }')
-kernels=$(ls /usr/src/linux-headers-*-*-* -d | sed -e 's|/usr/src/linux-headers-||')
+kernels=$(ls /usr/src/linux-headers-*-*-* -d | sed -e 's|/usr/src/linux-headers-||' || echo "")
+# NOTE(bnemec): On Fedora, the versions can be found in /usr/src/kernels
+if [ -z "$kernels" ]; then
+  kernels=$(ls /usr/src/kernels/* -d | sed -e 's|/usr/src/kernels/||' || echo "")
+fi
+if [ -z "$kernels" ]; then
+  echo "Warning: No kernel versions found for DKMS"
+fi
 __ARCH=$ARCH
 unset ARCH
 

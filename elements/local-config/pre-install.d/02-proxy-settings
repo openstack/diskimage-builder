@@ -5,6 +5,12 @@
 set -e
 set -o xtrace
 
+have_apt=
+have_yum=
+have_zypper=
+http_proxy=${http_proxy:-""}
+https_proxy=${https_proxy:-""}
+
 if [ -d /etc/apt ] ; then
   have_apt=1
 fi

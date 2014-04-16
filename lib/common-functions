@@ -110,7 +110,7 @@ function generate_hooks () {
 # $1 the break point.
 # $2.. what to call if a break is needed
 function check_break () {
-  if echo "$break" | egrep -e "(,|^)$1(,|$)" -q; then
+  if echo "${break:-}" | egrep -e "(,|^)$1(,|$)" -q; then
     echo "Starting debug shell. Exit to resume building." >&2
     echo At stage $1 >&2
     shift

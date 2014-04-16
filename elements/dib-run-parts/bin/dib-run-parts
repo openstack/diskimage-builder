@@ -59,7 +59,7 @@ fi
 # parallelized later
 # Note: -maxdepth 1 ensures only files in the target directory (but not
 # subdirectories) are run, which is the way run-parts behaves.
-targets=$(find $target_dir -maxdepth 1 -xtype f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n)
+targets=$(find $target_dir -maxdepth 1 -xtype f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n || echo "")
 
 if [ "$show_list" == "1" ] ; then
   for target in $targets ; do
