@@ -23,6 +23,7 @@ import sys
 # distromatch or other rich data sources.
 # TripleO service name on the left, Fedora/RHEL on the right.
 service_map = {
+    'apache2': 'httpd',
     'cinder-api': 'openstack-cinder-api',
     'cinder-scheduler': 'openstack-cinder-scheduler',
     'cinder-volume': 'openstack-cinder-volume',
