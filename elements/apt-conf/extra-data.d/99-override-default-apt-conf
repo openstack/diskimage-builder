@@ -1,10 +1,10 @@
 #!/bin/bash
 # Override the default /etc/apt/apt.conf with $DIB_APT_CONF
 
-set -eu
+set -ue
 
 # exit directly if DIB_APT_CONF is not defined properly
-if [ -z "$DIB_APT_CONF" ] ; then
+if [ -z "${DIB_APT_CONF:-}" ] ; then
     echo "DIB_APT_CONF is not set - no apt.conf will be copied in"
     exit 0
 elif [ ! -f "$DIB_APT_CONF" ] ; then
