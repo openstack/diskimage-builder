@@ -55,3 +55,7 @@ requirements project, you can include them:
  * pip install -d ~/.cache/image-create/pypi/download/pip/openstack \
    heat-cfntools distribute os-apply-config
    run-mirror -b remotes/origin/master --verbose -c mirror.yaml --no-download
+
+A dedicated user with no privileges may be desirable when running this for
+unattended installs, since pypi-mirror will compile fairly arbitrary code from
+the internet.
