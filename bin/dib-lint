@@ -45,10 +45,16 @@ trap "rm -rf $TMPDIR" EXIT
 for i in $(find elements -type f); do
     exclusions=("$(parse_exclusions $i)")
     # Check that files starting with a shebang are +x
-    if ! excluded executable; then
-        firstline=$(head -n 1 "$i")
-        if [ ! -x "$i" ] && [ "${firstline:0:2}" = "#!" ]; then
+    firstline=$(head -n 1 "$i")
+    if [ "${firstline:0:2}" = "#!" ]; then
+        if [ ! -x "$i" ] && ! excluded executable; then
             echo "ERROR: $i is not executable"
+            rc=1
+        fi
+
+        # Ensure 4 spaces indent are used
+        if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
+            echo "ERROR: $i should use 4 spaces indent"
             rc=1
         fi
     fi
