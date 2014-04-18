@@ -3,10 +3,6 @@
 
 set -e
 
-# get the cloudimg version
-source $TMP_MOUNT_PATH/etc/lsb-release
-echo "Current cloudimg codename is: $DISTRIB_DESCRIPTION $DISTRIB_CODENAME"
-
 # exit directly if DIB_APT_SOURCES is not defined properly
 if [ -z "$DIB_APT_SOURCES" ] ; then
     echo "DIB_APT_SOURCES must be set to the location of a sources.list file you wish to use"
