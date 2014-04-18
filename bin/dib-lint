@@ -84,4 +84,12 @@ for i in $(find elements -type f); do
         fi
     fi
 done
+
+for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
+    # Check for tab indentation
+    if grep -q $'^ *\t' ${i}; then
+        echo "ERROR: $i contains tab characters"
+        rc=1
+    fi
+done
 exit $rc
