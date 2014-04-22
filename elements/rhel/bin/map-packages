@@ -19,24 +19,24 @@ import sys
 # distromatch or other rich data sources.
 # Debian name on the left, RHEL on the right.
 package_map = {
-    'grub-pc': 'grub',
-    'extlinux': 'syslinux-extlinux',
-    'open-iscsi': 'iscsi-initiator-utils',
-    'vlan': 'vconfig',
     'augeas-tools': 'augeas',
     'build-essential': 'make automake gcc gcc-c++ kernel-devel',
-    'openssh-client': 'openssh-clients',
     'default-jre': 'java-1.7.0-openjdk',
-    'tftpd-hpa': 'tftp-server',
+    'extlinux': 'syslinux-extlinux',
+    'gearman-job-server': 'gearmand',
+    'grub-pc': 'grub',
     'libffi-dev': 'libffi-devel',
+    'libvirt-bin': 'libvirtd',
     'libxml2-dev': 'libxml2-devel',
     'libxslt-dev': 'libxslt-devel',
     'libz-dev': 'zlib-devel',
+    'open-iscsi': 'iscsi-initiator-utils',
+    'openssh-client': 'openssh-clients',
     'python-dev': 'python-devel',
-    'gearman-job-server': 'gearmand',
-    'tgt': 'scsi-target-utils',
     'stunnel4': 'stunnel',
-    'libvirt-bin': 'libvirtd',
+    'tftpd-hpa': 'tftp-server',
+    'tgt': 'scsi-target-utils',
+    'vlan': 'vconfig',
 }
 
 for arg in sys.argv[1:]:
