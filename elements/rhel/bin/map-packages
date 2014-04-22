@@ -31,6 +31,7 @@ package_map = {
     'libxslt-dev': 'libxslt-devel',
     'libz-dev': 'zlib-devel',
     'open-iscsi': 'iscsi-initiator-utils',
+    'openjdk-7-jre-headless': 'java-1.7.0-openjdk-headless',
     'openssh-client': 'openssh-clients',
     'python-dev': 'python-devel',
     'stunnel4': 'stunnel',
