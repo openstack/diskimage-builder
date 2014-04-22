@@ -1,0 +1,7 @@
+#!/bin/bash
+# ensure we do not have a lost+found directory in the root folder
+# that could cause copy to fail.
+set -eu
+set -o pipefail
+
+rm -rf lost+found

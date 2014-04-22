@@ -1,5 +1,5 @@
 #!/bin/bash
-# The base tbz-image created by kiwi does not contain an initrd so create one
+# The base image created by kiwi does not contain an initrd so create one
 # here. 
 
 set -eu
@@ -15,7 +15,9 @@ source $_LIB/img-defaults
 # tmpfs even).
 echo "rootfstype=$FS_TYPE" > /etc/sysconfig/initrd
 
-mkinitrd -A
+# openSuse mkinitrd requires a valid root device be in fstab.
+sed -i 's/vda1/sda1/' /etc/fstab
+mkinitrd -A -B
 
 # And cleanup again
 rm /etc/sysconfig/initrd

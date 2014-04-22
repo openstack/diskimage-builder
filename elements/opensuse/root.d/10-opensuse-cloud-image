@@ -3,6 +3,20 @@
 set -eu
 set -o pipefail
 
+function find_free_nbd_device () {
+    # Return first free nbd device
+    return_device=''
+    for chk_device in /sys/class/block/nbd*; do
+        # find free nbd device by checking size field
+        size_chk=`cat $chk_device/size`
+        if [ "$size_chk" = "0" ]; then
+            # device looks free. lets use it.
+            return_device=$chk_device
+            break
+        fi
+    done
+    echo $return_device
+}
 [ -n "$ARCH" ]
 [ -n "$TARGET_ROOT" ]
 
@@ -17,7 +31,8 @@ fi
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://download.opensuse.org/repositories/Cloud:/Images/images/}
 DIB_RELEASE=${DIB_RELEASE:-13.1}
 # FIXME: Hard coded build numbers, versions, etc.
-BASE_IMAGE_NAME=${BASE_IMAGE_NAME:-openSUSE-$DIB_RELEASE-OpenStack-Guest.$ARCH}
+# NOTE: Actual file name seems unstable, and has changed several times.
+BASE_IMAGE_NAME=${BASE_IMAGE_NAME:-openSUSE-$DIB_RELEASE-OS-guest.$ARCH-0.0.2-Build3.1}
 
 if [ -z "$DIB_OFFLINE" ] ; then
     # XXX: Try to extract the filename of the current built from the index
@@ -26,7 +41,7 @@ if [ -z "$DIB_OFFLINE" ] ; then
     # https://bugzilla.novell.com/show_bug.cgi?id=853882 is deployed
     echo "Looking up current built of Base Image ($BASE_IMAGE_NAME):"
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(curl $DIB_CLOUD_IMAGES | \
-        sed -n "s/^.*\<a\ href\=\"\($BASE_IMAGE_NAME.*\.tbz\)\".*$/\1/p")}
+        sed -n "s/^.*\<a\ href\=\"\($BASE_IMAGE_NAME.*\.tar\.bz2\)\".*$/\1/p")}
     if [ -n "$BASE_IMAGE_FILE" ]; then
         echo "Using base image: $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE"
     else
@@ -35,7 +50,7 @@ if [ -z "$DIB_OFFLINE" ] ; then
         exit 1
     fi
 else
-    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$BASE_IMAGE_NAME-0.0.1-Build6.1.tbz}
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$BASE_IMAGE_NAME-raw.tar.bz2}
 fi
 
 # FIXME: either check the checksums into git or verify the signature
@@ -54,6 +69,36 @@ else
     grep "$BASE_IMAGE_FILE" SHA256SUMS.openSUSE.$DIB_RELEASE.$ARCH | sha256sum --check -
     popd
 fi
-# Extract the base image (use --numeric-owner to avoid possible UID/GID mismatch
-# between image tarball and host OS)
-sudo tar -C $TARGET_ROOT --numeric-owner -xjf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+
+# Extract the qcow2 image and qcow2.sha256 files.
+# to make life easier create a temp directory to unzip the files.
+# TODO(NobodyCam): validate qcow2 with sha256 file
+UNTAR_TO_LOCATION=$TMP_MOUNT_PATH/openSUSE/Untar
+mkdir -p $UNTAR_TO_LOCATION
+sudo tar -C $UNTAR_TO_LOCATION -xjf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+# mount qcow
+nbd_device=$(find_free_nbd_device)
+mount_device=/dev/`basename $nbd_device`
+sudo qemu-nbd -c $mount_device $UNTAR_TO_LOCATION/$BASE_IMAGE_NAME.qcow2
+# Ensure that $mount_device is a block device.
+if [ -b $mount_device ]; then
+    org_dir=`pwd`
+    # make a mount point for the image
+    mkdir $UNTAR_TO_LOCATION/mnt
+    # mount the images root partition
+    sudo mount ${mount_device}p1 $UNTAR_TO_LOCATION/mnt
+    # copy contents to the build area
+    cd $UNTAR_TO_LOCATION/mnt
+    sudo find . -print | sudo cpio -padmu $TARGET_ROOT
+    # ensure we are not in the directory about to be unmounted
+    cd $org_dir
+    echo "Copied $UNTAR_TO_LOCATION/mnt to $TARGET_ROOT"
+    # unmount and remove the device used for the copy
+    sudo umount $UNTAR_TO_LOCATION/mnt
+    sudo qemu-nbd -d $mount_device
+else
+    echo "Unable to extract openSuSe Image."
+    exit 1
+fi
+# remove the temp directory
+sudo rm -rf $UNTAR_TO_LOCATION
