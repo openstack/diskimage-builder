@@ -1,0 +1,10 @@
+set -euxo
+
+BOOTDIR=$TARGET_ROOT/boot
+
+# Splashimage in grub has a known issue with serial console
+# So grub config file needs to be fixed.
+if [ -f $BOOTDIR/grub/grub.conf ] ; then
+    sed -i -e "/^splashimage/d;s/ rhgb\( \|$\)/\1/g;s/ quiet\( \|$\)/\1/g;/^serial/d;/^terminal/d;/^hiddenmenu/d" $BOOTDIR/grub/grub.conf
+    sed -i "/^default/aserial --unit=0 --speed=9600 --word=8 --parity=no --stop=1\nterminal --timeout=5 serial console" $BOOTDIR/grub/grub.conf
+fi
