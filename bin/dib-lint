@@ -18,15 +18,36 @@
 # This script checks all files in the "elements" directory for some
 # common mistakes and exits with a non-zero status if it finds any.
 
+parse_exclusions() {
+    # Exclusions are currently only read on a per-file basis
+    local filename=$1
+    local disable_pattern="# dib-lint: disable="
+    local exclusions=$(grep "^$disable_pattern.*$" $filename | sed "s/$disable_pattern//g")
+    echo $exclusions
+}
+
+excluded() {
+    local test_name=$1
+    for e in $exclusions; do
+        if [ "$e" = "$test_name" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 rc=0
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
 for i in $(find elements -type f); do
+    exclusions=("$(parse_exclusions $i)")
     # Check that files starting with a shebang are +x
-    firstline=$(head -n 1 "$i")
-    if [ ! -x "$i" ] && [ "${firstline:0:2}" = "#!" ]; then
-        echo "ERROR: $i is not executable"
-        rc=1
+    if ! excluded executable; then
+        firstline=$(head -n 1 "$i")
+        if [ ! -x "$i" ] && [ "${firstline:0:2}" = "#!" ]; then
+            echo "ERROR: $i is not executable"
+            rc=1
+        fi
     fi
 
     # Check alphabetical ordering of element-deps
