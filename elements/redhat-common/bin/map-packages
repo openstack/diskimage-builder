@@ -45,6 +45,7 @@ package_map = {
     'libvirt-bin': 'libvirt',
     'libxml2-dev': 'libxml2-devel',
     'libz-dev': 'zlib-devel',
+    'linux-headers-generic': 'kernel-headers',
     'linux-image-generic': 'kernel',
     'lm-sensors': 'lm_sensors',
     'mariadb-galera-server': 'MariaDB-Galera-server',
