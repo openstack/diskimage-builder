@@ -91,11 +91,18 @@ function prepare_first_boot () {
 
 function finalise_base () {
     TARGET_ROOT=$TMP_MOUNT_PATH run_d cleanup
-    # Remove the resolv.conf we created above
-    sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
-    # Move the original back
-    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] ; then
-        sudo mv $TMP_MOUNT_PATH/etc/resolv.conf.ORIG $TMP_MOUNT_PATH/etc/resolv.conf
+    # If the file has been set immutable, we probably want to keep it
+    if lsattr $TMP_MOUNT_PATH/etc/resolv.conf | grep '^....i' >/dev/null ; then
+        # We're keeping the contents of resolv.conf set in the elements,
+        # so remove the old saved file
+        sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
+    else
+        # Remove the resolv.conf we created above
+        sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
+        # Move the original back
+        if [ -L $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] ; then
+            sudo mv $TMP_MOUNT_PATH/etc/resolv.conf.ORIG $TMP_MOUNT_PATH/etc/resolv.conf
+        fi
     fi
 }
 
