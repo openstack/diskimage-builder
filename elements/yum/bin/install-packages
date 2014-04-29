@@ -17,12 +17,16 @@
 set -e
 
 EXTRA_ARGS=
+ACTION=install
 
 if [ "$1" = "-u" ] ; then
   yum -y update
   exit 0
 elif [ "$1" = "-d" ] ; then
   EXTRA_ARGS="--downloadonly"
+  shift
+elif [ "$1" = "-e" ]; then
+  ACTION=erase
   shift
 fi
 
@@ -42,7 +46,7 @@ if [ -n "$WHITELIST" ]; then
   if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
     rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
   fi
-  yum -y install $EXTRA_ARGS $(map-packages $WHITELIST)
+  yum -y $ACTION $EXTRA_ARGS $(map-packages $WHITELIST)
   for pkg in "$@"; do
     if [ "$pkg" = "python-pip" ] ; then
       alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
