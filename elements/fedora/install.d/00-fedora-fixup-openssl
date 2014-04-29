@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # The version of openssl shipped in the fedora cloud image is no longer
 # compatible with new python environments installed by virtualenv, so we need
 # to update it first.

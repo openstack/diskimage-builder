@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 INTERFACE=${1:-} #optional, if not specified configure all available interfaces
 ENI_FILE="/etc/network/interfaces"
 

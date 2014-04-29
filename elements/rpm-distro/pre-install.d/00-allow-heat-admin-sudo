@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+set -eu
+set -o pipefail
 
 # heat-admin can not sudo without a tty by default
 echo 'Defaults:heat-admin !requiretty' >> /etc/sudoers.d/heat-admin-notty

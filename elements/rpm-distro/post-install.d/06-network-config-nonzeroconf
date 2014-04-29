@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # zeroconf should not be activated or it will add a 169.254.0.0
 # route. The route will interfere with access to the nova metadata
 # server at 169.254.169.254.

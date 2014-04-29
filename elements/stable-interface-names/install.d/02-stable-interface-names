@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # remove softlink to /dev/null which disables these rules
 NET_NAME_SLOT_FILE="/etc/udev/rules.d/80-net-name-slot.rules"
 if [ -h $NET_NAME_SLOT_FILE ]; then

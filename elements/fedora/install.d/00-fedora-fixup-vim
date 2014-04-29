@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eux
+set -o pipefail
 
 # Workaround for:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1066983

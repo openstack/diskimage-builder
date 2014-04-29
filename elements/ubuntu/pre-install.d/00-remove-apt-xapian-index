@@ -1,4 +1,8 @@
 #!/bin/bash
+
+set -eu
+set -o pipefail
+
 # This package is broken and causes real issues on update:
 # https://bugs.launchpad.net/ubuntu/+source/apt-xapian-index/+bug/1227420
 apt-get --yes remove apt-xapian-index || :

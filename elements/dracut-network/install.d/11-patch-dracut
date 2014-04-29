@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # If the patch doesn't apply just do nothing. This patch fixes a small
 # issue in the script that writes the network configuration files from
 # the cmdline to the disk on FC18/FC19.

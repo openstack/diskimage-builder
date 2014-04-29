@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # Prioritize PAE if present
 KERNEL=$(basename `ls -1rv /boot/vmlinuz*  | grep PAE | grep -v debug | head -1`)
 if [ ! $KERNEL ]; then

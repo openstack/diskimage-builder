@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # Fedora 18 sets up for root to have a label of "_/"
 # Fedora 19 sets up for root to have a UUID
 # This regex will catch both

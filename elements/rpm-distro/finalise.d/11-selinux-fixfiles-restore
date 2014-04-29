@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -x
+set -eux
+set -o pipefail
 
 CONFIGURED_SELINUX=$(grep ^SELINUX= /etc/selinux/config | awk -F = '{print $2}')
 
