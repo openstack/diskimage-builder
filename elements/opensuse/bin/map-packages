@@ -39,6 +39,7 @@ package_map = {
     'linux-image-generic': 'kernel-default',
     'mysql-client-5.5': 'mariadb-client',
     'mysql-server-5.5': 'mariadb',
+    'openjdk-7-jre-headless': 'java-1_7_0-openjdk-headless',
     'openssh-client': 'openssh',
     'openvswitch-common': 'openvswitch',
     'openvswitch-datapath-dkms': 'openvswitch-kmp',

@@ -57,6 +57,7 @@ package_map = {
     'nfs-common': 'nfs-utils',
     'nfs-kernel-server': 'nfs-utils',
     'open-iscsi': 'iscsi-initiator-utils',
+    'openjdk-7-jre-headless': 'java-1.7.0-openjdk-headless',
     'openssh-client': 'openssh-clients',
     'openvswitch-common': 'openvswitch',
     'openvswitch-switch': 'openvswitch',
