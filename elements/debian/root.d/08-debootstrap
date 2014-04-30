@@ -37,10 +37,6 @@ if [ -n "$DIB_OFFLINE" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
 else
     echo Building new tarball for Debian $DIB_RELEASE ARCH=$ARCH
     ADD_PACKAGES=sudo,adduser,locales,openssh-server,file,less,kbd,curl,rsync,bash-completion,linux-image-amd64
-    if [ "$DIB_DEBIAN_ALT_INIT_PACKAGE" != "sysvinit" ]; then
-        ADD_PACKAGES=${ADD_PACKAGES},${DIB_DEBIAN_ALT_INIT_PACKAGE}
-    fi
-
     sudo sh -c "http_proxy=$http_proxy debootstrap --verbose \
         --arch=${ARCH} \
         --include=${ADD_PACKAGES} \
@@ -49,16 +45,28 @@ else
         $DIB_DISTRIBUTION_MIRROR"
     echo "Customizing result for cloud use"
 
-    CLOUD_INIT_PACKAGES="cloud-init cloud-utils cloud-initramfs-growroot"
+    apt_get_bp_extra_opts=
     if [ "$DIB_RELEASE" = "wheezy" ]; then
         sudo sh -c "echo deb $DIB_DISTRIBUTION_MIRROR wheezy-backports main >> ${TARGET_ROOT}/etc/apt/sources.list"
         sudo chroot ${TARGET_ROOT} apt-get update
-        sudo chroot ${TARGET_ROOT} apt-get install -y -t wheezy-backports $CLOUD_INIT_PACKAGES
         cat << EOF | sudo tee -a ${TARGET_ROOT}/etc/network/interfaces
 source-directory /etc/interfaces.d
 EOF
     else # unstable
         sudo chroot ${TARGET_ROOT} apt-get install -y $CLOUD_INIT_PACKAGES
+        sudo sh -c "http_proxy=$http_proxy chroot ${TARGET_ROOT} apt-get update"
+        apt_get_bp_extra_opts="-t wheezy-backports"
+    fi
+
+    CLOUD_INIT_PACKAGES="cloud-init cloud-utils cloud-initramfs-growroot"
+    sudo sh -c "http_proxy=$http_proxy chroot ${TARGET_ROOT} apt-get install -y $apt_get_bp_extra_opts $CLOUD_INIT_PACKAGES"
+
+    if [ "$DIB_DEBIAN_ALT_INIT_PACKAGE" != "sysvinit" ]; then
+        # To avoid a conflict against an essential package, we need to remove sysvinit first
+        sudo chroot ${TARGET_ROOT} dpkg --purge --force remove-essential sysvinit
+        sudo sh -c "http_proxy=$http_proxy chroot ${TARGET_ROOT}  apt-get install -y $apt_get_bp_extra_opts $DIB_DEBIAN_ALT_INIT_PACKAGE"
+        sudo sh -c "printf \"Package: sysvinit\nPin: origin ""\nPin-Priority: -1\n\" > \
+            ${TARGET_ROOT}/etc/apt/preferences.d/sysvinit > ${TARGET_ROOT}/etc/apt/preferences.d/sysvinit"
     fi
 
     sudo sed -i "s/PermitRootLogin yes/PermitRootLogin without-password/" $TARGET_ROOT/etc/ssh/sshd_config
