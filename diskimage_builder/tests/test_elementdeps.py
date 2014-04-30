@@ -40,7 +40,10 @@ class TestElementDeps(testtools.TestCase):
         super(TestElementDeps, self).setUp()
         self.element_dir = self.useFixture(fixtures.TempDir()).path
         _populate_element(self.element_dir, 'requires-foo', ['foo'])
-        _populate_element(self.element_dir, 'foo')
+        _populate_element(self.element_dir,
+                          'foo',
+                          [],
+                          ['operating-system'])
         _populate_element(self.element_dir,
                           'requires-requires-foo',
                           ['requires-foo'])
@@ -49,15 +52,21 @@ class TestElementDeps(testtools.TestCase):
                           'provides_virtual',
                           [],
                           ['virtual'])
-        _populate_element(self.element_dir, 'requires_virtual', ['virtual'])
+        _populate_element(self.element_dir,
+                          'requires_virtual',
+                          ['virtual'],
+                          ['operating-system'])
         _populate_element(self.element_dir, 'virtual', ['extra_dependency'])
         _populate_element(self.element_dir, 'extra_dependency', [])
-        _populate_element(self.element_dir, 'circular1', ['circular2'])
+        _populate_element(self.element_dir,
+                          'circular1',
+                          ['circular2'],
+                          ['operating-system'])
         _populate_element(self.element_dir, 'circular2', ['circular1'])
         _populate_element(self.element_dir,
                           'provides_new_virtual',
                           [],
-                          ['new_virtual'])
+                          ['new_virtual', 'operating-system'])
         _populate_element(self.element_dir,
                           'requires_new_virtual',
                           ['new_virtual'])
@@ -87,8 +96,8 @@ class TestElementDeps(testtools.TestCase):
 
     def test_self(self):
         result = element_dependencies.expand_dependencies(
-            ['self'], elements_dir=self.element_dir)
-        self.assertEqual(set(['self']), result)
+            ['self', 'foo'], elements_dir=self.element_dir)
+        self.assertEqual(set(['self', 'foo']), result)
 
     def test_circular(self):
         result = element_dependencies.expand_dependencies(
@@ -113,6 +122,18 @@ class TestElementDeps(testtools.TestCase):
             elements_dir=self.element_dir)
         self.assertEqual(set(['requires_new_virtual', 'provides_new_virtual']),
                          result)
+
+    def test_no_os_element(self):
+        self.assertRaises(SystemExit,
+                          element_dependencies.expand_dependencies,
+                          ['provides_virtual'],
+                          elements_dir=self.element_dir)
+
+    def test_duplicated_os_passed_as_element(self):
+        self.assertRaises(SystemExit,
+                          element_dependencies.expand_dependencies,
+                          ['circular1', 'operating-system'],
+                          elements_dir=self.element_dir)
 
 
 class TestElements(testtools.TestCase):
