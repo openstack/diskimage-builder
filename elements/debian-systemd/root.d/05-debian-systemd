@@ -1,0 +1,5 @@
+#!/bin/bash
+set -eux
+cat > ${TARGET_ROOT}/.extra_settings << EOF
+DIB_DEBIAN_ALT_INIT_PACKAGE=systemd-sysv
+EOF
