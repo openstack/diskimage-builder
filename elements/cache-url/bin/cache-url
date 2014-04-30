@@ -24,8 +24,14 @@ url=$1
 dest=$2
 time_cond=
 
-mkdir -p $(dirname $dest)
-tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)
+if [ -p $dest ]; then
+  type="fifo"
+  tmp=$(mktemp --tmpdir download.XXXXXXXX)
+else
+  type="normal"
+  mkdir -p $(dirname $dest)
+  tmp=$(mktemp $(dirname $dest)/.download.XXXXXXXX)
+fi
 
 if [ -f $dest -a -s $dest ] ; then
     time_cond="-z $dest"
@@ -44,7 +50,12 @@ if [ "$rcode" == "200" -o "${url:0:7}" == "file://" ] ; then
         rm -f $tmp
     else
         echo $success
-        mv $tmp $dest
+        if [ "fifo" = "$type" ]; then
+          cp $tmp $dest
+          rm $tmp
+        else
+          mv $tmp $dest
+        fi
     fi
 # 213 is the response to a ftp MDTM command, curl outputs a 213 as the status
 # if the url redirected to a ftp server and Not-Modified
