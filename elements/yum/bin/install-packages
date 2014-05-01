@@ -19,25 +19,47 @@ set -o pipefail
 
 EXTRA_ARGS=
 ACTION=install
+MAP_ELEMENT=
 
-if [ "$1" = "-u" ] ; then
-    yum -y update
+SCRIPTNAME=$(basename $0)
+function show_options () {
+    echo "Usage: $SCRIPTNAME [package ...]"
+    echo
+    echo "Options:"
+    echo "    -u          -- update all packages"
+    echo "    -d          -- download the packages only"
+    echo "    -e          -- erase/remove packages"
+    echo "    -m          -- use custom element package map (Example: -m nova)"
     exit 0
-elif [ "$1" = "-d" ] ; then
-    EXTRA_ARGS="--downloadonly"
-    shift
-elif [ "$1" = "-e" ]; then
-    ACTION=erase
-    shift
-fi
+}
+
+TEMP=$(getopt -o hudem: -n $SCRIPTNAME -- "$@")
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        -u) yum -y update; exit 0;;
+        -d) EXTRA_ARGS="--downloadonly"; shift;;
+        -e) ACTION="erase"; shift;;
+        -m) MAP_ELEMENT=$2; shift 2;;
+        -h) show_options;;
+        --) shift; break ;;
+        *) echo "Error: unsupported option $1."; exit 1;;
+    esac
+done
 
 # Packages that aren't available in the distro but requested for installation
 # can be ignored by adding them to the exclude list
 BLACKLIST=$(cat /tmp/yum-blacklist 2>/dev/null || echo "")
-WHITELIST=
+WHITELIST=""
 for i in "$@"
 do
-    if [[ ! ${BLACKLIST[*]} =~ $i ]]; then
+    PKG_NAME=$i
+    if [ -n "$MAP_ELEMENT" ]; then
+        PKG_NAME=$(pkg-map --element $MAP_ELEMENT $i)
+    fi
+    if [[ ! ${BLACKLIST[*]} =~ $PKG_NAME ]]; then
         WHITELIST="$WHITELIST $i"
     else
         echo "The package $i is not available and will not be installed"
@@ -47,7 +69,16 @@ if [ -n "$WHITELIST" ]; then
     if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
         rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
     fi
-    yum -y $ACTION $EXTRA_ARGS $(map-packages $WHITELIST)
+    if [ -n "$MAP_ELEMENT" ]; then
+        if ! PKGS=$(pkg-map --element $MAP_ELEMENT $WHITELIST); then
+            echo "bin/pkg-map error. $PKGS"
+            exit 1
+        fi
+    else
+        PKGS=$(map-packages $WHITELIST)
+    fi
+    echo "Installing $PKGS"
+    yum -y $ACTION $EXTRA_ARGS $PKGS
     for pkg in "$@"; do
         if [ "$pkg" = "python-pip" ] ; then
             alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
