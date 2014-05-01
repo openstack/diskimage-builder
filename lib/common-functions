@@ -241,7 +241,7 @@ function arg_to_elements() {
   fi
   echo "Building elements: $IMAGE_ELEMENT"
 
-  IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
+  export IMAGE_ELEMENT=$($SCRIPT_HOME/element-info --expand-dependencies $IMAGE_ELEMENT)
 
   echo "Expanded element dependencies to: $IMAGE_ELEMENT"
 }

@@ -322,6 +322,10 @@ To set environment variables for other hooks, add a file to environment.d.
 This directory contains bash script snippets that are sourced before running
 scripts in each phase.
 
+DIB exposes an internal IMAGE\_ELEMENT variable which provides elements access
+to the full set of elements that are included in the image build. This can
+be used to process local in-element files across all the elements
+(pkg-map for example).
 
 ### Dependencies ###
 
