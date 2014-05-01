@@ -19,6 +19,20 @@ set -o pipefail
 
 # install-packages package [package ...]
 
+ACTION=install
+MAP_ELEMENT=""
+
+SCRIPTNAME=$(basename $0)
+function show_options () {
+    echo "Usage: $SCRIPTNAME [package ...]"
+    echo
+    echo "Options:"
+    echo "    -u          -- update all packages"
+    echo "    -e          -- erase/remove packages"
+    echo "    -m          -- use custom element package map (Example: -m nova)"
+    exit 0
+}
+
 install_deb_packages () {
     DEBIAN_FRONTEND=noninteractive \
         http_proxy=${http_proxy:-} https_proxy=${https_proxy:-} \
@@ -26,12 +40,27 @@ install_deb_packages () {
         apt-get --option "Dpkg::Options::=--force-confold" --assume-yes "$@"
 }
 
-if [ "$1" = "-u" ] ; then
-    install_deb_packages dist-upgrade
-    exit 0
-elif [ "$1" = "-e" ]; then
-    shift
-    install_deb_packages remove $@
-else
-    install_deb_packages install $@
+TEMP=$(getopt -o hudem: -n $SCRIPTNAME -- "$@")
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        -u) install_deb_packages dist-upgrade; exit 0;;
+        -e) ACTION="remove"; shift;;
+        -m) MAP_ELEMENT=$2; shift 2;;
+        -h) show_options;;
+        --) shift; break ;;
+        *) echo "Error: unsupported option $1."; exit 1;;
+    esac
+done
+
+PKGS=$@
+if [ -n "$MAP_ELEMENT" ]; then
+    if ! PKGS=$(pkg-map --element $MAP_ELEMENT $@); then
+        echo "bin/pkg-map error. $PKGS"
+        exit 1
+    fi
 fi
+
+install_deb_packages $ACTION $PKGS
