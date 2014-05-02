@@ -83,5 +83,9 @@ for i in $(find elements -type f); do
             fi
         fi
     fi
+
+    if [ "$(tail -c 1 $i)" != "" ]; then
+        echo "ERROR: No newline at end of file: $i"
+    fi
 done
 exit $rc
