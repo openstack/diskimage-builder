@@ -21,14 +21,14 @@ EXTRA_ARGS=
 ACTION=install
 
 if [ "$1" = "-u" ] ; then
-  yum -y update
-  exit 0
+    yum -y update
+    exit 0
 elif [ "$1" = "-d" ] ; then
-  EXTRA_ARGS="--downloadonly"
-  shift
+    EXTRA_ARGS="--downloadonly"
+    shift
 elif [ "$1" = "-e" ]; then
-  ACTION=erase
-  shift
+    ACTION=erase
+    shift
 fi
 
 # Packages that aren't available in the distro but requested for installation
@@ -37,20 +37,20 @@ BLACKLIST=$(cat /tmp/yum-blacklist 2>/dev/null || echo "")
 WHITELIST=()
 for i in "$@"
 do
-  if [[ ! ${BLACKLIST[*]} =~ $i ]]; then
-    WHITELIST+="$i "
-  else
-    echo "The package $i is not available and will not be installed"
-  fi
+    if [[ ! ${BLACKLIST[*]} =~ $i ]]; then
+        WHITELIST+="$i "
+    else
+        echo "The package $i is not available and will not be installed"
+    fi
 done
 if [ -n "$WHITELIST" ]; then
-  if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
-    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
-  fi
-  yum -y $ACTION $EXTRA_ARGS $(map-packages $WHITELIST)
-  for pkg in "$@"; do
-    if [ "$pkg" = "python-pip" ] ; then
-      alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
+    if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
+        rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
     fi
-  done
+    yum -y $ACTION $EXTRA_ARGS $(map-packages $WHITELIST)
+    for pkg in "$@"; do
+        if [ "$pkg" = "python-pip" ] ; then
+            alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
+        fi
+    done
 fi

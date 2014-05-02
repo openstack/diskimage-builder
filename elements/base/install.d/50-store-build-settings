@@ -5,9 +5,9 @@ set -eu
 set -o pipefail
 
 if [ -e "/tmp/in_target.d/dib_environment" ]; then
-  cp /tmp/in_target.d/dib_environment /etc/
+    cp /tmp/in_target.d/dib_environment /etc/
 fi
 
 if [ -e "/tmp/in_target.d/dib_arguments" ]; then
-  cp /tmp/in_target.d/dib_arguments /etc/
+    cp /tmp/in_target.d/dib_arguments /etc/
 fi

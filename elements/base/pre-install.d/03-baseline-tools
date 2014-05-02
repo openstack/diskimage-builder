@@ -8,10 +8,10 @@ set -o pipefail
 DISTRO=`lsb_release -si` || true
 
 case $DISTRO in
-  'Ubuntu'|'Debian')
-    # Note: add-apt-repository would be nice for RPM platforms too - so when we
-    # need something like it, create a wrapper in dpkg/bin and fedora/bin.
-    apt-get -y update
-    install-packages python-software-properties
-    ;;
+    'Ubuntu'|'Debian')
+        # Note: add-apt-repository would be nice for RPM platforms too - so when we
+        # need something like it, create a wrapper in dpkg/bin and fedora/bin.
+        apt-get -y update
+        install-packages python-software-properties
+        ;;
 esac

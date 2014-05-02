@@ -20,46 +20,46 @@ fi
 ARGS="$0 $@"
 
 function serialize_me() {
-  if [ "$CONF_TYPE" == "eni" ]; then
-      # Serialize runs so that we don't miss hot-add interfaces
-      FLOCKED=${FLOCKED:-}
-      if [ -z "$FLOCKED" ] ; then
-          FLOCKED=true exec flock -x $ENI_FILE $ARGS
-      fi
-  fi
+    if [ "$CONF_TYPE" == "eni" ]; then
+        # Serialize runs so that we don't miss hot-add interfaces
+        FLOCKED=${FLOCKED:-}
+        if [ -z "$FLOCKED" ] ; then
+            FLOCKED=true exec flock -x $ENI_FILE $ARGS
+        fi
+    fi
 }
 
 function get_if_link() {
-  cat /sys/class/net/${1}/carrier
+    cat /sys/class/net/${1}/carrier
 }
 
 function enable_interface() {
-  local interface=$1
+    local interface=$1
 
-  serialize_me
-  if [ "$CONF_TYPE" == "eni" ]; then
-      printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
-  elif [ "$CONF_TYPE" == "netscripts" ]; then
-      printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"/etc/sysconfig/network-scripts/ifcfg-$interface"
-  fi
-  echo "Configured $1"
+    serialize_me
+    if [ "$CONF_TYPE" == "eni" ]; then
+        printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
+    elif [ "$CONF_TYPE" == "netscripts" ]; then
+        printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"/etc/sysconfig/network-scripts/ifcfg-$interface"
+    fi
+    echo "Configured $1"
 
 }
 
 function disable_interface() {
-  local interface=$1
+    local interface=$1
 
-  serialize_me
-  if [ "$CONF_TYPE" == "netscripts" ]; then
-      local IFCFG_FILE="/etc/sysconfig/network-scripts/ifcfg-$interface"
-      if [ -f "$IFCFG_FILE" ]; then
-          rm $IFCFG_FILE
-      else
-          echo "No link detected, skipping"
-      fi
-  else
-      echo "No link detected, skipping"
-  fi
+    serialize_me
+    if [ "$CONF_TYPE" == "netscripts" ]; then
+        local IFCFG_FILE="/etc/sysconfig/network-scripts/ifcfg-$interface"
+        if [ -f "$IFCFG_FILE" ]; then
+            rm $IFCFG_FILE
+        else
+                echo "No link detected, skipping"
+        fi
+        else
+        echo "No link detected, skipping"
+    fi
 }
 
 function config_exists() {
@@ -75,34 +75,34 @@ function config_exists() {
 }
 
 function inspect_interface() {
-  local interface=$1
-  local mac_addr_type="$(cat /sys/class/net/${interface}/addr_assign_type)"
+    local interface=$1
+    local mac_addr_type="$(cat /sys/class/net/${interface}/addr_assign_type)"
 
-  echo -n "Inspecting interface: $interface..."
-  if config_exists $interface; then
-    echo "Has config, skipping."
-  elif [ "$mac_addr_type" != "0" ]; then
-    echo "Device has generated MAC, skipping."
-  else
-    ip link set dev $interface up &>/dev/null
-    HAS_LINK="$(get_if_link $interface)"
+    echo -n "Inspecting interface: $interface..."
+    if config_exists $interface; then
+        echo "Has config, skipping."
+        elif [ "$mac_addr_type" != "0" ]; then
+        echo "Device has generated MAC, skipping."
+        else
+        ip link set dev $interface up &>/dev/null
+        HAS_LINK="$(get_if_link $interface)"
 
-    TRIES=10
-    while [ "$HAS_LINK" == "0" -a $TRIES -gt 0 ]; do
-      HAS_LINK="$(get_if_link $interface)"
-      if [ "$HAS_LINK" == "1" ]; then
-        break
-      else
-        sleep 1
-      fi
-      TRIES=$(( TRIES - 1 ))
-    done
-    if [ "$HAS_LINK" == "1" ] ; then
-      enable_interface "$interface"
-    else
-      disable_interface "$interface"
+        TRIES=10
+        while [ "$HAS_LINK" == "0" -a $TRIES -gt 0 ]; do
+            HAS_LINK="$(get_if_link $interface)"
+            if [ "$HAS_LINK" == "1" ]; then
+                break
+            else
+                sleep 1
+            fi
+                TRIES=$(( TRIES - 1 ))
+        done
+        if [ "$HAS_LINK" == "1" ] ; then
+            enable_interface "$interface"
+        else
+            disable_interface "$interface"
+        fi
     fi
-  fi
 
 }
 

@@ -18,5 +18,5 @@ mv $rc_local.REAL $rc_local
 exit 0
 EOF
 
-    chmod 755 $rc_local
+chmod 755 $rc_local
 fi

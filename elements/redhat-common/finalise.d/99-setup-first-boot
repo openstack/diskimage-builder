@@ -20,17 +20,17 @@ set -o xtrace
 dib-first-boot
 EOF
 
-    if [ $FILE_EXISTED ]
-    then
-        echo "mv $rc_local.REAL $rc_local" >> $rc_local
-    else
-        echo "rm \$0" >> $rc_local
-    fi
+if [ $FILE_EXISTED ]
+then
+    echo "mv $rc_local.REAL $rc_local" >> $rc_local
+else
+    echo "rm \$0" >> $rc_local
+fi
 
-    echo "exit 0" >> $rc_local
+echo "exit 0" >> $rc_local
 
-    chmod 755 $rc_local
+chmod 755 $rc_local
 
-    # Enable the service
-    systemctl enable rc-local.service
+# Enable the service
+systemctl enable rc-local.service
 fi

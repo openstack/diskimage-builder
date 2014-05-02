@@ -18,16 +18,16 @@ CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
     echo "Not checking freshness of cached $CACHED_FILE."
 else
-  echo "Fetching Base Image"
-  $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $DIB_IMAGE_CACHE/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
-  $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
-  pushd $DIB_IMAGE_CACHE
-  grep "$BASE_IMAGE_FILE" SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH | sha256sum --check -
-  popd
+    echo "Fetching Base Image"
+    $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $DIB_IMAGE_CACHE/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
+    pushd $DIB_IMAGE_CACHE
+    grep "$BASE_IMAGE_FILE" SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH | sha256sum --check -
+    popd
 fi
 # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
 # image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
 sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 if [ -e "$TARGET_ROOT/lost+found" ]; then
-  sudo rmdir $TARGET_ROOT/lost+found
+    sudo rmdir $TARGET_ROOT/lost+found
 fi
