@@ -52,9 +52,6 @@ else
         cat << EOF | sudo tee -a ${TARGET_ROOT}/etc/network/interfaces
 source-directory /etc/interfaces.d
 EOF
-    else # unstable
-        sudo chroot ${TARGET_ROOT} apt-get install -y $CLOUD_INIT_PACKAGES
-        sudo sh -c "http_proxy=$http_proxy chroot ${TARGET_ROOT} apt-get update"
         apt_get_bp_extra_opts="-t wheezy-backports"
     fi
 
