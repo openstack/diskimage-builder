@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -eu
+
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
+
+[ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
+
+for FILE in /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates-testing.repo; do
+    sudo sed -e "s|^#baseurl=http://download.fedoraproject.org/pub/fedora/linux|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^metalink/d" -i $FILE
+done
