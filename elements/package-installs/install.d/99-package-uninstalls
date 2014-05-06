@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+PACKAGES=
+
+for PACKAGEFILE in $(find $(dirname $0) -maxdepth 1 -name "package-installs-*" ); do
+    while read pkg; do
+        if [ ! ${pkg:0:1} = "-" ]; then
+            continue
+        fi
+        pkg=${pkg:1}
+        PACKAGES="$PACKAGES $pkg"
+    done < $PACKAGEFILE
+done
+
+install-packages -e $PACKAGES
