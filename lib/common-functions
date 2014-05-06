@@ -97,7 +97,7 @@ function first_boot_deprecated_message() {
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
   for _ELEMENT in $IMAGE_ELEMENT ; do
-    for dir in $(echo $ELEMENTS_PATH | tr ":" " ") ; do
+    for dir in ${ELEMENTS_PATH//:/ } ; do
       element_pre_check $dir/$_ELEMENT || continue
       cp -t $TMP_HOOKS_PATH -a $dir/$_ELEMENT/* ;
       break
