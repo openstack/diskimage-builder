@@ -57,7 +57,7 @@ Installation
 * Clone the repository locally, then add bin to your path.
 
 * Make sure you have qemu-img (qemu-utils package on Ubuntu/Debian,
-  qemu on Fedora/RHEL) and kpartx installed.
+  qemu on Fedora/RHEL/OpenSUSE) and kpartx installed.
 
 Invocation
 ==========
@@ -105,7 +105,8 @@ offline mode.
 Base images
 -----------
 
-These are cached by the standard elements - fedora, redhat, ubuntu.
+These are cached by the standard elements - fedora, redhat, ubuntu,
+debian and opensuse.
 
 source-repositories
 -------------------
@@ -188,12 +189,13 @@ element adds support for mellanox infiniband hardware to both the deploy
 ramdisk and the built images.
 
 Images must specify a base distribution image element. Currently base
-distribution elements exist for fedora, rhel, and ubuntu. Other
-distributions may be added in future, the infrastructure deliberately
-makes few assumptions about the exact operating system in use.
-The base image has opensshd running (a new key generated on first boot)
-and accepts keys via the cloud metadata service, loading them into the
-distribution specific default user account.
+distribution elements exist for fedora, rhel, ubuntu, debian and
+opensuse. Other distributions may be added in future, the
+infrastructure deliberately makes few assumptions about the exact
+operating system in use.  The base image has opensshd running (a new
+key generated on first boot) and accepts keys via the cloud metadata
+service, loading them into the distribution specific default user
+account.
 
 The goal of a built image is to have any global configuration ready to roll,
 but nothing that ties it to a specific cloud instance: images should be able to
