@@ -19,3 +19,8 @@ and Fedora.
 The `DIB_OFFLINE` or more specific `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`
 variables can be set to prefer the use of a pre-cached root filesystem
 tarball.
+
+The `DIB_DEBOOTSTRAP_EXTRA_ARGS` environment variable may be used to
+pass extra arguments to the debootstrap command used to create the
+base filesystem image. If --keyring is is used in `DIB_DEBOOTSTRAP_EXTRA_ARGS`,
+it will override `DIB_DEBIAN_KEYRING` if that is used as well.
