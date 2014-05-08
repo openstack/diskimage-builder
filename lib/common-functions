@@ -28,15 +28,17 @@ function tmpfs_check() {
 
 function mk_build_dir () {
   TMP_BUILD_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
+  TMP_IMAGE_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
   [ $? -eq 0 ] || die "Failed to create tmp directory"
   export TMP_BUILD_DIR
   if tmpfs_check ; then
     sudo mount -t tmpfs tmpfs $TMP_BUILD_DIR
+    sudo mount -t tmpfs tmpfs $TMP_IMAGE_DIR
   fi
-  sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR
+  sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR $TMP_IMAGE_DIR
   trap cleanup EXIT
   echo Building in $TMP_BUILD_DIR
-  export TMP_IMAGE_PATH=$TMP_BUILD_DIR/image.raw
+  export TMP_IMAGE_PATH=$TMP_IMAGE_DIR/image.raw
   export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
 }
 
@@ -190,8 +192,8 @@ function mount_qcow_image() {
 function cleanup_dirs () {
     sudo rm -rf $TMP_BUILD_DIR/built
     sudo rm -rf $TMP_BUILD_DIR/mnt
-    sudo umount -f  $TMP_BUILD_DIR || true
-    rm -rf $TMP_BUILD_DIR
+    sudo umount -f  $TMP_BUILD_DIR $TMP_IMAGE_DIR || true
+    rm -rf $TMP_BUILD_DIR $TMP_IMAGE_DIR
 }
 
 # Run a directory of hooks outside the target.
