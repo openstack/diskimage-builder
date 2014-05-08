@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 
 # Don't do anything if already mounted (if disk-image-create is invoked with
 # no elements specified, this hook actually fires twice, once during

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Ensure we load the mellanox driver somehow
 
-set -e
+set -eu
+set -o pipefail
 
 home=$(dirname $0)
 

@@ -3,8 +3,8 @@
 # Configure grub. Note that the various conditionals here are to handle
 # different distributions gracefully.
 
-set -e
-set -x
+set -eux
+set -o pipefail
 
 # FIXME:
 [ -n "$IMAGE_BLOCK_DEVICE" ]

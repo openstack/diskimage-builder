@@ -3,6 +3,7 @@
 # here. 
 
 set -eu
+set -o pipefail
 
 # To have access to FS_TYPE
 _LIB="/tmp/opensuse-extras"

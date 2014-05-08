@@ -1,6 +1,7 @@
 #!/bin/bash
 # Do an apt-get update, so that packages can be installed.
 
-set -e
+set -eu
+set -o pipefail
 
 apt-get -y update

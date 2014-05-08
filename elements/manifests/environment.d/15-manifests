@@ -15,6 +15,7 @@
 # under the License.
 #
 set -eu
+set -o pipefail
 
 export DIB_MANIFEST_IMAGE_DIR=${DIB_MANIFEST_IMAGE_DIR:-/etc/dib-manifests}
 export DIB_MANIFEST_SAVE_DIR=${DIB_MANIFEST_SAVE_DIR:-${IMAGE_NAME}.d/}

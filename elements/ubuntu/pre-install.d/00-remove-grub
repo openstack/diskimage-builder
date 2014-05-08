@@ -3,7 +3,8 @@
 # found (as happens in a chroot).
 # Temporarily remove grub, to avoid that confusion.
 
-set -e
+set -eu
+set -o pipefail
 
 if dpkg-query -W grub-pc; then
   apt-get -y remove grub-pc

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 
 [ -n "$TARGET_ROOT" ]
 

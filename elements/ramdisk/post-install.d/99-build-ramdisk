@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e
-set -x
+set -eux
+set -o pipefail
 
 _LIB="/tmp/ramdisk-build"
 

@@ -15,7 +15,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-set -e
+set -eu
+set -o pipefail
 
 # Download a URL to a local cache
 # e.g. cache-url http://.../foo ~/.cache/image-create/foo

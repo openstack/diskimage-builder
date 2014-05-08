@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+set -o pipefail
 
 # If the old cache exists, move it to the new name
 function make_new_cache(){

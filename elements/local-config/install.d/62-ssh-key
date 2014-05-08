@@ -2,7 +2,8 @@
 # Save user SSH public key if available.
 # XXX: Obviously not suitable for downloadable images.
 
-set -e
+set -eu
+set -o pipefail
 
 if [ -e "/tmp/in_target.d/ssh-authorized-keys" ]; then
   mkdir -p /root/.ssh

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Tweak the stock ubuntu cloud-init config
 
-set -e
+set -eu
+set -o pipefail
 
 dd of=/etc/cloud/cloud.cfg.d/10_etc_hosts.cfg << EOF
 manage_etc_hosts: True

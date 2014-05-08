@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+set -o pipefail
 
 if [ -e ~/.pip/pip.conf.orig ]; then
     mv ~/.pip/pip.conf{.orig,}

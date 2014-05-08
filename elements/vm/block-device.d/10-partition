@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 source $_LIB/die
 [ -n "$IMAGE_BLOCK_DEVICE" ] || die "Image block device not set"
 

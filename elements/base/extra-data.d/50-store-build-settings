@@ -1,7 +1,9 @@
 #!/bin/bash
 # Store the build-time environment and command line arguments
 
-set -e
+set -eu
+set -o pipefail
+
 source $_LIB/die
 [ -n "$TMP_HOOKS_PATH" ] || die "Temp hook path not set"
 

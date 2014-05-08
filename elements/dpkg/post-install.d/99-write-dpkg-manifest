@@ -15,6 +15,7 @@
 # under the License.
 #
 set -eux
+set -o pipefail
 
 DPKG_MANIFEST_NAME=dib-manifest-dpkg-$(basename ${IMAGE_NAME})
 

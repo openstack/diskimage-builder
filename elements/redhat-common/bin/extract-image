@@ -5,6 +5,7 @@
 
 
 set -eu
+set -o pipefail
 
 BASE_IMAGE_FILE=$1
 BASE_IMAGE_TAR=$2

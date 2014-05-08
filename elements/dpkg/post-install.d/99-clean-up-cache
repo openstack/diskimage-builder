@@ -1,6 +1,7 @@
 #!/bin/bash
 # Do an apt-get clean. This will free some space.
 
-set -e
+set -eu
+set -o pipefail
 
 apt-get clean

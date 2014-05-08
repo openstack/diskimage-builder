@@ -19,6 +19,7 @@ allowed_regex=${RUN_PARTS_REGEX:-"^[0-9A-Za-z_-]+$"}
 show_list=
 
 set -ue
+set -o pipefail
 
 name=$(basename $0)
 

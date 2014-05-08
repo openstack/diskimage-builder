@@ -1,8 +1,8 @@
 #!/bin/bash
 # Ensure that all binaries listed in ramdisk elements, exist
 
-set -e
-set -x
+set -eux
+set -o pipefail
 
 export TARGET_DIR="/tmp/in_target.d/"
 

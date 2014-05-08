@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 
 yum remove -y grub2
 # Install grub2 dependencies to minimise packages installed during finalise.

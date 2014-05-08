@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 
 # As this is run in cleanup, it's already been automatically unmounted,
 # so all we need to do here is remove the directory
