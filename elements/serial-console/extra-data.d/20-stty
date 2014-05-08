@@ -1,0 +1,5 @@
+#!/bin/bash
+set -uex
+set -o pipefail
+
+echo "Use of serial-console element is deprecated, please use enable-serial-console instead."
