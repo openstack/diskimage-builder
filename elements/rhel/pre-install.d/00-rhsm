@@ -3,6 +3,8 @@
 set -eu
 set -o pipefail
 
+export DIB_RHSM_USER=${DIB_RHSM_USER:-}
+
 if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]
   then
     opts="--force"
