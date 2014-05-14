@@ -62,10 +62,10 @@ fi
 targets=$(find $target_dir -maxdepth 1 -xtype f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n || echo "")
 
 if [ "$show_list" == "1" ] ; then
-  for target in $targets ; do
-    echo "${target_dir}/${target}"
-  done
-  exit 0
+    for target in $targets ; do
+        echo "${target_dir}/${target}"
+    done
+    exit 0
 fi
 
 PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)

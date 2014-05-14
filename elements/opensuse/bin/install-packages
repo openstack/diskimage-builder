@@ -18,16 +18,16 @@ set -eu
 set -o pipefail
 
 function run_zypper() {
-  # TODO: Uncertain if this can ever block wanting input from user
-  zypper --non-interactive --gpg-auto-import-keys "$@"
+    # TODO: Uncertain if this can ever block wanting input from user
+    zypper --non-interactive --gpg-auto-import-keys "$@"
 }
 
 if [ "$1" = "-u" ] ; then
-  run_zypper dist-upgrade
-  exit 0
+    run_zypper dist-upgrade
+    exit 0
 elif [ "$1" = "-d" ] ; then
-  EXTRA_ARGS="--download-only"
-  shift
+    EXTRA_ARGS="--download-only"
+    shift
 fi
 
 # Packages that aren't available in the distro but requested for installation
@@ -36,12 +36,12 @@ BLACKLIST=(dkms)
 WHITELIST=()
 for i in "$@"
 do
-  if [[ ! ${BLACKLIST[*]} =~ $i ]]; then
-    WHITELIST+="$i "
-  else
-    echo "The package $i is not available and will not be installed"
-  fi
+    if [[ ! ${BLACKLIST[*]} =~ $i ]]; then
+        WHITELIST+="$i "
+    else
+        echo "The package $i is not available and will not be installed"
+    fi
 done
 if [ -n "$WHITELIST" ]; then
-  run_zypper install $EXTRA_ARGS $(map-packages $WHITELIST)
+    run_zypper install $EXTRA_ARGS $(map-packages $WHITELIST)
 fi

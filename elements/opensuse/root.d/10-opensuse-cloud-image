@@ -26,12 +26,12 @@ if [ -z "$DIB_OFFLINE" ] ; then
     # https://bugzilla.novell.com/show_bug.cgi?id=853882 is deployed
     echo "Looking up current built of Base Image ($BASE_IMAGE_NAME):"
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(curl $DIB_CLOUD_IMAGES | \
-            sed -n "s/^.*\<a\ href\=\"\($BASE_IMAGE_NAME.*\.tbz\)\".*$/\1/p")}
+        sed -n "s/^.*\<a\ href\=\"\($BASE_IMAGE_NAME.*\.tbz\)\".*$/\1/p")}
     if [ -n "$BASE_IMAGE_FILE" ]; then
         echo "Using base image: $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE"
     else
         echo -e "Failed to extract image file name from $DIB_CLOUD_IMAGES" \
-                "\nPlease set BASE_IMAGE_FILE manually and retry."
+            "\nPlease set BASE_IMAGE_FILE manually and retry."
         exit 1
     fi
 else

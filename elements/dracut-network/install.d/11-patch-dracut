@@ -13,7 +13,7 @@ IFCFG_FILE="/usr/lib/dracut/modules.d/45ifcfg/write-ifcfg.sh"
 NETGEN_FILE="/usr/lib/dracut/modules.d/40network/net-genrules.sh"
 
 if patch --dry-run $NETGEN_FILE < $(dirname $0)/../dracut-029-netgen.patch > /dev/null; then
-  patch $NETGEN_FILE < $(dirname $0)/../dracut-029-netgen.patch || true
+    patch $NETGEN_FILE < $(dirname $0)/../dracut-029-netgen.patch || true
 else
-  patch $IFCFG_FILE < $(dirname $0)/../dracut-write-ifcfg.patch || true
+    patch $IFCFG_FILE < $(dirname $0)/../dracut-write-ifcfg.patch || true
 fi

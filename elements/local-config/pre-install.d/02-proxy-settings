@@ -13,60 +13,60 @@ http_proxy=${http_proxy:-""}
 https_proxy=${https_proxy:-""}
 
 if [ -d /etc/apt ] ; then
-  have_apt=1
+    have_apt=1
 fi
 if [ -e /etc/yum.conf ] ; then
-  have_yum=1
+    have_yum=1
 fi
 if [ -d /etc/zypp ] ; then
-  have_zypper=1
+    have_zypper=1
 fi
 
 if [ -n "$http_proxy" ]; then
-   if [ -d ~stack ]; then
-      echo export http_proxy=$http_proxy >> ~stack/.profile
-   fi
-   if [ -n "$have_apt" ] ; then
-     echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/02-use-http-proxy
-   fi
-   if [ -n "$have_yum" ] ; then
-     sed -i -e "s,\[main\],[main]\nproxy=$http_proxy," /etc/yum.conf
-   fi
-   if [ -n "$have_zypper" ] ; then
-     sed -i -e "s,^HTTP_PROXY=.*$,HTTP_PROXY=\"$http_proxy\"," /etc/sysconfig/proxy
-   fi
+    if [ -d ~stack ]; then
+        echo export http_proxy=$http_proxy >> ~stack/.profile
+    fi
+    if [ -n "$have_apt" ] ; then
+        echo "Acquire::http::Proxy \"$http_proxy\";"  > /etc/apt/apt.conf.d/02-use-http-proxy
+    fi
+    if [ -n "$have_yum" ] ; then
+        sed -i -e "s,\[main\],[main]\nproxy=$http_proxy," /etc/yum.conf
+    fi
+    if [ -n "$have_zypper" ] ; then
+        sed -i -e "s,^HTTP_PROXY=.*$,HTTP_PROXY=\"$http_proxy\"," /etc/sysconfig/proxy
+    fi
 fi
 
 if [ -n "$https_proxy" ]; then
-   if [ -d ~stack ]; then
-      echo export https_proxy=$https_proxy >> ~stack/.profile
-   fi
-   if [ -n "$have_apt" ] ; then
-     echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/02-use-https-proxy
-   fi
-   if [ -n "$have_zypper" ] ; then
-     sed -i -e "s,^HTTPS_PROXY=.*$,HTTPS_PROXY=\"$https_proxy\"," /etc/sysconfig/proxy
-   fi
+    if [ -d ~stack ]; then
+        echo export https_proxy=$https_proxy >> ~stack/.profile
+    fi
+    if [ -n "$have_apt" ] ; then
+        echo "Acquire::https::Proxy \"$https_proxy\";"  > /etc/apt/apt.conf.d/02-use-https-proxy
+    fi
+    if [ -n "$have_zypper" ] ; then
+        sed -i -e "s,^HTTPS_PROXY=.*$,HTTPS_PROXY=\"$https_proxy\"," /etc/sysconfig/proxy
+    fi
 fi
 
 no_proxy=${no_proxy:+"$no_proxy,192.0.2.1"}
 no_proxy=${no_proxy:-"192.0.2.1"}
 if [ -n "$no_proxy" ]; then
-   if [ -d ~stack ]; then
-      echo export no_proxy=$no_proxy >> ~stack/.profile
-   fi
-   if [ -n "$have_apt" ] ; then
-     for host in $(sed 's/,/ /g' <<<$no_proxy); do
-       echo "Acquire::http::Proxy::$host \"DIRECT\";" >> /etc/apt/apt.conf.d/02-no-proxy
-     done
-   fi
-   if [ -n "$have_zypper" ] ; then
-      sed -i -e "s,^\(NO_PROXY=.*\)\"$,\1\, $no_proxy\"," /etc/sysconfig/proxy
-   fi
+    if [ -d ~stack ]; then
+        echo export no_proxy=$no_proxy >> ~stack/.profile
+    fi
+    if [ -n "$have_apt" ] ; then
+        for host in $(sed 's/,/ /g' <<<$no_proxy); do
+            echo "Acquire::http::Proxy::$host \"DIRECT\";" >> /etc/apt/apt.conf.d/02-no-proxy
+        done
+    fi
+    if [ -n "$have_zypper" ] ; then
+        sed -i -e "s,^\(NO_PROXY=.*\)\"$,\1\, $no_proxy\"," /etc/sysconfig/proxy
+    fi
 fi
 
 if [ -n "$http_proxy" -o -n "$https_proxy" -o -n "$no_proxy" ]; then
-   if [ -n "$have_zypper" ] ; then
-      sed -i -e "s,^PROXY_ENABLED=.*$,PROXY_ENABLED=\"yes\"," /etc/sysconfig/proxy
-   fi
+    if [ -n "$have_zypper" ] ; then
+        sed -i -e "s,^PROXY_ENABLED=.*$,PROXY_ENABLED=\"yes\"," /etc/sysconfig/proxy
+    fi
 fi
