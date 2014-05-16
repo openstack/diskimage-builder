@@ -43,7 +43,7 @@ do
         echo "The package $i is not available and will not be installed"
     fi
 done
-if [ -n "$WHITELIST" ]; then
+if [ ${#WHITELIST[@]} -eq 0 ]; then
     if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
         rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
     fi
