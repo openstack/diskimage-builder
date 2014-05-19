@@ -1,0 +1,6 @@
+#!/bin/bash
+set -eu
+
+# For Debian map-services is currently a noop
+# We pass through the service name directly
+echo "$@"
