@@ -5,5 +5,6 @@ set -o pipefail
 
 IMAGE_NAME=${IMAGE_NAME:-'image'}
 
+sudo chmod a+r $TMP_MOUNT_PATH/tmp/ramdisk $TMP_MOUNT_PATH/tmp/kernel
 cp $TMP_MOUNT_PATH/tmp/ramdisk $IMAGE_NAME.initramfs
 cp $TMP_MOUNT_PATH/tmp/kernel $IMAGE_NAME.kernel
