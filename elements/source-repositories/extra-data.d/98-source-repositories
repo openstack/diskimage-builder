@@ -97,7 +97,21 @@ function get_repos_for_element(){
                 HAS_REF=$(git --git-dir=$CACHE_PATH/.git name-rev $REPOREF 2>/dev/null || true)
                 if [ -z "$DIB_OFFLINE" -o -z "$HAS_REF" ] ; then
                     echo "Updating cache of $REPOLOCATION in $CACHE_PATH with ref $REPOREF"
-                    git --git-dir=$CACHE_PATH/.git fetch --update-head-ok $REPOLOCATION +refs/heads/*:refs/heads/*
+                    # Copy named refs (which might be outside the usual heads
+                    # pattern) - e.g. gerrit
+                    if ! git --git-dir=$CACHE_PATH/.git fetch --update-head-ok $REPOLOCATION \
+                            +${REPOREF}:${REPOREF} ; then
+                        # Copy all heads from the remote repository - this permits
+                        # using a SHA1 object reference so long as the object
+                        # reference is reachable from one of the heads. git does
+                        # not permit arbitrary sha fetching from remote servers.
+                        # This is a separate fetch to the prior one as the prior
+                        # one will fail when REPOREF is a SHA1.
+                        git --git-dir=$CACHE_PATH/.git fetch --update-head-ok $REPOLOCATION \
+                            +refs/heads/*:refs/heads/*
+                    fi
+                    # Ensure that we have a reference to the revision.
+                    git --git-dir=$CACHE_PATH/.git rev-parse -q --verify $REPOREF^{commit}
                 fi
 
                 echo "Cloning from $REPONAME cache and applying ref $REPOREF"
