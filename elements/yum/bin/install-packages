@@ -34,16 +34,16 @@ fi
 # Packages that aren't available in the distro but requested for installation
 # can be ignored by adding them to the exclude list
 BLACKLIST=$(cat /tmp/yum-blacklist 2>/dev/null || echo "")
-WHITELIST=()
+WHITELIST=
 for i in "$@"
 do
     if [[ ! ${BLACKLIST[*]} =~ $i ]]; then
-        WHITELIST+="$i "
+        WHITELIST="$WHITELIST $i"
     else
         echo "The package $i is not available and will not be installed"
     fi
 done
-if [ ${#WHITELIST[@]} -eq 0 ]; then
+if [ -n "$WHITELIST" ]; then
     if [ -f /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release ]; then
         rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
     fi
