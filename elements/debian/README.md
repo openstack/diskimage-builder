@@ -10,3 +10,7 @@ and pass it in via `DIB_DISTRIBUTION_MIRROR`.
 Use of this element will also require the tool 'debootstrap' to be
 available on your system. It should be available on Ubuntu, Debian,
 and Fedora.
+
+The `DIB_OFFLINE` or more specific `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`
+variables can be set to prefer the use of a pre-cached root filesystem
+tarball.

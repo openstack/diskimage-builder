@@ -32,7 +32,7 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://http.debian.net/debian
 http_proxy=${http_proxy:-}
 
 set -x
-if [ -n "$DIB_OFFLINE" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
+if [ -n "$DIB_OFFLINE" -o -n "${DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE:-}" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
     echo $DEBOOTSTRAP_TARBALL found in cache. Using.
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
 else
