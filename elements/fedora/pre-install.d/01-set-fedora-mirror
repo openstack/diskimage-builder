@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+set -o pipefail
 
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
