@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -eu
-set -o pipefail
-
-cat > /etc/cloud/cloud.cfg.d/91-local-metadata-only.cfg <<EOF
-# No cloud metadata available, use only what is in the image.
-datasource_list: [ NoCloud, None ]
-EOF

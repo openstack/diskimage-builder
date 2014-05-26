@@ -1,0 +1,1 @@
+export DIB_CLOUD_INIT_DATASOURCES="NoCloud"
