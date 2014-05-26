@@ -2,8 +2,9 @@ Inject a PyPI mirror
 ====================
 
 Use a custom PyPI mirror to build images. The default is to bind mount one from
-~/.cache/image-create/pypi/mirror into the build environment. The element
-temporarily overwrites /root/.pip.conf and .pydistutils.cfg to use it.
+~/.cache/image-create/pypi/mirror into the build environment as mirror URL
+file:///tmp/pypi. The element temporarily overwrites /root/.pip.conf
+and .pydistutils.cfg to use it.
 
 When online, the official pypi.python.org pypi index is supplied as an
 extra-url, so uncached dependencies will still be available. When offline, only
@@ -23,6 +24,7 @@ you have more than 9 additional mirrors, some care will be needed.
 A typical use of this element is thus:
 export PYPI\_MIRROR\_URL=http://site/pypi/Ubuntu-13.10
 export PYPI\_MIRROR\_URL\_1=http://site/pypi/
+export PYPI\_MIRROR\_URL\_2=file:///tmp/pypi
 
 [pypi-mirror](https://git.openstack.org/cgit/openstack-infra/pypi-mirror) can
 be useful in making a partial PyPI mirror suitable for building images. For
