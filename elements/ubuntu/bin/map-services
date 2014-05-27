@@ -1,5 +1,6 @@
 #!/bin/bash
 set -eu
+set -o pipefail
 
 # For Ubuntu map-services is currently a noop
 # We pass through the service name directly
