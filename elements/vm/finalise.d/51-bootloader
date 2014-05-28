@@ -136,9 +136,11 @@ function install_grub2 {
     sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
     sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
     sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
-    if [ "$DIST" = 'Fedora' ] ; then
+    if [ "$DIST" = 'Debian' ] || [ "$DIST" = 'Fedora' ]; then
         # enable serial console
         sed -i "s%LABEL=cloudimg-rootfs%LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200%" $GRUB_CFG
+    fi
+    if [ "$DIST" = 'Fedora' ] ; then
         if [ $(lsb_release -rs) = '19' ]; then
             sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=cloudimg-rootfs%" /etc/fstab
         fi
