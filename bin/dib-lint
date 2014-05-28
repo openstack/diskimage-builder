@@ -109,5 +109,9 @@ for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
         echo "ERROR: $i contains tab characters"
         rc=1
     fi
+
+    if [ "$(tail -c 1 $i)" != "" ]; then
+        echo "ERROR: No newline at end of file: $i"
+    fi
 done
 exit $rc
