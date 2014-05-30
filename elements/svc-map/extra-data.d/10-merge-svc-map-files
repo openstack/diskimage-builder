@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+import os
+import sys
+import yaml
+
+
+def os_family(distro):
+    """Given a distribution, returns a operating system family."""
+    family = None
+    if distro in ['centos', 'fedora', 'rhel', 'rhel7']:
+        family = 'redhat'
+    elif distro in ['debian', 'ubuntu']:
+        family = 'debian'
+    elif distro == 'opensuse':
+        family = 'suse'
+    return family
+
+
+def merge_data(source, destination, distro):
+    """Merges two dictionaries and filters on distro, family, or default
+    (in order)."""
+    result = dict()
+    result.update(destination)
+    family = os_family(distro)
+    for servicename, mapping in source.iteritems():
+        if servicename in result:
+            raise Exception("%s already found in services list" % servicename)
+        if distro in mapping:
+            result[servicename] = mapping.get(distro)
+        elif family in mapping:
+            result[servicename] = mapping.get(family)
+        elif 'default' in mapping:
+            result[servicename] = mapping.get('default')
+        else:
+            result[servicename] = servicename
+
+    return result
+
+
+def write_data_to_file(data, service_file_path):
+    """Writes yaml data to a specified path."""
+    with open(service_file_path, 'w') as destination:
+        yaml.dump(data, destination, default_flow_style=False)
+
+
+def main():
+    elements = os.environ.get("IMAGE_ELEMENT").split(' ')
+    element_paths = os.environ.get("ELEMENTS_PATH").split(':')
+    service_names = dict()
+    for element in elements:
+        for element_path in element_paths:
+            data_path = os.path.join(element_path, element, "svc-map")
+            if os.path.exists(data_path):
+                with open(data_path, 'r') as dataFile:
+                    data = yaml.load(dataFile.read())
+                    try:
+                        service_names = merge_data(
+                            data,
+                            service_names,
+                            os.environ.get("DISTRO_NAME"))
+                    except Exception as err:
+                        print("%s.  Check %s for duplicate \
+                            service name." % (err, element))
+                        sys.exit(1)
+
+    write_data_to_file(service_names, os.path.join("/tmp", 'svc-map-services'))
+
+
+if __name__ == "__main__":
+    main()
