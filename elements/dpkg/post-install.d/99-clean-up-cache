@@ -4,4 +4,6 @@
 set -eu
 set -o pipefail
 
-apt-get clean
+if ! mount | grep /var/cache/apt/archives; then
+    apt-get clean
+fi

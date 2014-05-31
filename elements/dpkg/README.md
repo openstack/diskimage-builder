@@ -7,6 +7,13 @@ can be used by any dpkg based element.
 
 The dpkg specific version of install-packages is also kept here.
 
-If an extra or updated apt key is needed then define DIB\_ADD\_APT\_KEYS with
-the path to a folder. Any key files inside will be added to the key ring before
-any apt-get commands take place.
+### Environment Variables ###
+
+* DIB\_ADD\_APT\_KEYS: If an extra or updated apt key is needed then define
+  DIB\_ADD\_APT\_KEYS with the path to a folder. Any key files inside will be
+  added to the key ring before any apt-get commands take place.
+* DIB\_APT\_LOCAL\_CACHE: You can use this variable to disable the internal cache
+  of the /var/cache/apt/archives directory by setting it to 0. The default is to bind
+  mount the ~/.cache/image-create/apt/$DISTRO_NAME directory in
+  /var/cache/apt/archives, this to cache the .deb files downloaded during the image
+  creation.
