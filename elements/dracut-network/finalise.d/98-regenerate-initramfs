@@ -3,16 +3,8 @@
 set -eu
 set -o pipefail
 
-# Prioritize PAE if present
-KERNEL=$(basename `ls -1rv /boot/vmlinuz*  | grep PAE | grep -v debug | head -1`)
-if [ ! $KERNEL ]; then
-    KERNEL=$(basename `ls -1rv /boot/vmlinuz* | grep -v debug | head -1`)
-    if [ ! $KERNEL ]; then
-        echo "No suitable kernel found."
-        exit 1
-    fi
-fi
-KERNEL_VERSION=`echo $KERNEL | sed 's/vmlinuz-//g'`
-RAMDISK=/boot/initramfs-$KERNEL_VERSION.img
+RET=$(/bin/select-boot-kernel-initrd)
+KERNEL_VERSION=`echo ${RET%:*} | sed 's/vmlinuz-//g'`
+RAMDISK=/boot/${RET#*:}
 
 dracut --force --add "network" $RAMDISK $KERNEL_VERSION
