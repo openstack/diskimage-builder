@@ -1,0 +1,8 @@
+#!/bin/bash
+# Copy elements-functions into chroot so we can access the get_kernel_image function
+
+set -eu
+set -o pipefail
+
+sudo mkdir -p $TMP_MOUNT_PATH/lib/diskimage-builder
+sudo cp -t $TMP_MOUNT_PATH/lib/diskimage-builder $_LIB/img-functions

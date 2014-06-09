@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+sudo rm -f $TMP_MOUNT_PATH/lib/diskimage-builder/img-functions
+sudo rmdir $TMP_MOUNT_PATH/lib/diskimage-builder
