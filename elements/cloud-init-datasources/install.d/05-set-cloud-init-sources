@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+DIB_CLOUD_INIT_DATASOURCES=${DIB_CLOUD_INIT_DATASOURCES:-""}
+
+if [ -z "$DIB_CLOUD_INIT_DATASOURCES" ] ; then
+    echo "DIB_CLOUD_INIT_DATASOURCES must be set to a comma-separated list "
+    echo "of cloud-init data sources you wish to use, ie 'Ec2, NoCloud, ConfigDrive'"
+    exit 1
+fi
+
+cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
+datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES, None ]
+EOF
