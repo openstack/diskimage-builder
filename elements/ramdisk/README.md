@@ -10,5 +10,7 @@ and scripts need to be injected into a ramdisk that will fetch and apply a
 machine image to local disks. That tooling/scripting customisation can be
 easily applied in a repeatable and automatable way, using this element.
 
+NOTE: ramdisks require 1GB minimum memory on the machines they are booting.
+
 See the top-level README.md of the project, for more information about the
 mechanisms available to a ramdisk element.

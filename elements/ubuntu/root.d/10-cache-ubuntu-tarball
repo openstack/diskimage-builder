@@ -10,7 +10,7 @@ set -o pipefail
 shopt -s extglob
 
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud-images.ubuntu.com/}
-DIB_RELEASE=${DIB_RELEASE:-saucy}
+DIB_RELEASE=${DIB_RELEASE:-trusty}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
 SHA256SUMS=${SHA256SUMS:-https://${DIB_CLOUD_IMAGES##http?(s)://}/$DIB_RELEASE/current/SHA256SUMS}
 CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
