@@ -119,12 +119,12 @@ function get_repos_for_element(){
                 pushd $REPO_DEST
                 sudo git fetch $CACHE_PATH $REPOREF
                 sudo git reset --hard FETCH_HEAD
-                # Get the reference in use
-                git_ref=$(git rev-parse FETCH_HEAD)
+                # Get the sha in use
+                git_sha=$(git rev-parse FETCH_HEAD)
                 popd
 
-                # Write the reference being used into the source-repositories manifest
-                echo "$REPONAME git $REPOPATH $REPOLOCATION $git_ref" >> $GIT_MANIFEST
+                # Write the sha being used into the source-repositories manifest
+                echo "$REPONAME git $REPOPATH $REPOLOCATION $git_sha" >> $GIT_MANIFEST
                 ;;
             tar)
                 # The top level directory of the tarball mightn't have a fixed name i.e.
