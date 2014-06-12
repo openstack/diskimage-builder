@@ -43,6 +43,12 @@ function mk_build_dir () {
 }
 
 function finish_image () {
+    if [ -f $1 ]; then
+      old_image="${1%.*}"-$(date +%Y.%m.%d-%H.%M.%S).${1##*.}
+      echo "Old image is found. Renaming it to $old_image"
+      mv "$1" "$old_image"
+    fi
+
     mv $TMP_IMAGE_PATH $1
     cleanup_dirs
     # All done!
@@ -51,10 +57,10 @@ function finish_image () {
 }
 
 function save_image () {
-    # TODO: this really should rename the old file
     if [ -f  $1 ] ; then
-       echo "Old Image file Found REMOVING"
-       rm -f $1
+      old_image="${1%.*}"-$(date +%Y.%m.%d-%H.%M.%S).${1##*.}
+      echo "Old image is found. Renaming it to $old_image"
+      mv "$1" "$old_image"
     fi
 
     cp $TMP_IMAGE_PATH $1
