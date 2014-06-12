@@ -29,7 +29,7 @@ else
         EACTION="rm -r $WORKING"
         trap "$EACTION" EXIT
         RAW_FILE=$(basename $BASE_IMAGE_FILE)
-        RAW_FILE=${RAW_FILE#.qcow2}.raw
+        RAW_FILE=${RAW_FILE%.qcow2}.raw
         qemu-img convert -f qcow2 -O raw $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE $WORKING/$RAW_FILE
         MAGIC_BIT=p1
         # NOTE: On RHEL, partprobe of /dev/loop0 does not create /dev/loop0p2,
