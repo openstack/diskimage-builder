@@ -23,7 +23,10 @@ set -o pipefail
 BOOTDIR="$TARGET_ROOT/boot"
 KERNEL=
 RAMDISK=
-if [ -f $TARGET_ROOT/etc/redhat-release ]; then
+if [ -n "${DIB_BAREMETAL_KERNEL_PATTERN:-}" -a -n "${DIB_BAREMETAL_INITRD_PATTERN:-}" ]; then
+    KERNEL=$(basename `eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_KERNEL_PATTERN}" | head -1`)
+    RAMDISK=$(basename `eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_INITRD_PATTERN}" | head -1`)
+elif [ -f $TARGET_ROOT/etc/redhat-release ]; then
 
     # Prioritize PAE if present
     KERNEL=$(ls -1rv $BOOTDIR/vmlinuz*  | grep PAE | grep -v debug | head -1 || echo "")
