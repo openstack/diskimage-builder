@@ -38,12 +38,20 @@ if [ -n "$DIB_OFFLINE" -o -n "${DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE:-}" ] && [ -f $
 else
     echo Building new tarball for Debian $DIB_RELEASE ARCH=$ARCH
     ADD_PACKAGES=sudo,adduser,locales,openssh-server,file,less,kbd,curl,rsync,bash-completion,linux-image-amd64
+
+    KEYRING_OPT=
+    if [ -n "${DIB_DEBIAN_KEYRING:-}" ] ; then
+        KEYRING_OPT="--keyring=${DIB_DEBIAN_KEYRING}"
+    fi
+
     sudo sh -c "http_proxy=$http_proxy debootstrap --verbose \
         --arch=${ARCH} \
         --include=${ADD_PACKAGES} \
+        $KEYRING_OPT \
         $DIB_RELEASE \
         $TARGET_ROOT \
-        $DIB_DISTRIBUTION_MIRROR"
+        $DIB_DISTRIBUTION_MIRROR \
+        ${DIB_DEBIAN_DEBOOTSTRAP_SCRIPT:-}"
     echo "Customizing result for cloud use"
 
     apt_get_bp_extra_opts=
