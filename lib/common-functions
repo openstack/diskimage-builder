@@ -261,7 +261,7 @@ function create_base () {
     if [ -z "$(ls $TMP_MOUNT_PATH | grep -v '^lost+found\|tmp$')" ] ; then
         # No root element copied in. Note the test above allows
         # root.d elements to put things in /tmp
-        echo "Please include at least one distribution root element."
+        echo "Failed to deploy the root element."
         exit 1
     fi
 
