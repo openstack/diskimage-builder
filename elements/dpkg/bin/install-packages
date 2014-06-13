@@ -30,8 +30,8 @@ if [ "$1" = "-u" ] ; then
     install_deb_packages dist-upgrade
     exit 0
 elif [ "$1" = "-e" ]; then
-    install_deb_packages remove $@
     shift
+    install_deb_packages remove $@
 else
     install_deb_packages install $@
 fi
