@@ -29,33 +29,6 @@ function install_extlinux {
 
     mkdir -p /boot/syslinux
     extlinux --install /boot/syslinux
-
-    if [ -f /etc/redhat-release ]; then
-        kernel=$(ls -1rv /boot/vmlinuz* | head -1)
-        initrd=$(ls -1rv /boot/initramfs* | head -1)
-    elif [ -f /etc/SuSE-release ]; then
-        kernel=$(ls -1rv /boot/vmlinuz* | head -1)
-        initrd=$(ls -1rv /boot/initrd* | head -1)
-    elif [ -f /etc/debian_version ]; then
-        kernel=$(ls -1rv /boot/vmlinuz*generic | head -1)
-        initrd=$(ls -1rv /boot/initrd*generic | head -1)
-
-        # in case files with "generic" suffix were not found, fall back to default
-        kernel=${kernel:-$(ls -1rv /boot/vmlinuz* | head -1)}
-        initrd=${initrd:-$(ls -1rv /boot/initrd* | head -1)}
-    else
-        echo "Unable to find kernel and initram"
-        exit 1
-    fi
-
-    cat > /boot/syslinux/syslinux.cfg<<_EOF_
-DEFAULT linux
-
-LABEL linux
-    KERNEL $kernel
-    APPEND ro root=LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200
-    INITRD  $initrd
-_EOF_
 }
 
 function install_grub2 {
