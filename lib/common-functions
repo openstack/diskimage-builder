@@ -197,7 +197,7 @@ function run_d() {
     check_element
     check_break before-$1 bash
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
-      ${SCRIPT_HOME}/dib-run-parts ${TMP_HOOKS_PATH}/$1.d
+      dib-run-parts ${TMP_HOOKS_PATH}/$1.d
     fi
     check_break after-$1 bash
 }

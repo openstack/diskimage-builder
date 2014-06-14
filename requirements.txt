@@ -1,2 +1,3 @@
 Babel>=1.3
 argparse
+dib-utils
