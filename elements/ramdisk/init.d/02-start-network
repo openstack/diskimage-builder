@@ -17,7 +17,7 @@ readonly BOOT_INTERFACE
 ifconfig lo 127.0.0.1 up
 rv=0
 ifconfig "$BOOT_INTERFACE" up || rv=1
-if [ rv -ne 0 ]; then
+if [ $rv -ne 0 ]; then
     sleep 10
     rv=0
     ifconfig "$BOOT_INTERFACE" up || rv=1
