@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+set -eux
+set -o pipefail
+
+source $_LIB/img-functions
+
+function cleanup_old_kernel_initrd()
+{
+    KERNEL_VERSION=${KERNEL#vmlinuz-}
+    if [ -n "${BOOTDIR}" ] ; then
+        for file in `ls $BOOTDIR/vmlinuz-* | grep -v $KERNEL_VERSION | grep -v debug`
+        do
+            echo "Removing unnecessary kernels and ramdisk images from image."
+            file=$(basename $file)
+            rm -Rvf $BOOTDIR/*${file#vmlinuz-}*
+        done
+    fi
+}
+
+# Dig up the initrd and kernel.
+select_boot_kernel_initrd $TARGET_ROOT
+BOOTDIR=$TARGET_ROOT/boot
+
+# Select_boot_kernel has support for redhat/debian/openSuSE
+# openSuSE has a built-in logic to delete old kernels
+# Hence cleanup_old_kernel will be used only for redhat and debian derived distros.
+if [ -f $TARGET_ROOT/etc/redhat-release -o -f $TARGET_ROOT/etc/debian_version ] ; then
+    cleanup_old_kernel_initrd
+fi
