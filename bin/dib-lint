@@ -39,6 +39,11 @@ excluded() {
     return 1
 }
 
+error() {
+    echo "ERROR: $1"
+    rc=1
+}
+
 rc=0
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
@@ -48,14 +53,12 @@ for i in $(find elements -type f); do
     firstline=$(head -n 1 "$i")
     if [ "${firstline:0:2}" = "#!" ]; then
         if [ ! -x "$i" ] && ! excluded executable; then
-            echo "ERROR: $i is not executable"
-            rc=1
+            error "$i is not executable"
         fi
 
         # Ensure 4 spaces indent are used
         if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
-            echo "ERROR: $i should use 4 spaces indent"
-            rc=1
+            error "$i should use 4 spaces indent"
         fi
     fi
 
@@ -67,8 +70,7 @@ for i in $(find elements -type f); do
         sort ${UNSORTED} > ${SORTED}
         diff -c ${UNSORTED} ${SORTED}
         if [ $? -ne 0 ]; then
-            echo "ERROR: $i is not sorted alphabetically"
-            rc=1
+            error "$i is not sorted alphabetically"
         fi
     fi
 
@@ -84,20 +86,17 @@ for i in $(find elements -type f); do
     if [ -n "$(echo $firstline | grep '#!/bin/bash')" ]; then
         if ! excluded sete; then
             if [ -z "$(grep "^set -[^ ]*e" $i)" ]; then
-                echo "ERROR: $i is not set -e"
-                rc=1
+                error "$i is not set -e"
             fi
         fi
         if ! excluded setu; then
             if [ -z "$(grep "^set -[^ ]*u" $i)" ]; then
-                echo "ERROR: $i is not set -u"
-                rc=1
+                error "$i is not set -u"
             fi
         fi
         if ! excluded setpipefail; then
             if [ -z "$(grep "^set -o pipefail" $i)" ]; then
-                echo "ERROR: $i is not set -o pipefail"
-                rc=1
+                error "$i is not set -o pipefail"
             fi
         fi
     fi
@@ -106,12 +105,11 @@ done
 for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
     # Check for tab indentation
     if grep -q $'^ *\t' ${i}; then
-        echo "ERROR: $i contains tab characters"
-        rc=1
+        error "$i contains tab characters"
     fi
 
     if [ "$(tail -c 1 $i)" != "" ]; then
-        echo "ERROR: No newline at end of file: $i"
+        error "No newline at end of file: $i"
     fi
 done
 exit $rc
