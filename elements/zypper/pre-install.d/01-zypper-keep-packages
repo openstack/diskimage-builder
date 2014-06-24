@@ -4,4 +4,4 @@ set -eu
 set -o pipefail
 
 # Enable caching packages for all repositories
-sudo zypper modifyrepo --all --keep-packages
+zypper modifyrepo --all --keep-packages
