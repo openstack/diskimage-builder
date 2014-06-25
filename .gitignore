@@ -10,8 +10,8 @@ dist
 *.raw
 *.initrd
 *.vmlinuz
-*-manifests
-*.d
+/*-manifests
+/*.d
 build
 AUTHORS
 ChangeLog
