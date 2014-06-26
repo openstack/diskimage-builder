@@ -8,4 +8,5 @@ set -o pipefail
 ZYPPER_CACHE_DIR=~/.cache/image-create/zypper
 mkdir -p $ZYPPER_CACHE_DIR
 
+sudo mkdir -p $TMP_MOUNT_PATH/var/cache/zypp
 sudo mount --bind $ZYPPER_CACHE_DIR $TMP_MOUNT_PATH/var/cache/zypp
