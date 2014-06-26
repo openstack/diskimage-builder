@@ -43,9 +43,9 @@ function mk_build_dir () {
 }
 
 function finish_image () {
-    if [ -f $1 ]; then
+    if [ -f $1 -a ${OVERWRITE_OLD_IMAGE:-0} -eq 0 ]; then
       old_image="${1%.*}"-$(date +%Y.%m.%d-%H.%M.%S).${1##*.}
-      echo "Old image is found. Renaming it to $old_image"
+      echo "Old image found. Renaming it to $old_image"
       mv "$1" "$old_image"
     fi
 
@@ -57,17 +57,7 @@ function finish_image () {
 }
 
 function save_image () {
-    if [ -f  $1 ] ; then
-      old_image="${1%.*}"-$(date +%Y.%m.%d-%H.%M.%S).${1##*.}
-      echo "Old image is found. Renaming it to $old_image"
-      mv "$1" "$old_image"
-    fi
-
-    cp $TMP_IMAGE_PATH $1
-    cleanup_dirs
-    # All done!
-    trap EXIT
-    echo "Image file $1 created..."
+    finish_image $1
 }
 
 function element_pre_check() {
