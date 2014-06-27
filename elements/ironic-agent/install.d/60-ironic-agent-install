@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+install-packages python-dev python-pip qemu-utils parted hdparm util-linux genisoimage gcc
+
+pip install -r /tmp/ironic-python-agent/requirements.txt
+pip install /tmp/ironic-python-agent
+
+sudo echo $'[Unit]
+Description=Ironic Python Agent\n
+[Service]
+ExecStart=/usr/bin/ironic-python-agent
+Restart=always
+RestartSec=30s\n' > /usr/lib/systemd/system/ironic-python-agent.service
+
+sudo systemctl enable ironic-python-agent.service

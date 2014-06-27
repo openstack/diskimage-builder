@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+[ -n "$TARGET_ROOT" ]
+
+source $_LIB/img-functions
+
+WORKDIR=$(pwd)
+cd $TARGET_ROOT
+
+echo "#disabled" > ./tmp/fstab.new
+sudo mv ./tmp/fstab.new ./etc/fstab
+sudo ln -s ./sbin/init ./
+
+sudo find . -path ./sys -prune -o -path ./proc -prune -o -print | sudo cpio -o -H newc | gzip > $WORKDIR/$IMAGE_NAME.initramfs
+
+select_boot_kernel_initrd $TARGET_ROOT
+sudo cp $BOOTDIR/$KERNEL $WORKDIR/$IMAGE_NAME.vmlinuz

@@ -246,5 +246,12 @@ else
   # by this point.
   rm $TMP_IMAGE_PATH
 fi
+
+case "$IMAGE_ELEMENT" in
+  *ironic-agent*)
+    rm $IMAGE_NAME.$IMAGE_TYPE
+    ;;
+esac
+
 # All done!
 trap EXIT
