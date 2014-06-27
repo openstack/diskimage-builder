@@ -2,8 +2,6 @@
 set -eux
 set -o pipefail
 
-DISTRO=`lsb_release -si` || true
-
-if [ "openSUSE project" = "$DISTRO" ]; then
+if [ "opensuse" = "$DISTRO_NAME" ]; then
     install-packages dhcp-client
 fi
