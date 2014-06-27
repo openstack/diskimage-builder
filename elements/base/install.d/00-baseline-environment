@@ -4,4 +4,4 @@
 set -eu
 set -o pipefail
 
-install-packages vlan open-iscsi
+install-packages -m base vlan_package iscsi_package

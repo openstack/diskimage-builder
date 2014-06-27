@@ -3,4 +3,4 @@
 set -eu
 set -o pipefail
 
-install-packages ccache
+install-packages -m base ccache_package

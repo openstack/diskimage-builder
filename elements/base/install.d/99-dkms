@@ -3,4 +3,4 @@
 set -eu
 set -o pipefail
 
-install-packages dkms
+install-packages -m base dkms_package
