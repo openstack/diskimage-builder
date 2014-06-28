@@ -3,13 +3,10 @@
 set -eu
 set -o pipefail
 
-PYPI_MIRROR_URL=${PYPI_MIRROR_URL:-''}
-if [ -n "$PYPI_MIRROR_URL" ]; then
-    # External mirror URL being used - no need to bind mount anything.
-    exit 0
-fi
 MIRROR_SOURCE=~/.cache/image-create/pypi/mirror/
-MIRROR_TARGET=$TMP_MOUNT_PATH/tmp/pypi
+if [ -d "$MIRROR_SOURCE" ]; then
+    MIRROR_TARGET=$TMP_MOUNT_PATH/tmp/pypi
 
-sudo mkdir -p $MIRROR_SOURCE $MIRROR_TARGET
-sudo mount --bind $MIRROR_SOURCE $TMP_MOUNT_PATH/tmp/pypi
+    sudo mkdir -p $MIRROR_SOURCE $MIRROR_TARGET
+    sudo mount --bind $MIRROR_SOURCE $MIRROR_TARGET
+fi
