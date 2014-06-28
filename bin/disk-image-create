@@ -61,6 +61,8 @@ function show_options () {
     echo "    --min-tmpfs size -- minimum size in GB needed in tmpfs to build the image"
     echo "    --no-tmpfs -- do not use tmpfs to speed image build"
     echo "    --offline -- do not update cached resources"
+    echo "    --qemu-img-options -- option flags to be passed directly to qemu-img."
+    echo "       Options need to be comma separated, and follow the key=value pattern."
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
         echo "    -p package[,package,package] -- list of packages to install in the image"
@@ -84,7 +86,7 @@ function show_options () {
 
 INSTALL_PACKAGES=""
 COMPRESS_IMAGE="true"
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -107,6 +109,7 @@ while true ; do
         --min-tmpfs) export DIB_MIN_TMPFS=$2; shift 2;;
         --no-tmpfs) shift; export DIB_NO_TMPFS=1;;
         --offline) shift; export DIB_OFFLINE=1;;
+        --qemu-img-options) QEMU_IMG_OPTIONS=$2; shift 2;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
