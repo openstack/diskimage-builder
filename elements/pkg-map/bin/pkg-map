@@ -89,9 +89,7 @@ def main():
         if distro_map:
             name_map.update(distro_map)
     for name in extra:
-        pkg_name = None
-        if name in name_map:
-            pkg_name = name_map.get(name)
+        pkg_name = name_map.get(name)
         if pkg_name:
             print(pkg_name)
         else:
