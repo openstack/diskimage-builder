@@ -1,0 +1,7 @@
+#!/bin/bash
+# Setup repo required for dkms package.
+
+set -eu
+set -o pipefail
+
+zypper ar -f http://download.opensuse.org/repositories/X11:/Bumblebee/openSUSE_13.1/X11:Bumblebee.repo

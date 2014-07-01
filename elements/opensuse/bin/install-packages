@@ -53,8 +53,9 @@ done
 
 # Packages that aren't available in the distro but requested for installation
 # can be ignored by adding them to the exclude list
-BLACKLIST=(dkms)
-WHITELIST=""
+BLACKLIST=('')
+WHITELIST=('')
+
 for i in "$@"
 do
     PKG_NAME=$i

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Install requirments needed to build the image.
+set -eu
+set -o pipefail
+
+# install kernel package needed by dkms.
+install-packages kernel-devel
+
+# sudo and lsb not included by default.
+# so install them.
+install-packages sudo lsb-release
