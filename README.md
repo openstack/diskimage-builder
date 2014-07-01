@@ -368,12 +368,14 @@ Ramdisk elements support the following files in their element directories:
 
 * udev.d : udev rules files that will be copied into the ramdisk.
 
-### Whitespace Rules
+### Element coding standard ###
 
-- lines should not include trailing whitespace
-- there should be no hard tabs in the file
+- lines should not include trailing whitespace.
+- there should be no hard tabs in the file.
 - indents are 4 spaces, and all indentation should be some multiple of
-  them
+  them.
+- `do` and `then` keywords should be on the same line as the if, while or
+  for conditions.
 
 Global image-build variables
 ----------------------------

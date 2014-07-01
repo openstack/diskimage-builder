@@ -5,8 +5,7 @@ set -o pipefail
 
 export DIB_RHSM_USER=${DIB_RHSM_USER:-}
 
-if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ]
-then
+if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ] ; then
     opts="--force"
     if [[ -n "$DIB_SAT_KEY" ]]; then
         opts="$opts --activationkey ${DIB_SAT_KEY}"

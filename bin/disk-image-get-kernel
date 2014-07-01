@@ -18,8 +18,7 @@ set -e
 
 SCRIPTNAME=$(basename $0)
 SCRIPT_HOME=$(dirname $0)
-if [ -d $SCRIPT_HOME/../share/diskimage-builder ]
-then
+if [ -d $SCRIPT_HOME/../share/diskimage-builder ]; then
     export _PREFIX=$SCRIPT_HOME/../share/diskimage-builder
 else
     export _PREFIX=$SCRIPT_HOME/..

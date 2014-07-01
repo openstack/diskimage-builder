@@ -6,8 +6,7 @@ if [ -d /etc/first-boot.d ]; then
     rc_local=/etc/rc.d/rc.local
 
     FILE_EXISTED=
-    if [ -f $rc_local ]
-    then
+    if [ -f $rc_local ]; then
         FILE_EXISTED=1
         mv $rc_local $rc_local.REAL
     fi
@@ -20,8 +19,7 @@ set -o xtrace
 dib-first-boot
 EOF
 
-if [ $FILE_EXISTED ]
-then
+if [ $FILE_EXISTED ]; then
     echo "mv $rc_local.REAL $rc_local" >> $rc_local
 else
     echo "rm \$0" >> $rc_local
