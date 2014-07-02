@@ -22,16 +22,22 @@ set -o pipefail
 
 source $_LIB/img-functions
 
-# Dig up the initrd and kernel to use.
-if [ -d $TARGET_ROOT/boot/syslinux ] ; then
-    select_boot_kernel_initrd $TARGET_ROOT
+if [ -d $TARGET_ROOT/boot/extlinux ] ; then
+    CONF=$TARGET_ROOT/boot/extlinux/extlinux.conf
+elif [ -d $TARGET_ROOT/boot/syslinux ] ; then
+    CONF=$TARGET_ROOT/boot/syslinux/syslinux.cfg
+else
+    exit 0
+fi
 
-    cat > $TARGET_ROOT/boot/syslinux/syslinux.cfg<<_EOF_
+# Dig up the initrd and kernel to use.
+select_boot_kernel_initrd $TARGET_ROOT
+
+sudo sh -c "cat > $CONF <<_EOF_
 DEFAULT linux
 
 LABEL linux
-    KERNEL $KERNEL
-    APPEND ro root=LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200
-    INITRD $RAMDISK
-_EOF_
-fi
+    KERNEL /boot/$KERNEL
+    APPEND ro root=LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200 nofb nomodeset vga=normal
+    INITRD /boot/$RAMDISK
+_EOF_"
