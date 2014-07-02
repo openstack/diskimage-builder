@@ -39,16 +39,10 @@ function cleanup () {
 function create_ramdisk_base () {
   echo "Creating base system"
 
-  mkdir -p "$TMP_MOUNT_PATH/bin"
+  mkdir -p "${TMP_MOUNT_PATH}/"{bin,lib/modules,etc/udev}
   ln -s bin "$TMP_MOUNT_PATH/sbin"
-  mkdir -p "$TMP_MOUNT_PATH/lib"
-  mkdir -p "$TMP_MOUNT_PATH/lib/modules"
-  mkdir -p "$TMP_MOUNT_PATH/etc"
-  mkdir -p "$TMP_MOUNT_PATH/etc/udev"
   # cjk adding for discovery support
-  mkdir -p "$TMP_MOUNT_PATH/var/lib/dhcp"
-  mkdir -p "$TMP_MOUNT_PATH/var/run"
-  mkdir -p "$TMP_MOUNT_PATH/lib/udev/rules.d"
+  mkdir -p "${TMP_MOUNT_PATH}/"{lib/udev/rules.d,var/{lib/dhcp,run}}
 
   DISTRO=`lsb_release -si` || true
 
@@ -132,7 +126,7 @@ function copy_required_libs() {
     if [ "$ref" != "$dest" ]; then
       local link_path=$TMP_MOUNT_PATH/$ref
       if ! [ -e "$link_path" -o -L "$link_path" ]; then
-        mkdir -p `dirname "$link_path"`
+        mkdir -p $(dirname "$link_path")
         ln -s "$dest" "$link_path"
       fi
     fi
