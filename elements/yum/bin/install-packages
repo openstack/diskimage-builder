@@ -77,11 +77,15 @@ if [ -n "$WHITELIST" ]; then
     else
         PKGS=$(map-packages $WHITELIST)
     fi
-    echo "Installing $PKGS"
-    yum -y $ACTION $EXTRA_ARGS $PKGS
-    for pkg in "$@"; do
-        if [ "$pkg" = "python-pip" ] ; then
-            alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
-        fi
-    done
+    if [ -z "${PKGS}" ]; then
+        echo "Not running install-packages $ACTION with empty packages list"
+    else
+        echo "Running install-packages ${ACTION}. Package list: $PKGS"
+        yum -y $ACTION $EXTRA_ARGS $PKGS
+        for pkg in "$@"; do
+            if [ "$pkg" = "python-pip" ] ; then
+                alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
+            fi
+        done
+    fi
 fi
