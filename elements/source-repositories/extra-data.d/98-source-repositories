@@ -29,8 +29,14 @@ function get_repos_for_element(){
     local REGEX="^([^ ]+) (git|tar|file|package) ?(/[^ ]+)? ?([^ ]+)? ?([^ ]*)$"
 
     while read line; do
+        # temporarily turn off globbing '*' (since it may be used as the REPOREF for tarballs)
+        set -f
+
         # expand variables
         line=$(eval echo $line)
+
+        # restore globbing
+        set +f
 
         # ignore blank lines and lines beginning in '#'
         [[ "$line" == \#* ]] || [[ -z "$line" ]] && continue
@@ -41,7 +47,17 @@ function get_repos_for_element(){
             local REPOPATH=${BASH_REMATCH[3]}
             local REPOLOCATION=${BASH_REMATCH[4]}
             local REPO_ORIG_LOCATION=$REPOLOCATION
-            local REPOREF=${BASH_REMATCH[5]:-master}
+
+            if [ $REPONAME = "tar" -a -z "${BASH_REMATCH[5]:-}" ] ; then
+                echo "Warning: Default tarball REPOREF of '*' is deprecated; do not rely on it."
+            fi
+
+            # Default of '*' for tar repositories is deprecated; do not rely on it.
+            local REPOREF_DEFAULT_TAR=*
+            local REPOREF_DEFAULT_GIT=master
+            local REPOREF_LOOKUP_DEFAULT=REPOREF_DEFAULT_${REPOTYPE^^}
+
+            local REPOREF=${BASH_REMATCH[5]:-${!REPOREF_LOOKUP_DEFAULT:-}}
 
             local REPO_DEST=$TMP_MOUNT_PATH$REPOPATH
             local REPO_SUB_DIRECTORY=$(dirname $REPO_DEST)
@@ -129,8 +145,7 @@ function get_repos_for_element(){
             tar)
                 # The top level directory of the tarball mightn't have a fixed name i.e.
                 # it could contain version numbers etc... so we write it to a tmpdir
-                # the then move the contents into the directory we want it in, this does
-                # assume the tarball only contains a single top level directory
+                # for inspection before transferring the contents into the target directory
                 local tmpdir=$(mktemp --tmpdir=$TMP_MOUNT_PATH/tmp -d)
                 if [ -n "$CACHE_PATH" ] ; then
                     echo "Caching $REPONAME tarball from $REPOLOCATION in $CACHE_PATH"
@@ -142,9 +157,15 @@ function get_repos_for_element(){
                     echo "Fetching $REPONAME tarball from $REPOLOCATION"
                     curl $REPOLOCATION | tar -C $tmpdir -xzf -
                 fi
+
                 sudo mkdir -p $REPO_DEST
-                sudo mv $tmpdir/*/* $REPO_DEST
+
+                # A REPOREF of '.' will select the entire contents of the tarball,
+                # while '*' will select only the contents of its subdirectories.
+                sudo rsync -a --remove-source-files $tmpdir/$REPOREF/. $REPO_DEST
+
                 rm -rf $tmpdir
+
                 ;;
             file)
                 sudo mkdir -p $REPO_SUB_DIRECTORY
