@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+if [ 'amd64' = "$ARCH" ] ; then
+    ARCH="x86_64"
+fi
+
+DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-}
+
+if [ -n "$DIB_LOCAL_IMAGE" ]; then
+    IMAGE_LOCATION=$DIB_LOCAL_IMAGE
+    # No need to copy a local image into the cache directory, so just specify
+    # the cached path as the original path.
+    CACHED_IMAGE=$IMAGE_LOCATION
+    BASE_IMAGE_FILE=$(basename $DIB_LOCAL_IMAGE)
+    BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
+else
+    DIB_RELEASE=${DIB_RELEASE:-Broken-20140620-Nightly}
+    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://buildlogs.centos.org/centos/7/cloud}
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-CentOS-7-$DIB_RELEASE.qcow2}
+    BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
+    IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
+    CACHED_IMAGE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+fi
+
+$TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_LOCATION $CACHED_IMAGE
