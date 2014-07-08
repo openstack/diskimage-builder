@@ -73,11 +73,8 @@ PROFILE_DIR=$(mktemp -d /tmp/profiledir.XXXXXX)
 ENVIRONMENT_D_DIR=$target_dir/../environment.d
 
 if [ -d $ENVIRONMENT_D_DIR ] ; then
-    env_files=$(find $ENVIRONMENT_D_DIR \
-        -maxdepth 1 -xtype f -printf '%f\n' | \
-        grep -E "^[0-9A-Za-z_\.-]+$")
-    for env_file in $env_files ; do
-        source $ENVIRONMENT_D_DIR/$env_file
+    for env_file in $ENVIRONMENT_D_DIR/* ; do
+        source $env_file
     done
 fi
 
