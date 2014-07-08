@@ -24,10 +24,17 @@ else
     $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
     pushd $DIB_IMAGE_CACHE
     if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
-        # It is likely that an upstream http(s) proxy has given us a new image, but stale sha256sums
-        # Try again. Harder.
+        # It is likely that an upstream http(s) proxy has given us a skewed
+        # result - either a cached SHA file or a cached image. Use cache-busting
+        # to get (as long as caches are compliant...) fresh files.
+        # Try the sha256sum first, just in case that is the stale one (avoiding
+        # downloading the larger image), and then if the sums still fail retry
+        # the image.
         $TMP_HOOKS_PATH/bin/cache-url -f $SHA256SUMS $CACHED_SUMS
-        grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
+        if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
+            $TMP_HOOKS_PATH/bin/cache-url -f $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
+            grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
+        fi
     fi
     popd
 fi
