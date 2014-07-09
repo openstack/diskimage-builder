@@ -22,11 +22,25 @@ set -eu
 set -o pipefail
 
 parse_exclusions() {
-    # Exclusions are currently only read on a per-file basis
+    # Per-file exclusions
+    # Example: # dib-lint: disable=sete setpipefail
     local filename=$1
     local disable_pattern="# dib-lint: disable="
     local exclusions=$(grep "^$disable_pattern.*$" $filename | sed "s/$disable_pattern//g")
-    echo $exclusions
+
+    # Global exclusions read from tox.ini
+    # Example section in tox.ini:
+    #   [dib-lint]
+    #   ignore = sete setu
+    section="dib-lint"
+    option="ignore"
+    global_exclusions=$(python -c \
+        "import ConfigParser; \
+        conf=ConfigParser.ConfigParser(); \
+        conf.read('tox.ini'); \
+        print conf.get('$section', '$option') if conf.has_option('$section', '$option') else ''"
+    )
+    echo $exclusions $global_exclusions
 }
 
 excluded() {
