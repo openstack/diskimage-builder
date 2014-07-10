@@ -324,6 +324,15 @@ two-digit numeric prefix, and are executed in numeric order.
  * runs: outside chroot
  * inputs: $ARCH=i386|amd64|armhf $TARGET\_ROOT=/path/to/target/workarea
 
+### Other Subdirectories ###
+
+Elements may have other subdirectories that are processed by specific elements
+rather than the diskimage-builder tools themselves.
+
+One example of this is the ``bin`` directory.  The ``rpm-distro``, ``dpkg`` and
+``opensuse`` elements install all files found in the ``bin`` directory into
+``/usr/local/bin`` within the image as executable files.
+
 ### Environment Variables ###
 
 To set environment variables for other hooks, add a file to environment.d.
