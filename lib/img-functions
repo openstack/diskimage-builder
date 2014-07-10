@@ -35,7 +35,7 @@ function cleanup () {
 
 function ensure_nbd () {
     NBD=`which qemu-nbd` || true
-    if [ -z "$NBD" ];  then
+    if [ -z "$NBD" ]; then
         echo "qemu-nbd is not found in your PATH"
         echo "Please install it on your system"
         exit 1

@@ -7,8 +7,7 @@ set -o pipefail
 
 sudo mv $TARGET_ROOT/sbin/start-stop-daemon.REAL $TARGET_ROOT/sbin/start-stop-daemon
 
-if [ -f $TARGET_ROOT/sbin/initctl.REAL ]
-then
+if [ -f $TARGET_ROOT/sbin/initctl.REAL ]; then
     sudo mv $TARGET_ROOT/sbin/initctl.REAL $TARGET_ROOT/sbin/initctl
 fi
 

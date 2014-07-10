@@ -275,8 +275,7 @@ function create_base () {
     sudo touch $TMP_MOUNT_PATH/etc/resolv.conf
     sudo chmod 777 $TMP_MOUNT_PATH/etc/resolv.conf
     # use system configured resolv.conf if available to support internal proxy resolving
-    if [ -e /etc/resolv.conf ]
-    then
+    if [ -e /etc/resolv.conf ]; then
         cat /etc/resolv.conf > $TMP_MOUNT_PATH/etc/resolv.conf
     else
         echo nameserver 8.8.8.8 > $TMP_MOUNT_PATH/etc/resolv.conf
