@@ -27,13 +27,7 @@ source /init-func
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
 export PATH
 
-mkdir -p /proc
-mkdir -p /sys
-mkdir -p /dev
-mkdir -p /boot
-mkdir -p /etc
-mkdir -p /mnt
-mkdir -p /lib/modules
+mkdir -p /proc /sys /dev /boot /etc /mnt /lib/modules
 
 mount -t proc proc /proc
 
@@ -70,8 +64,7 @@ if [ "$UDEVD_VERSION" != "" -a $UDEVD_VERSION -gt 175 ]; then
     mount -t devtmpfs none /dev
     mkdir -p /run
     mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
-    mkdir -p /run/lock
-    mkdir -p /run/udev
+    mkdir -p /run/{lock,udev}
 else
     echo "Using old-style udevd setup"
     mount -t tmpfs none /dev
@@ -93,7 +86,6 @@ else
     mknod /dev/tty c 5 0
     mknod -m 0600 /dev/console c 5 1
     mknod -m 0666 /dev/ptmx c 5 2
-    mkdir -p /dev/.udev
     mkdir -p /dev/.udev/data
 fi
 
