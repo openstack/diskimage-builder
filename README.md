@@ -74,6 +74,11 @@ It's a colon (:) separated path list, and it will work in a first path/element f
 first served approach. The included elements tree is used when no path is supplied,
 and is added to the end of the path if a path is supplied.
 
+By default, the image building scripts will not overwrite existing disk images,
+allowing you to compare the newly built image with the existing one. To change
+that behaviour, set the variable OVERWRITE\_OLD\_IMAGE to any value that isn't
+0.
+
 Requirements
 ============
 
