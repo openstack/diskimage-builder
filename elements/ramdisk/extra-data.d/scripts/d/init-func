@@ -13,22 +13,72 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+function configure_vmedia_dir() {
+    VMEDIA_MOUNT_POINT="/vfloppy_mnt"
+    VMEDIA_DIR="/vfloppy"
+    VMEDIA_CONFIG_FILE="parameters.txt"
+
+    SYSFS_DEVICE_MODELS="/sys/class/block/*/device/model"
+    SYSFS_VMEDIA_DEVICE_MODEL="virtual media"
+
+    # Wait for some seconds for kernel to finish initializing the
+    # virtual media devices.
+    wait_for 5 1 "grep -q -i \"$SYSFS_VMEDIA_DEVICE_MODEL\" $SYSFS_DEVICE_MODELS"
+    if [[ $? != 0 ]]; then
+        echo "Error finding the virtual floppy device on the node."
+        troubleshoot
+    fi
+
+    # Find the virtual media device from the kernel sysfs file system.
+    VMEDIA_DEVICE=$(grep -l -i "$SYSFS_VMEDIA_DEVICE_MODEL" $SYSFS_DEVICE_MODELS | awk -F'/' '{print $5}')
+    if [[ -z $VMEDIA_DEVICE ]]; then
+        echo "Error finding the virtual floppy device on the node."
+        troubleshoot
+    fi
+
+    # Mount the virtual media device
+    VMEDIA_DEVICE_FILE="/dev/$VMEDIA_DEVICE"
+    mkdir -p $VMEDIA_MOUNT_POINT
+    mount $VMEDIA_DEVICE_FILE $VMEDIA_MOUNT_POINT
+    if [[ $? != 0 ]]; then
+        echo "Error mounting virtual media device $VMEDIA_DEVICE_FILE"
+        troubleshoot
+    fi
+
+    # Copy the contents of the virtual media to a directory in root
+    # filesystem so that we can unmount virtual media soon.
+    cp -rf $VMEDIA_MOUNT_POINT $VMEDIA_DIR
+    umount $VMEDIA_MOUNT_POINT
+}
+
 function get_kernel_parameter() {
-    local name=$1
-    for i in `cat /proc/cmdline`; do
+    if [ "$BOOT_METHOD" = "$VMEDIA_BOOT_TAG" ]; then
+        echo $(find_parameter_from_file $1 "$VMEDIA_DIR/$VMEDIA_CONFIG_FILE")
+    else
+        echo $(find_parameter_from_file $1 "/proc/cmdline")
+    fi
+}
+
+function find_parameter_from_file() {
+
+    local paramname=$1
+    local filename=$2
+
+    for i in `cat $filename`; do
         case "$i" in
-        ${name}=*)
-            echo "${i#${name}=}"
-            return 0
+            ${paramname}=*)
+                echo "${i#${paramname}=}"
+                return 0
             ;;
-        ${name})
-            echo ""
-            return 0
+            ${paramname})
+                echo ""
+                return 0
             ;;
-        *)
+            *)
             ;;
         esac
     done
+
     echo ""
     return 1
 }
