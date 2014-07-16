@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ ! -d /tmp/ilo ]; then
+    exit 0
+fi
+
+mv /tmp/ilo "$TMP_MOUNT_PATH"
