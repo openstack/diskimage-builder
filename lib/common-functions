@@ -192,7 +192,7 @@ function cleanup_dirs () {
     rm -rf $TMP_BUILD_DIR $TMP_IMAGE_DIR
 }
 
-# Run a directory of hooks outside the target.
+# Run a directory of hooks outside the target (that is, no chrooting).
 function run_d() {
     check_element
     check_break before-$1 bash

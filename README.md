@@ -382,6 +382,10 @@ Ramdisk elements support the following files in their element directories:
 * init.d : POSIX shell script fragments that will be appended to the default
   script executed as the ramdisk is booted (/init).
 
+* ramdisk-install.d : called to copy files into the ramdisk. The variable
+  TMP\_MOUNT\_PATH points to the root of the tree that will be packed into
+  the ramdisk.
+
 * udev.d : udev rules files that will be copied into the ramdisk.
 
 ### Element coding standard ###
