@@ -135,7 +135,23 @@ function install_grub2 {
             sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
         ;;
     esac
+
+    # os-prober leaks /dev/sda into config file in dual-boot host
+    # Disable grub-os-prober to avoid the issue  while running
+    # grub-mkconfig
+    # Setting a flag to track whether the entry is already there in grub config
+    PROBER_DISABLED=
+    if ! grep -qe "^\s*GRUB_DISABLE_OS_PROBER=true" /etc/default/grub; then
+        PROBER_DISABLED=true
+        echo 'GRUB_DISABLE_OS_PROBER=true' >> /etc/default/grub
+    fi
+
     $GRUB_MKCONFIG
+
+    # Remove the fix to disable os_prober
+    if [ -n "$PROBER_DISABLED" ]; then
+        sed -i '$d' /etc/default/grub
+    fi
 
     RELEASE=`lsb_release -cs`
     [ -n "$RELEASE" ]
