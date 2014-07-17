@@ -1,0 +1,60 @@
+readonly DISCOVERD_URL=$(get_kernel_parameter discoverd_callback_url)
+
+function request_curl(){
+    HTTP_METHOD=$1
+    URL=$2
+    DATA=$3
+
+    if [ ! -z "$DATA" ]; then
+        DATA="\"-d \"$DATA\"\""
+    fi
+
+    RESULT=$(eval curl -i -X "$HTTP_METHOD" \
+           "-H 'Accept: application/json'" \
+           "-H 'Content-Type: application/json'" \
+           "$DATA" \
+           "$URL") || troubleshoot
+    # CURL can't return error code on 4xx error
+    if echo $RESULT | grep "HTTP/1.0 4"; then
+        echo "Ironic API returned error: $RESULT"
+        troubleshoot
+    fi
+    echo $RESULT
+}
+
+IFACES=
+for iface in $(ls /sys/class/net/ | grep -v lo)
+do
+    MAC=$(ip link show $iface | awk '/ether/ {print $2}')
+    IP=$(ip addr show $iface | awk '/inet / { sub(/\/.*/, "", $2); print $2 }')
+    if [ ! -z "$MAC" ]; then
+        IFACES="$IFACES,\"$iface\":{\"mac\":\"$MAC\",\"ip\":\"$IP\"}"
+    fi
+done
+IFACES="{$(echo $IFACES | sed s/,//)}"
+
+# NOTE(dtantsur): workaround for IPMI device not present on some systems
+modprobe ipmi_msghandler || echo "WARNING: modprobe failed, ipmitool call may fail"
+modprobe ipmi_devintf || echo "WARNING: modprobe failed, ipmitool call may fail"
+modprobe ipmi_si || echo "WARNING: modprobe failed, ipmitool call may fail"
+
+BMC_ADDRESS=$(ipmitool lan print | grep -e "IP Address [^S]" | awk '{ print $4 }')
+
+CPU_ARCH=$(lscpu | grep Architecture | awk '{ print $2 }')
+# NOTE(lucasagomes): dmidecode because we want to know the total
+# memory in the system, even the reserved part to the BIOS
+RAM=$(dmidecode -t 16 | grep 'Maximum Capacity' | awk '{if ($4 == "GB") s+=$3*1024; else s+=$3;} END {print s}')
+CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
+disk_bytes=$(fdisk -l | grep Disk | awk '{print $5}' | head -n 1)
+# NOTE(dtantsur): -1 is required to give Ironic some spacing for partitioning and may be removed later
+DISK_SIZE=$(($disk_bytes/1024/1024/1024 - 1))
+
+NODE_DATA="'{\"ipmi_address\":\"$BMC_ADDRESS\",\"local_gb\":$DISK_SIZE,\"memory_mb\":$RAM,\"cpus\":$CPUS,\"cpu_arch\":\"$CPU_ARCH\""
+NODE_DATA="$NODE_DATA,\"interfaces\":$IFACES}'"
+echo Collected $NODE_DATA
+NODE_RESP=$(request_curl POST $DISCOVERD_URL $NODE_DATA)
+
+echo "Node is now discovered! Halting..."
+# Give user a chance of seeing the output
+sleep 5
+poweroff -f
