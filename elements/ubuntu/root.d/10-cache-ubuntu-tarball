@@ -14,33 +14,48 @@ DIB_RELEASE=${DIB_RELEASE:-trusty}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
 SHA256SUMS=${SHA256SUMS:-https://${DIB_CLOUD_IMAGES##http?(s)://}/$DIB_RELEASE/current/SHA256SUMS}
 CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+CACHED_FILE_LOCK=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE.lock
 CACHED_SUMS=$DIB_IMAGE_CACHE/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
 
-if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
-    echo "Not checking freshness of cached $CACHED_FILE."
-else
-    echo "Fetching Base Image"
-    $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $CACHED_SUMS
-    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
-    pushd $DIB_IMAGE_CACHE
-    if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
-        # It is likely that an upstream http(s) proxy has given us a skewed
-        # result - either a cached SHA file or a cached image. Use cache-busting
-        # to get (as long as caches are compliant...) fresh files.
-        # Try the sha256sum first, just in case that is the stale one (avoiding
-        # downloading the larger image), and then if the sums still fail retry
-        # the image.
-        $TMP_HOOKS_PATH/bin/cache-url -f $SHA256SUMS $CACHED_SUMS
+function get_ubuntu_tarball() {
+    if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
+        echo "Not checking freshness of cached $CACHED_FILE."
+    else
+        echo "Fetching Base Image"
+        $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $CACHED_SUMS
+        $TMP_HOOKS_PATH/bin/cache-url \
+            $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
+        pushd $DIB_IMAGE_CACHE
         if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
-            $TMP_HOOKS_PATH/bin/cache-url -f $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
-            grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
+            # It is likely that an upstream http(s) proxy has given us a skewed
+            # result - either a cached SHA file or a cached image. Use cache-busting
+            # to get (as long as caches are compliant...) fresh files.
+            # Try the sha256sum first, just in case that is the stale one (avoiding
+            # downloading the larger image), and then if the sums still fail retry
+            # the image.
+            $TMP_HOOKS_PATH/bin/cache-url -f $SHA256SUMS $CACHED_SUMS
+            if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
+                $TMP_HOOKS_PATH/bin/cache-url -f \
+                    $DIB_CLOUD_IMAGES/$DIB_RELEASE/current/$BASE_IMAGE_FILE $CACHED_FILE
+                grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
+            fi
         fi
+        popd
     fi
-    popd
-fi
-# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
-# image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
-sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
-if [ -e "$TARGET_ROOT/lost+found" ]; then
-    sudo rmdir $TARGET_ROOT/lost+found
-fi
+    # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+    # image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
+    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+    if [ -e "$TARGET_ROOT/lost+found" ]; then
+        sudo rmdir $TARGET_ROOT/lost+found
+    fi
+}
+
+(
+    echo "Getting $CACHED_FILE_LOCK: $(date)"
+    # Wait up to 20 minutes for another process to download
+    if ! flock -w 1200 9 ; then
+        echo "Did not get $CACHED_FILE_LOCK: $(date)"
+        exit 1
+    fi
+    get_ubuntu_tarball
+) 9> $CACHED_FILE_LOCK
