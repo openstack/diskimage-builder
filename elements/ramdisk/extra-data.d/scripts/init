@@ -34,10 +34,12 @@ mount -t proc proc /proc
 readonly _BOOTIF_=$(get_kernel_parameter BOOTIF)
 readonly _IP_=$(get_kernel_parameter ip)
 readonly BOOT_MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g"  | sed -e "s/^01://g" | tr 'a-f' 'A-F')
-readonly BOOT_IP_ADDRESS=$(echo "$_IP_" | cut -d':' -f1)
 readonly BOOT_SERVER=$(echo "$_IP_" | cut -d':' -f2)
-readonly BOOT_NETMASK=$(echo "$_IP_" | cut -d':' -f4)
-readonly BOOT_GATEWAY=$(echo "$_IP_" | cut -d':' -f3)
+
+# IP address and other parameters may be set later in the init script
+BOOT_IP_ADDRESS=$(echo "$_IP_" | cut -d':' -f1)
+BOOT_NETMASK=$(echo "$_IP_" | cut -d':' -f4)
+BOOT_GATEWAY=$(echo "$_IP_" | cut -d':' -f3)
 
 readonly DISK=$(get_kernel_parameter disk)
 

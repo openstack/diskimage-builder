@@ -26,20 +26,35 @@ if [ $rv -ne 0 ]; then
         troubleshoot
     fi
 fi
-ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"
-route del default || true
-route add default gw $BOOT_GATEWAY
 
-echo "pinging to boot server $BOOT_SERVER"
-w=30
-while [ $w -gt 0 ]; do
-    ping -c 5 -q "$BOOT_SERVER" > /dev/null
-    if [ $? -eq 0 ]; then
-        break
+# Check if boot IP address was specific or retrieve from DHCP
+if [ -n "$BOOT_IP_ADDRESS" ]; then
+    ifconfig "$BOOT_INTERFACE" "$BOOT_IP_ADDRESS" netmask "$BOOT_NETMASK"
+    route del default || true
+    route add default gw $BOOT_GATEWAY
+else
+    dhclient -1 "$BOOT_INTERFACE"
+    if [[ $? == 2 ]]; then
+        echo "Error getting IP address for $BOOT_INTERFACE with MAC \
+              $BOOT_MAC_ADDRESS"
+        troubleshoot
     fi
-    sleep 1
-    w=`expr $w - 5`
-done
+
+    BOOT_IP_ADDRESS=$(ifconfig "$BOOT_INTERFACE" | grep 'inet addr:' | \
+                      cut -d: -f2 | awk '{ print $1}')
+    BOOT_NETMASK=$(ifconfig "$BOOT_INTERFACE" | grep 'Mask:' | cut -d':' -f4)
+    BOOT_GATEWAY=$(route -n | grep "$BOOT_INTERFACE" | grep '^0.0.0.0' | \
+                   awk '{print $2}')
+    echo "obtained the following from dhcp: "
+    echo " ip address = $BOOT_IP_ADDRESS"
+    echo " netmask = $BOOT_NETMASK"
+    echo " gateway = $BOOT_GATEWAY"
+fi
+
+if [ -n "$BOOT_SERVER" ]; then
+    echo "pinging to boot server $BOOT_SERVER"
+    wait_for 6 1 ping -c 5 -q "$BOOT_SERVER" > /dev/null
+fi
 
 echo "network ready"
 

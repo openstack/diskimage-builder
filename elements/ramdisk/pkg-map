@@ -1,0 +1,10 @@
+{
+  "family":{
+    "debian":{
+      "dhcp_client":"isc-dhcp-client"
+    }
+  },
+  "default":{
+    "dhcp_client":"dhclient"
+  }
+}

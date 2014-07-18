@@ -2,6 +2,5 @@
 set -eux
 set -o pipefail
 
-if [ "opensuse" = "$DISTRO_NAME" ]; then
-    install-packages dhcp-client
-fi
+DHCP_CLIENT=$(pkg-map --element ramdisk dhcp_client)
+install-packages $DHCP_CLIENT
