@@ -60,7 +60,10 @@ for i in "$@"
 do
     PKG_NAME=$i
     if [ -n "$MAP_ELEMENT" ]; then
-        PKG_NAME=$(pkg-map --element $MAP_ELEMENT $i)
+        if !  PKG_NAME=$(pkg-map --element $MAP_ELEMENT $i); then
+            echo "bin/pkg-map error. $PKG_NAME"
+            exit 1
+        fi
     fi
     if [[ ! ${BLACKLIST[*]} =~ $PKG_NAME ]]; then
         WHITELIST+="$i "
