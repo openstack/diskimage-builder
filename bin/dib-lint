@@ -118,12 +118,16 @@ done
 
 for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
     # Check for tab indentation
-    if grep -q $'^ *\t' ${i}; then
-        error "$i contains tab characters"
+    if ! excluded indent; then
+        if grep -q $'^ *\t' ${i}; then
+            error "$i contains tab characters"
+        fi
     fi
 
-    if [ "$(tail -c 1 $i)" != "" ]; then
-        error "No newline at end of file: $i"
+    if ! excluded newline; then
+        if [ "$(tail -c 1 $i)" != "" ]; then
+            error "No newline at end of file: $i"
+        fi
     fi
 done
 exit $rc
