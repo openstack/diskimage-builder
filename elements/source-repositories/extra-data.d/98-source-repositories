@@ -188,7 +188,15 @@ rm -f $GIT_MANIFEST
 
 # Get source repositories for the target
 for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*" -not -name '*~'); do
-    get_repos_for_element $_SOURCEREPO
+    repo_flock=$CACHE_BASE/repositories_flock
+    (
+        echo "Getting $repo_flock: $(date)"
+        if ! flock -w 600 9 ; then
+            echo "Did not get $repo_flock: $(date)"
+            exit 1
+        fi
+        get_repos_for_element $_SOURCEREPO
+    ) 9> $repo_flock
 done
 
 # Copy the manifest into the image if it exists (there may be no git repositories used)
