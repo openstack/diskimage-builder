@@ -1,0 +1,9 @@
+#!/bin/bash
+# Do an apt-get clean. This will free some space.
+
+set -eu
+set -o pipefail
+
+if ! mount | grep /var/cache/apt/archives; then
+    apt-get clean
+fi
