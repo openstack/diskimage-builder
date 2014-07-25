@@ -46,31 +46,43 @@ else
         RAW_FILE=$(basename $BASE_IMAGE_FILE)
         RAW_FILE=${RAW_FILE#.qcow2}.raw
         qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $WORKING/$RAW_FILE
-        # WARNING: The mattdm image has the root filesystem on the second
-        #          partition (p2). If he changes the image the MAGIC_BIT
-        #          might also need to change.
-        # UPDATE to above warning alluding to Fedora18:
+
         # F19 images have the rootfs partition on p1
-        MAGIC_BIT=p1
+        # Centos7 images on p3 (p1 boot, p2 swap)
+        if [[ $DISTRO_NAME = "centos7" ]]; then
+            ROOT_PARTITON=p3
+        else
+            ROOT_PARTITON=p1
+        fi
+
         # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
         # loop device and creates it if it doesn't exist
         sudo losetup -f
+
         # XXX: Parsing stdout is dangerous, would like a better way to discover
         #      the device used for the image.
-        # NOTE: On F17 (parted-3.0-10.fc17.x86_64), partprobe of
-        #       /dev/loop0 does not create /dev/loop0p2, while kpartx at
-        #       least creates /dev/mapper/loop0p2.
-        LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
-        if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
-            echo "Error: Could not find /dev/mapper/$LOOPDEV"
+        ROOT_LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | \
+            awk "/loop[0-9]+$ROOT_PARTITON/ {print \$3}")
+        if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$ROOT_LOOPDEV ]; do sleep 1; done"; then
+            echo "Error: Could not find /dev/mapper/$ROOT_LOOPDEV"
             exit 1
         fi
-        EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
+        EACTION="sudo kpartx -d $WORKING/$RAW_FILE ; $EACTION"
         trap "$EACTION" EXIT
         mkdir $WORKING/mnt
-        sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
-        EACTION="sudo umount -f $WORKING/mnt;$EACTION"
+        sudo mount /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt
+        EACTION="sudo umount -f $WORKING/mnt ; $EACTION"
         trap "$EACTION" EXIT
+
+        # need to copy the contents of /boot into the image too, so
+        # mount it
+        if [[ $DISTRO_NAME = "centos7" ]]; then
+            BOOT_LOOPDEV=${ROOT_LOOPDEV/p3/p1}
+            sudo mount /dev/mapper/$BOOT_LOOPDEV $WORKING/mnt/boot
+            EACTION="sudo umount -f $WORKING/mnt/boot ; $EACTION"
+            trap "$EACTION" EXIT
+        fi
+
         # Chroot in so that we get the correct uid/gid
         sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
         mv $WORKING/tmp.tar $CACHED_TAR
