@@ -42,9 +42,9 @@ function install_grub2 {
 
     # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
     # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
-    GRUBNAME=`which grub-install` || echo "trying grub2-install"
+    GRUBNAME=$(which grub-install) || echo "trying grub2-install"
     if [ -z "$GRUBNAME" ]; then
-        GRUBNAME="bash -x `which grub2-install`"
+        GRUBNAME=$(which grub2-install)
     fi
 
     # If no GRUB2 is found, fallback to extlinux
