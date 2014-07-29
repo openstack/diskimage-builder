@@ -115,6 +115,7 @@ while true ; do
 done
 
 export DIB_IMAGE_CACHE=${DIB_IMAGE_CACHE:-~/.cache/image-create}
+mkdir -p $DIB_IMAGE_CACHE
 
 if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   echo "Re-execing to clear environment."
