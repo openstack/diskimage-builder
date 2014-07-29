@@ -44,7 +44,11 @@ if [ -n "$DIB_RHSM_USER" ] && [ -n "$DIB_RHSM_PASSWORD" ] ; then
             subscription-manager attach --pool $DIB_RHSM_POOL
         fi
         # optional repo required for diskimage-builder dependency
-        repos="--enable rhel-6-server-optional-rpms"
+        if [ "$DISTRO_NAME" == "rhel7" ]; then
+            repos="--enable rhel-7-server-optional-rpms"
+        else
+            repos="--enable rhel-6-server-optional-rpms"
+        fi
         if [[ -n "$DIB_RHSM_REPOS" ]]; then
             for repo in $DIB_RHSM_REPOS; do
                 repos="$repos --enable $repo"
