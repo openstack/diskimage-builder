@@ -26,15 +26,17 @@ IMAGE_ELEMENT=
 
 mk_build_dir
 mkdir -p $TMP_BUILD_DIR/mnt
-TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
+export TMP_HOOKS_PATH=/tmp
+export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
 
-echo "working in $TMP_MOUNT_PATH"
+echo "building ramdisk in $TMP_MOUNT_PATH"
 
 create_ramdisk_base
 populate_lib
 populate_busybox
 populate_init
 populate_udev
+SCRIPT_HOME=/tmp/in_target.d/bin TMP_HOOKS_PATH=/tmp/in_target.d run_d ramdisk-install
 finalise_image
 save_image /tmp/ramdisk
 cp /boot/vmlinuz-${KERNEL_VERSION} /tmp/kernel
