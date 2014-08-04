@@ -145,6 +145,12 @@ do_extra_package_install
 run_d_in_target install
 run_d_in_target post-install
 prepare_first_boot
+# ensure we do not have a lost+found directory in the root folder
+# that could cause copy to fail (it will be created again later
+# when creating the file system, if it needs such directory)
+if [ -e "$TMP_BUILD_DIR/mnt/lost+found" ]; then
+    sudo rm -rf "$TMP_BUILD_DIR/mnt/lost+found"
+fi
 # Free up /mnt
 unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
