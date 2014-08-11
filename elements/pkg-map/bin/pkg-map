@@ -60,7 +60,9 @@ def main():
 
     # Parse mapping data in this form using distro/family/default
     # Most specific takes priority (distro is most specific).
-    # Example for Nova and Glance (using fictitious name for Fedora)
+    # An empty package list can be provided.
+    # Example for Nova and Glance (using fictitious name for Fedora and SUSE
+    # and package mapping for SUSE family)
     # {
     #   "distro": {
     #     "fedora": {
@@ -72,7 +74,10 @@ def main():
     #     "redhat": {
     #       "nova_package": "openstack-nova",
     #       "glance_package": "openstack-glance"
-    #     }
+    #     },
+    #     "suse": {
+    #       "nova_package": ""
+    #    }
     #   },
     #   "default": {
     #     "nova_package": "nova",
@@ -92,6 +97,8 @@ def main():
         pkg_name = name_map.get(name)
         if pkg_name:
             print(pkg_name)
+        elif name in name_map:
+            continue
         else:
             err_msg = 'Missing package name for distro/element: %s/%s'
             print(err_msg % (args.distro, args.element))
