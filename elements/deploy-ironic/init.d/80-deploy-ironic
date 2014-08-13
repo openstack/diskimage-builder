@@ -26,11 +26,19 @@ if [ $? -ne 0 ]; then
   troubleshoot
 fi
 
-TOKEN_FILE=token-$DEPLOYMENT_ID
+if [ "$BOOT_METHOD" = "$VMEDIA_BOOT_TAG" ]; then
+  TOKEN_FILE="$VMEDIA_DIR/token"
+  if [ -f "$TOKEN_FILE" ]; then
+    TOKEN_HEADER="-H 'X-Auth-Token: $(cat $TOKEN_FILE)'"
+  else TOKEN_HEADER=""
+  fi
+else
+  TOKEN_FILE=token-$DEPLOYMENT_ID
 
-if tftp -r $TOKEN_FILE -g $BOOT_SERVER
-then TOKEN_HEADER="-H 'X-Auth-Token: `cat $TOKEN_FILE`'"
-else TOKEN_HEADER=""
+  if tftp -r $TOKEN_FILE -g $BOOT_SERVER
+    then TOKEN_HEADER="-H 'X-Auth-Token: $(cat $TOKEN_FILE)'"
+    else TOKEN_HEADER=""
+  fi
 fi
 
 DATA="'{\"address\":\"$BOOT_IP_ADDRESS\",\"key\":\"$DEPLOYMENT_KEY\",\"iqn\":\"$ISCSI_TARGET_IQN\",\"error\":\"$FIRST_ERR_MSG\"}'"
