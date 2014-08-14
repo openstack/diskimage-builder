@@ -46,22 +46,6 @@ function enable_interface() {
 
 }
 
-function disable_interface() {
-    local interface=$1
-
-    serialize_me
-    if [ "$CONF_TYPE" == "netscripts" ]; then
-        local IFCFG_FILE="/etc/sysconfig/network-scripts/ifcfg-$interface"
-        if [ -f "$IFCFG_FILE" ]; then
-            rm $IFCFG_FILE
-        else
-                echo "No link detected, skipping"
-        fi
-        else
-        echo "No link detected, skipping"
-    fi
-}
-
 function config_exists() {
     local interface=$1
     if [ "$CONF_TYPE" == "netscripts" ]; then
@@ -100,7 +84,7 @@ function inspect_interface() {
         if [ "$HAS_LINK" == "1" ] ; then
             enable_interface "$interface"
         else
-            disable_interface "$interface"
+            echo "No link detected, skipping"
         fi
     fi
 
