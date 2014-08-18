@@ -41,6 +41,7 @@ service_map = {
     'nova-scheduler': 'openstack-nova-scheduler',
     'nova-consoleauth': 'openstack-nova-consoleauth',
     'nova-compute': 'openstack-nova-compute',
+    'nova-novncproxy': 'openstack-nova-novncproxy',
     'openvswitch-switch': 'openvswitch',
     'rsync': 'rsyncd',
     'swift-proxy': 'openstack-swift-proxy',
