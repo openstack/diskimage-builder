@@ -23,8 +23,10 @@ Provides the following:
      + suse: includes the opensuse distro
 
    The most specific section takes priority.
+   An empty package list can be provided.
    Example for Nova and Glance (NOTE: using fictitious package names
-   for Fedora to provide a good example!)
+   for Fedora and package mapping for suse family to provide a good
+   example!)
 
    Example format:
     {
@@ -38,6 +40,9 @@ Provides the following:
         "redhat": {
           "nova_package": "openstack-nova",
           "glance_package": "openstack-glance"
+        },
+        "suse": {
+          "nova_package": ""
         }
       },
       "default": {
@@ -59,6 +64,10 @@ Provides the following:
    pkg-map --element nova-compute --distro ubuntu nova_package
 
    Returns: nova
+
+   pkg-map --element nova-compute --distro opensuse nova_package
+
+   Returns:
 
  * This output can be used to filter what other tools actually install
    (install-packages can be modified to use this for example)
