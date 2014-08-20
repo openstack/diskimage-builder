@@ -11,7 +11,12 @@ from git and pbr from a tarball would be
 
 *File : elements/custom-element/source-repository-pbr*
 
-    pbr tar /usr/local/pbr http://tarballs.openstack.org/pbr/pbr-master.tar.gz
+    # <ref> is defined as "*" by default, although this behavior is deprecated.
+    # A value of "." extracts the entire contents of the tarball.
+    # A value of "*" extracts the contents within all its subdirectories.
+    # A value of a subdirectory path may be used to extract only its contents.
+    # A value of a specific file path within the archive is not supported.
+    pbr tar /usr/local/pbr http://tarballs.openstack.org/pbr/pbr-master.tar.gz .
 
 diskimage-builder will then retrieve the sources specified and place them
 at the directory \<destination\>
@@ -49,9 +54,7 @@ may contain environment variables.
 
 Git sources will be cloned to \<destination\>
 
-Tarballs will be extracted to \<destination\>. Tarballs should contain a
-single topleval directory, regardless of the name of this top level directory
-it will be renamed to \<destination\>
+Tarballs will be extracted to \<destination\>.
 
 The package type indicates the element should install from packages onto the
 root filesystem of the image build during the install.d phase.
