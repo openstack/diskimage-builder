@@ -32,6 +32,8 @@ service_map = {
     'heat-api-cfn': 'openstack-heat-api-cfn',
     'heat-api-cloudwatch': 'openstack-heat-api-cloudwatch',
     'heat-engine': 'openstack-heat-engine',
+    'ironic-api': 'openstack-ironic-api',
+    'ironic-conductor': 'openstack-ironic-conductor',
     'keystone': 'openstack-keystone',
     'libvirt-bin': 'libvirtd',
     'mysql': ['mysqld', 'mariadb'],
