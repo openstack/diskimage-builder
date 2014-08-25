@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+function post_process()
+{
+    mkimage -A $1 -O linux -T kernel -C none -a $UBOOT_KERNEL_ADDR -e $UBOOT_KERNEL_EP -n "Kernel" -d $KERNEL uImage
+    mv uImage $KERNEL
+    mkimage -A $1 -O linux -T ramdisk -a 0 -n "RAMdisk" -C gzip -d $RAMDISK uInitrd
+    mv uInitrd $RAMDISK
+}
+
+UBOOT_KERNEL_ADDR=${UBOOT_KERNEL_ADDR:-0x80000}
+UBOOT_KERNEL_EP=${UBOOT_KERNEL_EP:-0x80000}
+[ -n "$TARGET_ROOT" ]
+
+# Check if RAMDISK is being built.
+if [ -f "$TARGET_ROOT/tmp/ramdisk" ] ; then
+    KERNEL="$TARGET_ROOT/tmp/kernel"
+    RAMDISK="$TARGET_ROOT/tmp/ramdisk"
+else
+    source "$_LIB/img-functions"
+    # Dig up the initrd and kernel to use.
+    select_boot_kernel_initrd "$TARGET_ROOT"
+    KERNEL="$TARGET_ROOT/boot/$KERNEL"
+    RAMDISK="$TARGET_ROOT/boot/$RAMDISK"
+fi
+
+case "$ARCH" in
+    arm*)
+        post_process arm
+        ;;
+esac
