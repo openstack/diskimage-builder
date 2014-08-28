@@ -97,7 +97,7 @@ if [ -b $mount_device ]; then
     sudo umount $UNTAR_TO_LOCATION/mnt
     sudo qemu-nbd -d $mount_device
 else
-    echo "Unable to extract openSuSe Image."
+    echo "Unable to extract openSUSE Image."
     exit 1
 fi
 # remove the temp directory

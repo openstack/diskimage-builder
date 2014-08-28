@@ -37,8 +37,8 @@ function cleanup_old_kernel_initrd()
 select_boot_kernel_initrd $TARGET_ROOT
 BOOTDIR=$TARGET_ROOT/boot
 
-# Select_boot_kernel has support for redhat/debian/openSuSE
-# openSuSE has a built-in logic to delete old kernels
+# Select_boot_kernel has support for redhat/debian/openSUSE
+# openSUSE has a built-in logic to delete old kernels
 # Hence cleanup_old_kernel will be used only for redhat and debian derived distros.
 if [ -f $TARGET_ROOT/etc/redhat-release -o -f $TARGET_ROOT/etc/debian_version ] ; then
     cleanup_old_kernel_initrd

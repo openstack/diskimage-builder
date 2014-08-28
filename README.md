@@ -57,7 +57,7 @@ Installation
 * Clone the repository locally, then add bin to your path.
 
 * Make sure you have qemu-img (qemu-utils package on Ubuntu/Debian,
-  qemu on Fedora/RHEL/OpenSUSE) and kpartx installed.
+  qemu on Fedora/RHEL/openSUSE) and kpartx installed.
 
 Invocation
 ==========
