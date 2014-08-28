@@ -26,38 +26,27 @@ export PYPI\_MIRROR\_URL=http://site/pypi/Ubuntu-13.10
 export PYPI\_MIRROR\_URL\_1=http://site/pypi/
 export PYPI\_MIRROR\_URL\_2=file:///tmp/pypi
 
-[pypi-mirror](https://git.openstack.org/cgit/openstack-infra/pypi-mirror) can
-be useful in making a partial PyPI mirror suitable for building images. For
+[devpi-server](https://git.openstack.org/cgit/openstack-infra/pypi-mirro://pypi.python.org/pypi/devpi-server)
+can be useful in making a partial PyPI mirror suitable for building images. For
 instance:
 
- * sudo apt-get install  libxml2-dev libxslt-dev libmysqlclient-dev libpq-dev \
-   libnspr4-dev pkg-config libsqlite3-dev libzmq-dev libffi-dev libldap2-dev \
-   libsasl2-dev
+ * pip install -U devpi
 
- * pip install git+https://git.openstack.org/openstack-infra/pypi-mirror
+ * devpi-server quickstart
 
- * cat << EOF > mirror.yaml
-   cache-root: /home/USER/.cache/image-create/pypi/download
+ * devpi use http://machinename:3141
 
-   mirrors:
-    - name: openstack
-      projects:
-        - https://git.openstack.org/openstack/requirements
-      output: /home/USER/.cache/image-create/pypi/mirror
-   EOF
+* Re-export your variables to point at the new mirror:
 
- * mkdir -p /home/USER/.cache/image-create/pypi/{download,mirror}
+    export PYPI\_MIRROR\_URL=http://machinename:3141/
+    unset PYPI\__MIRROR\_URL\_1
+    unset PYPI\__MIRROR\_URL\_1
 
- * run-mirror -b remotes/origin/master --verbose -c mirror.yaml
-   # This creates and updates the mirror.
+The next time packages are installed, they'll be cached on the local devpi
+server; subsequent runs pointed at the same mirror will use the local cache if
+the upstream can't be contacted.
 
-If you have additional packages that are not identified in the global openstack
-requirements project, you can include them:
-
- * pip install -d ~/.cache/image-create/pypi/download/pip/openstack \
-   heat-cfntools distribute os-apply-config
-   run-mirror -b remotes/origin/master --verbose -c mirror.yaml --no-download
-
-A dedicated user with no privileges may be desirable when running this for
-unattended installs, since pypi-mirror will compile fairly arbitrary code from
-the internet.
+Note that this process only has the server running temporarily; see
+[Quickstart: Permanent install on
+server/laptop](http://doc.devpi.net/latest/quickstart-server.html) guide from
+the devpi developers for more information on a more permanent setup.
