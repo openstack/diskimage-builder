@@ -20,7 +20,7 @@ set -eux
 set -o pipefail
 
 # Truncate /var/log files in preparation for first boot
-sudo find $TARGET_ROOT/var/log -type f -delete
+sudo find $TARGET_ROOT/var/log -type f -exec cp /dev/null '{}' \;
 
 # also /root logs
 sudo find $TARGET_ROOT/root -name \*.log -type f -delete
