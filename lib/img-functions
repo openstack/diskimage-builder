@@ -164,8 +164,8 @@ function select_boot_kernel_initrd () {
         KERNEL=${KERNEL:-$(basename `ls -1rv $BOOTDIR/vmlinuz* | head -1`)}
         RAMDISK=${RAMDISK:-$(basename `ls -1rv $BOOTDIR/initrd* | head -1`)}
     elif [ -f $TARGET_ROOT/etc/SuSE-release ]; then
-        KERNEL=vmlinuz
-        RAMDISK=initrd
+        KERNEL=$(basename $(readlink -e $BOOTDIR/vmlinuz))
+        RAMDISK=$(basename $(readlink -e $BOOTDIR/initrd))
     else
         echo "ERROR: Unable to detect operating system"
         exit 1
