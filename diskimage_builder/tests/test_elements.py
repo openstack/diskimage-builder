@@ -40,7 +40,7 @@ def load_tests(loader, tests, pattern):
         element_dir = os.path.join(elements_dir, element)
         tests_path = os.path.join(element_dir, "tests")
         if (not os.path.isdir(tests_path) or
-            not os.path.isfile(os.path.join(tests_path, '__init__.py'))):
+                not os.path.isfile(os.path.join(tests_path, '__init__.py'))):
             continue
         # Create a 'package' for the element, so it can be imported.
         package = StubPackage()
