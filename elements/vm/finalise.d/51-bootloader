@@ -16,19 +16,34 @@ function install_extlinux {
 
     echo "Installing Extlinux..."
 
-    MBR=/usr/share/syslinux/mbr.bin
-    if [ ! -f $MBR ]; then
-        MBR=/usr/lib/syslinux/mbr.bin
-        if [ ! -f $MBR ]; then
-            echo "mbr.bin (from SYSLINUX) not found."
-            exit 1
+    # Find and install mbr.bin
+    for MBR in /usr/share/syslinux/mbr.bin /usr/lib/syslinux/mbr.bin \
+        /usr/lib/extlinux/mbr.bin /usr/lib/EXTLINUX/mbr.bin ; do
+        if [ -f $MBR ]; then
+            break
         fi
+    done
+    if [ ! -f $MBR ]; then
+        echo "mbr.bin (from EXT/SYSLINUX) not found."
+        exit 1
     fi
 
     dd if=$MBR of=$BOOT_DEV
 
-    mkdir -p /boot/syslinux
-    extlinux --install /boot/syslinux
+    # Find any pre-created extlinux install directory
+    for EXTDIR in /boot/extlinux /boot/syslinux ; do
+        if [ -d $EXTDIR ] ; then
+            break
+        fi
+    done
+    if [ ! -d $EXTDIR ] ; then
+        # No install directory found so default to /boot/syslinux
+        EXTDIR=/boot/syslinux
+        mkdir -p $EXTDIR
+    fi
+
+    # Finally install extlinux
+    extlinux --install $EXTDIR
 }
 
 function install_grub2 {
