@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+DIB_ELEMENT_MANIFEST_PATH=${DIB_ELEMENT_MANIFEST_PATH:-"$DIB_MANIFEST_IMAGE_DIR/dib-element-manifest"}
+sudo mkdir -p $TMP_MOUNT_PATH/$(dirname $DIB_ELEMENT_MANIFEST_PATH)
+sudo /bin/bash -c "echo $IMAGE_ELEMENT | tr ' ' '\n' > $TMP_MOUNT_PATH/$DIB_ELEMENT_MANIFEST_PATH"
