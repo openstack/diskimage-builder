@@ -3,6 +3,9 @@
     "redhat": {
       "vlan_package": "vconfig",
       "iscsi_package": "iscsi-initiator-utils"
+    },
+    "suse": {
+      "dkms_package": ""
     }
   },
   "default": {
