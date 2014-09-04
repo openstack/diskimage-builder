@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+SCRIPTNAME=$(basename $0)
+function show_options () {
+    echo "Usage: $SCRIPTNAME -d <directory>"
+    echo
+    echo "Options:"
+    echo "    -d          -- directory to search for package-uninstalls-* files"
+    exit 1
+}
+
+TEMP=$(getopt -o hd: -n $SCRIPTNAME -- "$@")
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+eval set -- "$TEMP"
+
+WORKDIR=
+
+while true ; do
+    case "$1" in
+        -d) WORKDIR=$2; shift 2;;
+        -h) show_options;;
+        --) shift ; break ;;
+        *) echo "Error: unsupported option $1."; exit 1;;
+    esac
+done
+
+if [ -z "$WORKDIR" ]; then
+    show_options
+fi
+
+PACKAGES=
+
+for PACKAGEFILE in $(find $WORKDIR -maxdepth 1 -name "package-installs-*" ); do
+    basefile=$(basename $PACKAGEFILE)
+    element_name=${basefile#"package-installs-"}
+    while read pkg; do
+        if [ -z "$pkg" ]; then
+            continue
+        fi
+        # Ignore comments
+        if [ ${pkg:0:1} = "#" ]; then
+            continue
+        fi
+        if [ ! ${pkg:0:1} = "-" ]; then
+            continue
+        fi
+
+        if [ -e /usr/share/pkg-map/$element_name ]; then
+            # map the package to its true name
+            pkg=$(pkg-map --element $element_name $pkg)
+        fi
+
+        pkg=${pkg:1}
+        PACKAGES="$PACKAGES $pkg"
+    done < $PACKAGEFILE
+done
+
+install-packages -e $PACKAGES
