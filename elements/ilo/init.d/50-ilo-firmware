@@ -1,0 +1,22 @@
+if [ -d /ilo ]; then
+    find /ilo -type f \( -name flash_ilo3 -o -name flash_ilo4 \) | while read FWNAME
+    do
+        cd "$(dirname "$FWNAME")"
+        logname="$(basename "$(dirname "$FWNAME")").log"
+        echo Running $FWNAME
+        "$FWNAME" --silent --log "$logname"
+        result=$?
+        echo Finished $FWNAME with result $?
+        cat "$logname"
+        #avoid leaking space during large runs
+        rm "$logname"
+        if [ $result -eq 2 ]; then
+            echo "Firmware already up to date"
+        elif [ $result -eq 4 ]; then
+            echo "Firmware not applicable to machine"
+        elif [ $result -ne 0 ]; then
+            echo "Error applying firmware"
+            troubleshoot
+        fi
+    done
+fi

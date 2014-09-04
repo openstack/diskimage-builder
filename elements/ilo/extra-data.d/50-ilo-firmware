@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ -z "${DIB_ILO_FIRMWARE_PATH:-}" ]; then
+    echo "DIB_ILO_FIRMWARE_PATH not set in ilo element" >&2
+    exit 0
+fi
+
+if [ ! -d "${DIB_ILO_FIRMWARE_PATH}" ]; then
+    echo "Firmware path not found: ${DIB_ILO_FIRMWARE_PATH}"
+    exit 1
+fi
+
+# We copy to /tmp because its temporary - we do a mv later into the initramfs
+# image.
+mkdir -p "$TMP_MOUNT_PATH/tmp/ilo/"
+find "${DIB_ILO_FIRMWARE_PATH}" -type f \( -name '*.scexe' -o -name '*.exe' \) | while read FWNAME
+do
+    TARGET="$TMP_MOUNT_PATH/tmp/ilo/$(basename "$FWNAME")"
+    echo Unpacking $FWNAME to $TARGET
+    bash "$FWNAME" "--unpack=$TARGET"
+    echo Done
+done
