@@ -1,7 +1,13 @@
-#!/bin/bash
+# On a fresh Fedora 18 install you might have to update audit in order to
+# fix a conflict with a file from the glibc package.
+# https://bugzilla.redhat.com/show_bug.cgi?id=894307
+audit
 
-set -eu
-set -o pipefail
+# The version of openssl shipped in the fedora cloud image is no longer
+# compatible with new python environments installed by virtualenv, so we need
+# to update it first.
+# See https://bugs.launchpad.net/diskimage-builder/+bug/1254879
+openssl
 
 # FIXME: To avoid conflict between the pyOpenSSL installed via python-pip
 # and pyOpenSSL installed via yum, we are going to sort it out installing
@@ -11,4 +17,8 @@ set -o pipefail
 # dependency of the python-paste package needed for the heat element,
 # this seems to be conflicting and causing the image building process to
 # fail. The problem is hapenning on a Fedora 18 system.
-install-packages python-pyopenssl
+python-pyopenssl
+
+# Workaround for:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1066983
+vim-minimal
