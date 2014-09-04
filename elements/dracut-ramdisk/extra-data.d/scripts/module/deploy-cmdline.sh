@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # NOTE(bnemec): Dracut doesn't like it if we enable these
-# dib-lint: disable=setu sete setpipefail
+# dib-lint: disable=setu sete setpipefail dibdebugtrace
 
 # We never let Dracut boot off the specified root anyway, so all
 # we need is a value it will accept.

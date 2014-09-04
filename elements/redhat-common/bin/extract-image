@@ -3,6 +3,9 @@
 # Intended to be called from the root.d cloud-image script as follows:
 # $TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_LOCATION $CACHED_IMAGE
 
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
 set -eu
 set -o pipefail
 

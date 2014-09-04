@@ -2,6 +2,10 @@
 # This script is for RHEL6 use only.  For RHEL7, please see the readme for
 # documentation on which scripts are used for registration and the variables
 # needed to enable the registration process.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
 set -eu
 set -o pipefail
 

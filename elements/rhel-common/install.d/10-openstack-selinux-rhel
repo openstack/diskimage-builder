@@ -1,7 +1,11 @@
 #!/bin/bash
 # Install openstack-selinux if it is available
 # dib-lint: disable=sete
-set -ux
+
+if [ "${DIB_DEBUG_TRACE:-1}" -gt 0 ]; then
+    set -x
+fi
+set -u
 set -o pipefail
 
 HAS_PACKAGE=$(yum list | grep openstack-selinux)

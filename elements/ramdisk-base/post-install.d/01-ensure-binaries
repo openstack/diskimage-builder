@@ -1,7 +1,10 @@
 #!/bin/bash
 # Ensure that all binaries listed in ramdisk elements, exist
 
-set -eux
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
 set -o pipefail
 
 export TARGET_DIR="/tmp/in_target.d/"

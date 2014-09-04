@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Dracut is bash too, and it doesn't play nicely with our usual sets
-# dib-lint: disable=setu sete setpipefail
+# dib-lint: disable=setu sete setpipefail dibdebugtrace
 
 check() {
     return 0

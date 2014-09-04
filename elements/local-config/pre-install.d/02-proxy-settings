@@ -2,9 +2,11 @@
 # Save the HTTP/[S] and noproxy settings if available.
 # XXX: Obviously not suitable for downloadable images.
 
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
 set -eu
 set -o pipefail
-set -o xtrace
 
 have_apt=
 have_yum=
