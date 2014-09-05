@@ -138,8 +138,8 @@ function select_boot_kernel_initrd () {
     TARGET_ROOT=$1
     BOOTDIR=$TARGET_ROOT/boot
     if [ -n "${DIB_BAREMETAL_KERNEL_PATTERN:-}" -a -n "${DIB_BAREMETAL_INITRD_PATTERN:-}" ]; then
-        KERNEL=$(basename `eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_KERNEL_PATTERN}" | head -1`)
-        RAMDISK=$(basename `eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_INITRD_PATTERN}" | head -1`)
+        KERNEL=$(basename $(eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_KERNEL_PATTERN}" | head -1))
+        RAMDISK=$(basename $(eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_INITRD_PATTERN}" | head -1))
     elif [ -f $TARGET_ROOT/etc/redhat-release ]; then
 
         # Prioritize PAE if present
@@ -152,17 +152,17 @@ function select_boot_kernel_initrd () {
 
         KERNEL=$(basename $KERNEL)
         KERNEL_VERSION=${KERNEL#vmlinuz-}
-        RAMDISK=$(basename `ls $BOOTDIR/initramfs-$KERNEL_VERSION.img` || echo "")
+        RAMDISK=$(basename $(ls $BOOTDIR/initramfs-$KERNEL_VERSION.img) || echo "")
         if [ ! $RAMDISK ]; then
             echo "Can't find an initramfs for the $KERNEL_VERSION version of the kernel."
             exit 1
         fi
     elif [ -f $TARGET_ROOT/etc/debian_version ]; then
-        KERNEL=$(basename `ls -1rv $BOOTDIR/vmlinuz*generic | head -1`)
-        RAMDISK=$(basename `ls -1rv $BOOTDIR/initrd*generic | head -1`)
+        KERNEL=$(basename $(ls -1rv $BOOTDIR/vmlinuz*generic | head -1))
+        RAMDISK=$(basename $(ls -1rv $BOOTDIR/initrd*generic | head -1))
         # in case files with "generic" suffix were not found, fall back to default
-        KERNEL=${KERNEL:-$(basename `ls -1rv $BOOTDIR/vmlinuz* | head -1`)}
-        RAMDISK=${RAMDISK:-$(basename `ls -1rv $BOOTDIR/initrd* | head -1`)}
+        KERNEL=${KERNEL:-$(basename $(ls -1rv $BOOTDIR/vmlinuz* | head -1))}
+        RAMDISK=${RAMDISK:-$(basename $(ls -1rv $BOOTDIR/initrd* | head -1))}
     elif [ -f $TARGET_ROOT/etc/SuSE-release ]; then
         KERNEL=$(basename $(readlink -e $BOOTDIR/vmlinuz))
         RAMDISK=$(basename $(readlink -e $BOOTDIR/initrd))
