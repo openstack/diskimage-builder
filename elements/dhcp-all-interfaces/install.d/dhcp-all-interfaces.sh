@@ -65,9 +65,9 @@ function inspect_interface() {
     echo -n "Inspecting interface: $interface..."
     if config_exists $interface; then
         echo "Has config, skipping."
-        elif [ "$mac_addr_type" != "0" ]; then
+    elif [ "$mac_addr_type" != "0" ]; then
         echo "Device has generated MAC, skipping."
-        else
+    else
         ip link set dev $interface up &>/dev/null
         HAS_LINK="$(get_if_link $interface)"
 
@@ -79,7 +79,7 @@ function inspect_interface() {
             else
                 sleep 1
             fi
-                TRIES=$(( TRIES - 1 ))
+            TRIES=$(( TRIES - 1 ))
         done
         if [ "$HAS_LINK" == "1" ] ; then
             enable_interface "$interface"
