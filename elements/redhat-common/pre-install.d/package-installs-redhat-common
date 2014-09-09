@@ -1,0 +1,5 @@
+gettext
+-grub2
+grub2-tools
+os-prober
+system-logos

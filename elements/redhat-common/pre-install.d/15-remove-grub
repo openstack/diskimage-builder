@@ -3,9 +3,8 @@
 set -eu
 set -o pipefail
 
+# Must manually remove grub2 here, otherwise the download below does not work.
 yum remove -y grub2
-# Install grub2 dependencies to minimise packages installed during finalise.
-install-packages grub2-tools gettext os-prober system-logos
 
 # Remove all old versions of grub2 from the yum cache and then ensure the
 # latest version is in the cache.

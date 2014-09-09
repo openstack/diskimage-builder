@@ -8,5 +8,3 @@ NET_NAME_SLOT_FILE="/etc/udev/rules.d/80-net-name-slot.rules"
 if [ -h $NET_NAME_SLOT_FILE ]; then
     rm $NET_NAME_SLOT_FILE
 fi
-
-install-packages biosdevname

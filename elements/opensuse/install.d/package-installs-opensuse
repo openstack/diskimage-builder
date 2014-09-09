@@ -1,0 +1,6 @@
+# sudo is not included by default.
+sudo
+# install kernel package needed by dkms.
+kernel-devel
+# lsb-release is not included by default.
+lsb-release

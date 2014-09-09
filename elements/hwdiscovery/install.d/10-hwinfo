@@ -1,8 +1,0 @@
-#!/bin/bash
-# Support for hard ware discovery
-
-set -eu
-set -o pipefail
-set -o xtrace
-
-install-packages hwinfo
