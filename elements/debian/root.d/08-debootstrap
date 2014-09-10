@@ -98,7 +98,7 @@ iface eth0 inet dhcp
 EOF
 
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
-    sudo tar -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL .
+    sudo tar -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL --exclude='./tmp/*' .
 fi
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings
