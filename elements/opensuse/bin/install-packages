@@ -19,6 +19,7 @@ set -o pipefail
 
 EXTRA_ARGS=""
 MAP_ELEMENT=""
+ACTION=install
 
 SCRIPTNAME=$(basename $0)
 function show_options () {
@@ -26,6 +27,7 @@ function show_options () {
     echo
     echo "Options:"
     echo "    -u          -- update all packages"
+    echo "    -e          -- erase/remove packages"
     echo "    -d          -- download the packages only"
     echo "    -m          -- use custom element package map (Example: -m nova)"
     exit 0
@@ -43,6 +45,7 @@ eval set -- "$TEMP"
 while true ; do
     case "$1" in
         -u) run_zypper dist-upgrade; exit 0;;
+        -e) ACTION="remove"; shift;;
         -d) EXTRA_ARGS="--download-only"; shift;;
         -m) MAP_ELEMENT=$2; shift 2;;
         -h) show_options;;
@@ -84,6 +87,6 @@ if [ -n "$WHITELIST" ]; then
     if [ -z "${PKGS}" ]; then
         echo 'No packages need to be installed'
     else
-        run_zypper install $EXTRA_ARGS $PKGS
+        run_zypper $ACTION $EXTRA_ARGS $PKGS
     fi
 fi
