@@ -23,6 +23,11 @@ import sys
 # TripleO service name on the left, Fedora/RHEL on the right.
 service_map = {
     'apache2': 'httpd',
+    'ceilometer-api': 'openstack-ceilometer-api',
+    'ceilometer-agent-central': 'openstack-ceilometer-central',
+    'ceilometer-agent-compute': 'openstack-ceilometer-compute',
+    'ceilometer-agent-notification': 'openstack-ceilometer-notification',
+    'ceilometer-collector': 'openstack-ceilometer-collector',
     'cinder-api': 'openstack-cinder-api',
     'cinder-scheduler': 'openstack-cinder-scheduler',
     'cinder-volume': 'openstack-cinder-volume',
