@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+sudo sed -i 's/keepcache=1/keepcache=0/' /etc/yum.conf
+sudo sed -i 's/cachedir=\/tmp\/yum/cachedir=\/var\/cache\/yum/' /etc/yum.conf
