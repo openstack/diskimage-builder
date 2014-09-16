@@ -80,9 +80,9 @@ EOF
     sudo install -d -m 0755 -o root -g root ${TARGET_ROOT}/etc/sudoers.d
     sudo sh -c "echo 'debian ALL=(ALL) NOPASSWD:ALL' > ${TARGET_ROOT}/etc/sudoers.d/debian-cloud-init"
     sudo chmod 0440 ${TARGET_ROOT}/etc/sudoers.d/debian-cloud-init
-    sudo sh -c "echo 'proc /proc proc nodev,noexec,nosuid 0 0
-LABEL=cloudimg-rootfs / ext4 errors=remount-ro 0 1
-' > ${TARGET_ROOT}/etc/fstab"
+    sudo sh -c "echo \"proc /proc proc nodev,noexec,nosuid 0 0
+LABEL=${DIB_ROOT_LABEL} / ext4 errors=remount-ro 0 1
+\" > ${TARGET_ROOT}/etc/fstab"
     sudo sh -c "echo 'blacklist pcspkr' > ${TARGET_ROOT}/etc/modprobe.d/blacklist.conf"
     sudo sh -c "echo 'debian' > ${TARGET_ROOT}/etc/hostname"
 

@@ -38,6 +38,6 @@ DEFAULT linux
 
 LABEL linux
     KERNEL /boot/$KERNEL
-    APPEND ro root=LABEL=cloudimg-rootfs console=tty0 console=ttyS0,115200 nofb nomodeset vga=normal
+    APPEND ro root=LABEL=${DIB_ROOT_LABEL} console=tty0 console=ttyS0,115200 nofb nomodeset vga=normal
     INITRD /boot/$RAMDISK
 _EOF_"

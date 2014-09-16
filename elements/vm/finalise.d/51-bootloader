@@ -166,12 +166,12 @@ function install_grub2 {
     # force use of a LABEL:
     # NOTE: Updating the grub config by hand once deployed should work, its just
     # prepping it in a different environment that needs fiddling.
-    sed -i "s%$PART_DEV%LABEL=cloudimg-rootfs%" $GRUB_CFG
-    sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label cloudimg-rootfs%" $GRUB_CFG
-    sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=cloudimg-rootfs%" $GRUB_CFG
+    sed -i "s%$PART_DEV%LABEL=${DIB_ROOT_LABEL}%" $GRUB_CFG
+    sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label ${DIB_ROOT_LABEL}%" $GRUB_CFG
+    sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=${DIB_ROOT_LABEL}%" $GRUB_CFG
     if [ "$DIST" = 'Fedora' ] ; then
         if [ $(lsb_release -rs) = '19' ]; then
-            sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=cloudimg-rootfs%" /etc/fstab
+            sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=${DIB_ROOT_LABEL}%" /etc/fstab
         fi
         # Fix efi specific instructions in grub config file
         if [ -d /sys/firmware/efi ]; then

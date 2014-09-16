@@ -6,4 +6,4 @@ set -o pipefail
 # Fedora 18 sets up for root to have a label of "_/"
 # Fedora 19 sets up for root to have a UUID
 # This regex will catch both
-sed -i "s%.*\s\/\s%LABEL=cloudimg-rootfs / %" /etc/fstab
+sed -i "s%.*\s\/\s%LABEL=${DIB_ROOT_LABEL} / %" /etc/fstab

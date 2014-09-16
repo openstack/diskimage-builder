@@ -62,6 +62,7 @@ function show_options () {
     echo "    --offline -- do not update cached resources"
     echo "    --qemu-img-options -- option flags to be passed directly to qemu-img."
     echo "       Options need to be comma separated, and follow the key=value pattern."
+    echo "    --root-label label -- label for the root filesystem.  Defaults to 'cloudimg-rootfs'."
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
         echo "    -p package[,package,package] -- list of packages to install in the image"
@@ -85,7 +86,8 @@ function show_options () {
 
 INSTALL_PACKAGES=""
 COMPRESS_IMAGE="true"
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options: -n $SCRIPTNAME -- "$@"`
+DIB_ROOT_LABEL=""
+TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options:,root-label: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -109,6 +111,7 @@ while true ; do
         --no-tmpfs) shift; export DIB_NO_TMPFS=1;;
         --offline) shift; export DIB_OFFLINE=1;;
         --qemu-img-options) QEMU_IMG_OPTIONS=$2; shift 2;;
+        --root-label) export DIB_ROOT_LABEL=$2; shift 2;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -135,9 +138,21 @@ fi
 arg_to_elements "$@"
 
 export IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPE}}
+# FS_TYPE isn't available until after we source img-defaults
+if [ -z "$DIB_ROOT_LABEL" ]; then
+    # NOTE(bnemec): XFS has a limit of 12 characters for filesystem labels
+    # Not changing the default for other filesystems to maintain backwards compatibility
+    if [ "$FS_TYPE" = "xfs" ]; then
+        DIB_ROOT_LABEL="img-rootfs"
+    else
+        DIB_ROOT_LABEL="cloudimg-rootfs"
+    fi
+fi
 
 mk_build_dir
 create_base
+# This variable needs to be propagated into the chroot
+echo "export DIB_ROOT_LABEL=\"${DIB_ROOT_LABEL}\"" > $TMP_HOOKS_PATH/environment.d/10-dib-root-label.bash
 run_d extra-data
 # Run pre-install scripts. These do things that prepare the chroot for package installs
 run_d_in_target pre-install
@@ -184,7 +199,7 @@ LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
 export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
 export IMAGE_BLOCK_DEVICE=$LOOPDEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
-sudo mkfs $MKFS_OPTS -t $FS_TYPE -L cloudimg-rootfs ${IMAGE_BLOCK_DEVICE}
+sudo mkfs $MKFS_OPTS -t $FS_TYPE -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 mkdir $TMP_BUILD_DIR/mnt
 sudo mount ${IMAGE_BLOCK_DEVICE} $TMP_BUILD_DIR/mnt
 sudo mv -t $TMP_BUILD_DIR/mnt ${TMP_BUILD_DIR}/built/*
