@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# This script is for RHEL6 use only.  For RHEL7, please see the readme for
+# documentation on which scripts are used for registration and the variables
+# needed to enable the registration process.
 set -eu
 set -o pipefail
 

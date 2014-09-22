@@ -1,0 +1,119 @@
+#!/bin/bash
+set -eux
+set -o pipefail
+
+REG_ACTIVATION_KEY="$(os-apply-config --key rh_registration.activation_key --type raw --key-default '')"
+REG_AUTO_ATTACH="$(os-apply-config --key rh_registration.auto_attach --type raw --key-default 'true')"
+REG_BASE_URL="$(os-apply-config --key rh_registration.base_url --type raw --key-default '')"
+REG_ENVIRONMENT="$(os-apply-config --key rh_registration.environment --type raw --key-default '')"
+REG_FORCE="$(os-apply-config --key rh_registration.force --type raw --key-default '')"
+REG_MACHINE_NAME="$(os-apply-config --key rh_registration.machine_name --type raw --key-default '')"
+REG_ORG="$(os-apply-config --key rh_registration.org --type raw --key-default '')"
+REG_PASSWORD="$(os-apply-config --key rh_registration.password --type raw --key-default '')"
+REG_POOL_ID="$(os-apply-config --key rh_registration.poolid --type raw --key-default '')"
+REG_RELEASE="$(os-apply-config --key rh_registration.release --type raw --key-default '')"
+REG_REPOS="$(os-apply-config --key rh_registration.repos --type raw --key-default '')"
+REG_SAT_URL="$(os-apply-config --key rh_registration.satellite_url --type raw --key-default '')"
+REG_SERVER_URL="$(os-apply-config --key rh_registration.server_url --type raw --key-default '')"
+REG_SERVICE_LEVEL="$(os-apply-config --key rh_registration.service_level --type raw --key-default '')"
+REG_USER="$(os-apply-config --key rh_registration.user --type raw --key-default '')"
+REG_TYPE="$(os-apply-config --key rh_registration.type --type raw --key-default '')"
+REG_METHOD="$(os-apply-config --key rh_registration.method --type raw --key-default '')"
+
+opts=
+attach_opts=
+repos="repos --enable rhel-7-server-rpms"
+satellite_repo="rhel-7-server-rh-common-beta-rpms"
+if [ -n "${REG_AUTO_ATTACH:-}" ]; then
+    opts="$opts --auto-attach"
+
+    if [ -n "${REG_SERVICE_LEVEL:-}" ]; then
+        opts="$opts --servicelevel $REG_SERVICE_LEVEL"
+    fi
+
+    if [ -n "${REG_RELEASE:-}" ]; then
+        opts="$opts --release=$REG_RELEASE"
+    fi
+else
+    if [ -n "${REG_SERVICE_LEVEL:-}" ]; then
+        echo "WARNING: REG_SERVICE_LEVEL set without REG_AUTO_ATTACH."
+    fi
+
+    if [ -n "${REG_RELEASE:-}" ]; then
+        echo "WARNING: REG_RELEASE set without REG_AUTO_ATTACH."
+    fi
+
+    if [ -n "${REG_POOL_ID:-}" ]; then
+        attach_opts="$attach_opts --pool=$REG_POOL_ID"
+    fi
+fi
+
+if [ -n "${REG_BASE_URL:-}" ]; then
+    opts="$opts --baseurl=$REG_BASE_URL"
+fi
+
+if [ -n "${REG_ENVIRONMENT:-}" ]; then
+    opts="$opts --env=$REG_ENVIRONMENT"
+fi
+
+if [ -n "${REG_FORCE:-}" ]; then
+    opts="$opts --force"
+fi
+
+if [ -n "${REG_SERVER_URL:-}" ]; then
+    opts="$opts --serverurl=$REG_SERVER_URL"
+fi
+
+if [ -n "${REG_USER:-}" ]; then
+    opts="$opts --username $REG_USER"
+fi
+
+if [ -n "${REG_PASSWORD:-}" ]; then
+    opts="$opts --password $REG_PASSWORD"
+fi
+
+if [ -n "${REG_MACHINE_NAME:-}" ]; then
+    opts="$opts --name $REG_MACHINE_NAME"
+fi
+
+if [ -n "${REG_ORG:-}" ]; then
+    opts="$opts --org $REG_ORG"
+fi
+case "${REG_METHOD:-}" in
+    portal)
+        if [ -n "${REG_ACTIVATION_KEY:-}" ]; then
+            echo "WARNING: Activation keys are not supported by the customer portal at this time."
+        fi
+
+        if [ -n "${REG_REPOS:-}" ]; then
+            for repo in $REG_REPOS; do
+                repos="$repos --enable $repo"
+            done
+        fi
+
+        subscription-manager register $opts
+        if [ -z "${REG_AUTO_ATTACH:-}" ]; then
+            subscription-manager attach $attach_opts
+        fi
+        subscription-manager $repos
+        ;;
+    satellite)
+        repos="$repos --enable ${satellite_repo}"
+        if [ -n "${REG_REPOS:-}" ]; then
+            for repo in $REG_REPOS; do
+                repos="$repos --enable $repo"
+            done
+        fi
+
+        rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
+        subscription-manager register $opts
+        subscription-manager $repos
+        yum install -y katello-agent || true # needed for errata reporting to satellite6
+        katello-package-upload
+        # beta-rpms repo only needed to support the katello-ca rpm above.
+        subscription-manager repos --disable ${satellite_repo}
+        ;;
+    *)
+        echo "WARNING: only 'portal' and 'satellite' are valid values for REG_METHOD."
+        exit 1
+esac

@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eux
+set -o pipefail
+
+# When building an image with diskimage-builder, you will need to register
+# with either the customer portal or a satellite instance in order to enable
+# repos for software installation.  In most cases, it is desirable to
+# unregister a system when diskimage-builder is completing so the customer
+# entitlements are not decremented.  This option is here for the case when
+# a single image needs to be built and deployed as a single instance or for
+# debugging purposes so you can check the portal or satellite to see what was
+# registered.  Set REG_HALT_UNREGISTER to any non-null value to enable this
+# functionality.
+if [ -z "${REG_HALT_UNREGISTER:-}" ]; then
+    subscription-manager unregister
+fi
