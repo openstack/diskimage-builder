@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+function clean_up_arch_emulation {
+    cat <<EOF >$TMP_MOUNT_PATH/tmp/clean_up_qemu_binary
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+sudo rm -rf "${TMP_MOUNT_PATH}${1}"
+EOF
+
+    sudo chmod +x "$TMP_MOUNT_PATH/tmp/clean_up_qemu_binary"
+}
+
+function check_copy_file {
+    if [ -f "$1" ] ; then
+        if [ ! -f "${TMP_MOUNT_PATH}${1}" ]; then
+            sudo cp "$1" "$TMP_MOUNT_PATH/usr/bin"
+            clean_up_arch_emulation $1
+        fi
+    else
+        echo "qemu binary file not found."
+        exit 1
+    fi
+}
+
+function copy_binary {
+    echo "checking for architecture compatibility..."
+    img_arch=$2
+    if [[ "$host_arch" != "$img_arch" ]]; then
+        qemu_binary=$1
+        check_copy_file $qemu_binary
+    else
+        echo "Emulation not required for this host/image architecture combination"
+    fi
+}
+
+host_arch="$(uname -m)"
+
+case "$ARCH" in
+    "i386" | "amd64")
+        qemu_binary_file="/usr/bin/qemu-i386-static"
+        copy_binary $qemu_binary_file $ARCH
+    ;;
+    "armhf")
+        qemu_binary_file="/usr/bin/qemu-arm-static"
+        copy_binary $qemu_binary_file $ARCH
+    ;;
+    "arm64")
+        qemu_binary_file="/usr/bin/qemu-aarch64-static"
+        copy_binary $qemu_binary_file $ARCH
+    ;;
+    *)
+        echo "architecture not supported"
+        exit 1
+    ;;
+esac
