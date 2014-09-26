@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+# Copyright 2012 Hewlett-Packard Development Company, L.P.
+# Copyright 2014 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+import os
+import sys
+import yaml
+
+
+def load_service_mapping(filepath="/usr/share/svc-map/services"):
+    if not os.path.isfile(filepath):
+        return {}
+    with open(filepath, 'r') as data_file:
+        return yaml.load(data_file.read())
+
+
+def main():
+    for arg in sys.argv[1:]:
+        # We need to support the service name being different when installing
+        # from source vs. packages. So, if the requested service file already
+        # exists, just use that.
+        if os.path.exists('/lib/systemd/system/%s.service' % arg):  # systemd
+            print(arg)
+        elif os.path.exists('/etc/init/%s.conf' % arg):  # upstart
+            print(arg)
+        else:
+            service_map = load_service_mapping()
+            name = service_map.get(arg, arg)
+            print(name)
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()
