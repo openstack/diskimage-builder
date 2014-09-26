@@ -1,0 +1,15 @@
+{
+  "family":{
+    "debian":{
+      "ncat":"netcat-traditional",
+      "tftp":"tftp-hpa"
+    },
+    "redhat":{
+      "ncat":"nmap-ncat"
+    }
+  },
+  "default":{
+    "ncat":"ncat",
+    "tftp":"tftp"
+  }
+}

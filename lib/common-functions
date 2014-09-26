@@ -233,7 +233,7 @@ function arg_to_elements() {
     IMAGE_ELEMENT="base $IMAGE_ELEMENT"
   fi
   if [ "$IS_RAMDISK" == "1" ]; then
-    IMAGE_ELEMENT="ramdisk $IMAGE_ELEMENT"
+    IMAGE_ELEMENT="$RAMDISK_ELEMENT $IMAGE_ELEMENT"
   fi
   echo "Building elements: $IMAGE_ELEMENT"
 
