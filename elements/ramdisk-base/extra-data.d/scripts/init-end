@@ -1,7 +1,6 @@
 
 
 # Final init steps
-
 echo "rebooting"
 reboot -f
 

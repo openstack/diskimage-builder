@@ -50,11 +50,3 @@ else
     echo " netmask = $BOOT_NETMASK"
     echo " gateway = $BOOT_GATEWAY"
 fi
-
-if [ -n "$BOOT_SERVER" ]; then
-    echo "pinging to boot server $BOOT_SERVER"
-    wait_for 6 1 ping -c 5 -q "$BOOT_SERVER" > /dev/null
-fi
-
-echo "network ready"
-
