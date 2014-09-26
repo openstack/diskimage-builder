@@ -1,0 +1,57 @@
+mkdir -p /proc /sys /dev /boot /etc /mnt /lib/modules
+
+mount -t proc proc /proc
+
+mount -t sysfs none /sys
+
+UDEVD=
+if [ -x "/bin/systemd-udevd" ]; then
+    UDEVD="systemd-udevd"
+else
+    UDEVD="udevd"
+fi
+
+# udev versions 176 and newer require a different on-disk setup
+UDEVD_VERSION=$(udevadm --version)
+
+if [ "$UDEVD_VERSION" != "" -a $UDEVD_VERSION -gt 175 ]; then
+    echo "Using new-style udevd setup"
+    mount -t devtmpfs none /dev
+    mkdir -p /run
+    mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
+    mkdir -p /run/{lock,udev}
+else
+    echo "Using old-style udevd setup"
+    mount -t tmpfs none /dev
+    ln -sf /proc/self/fd /dev/fd
+    mknod /dev/null c 1 3
+    mknod /dev/zero c 1 5
+    mknod /dev/random c 1 8
+    mknod /dev/urandom c 1 9
+    mknod /dev/tty0 c 4 0
+    mknod /dev/tty1 c 4 1
+    mknod /dev/tty2 c 4 2
+    mknod /dev/tty3 c 4 3
+    mknod /dev/tty4 c 4 4
+    mknod /dev/tty5 c 4 5
+    mknod /dev/tty6 c 4 6
+    mknod /dev/tty7 c 4 7
+    mknod /dev/tty8 c 4 8
+    mknod /dev/tty9 c 4 9
+    mknod /dev/tty c 5 0
+    mknod -m 0600 /dev/console c 5 1
+    mknod -m 0666 /dev/ptmx c 5 2
+    mkdir -p /dev/.udev/data
+fi
+
+echo "starting syslogd"
+
+echo '*.* /initlog' > /etc/syslog.conf
+syslogd
+klogd
+
+echo "starting udevd"
+$UDEVD --daemon --resolve-names=never
+
+echo "load modules"
+load_modules_by_udev

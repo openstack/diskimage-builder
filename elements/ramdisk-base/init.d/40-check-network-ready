@@ -1,0 +1,6 @@
+if [ -n "$BOOT_SERVER" ]; then
+    echo "pinging to boot server $BOOT_SERVER"
+    wait_for 6 5 ping -c 5 -q "$BOOT_SERVER" > /dev/null
+fi
+
+echo "network ready"
