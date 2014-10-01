@@ -73,7 +73,7 @@ function extract_image() {
             trap "$EACTION" EXIT
 
             # Chroot in so that we get the correct uid/gid
-            sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
+            sudo chroot $WORKING/mnt bin/tar --xattrs --xattrs-include='*' --xattrs-exclude='security.selinux' -cz . > $WORKING/tmp.tar
             mv $WORKING/tmp.tar $CACHED_TAR
         else
             echo "Using cached tar from $CACHED_TAR"
@@ -82,8 +82,10 @@ function extract_image() {
 
     # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
     # image tarball and host OS e.g. when building Fedora image on an openSUSE host)
+    # Include all xattrs except selinux because the selinux ones cause issues in our
+    # chroot environment, and we restore all of those at the end of the build anyway.
     echo "Extracting base root image from $CACHED_TAR"
-    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $CACHED_TAR
+    sudo tar -C $TARGET_ROOT --numeric-owner --xattrs --xattrs-include='*' --xattrs-exclude='security.selinux' -xzf $CACHED_TAR
 }
 
 (
