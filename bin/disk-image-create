@@ -45,7 +45,8 @@ function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
-    echo "    -t qcow2|tar -- set the imagetype of the output image file(default qcow2)"
+    echo "    -t qcow2,tar -- set the image types of the output image files (default qcow2)"
+    echo "       File types should be comma separated"
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
@@ -85,6 +86,7 @@ function show_options () {
 }
 
 INSTALL_PACKAGES=""
+IMAGE_TYPES=("qcow2")
 COMPRESS_IMAGE="true"
 DIB_ROOT_LABEL=""
 TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options:,root-label: -n $SCRIPTNAME -- "$@"`
@@ -97,7 +99,7 @@ while true ; do
     case "$1" in
         -a) export ARCH=$2; shift 2 ;;
         -o) export IMAGE_NAME=$2; shift 2 ;;
-        -t) export IMAGE_TYPE=$2; shift 2 ;;
+        -t) IFS="," read -a IMAGE_TYPES <<< "$2"; export IMAGE_TYPES ; shift 2 ;;
         -h|--help) show_options; exit 0;;
         -x) shift; set -x;;
         -u) shift; export COMPRESS_IMAGE="";;
@@ -137,7 +139,10 @@ fi
 
 arg_to_elements "$@"
 
-export IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPE}}
+if [ "${#IMAGE_TYPES[@]}" = "1" ]; then
+  export IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPES[0]}}
+fi
+
 # FS_TYPE isn't available until after we source img-defaults
 if [ -z "$DIB_ROOT_LABEL" ]; then
     # NOTE(bnemec): XFS has a limit of 12 characters for filesystem labels
@@ -207,18 +212,27 @@ mount_proc_dev_sys
 run_d_in_target finalise
 finalise_base
 
-if [ "$IMAGE_TYPE" == "tar" ]; then
-  sudo tar -C ${TMP_BUILD_DIR}/mnt -cf $IMAGE_NAME.tar --exclude ./sys \
-           --exclude ./proc --xattrs --xattrs-include=\* .
-  sudo chown $USER: $IMAGE_NAME.tar
-fi
+for X in ${!IMAGE_TYPES[@]} ; do
+  if [ "${IMAGE_TYPES[$X]}" == "tar" ]; then
+    sudo tar -C ${TMP_BUILD_DIR}/mnt -cf $IMAGE_NAME.tar --exclude ./sys \
+             --exclude ./proc --xattrs --xattrs-include=\* .
+    sudo chown $USER: $IMAGE_NAME.tar
+    unset IMAGE_TYPES[$X]
+  fi
+done
 
 unmount_image
 
-if [ "$IS_RAMDISK" == "0" -a "$IMAGE_TYPE" != "tar" ]; then
-  compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
+if [ "$IS_RAMDISK" == "0" ]; then
+  for IMAGE_TYPE in ${IMAGE_TYPES[@]} ; do
+    compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
+  done
+  rm $TMP_IMAGE_PATH
+  cleanup_dirs
 else
   # This is a ramdisk build, we have already extracted the kernel and ramdisk
   # by this point.
   rm $TMP_IMAGE_PATH
 fi
+# All done!
+trap EXIT
