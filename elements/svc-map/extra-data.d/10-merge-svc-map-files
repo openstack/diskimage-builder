@@ -7,7 +7,7 @@ import yaml
 def os_family(distro):
     """Given a distribution, returns a operating system family."""
     family = None
-    if distro in ['centos', 'fedora', 'rhel', 'rhel7']:
+    if distro in ['centos7', 'fedora', 'rhel', 'rhel7']:
         family = 'redhat'
     elif distro in ['debian', 'ubuntu']:
         family = 'debian'
