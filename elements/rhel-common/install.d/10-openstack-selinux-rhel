@@ -1,0 +1,10 @@
+#!/bin/bash
+# Install openstack-selinux if it is available
+# dib-lint: disable=sete
+set -ux
+set -o pipefail
+
+HAS_PACKAGE=$(yum list | grep openstack-selinux)
+if [ -n "$HAS_PACKAGE" ]; then
+    install-packages openstack-selinux
+fi
