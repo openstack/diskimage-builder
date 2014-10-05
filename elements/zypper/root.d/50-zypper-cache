@@ -5,7 +5,7 @@ set -o pipefail
 
 [ -n "$TARGET_ROOT" ]
 
-ZYPPER_CACHE_DIR=~/.cache/image-create/zypper
+ZYPPER_CACHE_DIR=$DIB_IMAGE_CACHE/zypper
 mkdir -p $ZYPPER_CACHE_DIR
 
 sudo mkdir -p $TMP_MOUNT_PATH/var/cache/zypp

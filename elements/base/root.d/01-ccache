@@ -9,7 +9,7 @@ set -o pipefail
 # after automatically pulling in the Ubuntu element)
 grep " $TMP_MOUNT_PATH/tmp/ccache" /proc/mounts && exit
 
-DIB_CCACHE_DIR=${DIB_CCACHE_DIR:-$HOME/.cache/image-create/ccache}
+DIB_CCACHE_DIR=${DIB_CCACHE_DIR:-$DIB_IMAGE_CACHE/ccache}
 mkdir -p $DIB_CCACHE_DIR
 
 sudo mkdir -p $TMP_MOUNT_PATH/tmp/ccache

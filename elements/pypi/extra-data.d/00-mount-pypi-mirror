@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-MIRROR_SOURCE=~/.cache/image-create/pypi/mirror/
+MIRROR_SOURCE=$DIB_IMAGE_CACHE/pypi/mirror/
 if [ -d "$MIRROR_SOURCE" ]; then
     MIRROR_TARGET=$TMP_MOUNT_PATH/tmp/pypi
 

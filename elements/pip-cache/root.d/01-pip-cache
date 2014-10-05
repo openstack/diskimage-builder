@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-PIP_CACHE_DIR=$HOME/.cache/image-create/pip
+PIP_CACHE_DIR=$DIB_IMAGE_CACHE/pip
 mkdir -p $PIP_CACHE_DIR
 
 sudo mkdir -p $TMP_MOUNT_PATH/tmp/pip

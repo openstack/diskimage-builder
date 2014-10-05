@@ -5,7 +5,7 @@ set -o pipefail
 
 [ -n "$TARGET_ROOT" ]
 
-YUM_CACHE_DIR=~/.cache/image-create/yum
+YUM_CACHE_DIR=$DIB_IMAGE_CACHE/yum
 mkdir -p $YUM_CACHE_DIR
 
 sudo mkdir -p $TMP_MOUNT_PATH/tmp/yum

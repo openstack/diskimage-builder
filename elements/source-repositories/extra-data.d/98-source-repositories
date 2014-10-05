@@ -197,8 +197,8 @@ function get_repos_for_element(){
     done < $REPO_SOURCES
 }
 
-CACHE_BASE=~/.cache/image-create/source-repositories
-OLD_CACHE_BASE=~/.cache/image-create/repository-sources
+CACHE_BASE=$DIB_IMAGE_CACHE/source-repositories
+OLD_CACHE_BASE=$DIB_IMAGE_CACHE/repository-sources
 make_new_cache $OLD_CACHE_BASE $CACHE_BASE
 mkdir -p $CACHE_BASE
 # Use the IMAGE_NAME from the calling script, and make it unique with the temporary path
