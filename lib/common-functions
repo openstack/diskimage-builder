@@ -216,7 +216,7 @@ function detach_loopback() {
 
     # loopback dev may be tied up a bit by udev events triggered by partition events
     for try in $(seq 10 -1 1) ; do
-        if sudo losetup -d $loopdev ; then
+        if ! sudo losetup $loopdev || sudo losetup -d $loopdev ; then
             return 0
         fi
         echo $loopdev may be busy, sleeping up to $try more seconds...
