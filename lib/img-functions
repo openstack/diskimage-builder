@@ -81,14 +81,6 @@ function run_d_in_target () {
     fi
 }
 
-function prepare_first_boot () {
-    check_break before-first-boot run_in_target bash
-    if [ -d ${TMP_HOOKS_PATH}/first-boot.d ] ; then
-      sudo cp -t $TMP_MOUNT_PATH/etc/ -a $TMP_HOOKS_PATH/first-boot.d
-    fi
-    check_break after-first-boot run_in_target bash
-}
-
 function finalise_base () {
     TARGET_ROOT=$TMP_MOUNT_PATH run_d cleanup
     # If the file has been set immutable, we probably want to keep it
