@@ -58,12 +58,30 @@ function save_image () {
     finish_image $1
 }
 
+function copy_hooks_not_overwrite () {
+    _DIR=$(basename $1)
+    test -d $TMP_HOOKS_PATH/$_DIR || mkdir $TMP_HOOKS_PATH/$_DIR
+    for _HOOK in $(ls $1); do
+      if [ ! -f $TMP_HOOKS_PATH/$_DIR/$_HOOK ]; then
+        cp -t $TMP_HOOKS_PATH/$_DIR -a $1/$_HOOK
+      else
+        echo "There is a duplicated hook in your elements: $_ELEMENT/$_DIR/$_HOOK"
+        exit 1
+      fi
+    done
+}
+
 function generate_hooks () {
   mkdir -p $TMP_HOOKS_PATH
   for _ELEMENT in $IMAGE_ELEMENT ; do
     for dir in ${ELEMENTS_PATH//:/ } ; do
       [ -d $dir/$_ELEMENT ] || continue
-      cp -t $TMP_HOOKS_PATH -a $dir/$_ELEMENT/* ;
+      for _DIR in $(find $dir/$_ELEMENT -mindepth 1 -maxdepth 1 -type d -not -name tests); do
+        copy_hooks_not_overwrite $_DIR
+      done
+      for _FILE in $(find $dir/$_ELEMENT -maxdepth 1 -type f); do
+        cp -t $TMP_HOOKS_PATH -a $_FILE
+      done
       break
     done
   done
