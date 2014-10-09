@@ -1,0 +1,160 @@
+#!/bin/bash
+#
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+set -eux
+set -o pipefail
+
+function build_efiboot_img() {
+
+    cat > "$TMP_BUILD_DIR/grub-embedded.cfg" << END_CONFIG
+search --file --set=root /vmlinuz
+set prefix=(\$root)/EFI/BOOT/
+END_CONFIG
+
+    grub-mkimage --format=x86_64-efi --output=$TMP_BUILD_DIR/bootx64.efi \
+    --config=$TMP_BUILD_DIR/grub-embedded.cfg --compression=xz \
+    --prefix=/EFI/BOOT part_gpt part_msdos fat ext2 hfs hfsplus \
+    iso9660 udf ufs1 ufs2 zfs chain linux boot appleldr ahci \
+    configfile normal regexp minicmd reboot halt search \
+    search_fs_file search_fs_uuid search_label gfxterm gfxmenu \
+    efi_gop efi_uga all_video loadbios gzio echo true probe \
+    loadenv bitmap_scale font cat help ls png jpeg tga test \
+    at_keyboard usb_keyboard
+
+    # Create a FAT formatted image that contains bootx64.efi in the /EFI/BOOT
+    # directory.  This is used to bootstrap GRUB from the ISO image.
+    dd if=/dev/zero of=$TMP_BUILD_DIR/efiboot.img bs=1K count=1440
+    mkdosfs -F 12 $TMP_BUILD_DIR/efiboot.img
+
+    # Create a temporary mount point:
+    MOUNTPOINT=$TMP_BUILD_DIR/tmpmount
+    mkdir $MOUNTPOINT
+    sudo mount -o loop $TMP_BUILD_DIR/efiboot.img $MOUNTPOINT
+    sudo mkdir -p $MOUNTPOINT/EFI/BOOT
+    sudo cp $TMP_BUILD_DIR/bootx64.efi $MOUNTPOINT/EFI/BOOT
+    sudo umount $MOUNTPOINT
+    rmdir $MOUNTPOINT
+    cp $TMP_BUILD_DIR/efiboot.img $TMP_IMAGE_DIR/isolinux
+}
+
+function build_iso() {
+
+    KERNEL=$1
+    INITRD=$2
+    KERNEL_CMDLINE_ARGS=$3
+    OUTPUT_FILENAME=$4
+
+    SCRIPTNAME=$(basename $0)
+    SCRIPTDIR=$(dirname $0)
+    MKISOFS="/usr/bin/mkisofs"
+    EFI_BOOT_DIR="EFI/BOOT"
+
+    # Create a temporary build directory for holiding the contents of iso
+    TMP_IMAGE_DIR="$TMP_BUILD_DIR/image"
+    echo "Creating temporary directory $TMP_IMAGE_DIR"
+    mkdir -p "$TMP_IMAGE_DIR"
+
+    # Copy isolinux bin to the isolinux directory
+    mkdir -p "$TMP_IMAGE_DIR/isolinux"
+    echo "Copying isolinux.bin"
+
+    # TODO(rameshg87): Something similar to pkg-map can be used here.
+    # But pkg-map doesn't work for cleanup scripts right now.
+    if [ $DISTRO_NAME = "fedora" ]; then
+        ISOLINUX_BIN=/usr/share/syslinux/isolinux.bin
+    else
+        ISOLINUX_BIN=/usr/lib/syslinux/isolinux.bin
+    fi
+
+    cp $ISOLINUX_BIN "$TMP_IMAGE_DIR/isolinux"
+
+    # Copy initrd, kernel
+    echo "Copying kernel to $TMP_IMAGE_DIR/vmlinuz"
+    cp $KERNEL "$TMP_IMAGE_DIR/vmlinuz"
+
+    echo "Copying initrd to $TMP_IMAGE_DIR/initrd"
+    cp $INITRD "$TMP_IMAGE_DIR/initrd"
+
+    # Generate isolinux.cfg for default booting
+    echo "Generating isolinux.cfg"
+    cat > "$TMP_IMAGE_DIR/isolinux/isolinux.cfg" << END_CONFIG
+DEFAULT install
+LABEL install
+menu label "Install image"
+    kernel /vmlinuz
+    append initrd=/initrd $KERNEL_CMDLINE_ARGS --
+TIMEOUT 5
+PROMPT 0
+END_CONFIG
+
+
+    echo "Creating EFI/BOOT directory"
+    mkdir -p "$TMP_IMAGE_DIR/$EFI_BOOT_DIR"
+
+    # Generate grub.cfg for default booting
+    echo "Generating grub.cfg"
+    cat > "$TMP_IMAGE_DIR/$EFI_BOOT_DIR/grub.cfg" << END_CONFIG
+set default="0"
+set timeout="5"
+set hidden_timeout_quiet=false
+
+menuentry "install" {
+    linux /vmlinuz  $KERNEL_CMDLINE_ARGS --
+    initrd /initrd
+}
+END_CONFIG
+
+
+    DIB_UEFI_ISO_BUILD_EFIBOOT=${DIB_UEFI_ISO_BUILD_EFIBOOT:-}
+    if [ -n "$DIB_UEFI_ISO_BUILD_EFIBOOT" ]; then
+        build_efiboot_img
+    else
+        cp $SCRIPTDIR/efiboot.img $TMP_IMAGE_DIR/isolinux
+    fi
+
+    # Create the ISO
+    echo "Generating the ISO"
+    $MKISOFS -r -V "INSTALL_IMAGE" -cache-inodes -J -l \
+    -b isolinux/isolinux.bin  -no-emul-boot \
+    -boot-load-size 4 -boot-info-table \
+    -eltorito-alt-boot -e isolinux/efiboot.img \
+    -no-emul-boot -o $OUTPUT_FILENAME $TMP_IMAGE_DIR
+
+}
+
+IMAGE_NAME=${IMAGE_NAME:-'image'}
+
+if echo $IMAGE_ELEMENT | grep -q '\bramdisk\b'; then
+    EMITTED_KERNEL=$IMAGE_NAME.kernel
+    EMITTED_RAMDISK=$IMAGE_NAME.initramfs
+    EMITTED_KERNEL_CMDLINE_ARGS="boot_method=vmedia"
+    EMITTED_ISO_FILENAME=$IMAGE_NAME.iso
+elif echo $IMAGE_ELEMENT | grep -q '\bbaremetal\b'; then
+    EMITTED_KERNEL=${IMAGE_NAME}.vmlinuz
+    EMITTED_RAMDISK=${IMAGE_NAME}.initrd
+    EMITTED_KERNEL_CMDLINE_ARGS="root=UUID=$DIB_IMAGE_ROOT_FS_UUID"
+    DIB_BOOT_ISO_KERNEL_CMDLINE_ARGS=${DIB_BOOT_ISO_KERNEL_CMDLINE_ARGS:-}
+    if [ -n "$DIB_BOOT_ISO_KERNEL_CMDLINE_ARGS" ]; then
+        EMITTED_KERNEL_CMDLINE_ARGS="$EMITTED_KERNEL_CMDLINE_ARGS $DIB_BOOT_ISO_KERNEL_CMDLINE_ARGS"
+    fi
+    export EMITTED_ISO_FILENAME="$IMAGE_NAME-boot.iso"
+else
+    echo "Cannot find the kernel/ramdisk to build the iso image. "
+    echo "Please use 'iso' element with either 'baremetal' or 'ramdisk' elements"
+fi
+
+build_iso "$EMITTED_KERNEL" "$EMITTED_RAMDISK" "$EMITTED_KERNEL_CMDLINE_ARGS" \
+    "$EMITTED_ISO_FILENAME"
