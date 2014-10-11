@@ -28,6 +28,12 @@ function unmount_image () {
     fi
 }
 
+function trap_cleanup() {
+    exitval=$?
+    cleanup
+    exit $exitval
+}
+
 function cleanup () {
     unmount_image
     cleanup_dirs
