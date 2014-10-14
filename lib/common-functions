@@ -36,7 +36,7 @@ function mk_build_dir () {
     sudo mount -t tmpfs tmpfs $TMP_IMAGE_DIR
   fi
   sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR $TMP_IMAGE_DIR
-  trap cleanup EXIT
+  trap trap_cleanup EXIT
   echo Building in $TMP_BUILD_DIR
   export TMP_IMAGE_PATH=$TMP_IMAGE_DIR/image.raw
   export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
