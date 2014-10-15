@@ -64,7 +64,10 @@ function run_in_target () {
     # -E to preserve http_proxy
     ORIG_HOME=$HOME
     export HOME=/root
-    sudo -E chroot $TMP_MOUNT_PATH sh -c "$cmd"
+    # Force an empty TMPDIR inside the chroot. There is no need to use an user
+    # defined tmp dir which may not exist in the chroot.
+    # Bug: #1330290
+    sudo -E TMPDIR= chroot $TMP_MOUNT_PATH sh -c "$cmd"
     export HOME=$ORIG_HOME
 }
 
