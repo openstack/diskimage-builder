@@ -3,4 +3,8 @@
 set -eu
 set -o pipefail
 
-install -m 0755 -o root -g root /opt/stack/lsb-release/lsb_release /usr/local/bin
+if [ -z "${NO_SOURCE_REPOSITORIES:-}" ]; then
+    install -m 0755 -o root -g root /opt/stack/lsb-release/lsb_release /usr/local/bin
+else
+    install-packages redhat-lsb-core
+fi

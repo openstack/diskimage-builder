@@ -103,3 +103,7 @@ The base url for all git repositories can be set by use of:
 So setting DIB\_GITREPOBASE=https://github.com/ when the repo location is set
 to http://git.openstack.org/openstack/nova.git will result in use of the
 https://github.com/openstack/nova.git repository.
+
+When doing image builds in environments where external resources are not allowed,
+it is possible to disable fetching of all source repositories by including an
+element in the image that sets NO_SOURCE_REPOSITORIES=1 in an environment.d script.
