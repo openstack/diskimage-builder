@@ -364,13 +364,6 @@ Each element can use the following files to define or affect dependencies:
   file and A and C are included when building an image, then B is not used.
 
 
-### First-boot files ###
-
-* first-boot.d: **DEPRECATED** Runs inside the image before
-  rc.local. Scripts from here are good for doing per-instance
-  configuration based on cloud metadata. **This will be removed in a
-  future release of diskimage-builder. The os-refresh-config element in
-  tripleo-image-elements is recommended as a replacement.**
 
 ### Ramdisk Elements ###
 
@@ -435,23 +428,12 @@ possible approach to this would be to label elements as either a "driver",
                10-user             - common Nova user accts
                50-my-pack          - install packages from my PPA
                60-nova             - install nova and some dependencies
-            first-boot.d/
-               60-nova             - do some post-install config for nova
 
 - In the general case, configuration should probably be handled either by the
-  meta-data service (eg, during first-boot.d) or via normal CM tools
+  meta-data service (eg, o-r-c) or via normal CM tools
   (eg, salt). That being said, it may occasionally be desirable to create a
   set of elements which express a distinct configuration of the same software
-  components. For example, if one were to bake a region-specific SSL cert into
-  the images deployed in each region, one might express it like this:
-
-      elements/
-         config-az1/
-            first-boot.d/
-               20-ssl      - add the az1 certificate
-         config-az2/
-            first-boot.d/
-               20-ssl      - add the az2 certificate
+  components.
 
 In this way, depending on the hardware and in which availability zone it is
 to be deployed, an image would be composed of:
@@ -486,8 +468,7 @@ comma-delimited string. Some examples:
 * break=before-block-device-size will break before the block device size hooks
   are called.
 
-* break=after-first-boot,before-pre-install will break after the first-boot
-  hooks and before the pre-install hooks.
+* break=before-pre-install will break before the pre-install hooks.
 
 * break=after-error will break after an error during a in target hookpoint.
 

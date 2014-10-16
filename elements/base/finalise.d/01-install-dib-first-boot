@@ -1,7 +1,0 @@
-#!/bin/bash
-set -eu
-set -o pipefail
-
-if [ -d /etc/first-boot.d ]; then
-    install -m 0755 -o root -g root $(dirname $0)/../dib-first-boot /usr/sbin/
-fi
