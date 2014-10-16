@@ -39,5 +39,8 @@ populate_udev
 SCRIPT_HOME=/tmp/in_target.d/bin TMP_HOOKS_PATH=/tmp/in_target.d run_d ramdisk-install
 finalise_image
 save_image /tmp/ramdisk
+# In the past save_image did this for us. If EXIT handler is not
+# reset ramdisk image builds fail.
+trap EXIT
 cp /boot/vmlinuz-${KERNEL_VERSION} /tmp/kernel
 chmod o+r /tmp/kernel
