@@ -1,0 +1,13 @@
+{
+  "family": {
+    "redhat": {
+      "PyYAML": "PyYAML"
+    },
+    "debian": {
+      "PyYAML": "python-yaml"
+    }
+  },
+  "default": {
+    "PyYAML": "PyYAML"
+  }
+}
