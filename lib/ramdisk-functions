@@ -25,7 +25,9 @@ function fullpath() {
 }
 
 function cleanup () {
-  unmount_dir "$TMP_BUILD_DIR/mnt"
+  if [ "$RAMDISK_ELEMENT" != "dracut-ramdisk" ]; then
+    unmount_dir "$TMP_BUILD_DIR/mnt"
+  fi
   if [ -f "$TMP_IMAGE_PATH" ]; then
     loopdev=`sudo losetup -j "$TMP_IMAGE_PATH" | cut -d: -f1`
     if [ -n "$loopdev" ]; then

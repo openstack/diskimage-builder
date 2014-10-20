@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+_LIB="/tmp/ramdisk-build"
+
+source "$_LIB/common-defaults"
+source "$_LIB/img-defaults"
+source "$_LIB/ramdisk-defaults"
+
+source "$_LIB/common-functions"
+source "$_LIB/img-functions"
+source "$_LIB/ramdisk-functions"
+
+KERNEL_VERSION="${DIB_KERNEL_VERSION:-$(find_kernel_version)}"
+MODULE_DIR="$MODULE_ROOT/lib/modules/$KERNEL_VERSION"
+FIRMWARE_DIR="$MODULE_ROOT/lib/firmware"
+LIB_UDEV="$LIB_UDEV_ROOT/lib/udev"
+INIT="$_LIB/scripts/init"
+FUNCTIONS_D="$_LIB/scripts/d"
+MODULE="$_LIB/scripts/module"
+# NOTE(bnemec): IMAGE_ELEMENT is normally set in disk-image-create, but we're
+# not using that to build the image here.
+IMAGE_ELEMENT=
+
+mk_build_dir
+mkdir -p "$TMP_BUILD_DIR/mnt"
+export TMP_HOOKS_PATH=/tmp
+export TMP_MOUNT_PATH="$TMP_BUILD_DIR/mnt"
+
+echo "building ramdisk in $TMP_MOUNT_PATH"
+
+populate_init
+SCRIPT_HOME=/tmp/in_target.d/bin TMP_HOOKS_PATH=/tmp/in_target.d run_d ramdisk-install
+MODULE_PATH="/usr/lib/dracut/modules.d"
+cp -r "$MODULE" "$MODULE_PATH/80deploy-ramdisk"
+cp "$TMP_MOUNT_PATH/init" "$MODULE_PATH/80deploy-ramdisk/init.sh"
+
+# Notes on the options passed to Dracut:
+# -N: Do not build a host-specific ramdisk.  We want to be able to run this ramdisk
+#     on as many different machines as possible.
+# --install: A list of the binaries needed by our ramdisk script fragments.
+# --kernel-cmdline: Kernel parameters to pass to the ramdisk.  rd.neednet is required
+#                   to force Dracut to bring up networking even if it isn't passed a
+#                   network target root.  Pre-loading the ahci module is necessary
+#                   on some systems to ensure that SATA disks are recognized.
+# --include: Files from the chroot to include in the ramdisk.
+# --kver: The kernel version to use, as determined above.
+# --add-drivers: Extra kernel modules to include in the ramdisk.
+# -o: Force omission of these dracut modules.  Our scripts are written for bash,
+#     so dash is not desirable, and plymouth was causing some issues on Ubuntu.
+dracut -N \
+    --install 'tail head awk ifconfig cut expr route ping tgtd tgtadm nc wget curl tftp grep' \
+    --kernel-cmdline "rd.shell rd.debug rd.neednet=1 rd.driver.pre=ahci" \
+    --include "$TMP_MOUNT_PATH/init-func" /init-func \
+    --kver "${KERNEL_VERSION}" \
+    --add-drivers "virtio virtio_net virtio_blk" \
+    -o "dash plymouth" \
+    /tmp/ramdisk
+
+cp "/boot/vmlinuz-${KERNEL_VERSION}" /tmp/kernel
+chmod o+r /tmp/kernel

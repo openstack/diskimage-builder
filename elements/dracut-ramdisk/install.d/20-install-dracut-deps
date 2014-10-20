@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+DRACUT_NETWORK="dracut-network"
+if [ 'ubuntu' = "$DISTRO_NAME" ]; then
+    DRACUT_NETWORK=
+    # Install Dracut from source because the packaged version is
+    # broken and old.  For Dracut builds we throw away the chroot
+    # anyway so it won't matter if we've installed some build deps.
+    install-packages build-essential arping
+    pushd /tmp
+    tar xJvf dracut.tar.xz
+    pushd dracut-$DRACUT_VERSION
+    ./configure
+    make
+    make install
+    popd
+    popd
+fi
+
+PACKAGES=$(pkg-map --element dracut-ramdisk ncat tftp)
+install-packages $DRACUT_NETWORK wget $PACKAGES

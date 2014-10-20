@@ -18,6 +18,7 @@
 # options for ramdisk-image-create
 export DIB_NO_TMPFS=${DIB_NO_TMPFS:-1}
 export DIB_MIN_TMPFS=${DIB_MIN_TMPFS:-1}
+export RAMDISK_ELEMENT=${RAMDISK_ELEMENT:-ramdisk}
 source $_LIB/common-defaults
 MODULE_ROOT=${DIB_MODULE_ROOT:-""}
 LIB_UDEV_ROOT=${DIB_LIB_UDEV_ROOT:-""}
