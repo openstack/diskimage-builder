@@ -3,6 +3,11 @@
 set -eu
 set -o pipefail
 
+# Don't provide any source repositories in environments where they are not allowed
+if [ -n "${NO_SOURCE_REPOSITORIES:-}" ]; then
+    exit 0
+fi
+
 # If the old cache exists, move it to the new name
 function make_new_cache(){
     local OLD_CACHE_BASE=$1
