@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+# dib-lint: disable=indent
+# dib-lint indent requirements causes issue with pep8
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -13,6 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
 import sys
 
 # Manually maintained for brevity; consider making this compiled from
@@ -39,6 +41,9 @@ package_map = {
     'tgt': 'scsi-target-utils',
     'vlan': 'vconfig',
 }
+
+print("WARNING: map-packages is deprecated.  Please use the pkg-map element.",
+      file=sys.stderr)
 
 for arg in sys.argv[1:]:
     print(package_map.get(arg, arg))
