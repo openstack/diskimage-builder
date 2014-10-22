@@ -5,3 +5,4 @@ set -o pipefail
 # For Ubuntu map-services is currently a noop
 # We pass through the service name directly
 echo "$@"
+>&2 echo "WARNING: map-services has been deprecated. Please use svc-map."
