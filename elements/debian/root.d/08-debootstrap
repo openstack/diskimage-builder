@@ -57,12 +57,14 @@ else
     apt_get_bp_extra_opts=
     if [ "$DIB_RELEASE" = "wheezy" ]; then
         sudo sh -c "echo deb $DIB_DISTRIBUTION_MIRROR wheezy-backports main >> ${TARGET_ROOT}/etc/apt/sources.list"
-        sudo chroot ${TARGET_ROOT} apt-get update
         cat << EOF | sudo tee -a ${TARGET_ROOT}/etc/network/interfaces
 source /etc/network/interfaces.d/*
 EOF
         apt_get_bp_extra_opts="-t wheezy-backports"
     fi
+
+    # Need to update to retrieve the signed Release file
+    sudo chroot ${TARGET_ROOT} apt-get update
 
     CLOUD_INIT_PACKAGES="cloud-init cloud-utils cloud-initramfs-growroot"
     sudo sh -c "http_proxy=$http_proxy chroot ${TARGET_ROOT} apt-get install -y $apt_get_bp_extra_opts $CLOUD_INIT_PACKAGES"
