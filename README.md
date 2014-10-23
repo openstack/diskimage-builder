@@ -21,7 +21,7 @@ What tools are there?
 * disk-image-create [-a i386|amd64|armhf] -o filename {element} [{element} ...]
   Create an image of element {element}, optionally mixing in other elements.
   Element dependencies are automatically included. Support for other
-  architectures depends on your environment being able to run binaries of that 
+  architectures depends on your environment being able to run binaries of that
   platform. For instance, to enable armhf on Ubuntu install the qemu-user-static
   package. The default output format from disk-image-create is qcow2. To instead
   output a tarball pass in "-t tar". This tarball could then be used as an image
@@ -104,7 +104,7 @@ disk-image-builder for caching. When invoking disk-image-builder the --offline
 option will instruct disk-image-builder to not refresh cached resources.
 
 Note that we don't maintain operating system package caches, instead depending
-on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to 
+on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to
 facilitate caching of that layer, so you need to arrange independently for
 offline mode.
 
@@ -222,7 +222,7 @@ contents can be modelled as three distinct portions:
 The goal of the image building tools is to create machine images that contain
 the correct global content and are ready for 'last-mile' configuration by the
 nova metadata API, after which a configuration management system can take over
-(until the next deploy, when it all starts over from scratch). 
+(until the next deploy, when it all starts over from scratch).
 
 Existing elements
 -----------------
@@ -269,7 +269,7 @@ two-digit numeric prefix, and are executed in numeric order.
 
 * root.d: Create or adapt the initial root filesystem content. This is where
   alternative distribution support is added, or customisations such as
-  building on an existing image. 
+  building on an existing image.
 
   Only one element can use this at a time unless particular care is taken not
   to blindly overwrite but instead to adapt the context extracted by other
@@ -369,7 +369,7 @@ Each element can use the following files to define or affect dependencies:
 
 Ramdisk elements support the following files in their element directories:
 
-* binary-deps.d : text files listing executables required to be fed into the 
+* binary-deps.d : text files listing executables required to be fed into the
   ramdisk. These need to be present in $PATH in the build chroot (i.e. need to
   be installed by your elements as described above).
 
@@ -398,6 +398,10 @@ Global image-build variables
   perform remote data access should avoid it if possible. If not possible
   the operation should still be attempted as the user may have an external
   cache able to keep the operation functional.
+
+* DIB\_IMAGE\_ROOT\_FS\_UUID : this contains the UUID of the root fs, when
+  diskimage-builder is building a disk image. This works only for ext
+  filesystems.
 
 Structure of an element
 -----------------------
@@ -512,7 +516,7 @@ Copyright
 =========
 
 Copyright 2012 Hewlett-Packard Development Company, L.P.
-Copyright (c) 2012 NTT DOCOMO, INC. 
+Copyright (c) 2012 NTT DOCOMO, INC.
 
 All Rights Reserved.
 
