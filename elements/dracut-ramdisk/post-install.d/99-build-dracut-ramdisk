@@ -61,3 +61,5 @@ dracut -N \
 
 cp "/boot/vmlinuz-${KERNEL_VERSION}" /tmp/kernel
 chmod o+r /tmp/kernel
+# We don't want to run cleanup (set in mk_build_dir above) when this exits
+trap EXIT
