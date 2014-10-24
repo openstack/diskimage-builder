@@ -20,7 +20,7 @@ set -o pipefail
 function build_efiboot_img() {
 
     cat > "$TMP_BUILD_DIR/grub-embedded.cfg" << END_CONFIG
-search --file --set=root /vmlinuz
+search --set=root --label VMEDIA_BOOT_ISO
 set prefix=(\$root)/EFI/BOOT/
 END_CONFIG
 
@@ -127,7 +127,7 @@ END_CONFIG
 
     # Create the ISO
     echo "Generating the ISO"
-    $MKISOFS -r -V "INSTALL_IMAGE" -cache-inodes -J -l \
+    $MKISOFS -r -V "VMEDIA_BOOT_ISO" -cache-inodes -J -l \
     -b isolinux/isolinux.bin  -no-emul-boot \
     -boot-load-size 4 -boot-info-table \
     -eltorito-alt-boot -e isolinux/efiboot.img \
