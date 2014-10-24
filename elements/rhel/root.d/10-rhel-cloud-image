@@ -35,6 +35,10 @@ else
         # NOTE: On RHEL, partprobe of /dev/loop0 does not create /dev/loop0p2,
         # while kpartx at least creates /dev/mapper/loop0p2.
         LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+        # If running inside Docker, make our nodes manually, because udev will not be working.
+        if [ -f /.dockerenv ]; then
+            sudo dmsetup --noudevsync mknodes
+        fi
         export LOOPDEV=$LOOPDEV
         echo "Loop device is set to: $LOOPDEV"
         if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then

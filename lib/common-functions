@@ -195,7 +195,7 @@ function detach_loopback() {
     loopdev_name=$(echo $loopdev | sed 's/\/dev\///g')
     mapper_name=$(sudo dmsetup ls | grep $loopdev_name | awk '{ print $1 }')
     if [ "$mapper_name" ]; then
-        sudo dmsetup remove $mapper_name
+        sudo dmsetup --noudevsync remove $mapper_name
     fi
 
     # loopback dev may be tied up a bit by udev events triggered by partition events

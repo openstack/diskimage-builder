@@ -3,7 +3,6 @@
 # Intended to be called from the root.d cloud-image script as follows:
 # $TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_LOCATION $CACHED_IMAGE
 
-
 set -eu
 set -o pipefail
 
@@ -61,6 +60,10 @@ function extract_image() {
             #      the device used for the image.
             ROOT_LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | \
                 awk "/loop[0-9]+$ROOT_PARTITON/ {print \$3}")
+            # If running inside Docker, make our nodes manually, because udev will not be working.
+            if [ -f /.dockerenv ]; then
+                sudo dmsetup --noudevsync mknodes
+            fi
             if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$ROOT_LOOPDEV ]; do sleep 1; done"; then
                 echo "Error: Could not find /dev/mapper/$ROOT_LOOPDEV"
                 exit 1
