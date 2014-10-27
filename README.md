@@ -124,7 +124,14 @@ Install Types
 -------------
 
 Install types permit elements to be installed from different sources, such as
-git repositories, distribution packages, or pip.
+git repositories, distribution packages, or pip. The default install type
+is 'source' but it can be modified on the disk-image-create command line
+via the --install-type option. For example you can set:
+
+    --install-type=package
+
+to enable package installs by default. Alternately, you can also
+set DIB\_DEFAULT\_INSTALLTYPE.
 
 Many elements expose different install types. The different implementations
 live under `<install-dir-prefix>-<install-type>-install` directories under an

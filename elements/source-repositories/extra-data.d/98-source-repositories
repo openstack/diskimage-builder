@@ -89,7 +89,7 @@ function get_repos_for_element(){
 
             # Return if install type is not source
             local INSTALL_TYPE_VAR=DIB_INSTALLTYPE_${REPONAME//[^A-Za-z0-9]/_}
-            local INSTALL_TYPE=${!INSTALL_TYPE_VAR:-source}
+            local INSTALL_TYPE=${!INSTALL_TYPE_VAR:-$DIB_DEFAULT_INSTALLTYPE}
             if [ ! $INSTALL_TYPE = "source" ]; then
                 echo "$REPONAME install type not set to source"
                 continue
