@@ -89,7 +89,7 @@ function show_options () {
 INSTALL_PACKAGES=""
 IMAGE_TYPES=("qcow2")
 COMPRESS_IMAGE="true"
-DIB_ROOT_LABEL=""
+export DIB_ROOT_LABEL=""
 TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options:,ramdisk-element:,root-label: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
@@ -162,8 +162,6 @@ fi
 
 mk_build_dir
 create_base
-# This variable needs to be propagated into the chroot
-echo "export DIB_ROOT_LABEL=\"${DIB_ROOT_LABEL}\"" > $TMP_HOOKS_PATH/environment.d/10-dib-root-label.bash
 run_d extra-data
 # Run pre-install scripts. These do things that prepare the chroot for package installs
 run_d_in_target pre-install
