@@ -50,7 +50,12 @@ for PACKAGEFILE in $(find $WORKDIR -maxdepth 1 -name "package-installs-*" ); do
 
         if [ -e /usr/share/pkg-map/$element_name ]; then
             # map the package to its true name
-            pkg=$(pkg-map --element $element_name $pkg)
+            set +e
+            map_pkg=$(pkg-map --element $element_name $pkg)
+            if [ $? -eq 0 ]; then
+                pkg=$map_pkg
+            fi
+            set -e
         fi
 
         PACKAGES="$PACKAGES $pkg"
