@@ -171,7 +171,7 @@ function populate_lib () {
 
   cp -a "$MODULE_DIR" "$TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION"
   echo "Removing kernel framebuffer drivers to enforce text mode consoles..."
-  find $TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION/kernel/drivers/video -name '*fb.ko' -exec rm -v {} \;
+  find $TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION/kernel/drivers/video -name '*fb.ko' -exec rm -v {} +
   if [ -d $FIRMWARE_DIR ]; then
     cp -a "$FIRMWARE_DIR" "$TMP_MOUNT_PATH/lib/firmware"
   fi

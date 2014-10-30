@@ -9,7 +9,7 @@ yum remove -y grub2
 # Remove all old versions of grub2 from the yum cache and then ensure the
 # latest version is in the cache.
 basearch=$(cat /etc/yum/vars/basearch)
-find /tmp/yum/$basearch -regex ".*/grub2-[0-9].*\.rpm" -exec rm -f {} \;
+find /tmp/yum/$basearch -regex ".*/grub2-[0-9].*\.rpm" -exec rm -f {} +
 install-packages -d grub2
 
 # Copy grub2 rpm out of mounted yum cache for install during finalise
