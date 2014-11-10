@@ -2,4 +2,5 @@ gettext
 -grub2
 grub2-tools
 os-prober
+redhat-lsb-core
 system-logos
