@@ -3,26 +3,10 @@
 # NOTE(bnemec): Dracut doesn't like it if we enable these
 # dib-lint: disable=setu sete setpipefail
 
-source /init-func
-
-find_target() {
-    local DISK=$(getarg disk)
-    local target_disk=
-    t=0
-    while ! target_disk=$(find_disk "$DISK"); do
-        if [ $t -eq 10 ]; then
-            break
-        fi
-        t=$(($t + 1))
-        sleep 1
-    done
-    echo $target_disk
-}
-root=$(find_target)
-
-if [ -n "$root" ]; then
-    rootok=1
-fi
+# We never let Dracut boot off the specified root anyway, so all
+# we need is a value it will accept.
+root=/dev/zero
+rootok=1
 
 # Dracut doesn't correctly parse the ip argument passed to us.
 # Override /proc/cmdline to rewrite it in a way dracut can grok.
