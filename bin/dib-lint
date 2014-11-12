@@ -71,8 +71,10 @@ for i in $(find elements -type f); do
         fi
 
         # Ensure 4 spaces indent are used
-        if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
-            error "$i should use 4 spaces indent"
+        if ! excluded indent; then
+            if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
+                error "$i should use 4 spaces indent"
+            fi
         fi
     fi
 
@@ -118,7 +120,7 @@ done
 
 for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
     # Check for tab indentation
-    if ! excluded indent; then
+    if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then
             error "$i contains tab characters"
         fi
