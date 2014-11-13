@@ -45,14 +45,14 @@ for _install_type_var in $INSTALL_TYPE_VARS; do
 
 done
 
-# For any existing *-source-install directory under install.d, if an
-# environment variable setting a different install type was not seen, enable
-# the source install type.
-source_install_dirs=$(ls -d $TMP_HOOKS_PATH/install.d/*-source-install || true)
-for _source_install_dir in $source_install_dirs; do
-    SUFFIX="-source-install"
-    _source_install_dir=$(basename $_source_install_dir)
-    INSTALLDIRPREFIX=${_source_install_dir%$SUFFIX}
+# For any existing *-<default_install_dir>-install directory under install.d,
+# if an environment variable setting a different install type was not seen,
+# enable the default (set via --install-type).
+default_install_type_dirs=$(ls -d $TMP_HOOKS_PATH/install.d/*-${DIB_DEFAULT_INSTALLTYPE}-install || true)
+for _install_dir in $default_install_type_dirs; do
+    SUFFIX="-${DIB_DEFAULT_INSTALLTYPE}-install"
+    _install_dir=$(basename $_install_dir)
+    INSTALLDIRPREFIX=${_install_dir%$SUFFIX}
 
     found=0
     for specified in ${SPECIFIED_ELEMS[@]}; do
@@ -65,7 +65,7 @@ for _source_install_dir in $source_install_dirs; do
     # install type not specified, assume source
     if [ "$found" = "0" ]; then
         pushd $TMP_HOOKS_PATH/install.d
-        ln -sf $_source_install_dir/* .
+        ln -sf $_install_dir/* .
         popd
     fi
 done

@@ -65,6 +65,7 @@ function show_options () {
     echo "       Options need to be comma separated, and follow the key=value pattern."
     echo "    --root-label label -- label for the root filesystem.  Defaults to 'cloudimg-rootfs'."
     echo "    --ramdisk-element -- specify the main element to be used for building ramdisks."
+    echo "    --install-type -- specify the default installation type. Defaults to 'source'. Set to 'package' to use package based installations by default."
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
         echo "    -p package[,package,package] -- list of packages to install in the image"
@@ -90,7 +91,8 @@ INSTALL_PACKAGES=""
 IMAGE_TYPES=("qcow2")
 COMPRESS_IMAGE="true"
 export DIB_ROOT_LABEL=""
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options:,ramdisk-element:,root-label: -n $SCRIPTNAME -- "$@"`
+DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
+TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options:,ramdisk-element:,root-label:,install-type: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -116,6 +118,7 @@ while true ; do
         --qemu-img-options) QEMU_IMG_OPTIONS=$2; shift 2;;
         --root-label) export DIB_ROOT_LABEL=$2; shift 2;;
         --ramdisk-element) RAMDISK_ELEMENT=$2; shift 2;;
+        --install-type) DIB_DEFAULT_INSTALLTYPE=$2; shift 2;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -162,6 +165,8 @@ fi
 
 mk_build_dir
 create_base
+# This variable needs to be propagated into the chroot
+echo "export DIB_DEFAULT_INSTALLTYPE=\"${DIB_DEFAULT_INSTALLTYPE}\"" > $TMP_HOOKS_PATH/environment.d/11-dib-install-type.bash
 run_d extra-data
 # Run pre-install scripts. These do things that prepare the chroot for package installs
 run_d_in_target pre-install
