@@ -1,0 +1,146 @@
+#!/usr/bin/env python
+
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+import argparse
+from json import load as json_load
+import os
+import subprocess
+import sys
+
+from yaml import load as yaml_load
+
+
+class PackageInstalls(object):
+
+    @classmethod
+    def phase_to_attr(cls, phase):
+        return phase.replace('.', '_').replace('-', '_')
+
+    @classmethod
+    def from_yaml_path(cls, path):
+        with open(path) as fp:
+            return PackageInstalls.from_native_objs(yaml_load(fp))
+
+    @classmethod
+    def from_json_path(cls, path):
+        with open(path) as fp:
+            return PackageInstalls.from_native_objs(json_load(fp))
+
+    @classmethod
+    def from_native_objs(cls, objs):
+        init_args = {}
+        for pkg_name, params in objs.items():
+            uninstall = False
+            phase = "install.d"
+
+            try:
+                phase = params["phase"]
+            except (KeyError, TypeError):
+                pass
+
+            try:
+                uninstall = bool(params["uninstall"])
+            except (KeyError, TypeError):
+                pass
+
+            init_arg = PackageInstalls.phase_to_attr(phase)
+            if uninstall:
+                init_arg = init_arg + '_uninst'
+
+            init_args[init_arg] = init_args.get(init_arg, []) + [pkg_name]
+        return PackageInstalls(**init_args)
+
+    def __init__(self, **phase_installs):
+        for phase, pkgs in phase_installs.items():
+            setattr(self, phase, pkgs)
+
+
+class PackageInstallsController(object):
+
+    def __init__(self, path='/usr/share/package-installs'):
+        self.path = path
+
+    def package_installs(self):
+        for yaml_path in os.listdir(self.path):
+            full_path = os.path.join(self.path, yaml_path)
+            if full_path.endswith('.yaml'):
+                pi = PackageInstalls.from_yaml_path(full_path)
+            elif full_path.endswith('.json'):
+                pi = PackageInstalls.from_json_path(full_path)
+            else:
+                print("No decoder known for %s, skipping" % full_path)
+                continue
+            yield (yaml_path[:-5], pi)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Install or uninstall packages for a specific phase based"
+                    " on package-installs files.")
+    parser.add_argument('--phase',
+                        help="Install phase to filter on. Valid options are"
+                             " 'install.d' or pre-install.d")
+    parser.add_argument('--uninstall', action="store_true",
+                        help="Only show packages to uninstall. By default only"
+                             " packages to install are shown")
+    args, extra = parser.parse_known_args()
+
+    if not args.phase:
+        print("Please specify an install phase.")
+        sys.exit(1)
+
+    pi_c = PackageInstallsController()
+    pkgs = []
+    for element, pi in pi_c.package_installs():
+        installs_attr = PackageInstalls.phase_to_attr(args.phase)
+        if args.uninstall:
+            installs_attr += '_uninst'
+
+        try:
+            phase_installs = getattr(pi, installs_attr)
+        except AttributeError:
+            continue
+
+        for pkg in phase_installs:
+            print("Installing %s from %s" % (phase_installs, element))
+            pkg_map_args = ["pkg-map", "--missing-ok", "--element", element]
+            pkg_map_args += phase_installs
+
+            try:
+                map_output = subprocess.check_output(pkg_map_args)
+            except subprocess.CalledProcessError as e:
+                if e.returncode == 1:
+                    print("pkg-map failed with error %s" % e.output)
+                    sys.exit(1)
+                elif e.returncode == 2:
+                    pkgs += phase_installs
+                    continue
+            pkgs += map_output.strip().split('\n')
+
+    install_args = ["install-packages"]
+    if args.uninstall:
+        install_args.append("-e")
+    install_args.extend(pkgs)
+
+    try:
+        subprocess.check_output(install_args)
+    except subprocess.CalledProcessError as e:
+        print("install failed with error %s" % e.output)
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
