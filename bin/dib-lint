@@ -71,9 +71,14 @@ for i in $(find elements -type f); do
         fi
 
         # Ensure 4 spaces indent are used
-        if ! excluded indent; then
-            if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
-                error "$i should use 4 spaces indent"
+
+        if [ "$(file -b --mime-type $i)" = "text/x-python" ]; then
+            flake8 $i
+        else
+            if ! excluded indent ; then
+                if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
+                    error "$i should use 4 spaces indent"
+                fi
             fi
         fi
     fi
