@@ -1,0 +1,102 @@
+#!/bin/bash
+set -eux
+set -o pipefail
+
+opts=
+attach_opts=
+repos="repos --enable rhel-7-server-rpms"
+
+if [ -n "${REG_AUTO_ATTACH:-}" ]; then
+    opts="$opts --auto-attach"
+
+    if [ -n "${REG_SERVICE_LEVEL:-}" ]; then
+        opts="$opts --servicelevel $REG_SERVICE_LEVEL"
+    fi
+
+    if [ -n "${REG_RELEASE:-}" ]; then
+        opts="$opts --release=$REG_RELEASE"
+    fi
+else
+    if [ -n "${REG_SERVICE_LEVEL:-}" ]; then
+        echo "WARNING: REG_SERVICE_LEVEL set without REG_AUTO_ATTACH."
+    fi
+
+    if [ -n "${REG_RELEASE:-}" ]; then
+        echo "WARNING: REG_RELEASE set without REG_AUTO_ATTACH."
+    fi
+
+    if [ -n "${REG_POOL_ID:-}" ]; then
+        attach_opts="$attach_opts --pool=$REG_POOL_ID"
+    fi
+fi
+
+
+
+if [ -n "${REG_BASE_URL:-}" ]; then
+    opts="$opts --baseurl=$REG_BASE_URL"
+fi
+
+if [ -n "${REG_ENVIRONMENT:-}" ]; then
+    opts="$opts --env=$REG_ENVIRONMENT"
+fi
+
+if [ -n "${REG_FORCE:-}" ]; then
+    opts="$opts --force"
+fi
+
+if [ -n "${REG_SERVER_URL:-}" ]; then
+    opts="$opts --serverurl=$REG_SERVER_URL"
+fi
+
+if [ -n "${REG_USER:-}" ]; then
+    opts="$opts --username $REG_USER"
+fi
+
+if [ -n "${REG_PASSWORD:-}" ]; then
+    opts="$opts --password $REG_PASSWORD"
+fi
+
+if [ -n "${REG_MACHINE_NAME:-}" ]; then
+    opts="$opts --name $REG_MACHINE_NAME"
+fi
+
+if [ -n "${REG_ORG:-}" ]; then
+    opts="$opts --org $REG_ORG"
+fi
+
+case "${REG_METHOD:-}" in
+    portal)
+        if [ -n "${REG_ACTIVATION_KEY:-}" ]; then
+            echo "WARNING: Activation keys are not supported by the customer portal at this time."
+        fi
+
+        if [ -n "${REG_REPOS:-}" ]; then
+            for repo in $REG_REPOS; do
+                repos="$repos --enable $repo"
+            done
+        fi
+
+        subscription-manager register $opts
+        if [ -z "${REG_AUTO_ATTACH:-}" ]; then
+            subscription-manager attach $attach_opts
+        fi
+        subscription-manager $repos
+        ;;
+    satellite)
+        repos="$repos --enable rhel-7-server-rh-common-beta-rpms"
+        if [ -n "${REG_REPOS:-}" ]; then
+            for repo in $REG_REPOS; do
+                repos="$repos --enable $repo"
+            done
+        fi
+
+        rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
+        subscription-manager register $opts
+        subscription-manager $repos
+        # beta-rpms repo only needed to support the katello-ca rpm above.
+        subscription-manager repos --disable rhel-7-server-rh-common-beta-rpms
+        ;;
+    *)
+        echo "WARNING: only 'portal' and 'satellite' are valid values for REG_METHOD."
+        exit 1
+esac
