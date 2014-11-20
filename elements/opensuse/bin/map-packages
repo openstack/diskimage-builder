@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# dib-lint: disable=indent
+# dib-lint indent requirements causes issue with pep8
 
 # Copyright 2013 SUSE Linux Products GmbH
 #
@@ -14,6 +16,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
 import sys
 
 # Manually maintained for brevity; consider making this compiled from
@@ -56,6 +59,9 @@ package_map = {
     'openstack-neutron-ml2': 'openstack-neutron',
     'openstack-neutron-openvswitch': 'openstack-neutron-openvswitch-agent',
 }
+
+print("WARNING: map-packages is deprecated.  Please use the pkg-map element.",
+      file=sys.stderr)
 
 for arg in sys.argv[1:]:
     print(package_map.get(arg, arg))
