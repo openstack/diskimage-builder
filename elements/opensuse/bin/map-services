@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# dib-lint: disable=indent
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # Copyright 2014 SUSE, Inc.
 #
@@ -15,6 +15,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
 import os
 import sys
 
@@ -49,6 +50,9 @@ service_map = {
     'nova-novncproxy': 'openstack-nova-novncproxy',
     'nova-scheduler': 'openstack-nova-scheduler',
 }
+
+print("WARNING: map-services has been deprecated.  "
+      "Please use the svc-map element.", file=sys.stderr)
 
 for arg in sys.argv[1:]:
     # We need to support the service name being different when installing from
