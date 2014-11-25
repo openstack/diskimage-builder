@@ -142,6 +142,11 @@ if [ "$IS_RAMDISK" == "1" ]; then
   source $_LIB/ramdisk-functions
 fi
 
+# If no elements are specified theres no way we can succeed
+if [ -z "$@" ]; then
+    echo "ERROR: At least one distribution root element must be specified"
+    exit 1
+fi
 arg_to_elements "$@"
 
 if [ "${#IMAGE_TYPES[@]}" = "1" ]; then
