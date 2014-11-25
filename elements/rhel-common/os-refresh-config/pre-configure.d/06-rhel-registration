@@ -115,5 +115,5 @@ case "${REG_METHOD:-}" in
         ;;
     *)
         echo "WARNING: only 'portal' and 'satellite' are valid values for REG_METHOD."
-        exit 1
+        exit 0
 esac
