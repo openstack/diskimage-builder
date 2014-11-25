@@ -143,7 +143,7 @@ if [ "$IS_RAMDISK" == "1" ]; then
 fi
 
 # If no elements are specified theres no way we can succeed
-if [ -z "$@" ]; then
+if [ -z "$*" ]; then
     echo "ERROR: At least one distribution root element must be specified"
     exit 1
 fi
