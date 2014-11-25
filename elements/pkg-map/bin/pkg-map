@@ -20,6 +20,11 @@ import os
 import sys
 
 
+def eprint(msg):
+    sys.stderr.write(msg)
+    sys.stderr.write("\n")
+
+
 def os_family(distro):
     family = None
     if distro in ['fedora', 'rhel', 'rhel7', 'centos7']:
@@ -34,26 +39,32 @@ def os_family(distro):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Translate package name to distro specific name.")
+        description="Translate package name to distro specific name."
+                    " Exits with 1 if error is encountered, 2 if no pkg-map"
+                    " file is found. Otherwise exits with 0.")
     parser.add_argument('--element', default='',
                         help='The element (namespace) to use for translation.')
     parser.add_argument('--distro', default=os.environ.get('DISTRO_NAME'),
                         help='The distro name to use for translation.'
                         ' Defaults to DISTRO_NAME')
+    parser.add_argument('--missing-ok', action="store_true",
+                        help='Do not consider missing mappings an error.'
+                             ' Causes packages where no mapping is set to be'
+                             ' printed.')
     args, extra = parser.parse_known_args()
 
     if not args.element:
-        print('Please specify an --element argument.')
+        eprint('Please specify an --element argument.')
         sys.exit(1)
 
     if not args.distro:
-        print('Please specify a --distro argument or set DISTRO_NAME.')
+        eprint('Please specify a --distro argument or set DISTRO_NAME.')
         sys.exit(1)
 
     map_file = '/usr/share/pkg-map/%s' % args.element
     if not os.path.exists(map_file):
-        print('Map file for %s element does not exist.' % args.element)
-        sys.exit(1)
+        eprint('Map file for %s element does not exist.' % args.element)
+        sys.exit(2)
 
     with open(map_file) as fd:
         package_names = json.loads(fd.read())
@@ -93,6 +104,7 @@ def main():
         distro_map = package_names['distro'].get(args.distro)
         if distro_map:
             name_map.update(distro_map)
+
     for name in extra:
         pkg_name = name_map.get(name)
         if pkg_name:
@@ -101,8 +113,11 @@ def main():
             continue
         else:
             err_msg = 'Missing package name for distro/element: %s/%s'
-            print(err_msg % (args.distro, args.element))
-            sys.exit(1)
+            eprint(err_msg % (args.distro, args.element))
+            if args.missing_ok:
+                print(name)
+            else:
+                sys.exit(1)
 
     sys.exit(0)
 
