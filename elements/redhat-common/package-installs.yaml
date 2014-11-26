@@ -1,0 +1,16 @@
+# Install any packages in this file that may not be in the base cloud
+# image but could reasonably be expected
+lsof:
+tcpdump:
+traceroute:
+which:
+gettext:
+    phase: pre-install.d
+grub2-tools:
+    phase: pre-install.d
+os-prober:
+    phase: pre-install.d
+redhat-lsb-core:
+    phase: pre-install.d
+system-logos:
+    phase: pre-install.d

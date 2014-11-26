@@ -2,4 +2,4 @@
 # if you are doing pip install on a git cloned directoy, because this
 # looks to be a fairly common pattern it makes sense to have git on the
 # target image
-git
+git:
