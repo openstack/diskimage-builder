@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
+
 import os.path
 
 
@@ -24,6 +26,8 @@ def main():
         indices = list(map(os.environ.get, sorted(candidates)))
     else:
         indices = ['file:///tmp/pypi']
+        print('WARNING: You are using the pypi element but no pypi mirror is '
+              'defined via the PYPI_MIRROR_URL env variable')
     easy_index = indices[-1]
     use_pypi_python_org = True
     if os.environ.get('DIB_OFFLINE'):
