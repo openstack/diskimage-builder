@@ -89,8 +89,7 @@ for i in $(find elements -type f); do
         SORTED=${TMPDIR}/element-deps.sorted
         grep -v '^#' $i > ${UNSORTED}
         sort ${UNSORTED} > ${SORTED}
-        diff -c ${UNSORTED} ${SORTED}
-        if [ $? -ne 0 ]; then
+        if [ -n "$(diff -c ${UNSORTED} ${SORTED})" ]; then
             error "$i is not sorted alphabetically"
         fi
     fi
