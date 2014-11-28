@@ -1,0 +1,1 @@
+nova-agent tar /tmp/nova-agent https://f97f271e9fde8f434e2a-fa73b8821af96cee574a861a54d04230.ssl.cf3.rackcdn.com/files/nova-agent/nova-agent-Linux-x86_64-1.39.0.tar.gz .
