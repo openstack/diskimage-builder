@@ -1,0 +1,12 @@
+#!/bin/bash
+set -eu
+set -o pipefail
+
+# Fedora sets requiretty by default, which while great for machines that are
+# going to see a lot of passwords sent over the wire because of interactive
+# activity, that's not how we're using these. Remove the setting, and the
+# comments about it
+
+sed -i -e '/^Defaults\s*requiretty/d' -e '/Disable "ssh hostname/d' /etc/sudoers
+sed -i -e '/You have to run/d' /etc/sudoers
+visudo -c

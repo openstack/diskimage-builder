@@ -1,8 +1,0 @@
-#!/bin/bash
-set -eu
-set -o pipefail
-
-# root can not sudo without a tty by default.
-echo "Defaults:root !requiretty" >> /etc/sudoers.d/root-notty
-chmod 0440 /etc/sudoers.d/root-notty
-visudo -c
