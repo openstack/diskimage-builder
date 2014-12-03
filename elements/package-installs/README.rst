@@ -3,26 +3,28 @@ uninstalling packages for an image build. This is done by creating a
 package-installs.yaml or package-installs.json file in the element directory.
 
 
-example package-installs.yaml:
-libxml2:
-grub2:
-  phase: pre-install.d
-networkmanager:
-  uninstall: True
+example package-installs.yaml::
 
-example package-installs.json:
-{
-  "libxml2": null,
-  "grub2": {"phase": "pre-install.d"},
-  "networkmanager": {"uninstall": true}
-}
+ libxml2:
+ grub2:
+   phase: pre-install.d
+ networkmanager:
+   uninstall: True
+
+example package-installs.json::
+
+    {
+    "libxml2": null,
+    "grub2": {"phase": "pre-install.d"},
+    "networkmanager": {"uninstall": true}
+    }
 
 
 Setting phase or uninstall properties for a package overrides the following
-default values:
+default values::
 
-phase: install.d
-uninstall: False
+    phase: install.d
+    uninstall: False
 
 
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or
