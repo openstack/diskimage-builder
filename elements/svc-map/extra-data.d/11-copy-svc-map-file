@@ -2,4 +2,4 @@
 set -eux
 set -o pipefail
 
-sudo install -D -o root -g root -m 0644 /tmp/svc-map-services "$TMP_MOUNT_PATH/usr/share/svc-map/services"
+sudo install -D -o root -g root -m 0644 "$TMP_MOUNT_PATH/tmp/svc-map-services" "$TMP_MOUNT_PATH/usr/share/svc-map/services"
