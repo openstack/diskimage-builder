@@ -1,0 +1,18 @@
+#!/bin/bash
+# Add an additional yum repo configuration with $DIB_YUM_REPO_CONF
+
+set -eux
+set -o pipefail
+
+# exit directly if DIB_YUM_REPO_CONF is not defined properly
+if [ -z "${DIB_YUM_REPO_CONF:-}" ] ; then
+    echo "DIB_YUM_REPO_CONF is not set - no repo configuration will be copied in"
+    exit 0
+elif [ ! -f "$DIB_YUM_REPO_CONF" ] ; then
+    echo "DIB_YUM_REPO_CONF is not a valid yum repo configuration file."
+    echo "You should assign a proper yum repo configuration file in DIB_YUM_REPO_CONF"
+    exit 1
+fi
+
+# copy the yum repo configuration
+sudo cp -L -f $DIB_YUM_REPO_CONF $TMP_MOUNT_PATH/etc/yum.repos.d/dib-yum-repo-conf.repo

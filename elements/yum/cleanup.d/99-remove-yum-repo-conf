@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+sudo rm -f $TMP_MOUNT_PATH/etc/yum.repos.d/dib-yum-repo-conf.repo
