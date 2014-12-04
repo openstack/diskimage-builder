@@ -118,22 +118,21 @@ function install_grub2 {
         GRUB_CFG=/boot/grub/grub.cfg
     fi
 
-    DIST=`lsb_release -is`
-    [ -n "$DIST" ]
     echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
     echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
     echo 'GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS0,115200"' >>/etc/default/grub
     echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
     GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
-    case $DIST in
-        'Ubuntu'|'Debian')
+    DISTRO_NAME=${DISTRO_NAME:-}
+    case $DISTRO_NAME in
+        'ubuntu'|'debian')
             sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
             GRUB_MKCONFIG=update-grub
         ;;
-        'Fedora'|'CentOS')
+        'fedora'|'centos7')
             echo 'GRUB_CMDLINE_LINUX="nofb nomodeset vga=normal"' >>/etc/default/grub
         ;;
-        'openSUSE project')
+        'opensuse')
             sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
         ;;
     esac
@@ -155,11 +154,10 @@ function install_grub2 {
         sed -i '$d' /etc/default/grub
     fi
 
-    RELEASE=`lsb_release -cs`
-    [ -n "$RELEASE" ]
     # grub-mkconfig generates a config with the device in it,
     # This shouldn't be needed, but old code has bugs
-    if [ $RELEASE = 'precise' ] || [ $RELEASE = 'wheezy' ]; then
+    DIB_RELEASE=${DIB_RELEASE:-}
+    if [ $DIB_RELEASE = 'precise' ] || [ $DIB_RELEASE = 'wheezy' ]; then
         sed -i "s%search --no.*%%" $GRUB_CFG
         sed -i "s%set root=.*%set root=(hd0,1)%" $GRUB_CFG
     fi
@@ -169,8 +167,8 @@ function install_grub2 {
     sed -i "s%$PART_DEV%LABEL=${DIB_ROOT_LABEL}%" $GRUB_CFG
     sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label ${DIB_ROOT_LABEL}%" $GRUB_CFG
     sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=${DIB_ROOT_LABEL}%" $GRUB_CFG
-    if [ "$DIST" = 'Fedora' ] ; then
-        if [ $(lsb_release -rs) = '19' ]; then
+    if [ "$DISTRO_NAME" = 'fedora' ] ; then
+        if [ $DIB_RELEASE = '19' ]; then
             sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=${DIB_ROOT_LABEL}%" /etc/fstab
         fi
         # Fix efi specific instructions in grub config file
