@@ -81,8 +81,8 @@ It will change over time as new releases come out.  There are also variants
 
 #### REG\_REPOS
 A single string representing a list of repository names separated by a
-space.  Each of the repositories in this string are enabled through
-subscription manager.  Once you've attached a subscription, you can
+comma (No spaces).  Each of the repositories in this string are enabled
+through subscription manager.  Once you've attached a subscription, you can
 find available repositories by running subscription-manager repos --list.
 
 #### REG\_SERVER\_URL
@@ -119,7 +119,7 @@ REG_METHOD=satellite
 To register with the Red Hat Customer Portal, a common example would be to
 set the following variables:
 
-REG_REPOS='rhel-7-server-optional-rpms rhel-7-server-extras-rpms'
+REG_REPOS='rhel-7-server-optional-rpms,rhel-7-server-extras-rpms'
 REG_AUTO_ATTACH=true
 REG_USER='tripleo'
 REG_PASSWORD='tripleo'
@@ -165,8 +165,8 @@ Heat metadata can be used to configure the rhel-common element.
             # minor release version. This is only used with the auto_attach
             # option.
         repos:
-            # A single string representing a list of repository names separated
-            # by a space.  Each of the repositories in this string are enabled
+            # A single string representing a list of repository names separated by a
+            # comma (No spaces).  Each of the repositories in this string are enabled
             # through subscription manager.
         satellite_url:
             # The url of the Satellite instance to register with.  Required for
@@ -214,7 +214,7 @@ use the following metadata:
 
     {
         "rh_registration":{
-            "repos":"rhel-7-server-optional-rpms rhel-7-server-extras-rpms",
+            "repos":"rhel-7-server-optional-rpms,rhel-7-server-extras-rpms",
             "auto_attach":true,
             "user":"tripleo",
             "password":"tripleo",

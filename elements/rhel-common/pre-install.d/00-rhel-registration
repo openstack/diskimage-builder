@@ -72,7 +72,7 @@ if [ -n "${REG_ORG:-}" ]; then
 fi
 
 if [ -n "${REG_REPOS:-}" ]; then
-    for repo in $REG_REPOS; do
+    for repo in $(echo $REG_REPOS | tr ',' '\n'); do
         repos="$repos --enable $repo"
     done
 fi
