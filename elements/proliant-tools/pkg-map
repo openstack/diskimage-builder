@@ -1,0 +1,10 @@
+{
+    "family": {
+        "debian": {
+            "alien": "alien"
+        }
+    },
+    "default": {
+        "alien": ""
+    }
+}
