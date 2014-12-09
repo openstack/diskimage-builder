@@ -9,6 +9,18 @@ Portal or Satellite to enable software installation from official
 repositories. After the end of the image creation process, the image will
 unregister itself so an entitlement will not be decremented from the account.
 
+
+SECURITY WARNING:
+-----------------
+While the image building workflow will allow you to register with a username
+and password combination, that feature is deprecated in the boot process via
+Heat as it will expose your username and password in clear text for anyone
+that has rights to run heat stack-show.  A compromised username and password
+can be used to login to the Red Hat Customer Portal or an instance of
+Satellite.  An activation key can only be used for registration purposes using
+the subscription-manager command line tool and is considered a lower security
+risk.
+
 IMPORTANT NOTE:
 ----------------
 The 00-rhsm script is specific to RHEL6.  If you use the REG_ variables to
@@ -158,6 +170,7 @@ Heat metadata can be used to configure the rhel-common element.
         org:
             # Gives the organization to which to join the system.
         password:
+            # DEPRECATED
             # Gives the password for the user account.
         release:
             # Sets the operating system minor release to use for subscriptions
@@ -180,6 +193,7 @@ Heat metadata can be used to configure the rhel-common element.
             # Sets the service level to use for subscriptions on that machine.
             # This is only used with the auto_attach option.
         user:
+            # DEPRECATED
             # Gives the content server user account name.
         type:
             # Sets what type of consumer is being registered. The default is
@@ -202,8 +216,7 @@ metadata:
             "satellite_url": "http://my-sat06.server.org",
             "org": "tripleo",
             "environment": "Library",
-            "user":"tripleo",
-            "password":"tripleo",
+            "activation_key": "my-key-SQQkh4",
             "method":"satellite"
             "repos": "rhel-ha-for-rhel-7-server-rpms"
         }
@@ -216,8 +229,8 @@ use the following metadata:
         "rh_registration":{
             "repos":"rhel-7-server-optional-rpms,rhel-7-server-extras-rpms",
             "auto_attach":true,
-            "user":"tripleo",
-            "password":"tripleo",
+            "activation_key": "my-key-SQQkh4",
+            "org": "5643002",
             "method":"portal"
         }
     }
