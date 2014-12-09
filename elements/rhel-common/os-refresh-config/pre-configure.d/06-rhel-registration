@@ -116,7 +116,10 @@ case "${REG_METHOD:-}" in
         # beta-rpms repo only needed to support the katello-ca rpm above.
         subscription-manager repos --disable ${satellite_repo}
         ;;
+    disable)
+        echo "Disabling RHEL registration"
+        ;;
     *)
-        echo "WARNING: only 'portal' and 'satellite' are valid values for REG_METHOD."
-        exit 0 # keeps the stack from failing if you don't set a value in REG_METHOD
+        echo "WARNING: only 'portal', 'satellite', and 'disable' are valid values for REG_METHOD."
+        exit 0
 esac
