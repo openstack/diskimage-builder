@@ -65,6 +65,8 @@ function show_options () {
     echo "       Options need to be comma separated, and follow the key=value pattern."
     echo "    --root-label label -- label for the root filesystem.  Defaults to 'cloudimg-rootfs'."
     echo "    --ramdisk-element -- specify the main element to be used for building ramdisks."
+    echo "       Defaults to 'ramdisk'.  Should be set to 'dracut-ramdisk' for platforms such"
+    echo "       as RHEL and CentOS that do not package busybox."
     echo "    --install-type -- specify the default installation type. Defaults to 'source'. Set to 'package' to use package based installations by default."
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
