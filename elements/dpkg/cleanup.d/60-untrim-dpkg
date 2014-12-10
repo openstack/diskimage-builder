@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+[ -n "$TARGET_ROOT" ]
+
+sudo rm $TARGET_ROOT/etc/dpkg/dpkg.cfg.d/02apt-speedup
+sudo rm $TARGET_ROOT/etc/apt/apt.conf.d/no-languages
