@@ -4,4 +4,4 @@ set -eux
 set -o pipefail
 
 package-uninstalls -d $(dirname $0)
-package-installs-v2 --phase pre-install.d --uninstall
+package-installs-v2 --phase pre-install.d --uninstall /tmp/package-installs.json

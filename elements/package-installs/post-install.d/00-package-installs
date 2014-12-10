@@ -4,4 +4,4 @@ set -eux
 set -o pipefail
 
 package-installs -d $(dirname $0)
-package-installs-v2 --phase post-install.d
+package-installs-v2 --phase post-install.d /tmp/package-installs.json

@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+import argparse
+import collections
+import functools
+import json
+import os
+
+import yaml
+
+
+def collect_data(data, filename, element_name):
+    try:
+        objs = json.load(open(filename))
+    except ValueError:
+        objs = yaml.load(open(filename))
+    for pkg_name, params in objs.items():
+        if not params:
+            params = {}
+        phase = params.get('phase', 'install.d')
+        install = "install"
+        if 'uninstall' in params:
+            install = "uninstall"
+
+        data[phase][install].append((pkg_name, element_name))
+    return data
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Produce a single packages-installs file from all of"
+                    " the available package-installs files")
+    parser.add_argument('--elements', required=True,
+                        help="Which elements to squash")
+    parser.add_argument('--path', required=True,
+                        help="Elements path to search for elements")
+    parser.add_argument('outfile', help="Location of the output file")
+    args = parser.parse_args()
+
+    # Replicate the logic of finding the first element, because we can't
+    # operate on the post-copied hooks dir, since we lose element context
+    element_dirs = list()
+    for element_name in args.elements.split():
+        for elements_dir in args.path.split(':'):
+            potential_path = os.path.join(elements_dir, element_name)
+            if os.path.exists(potential_path):
+                element_dirs.append((elements_dir, element_name))
+
+    # Collect the merge of all of the existing install files in the elements
+    # that are the first on the ELEMENT_PATH
+    final_dict = collections.defaultdict(
+        functools.partial(collections.defaultdict, list))
+    for (elements_dir, element_name) in element_dirs:
+        for file_type in ('json', 'yaml'):
+            target_file = os.path.join(
+                elements_dir, element_name, "package-installs.%s" % file_type)
+            if not os.path.exists(target_file):
+                continue
+            final_dict = collect_data(final_dict, target_file, element_name)
+
+    # Write the resulting file
+    with open(args.outfile, 'w') as outfile:
+        json.dump(
+            final_dict, outfile,
+            indent=True, separators=(',', ': '), sort_keys=False)
+
+if __name__ == '__main__':
+    main()
