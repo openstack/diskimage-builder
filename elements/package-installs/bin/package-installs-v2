@@ -55,14 +55,14 @@ def main():
 
         try:
             map_output = subprocess.check_output(
-                pkg_map_args, stderr=subprocess.STDOUT)
+                pkg_map_args)
         except subprocess.CalledProcessError as e:
             if e.returncode == 1:
                 if args.noop:
                     pkgs.append(pkg)
                     continue
                 else:
-                    print("pkg-map failed with error %s" % e.output)
+                    print("pkg-map failed")
                     sys.exit(1)
             elif e.returncode == 2:
                 pkgs.append(pkg)
