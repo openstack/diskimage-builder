@@ -1,0 +1,83 @@
+#!/bin/bash
+# These are useful, or at worst not harmful, for all images we build.
+
+set -eux
+set -o pipefail
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+shopt -s extglob
+
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cdimage.ubuntu.com/ubuntu-core/preview}
+DIB_RELEASE=${DIB_RELEASE:-alpha-01}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-ubuntu-core-$DIB_RELEASE.img}
+BASE_IMAGE_TAR=$DIB_RELEASE-ubuntu-core.tgz
+SHA256SUMS=${SHA256SUMS:-$DIB_CLOUD_IMAGES/SHA256SUMS}
+CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+CACHED_TAR=$DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
+CACHED_SUMS=$DIB_IMAGE_CACHE/SHA256SUMS.ubuntu-core.$DIB_RELEASE
+
+if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
+    echo "Not checking freshness of cached $CACHED_TAR"
+else
+    echo "Fetching Base Image"
+    $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $CACHED_SUMS
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
+
+    pushd $DIB_IMAGE_CACHE
+    if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
+        # It is likely that an upstream http(s) proxy has given us a skewed
+        # result - either a cached SHA file or a cached image. Use cache-busting
+        # to get (as long as caches are compliant...) fresh files.
+        # Try the sha256sum first, just in case that is the stale one (avoiding
+        # downloading the larger image), and then if the sums still fail retry
+        # the image.
+        $TMP_HOOKS_PATH/bin/cache-url -f $SHA256SUMS $CACHED_SUMS
+        if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
+            $TMP_HOOKS_PATH/bin/cache-url -f \
+                $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
+            grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
+        fi
+    fi
+    popd
+
+    if [ ! -f $CACHED_TAR -o \
+        $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE -nt $CACHED_TAR ] ; then
+
+        echo "Repacking base image as tarball."
+        WORKING=$(mktemp -d)
+        EACTION="rm -r $WORKING"
+        trap "$EACTION" EXIT
+        RAW_FILE=$(basename $BASE_IMAGE_FILE)
+        RAW_FILE=${RAW_FILE%.img}.raw
+        qemu-img convert -f qcow2 -O raw $CACHED_FILE $WORKING/$RAW_FILE
+        MAGIC_BIT=p1
+        # NOTE: On RHEL, partprobe of /dev/loop0 does not create /dev/loop0p2,
+        # while kpartx at least creates /dev/mapper/loop0p2.
+        LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | awk "/loop[0-9]+$MAGIC_BIT/ {print \$3}")
+        # If running inside Docker, make our nodes manually, because udev will not be working.
+        if [ -f /.dockerenv ]; then
+            sudo dmsetup --noudevsync mknodes
+        fi
+        export LOOPDEV=$LOOPDEV
+        echo "Loop device is set to: $LOOPDEV"
+        if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$LOOPDEV ]; do sleep 1; done"; then
+            echo "Error: Could not find /dev/mapper/$LOOPDEV"
+            exit 1
+        fi
+        EACTION="sudo kpartx -d $WORKING/$RAW_FILE;$EACTION"
+        trap "$EACTION" EXIT
+        mkdir $WORKING/mnt
+        sudo mount /dev/mapper/$LOOPDEV $WORKING/mnt
+        EACTION="sudo umount -f $WORKING/mnt;$EACTION"
+        trap "$EACTION" EXIT
+        # Chroot in so that we get the correct uid/gid
+        sudo chroot $WORKING/mnt bin/tar -cz . > $WORKING/tmp.tar
+        mv $WORKING/tmp.tar $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
+    fi
+fi
+
+# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+# image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
+sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
