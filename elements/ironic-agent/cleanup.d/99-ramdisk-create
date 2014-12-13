@@ -7,14 +7,14 @@ set -o pipefail
 
 source $_LIB/img-functions
 
-WORKDIR=$(pwd)
+IMAGE_PATH=$(readlink -f $IMAGE_NAME)
 cd $TARGET_ROOT
 
 echo "#disabled" > ./tmp/fstab.new
 sudo mv ./tmp/fstab.new ./etc/fstab
 sudo ln -s ./sbin/init ./
 
-sudo find . -path ./sys -prune -o -path ./proc -prune -o -print | sudo cpio -o -H newc | gzip > $WORKDIR/$IMAGE_NAME.initramfs
+sudo find . -path ./sys -prune -o -path ./proc -prune -o -print | sudo cpio -o -H newc | gzip > ${IMAGE_PATH}.initramfs
 
 select_boot_kernel_initrd $TARGET_ROOT
-sudo cp $BOOTDIR/$KERNEL $WORKDIR/$IMAGE_NAME.vmlinuz
+sudo cp $BOOTDIR/$KERNEL ${IMAGE_PATH}.vmlinuz
