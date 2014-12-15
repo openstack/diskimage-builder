@@ -1,20 +1,26 @@
 readonly IRONIC_API_URL=$(get_kernel_parameter ironic_api_url)
 readonly IRONIC_BOOT_OPTION=$(get_kernel_parameter boot_option)
 readonly IRONIC_BOOT_MODE=$(get_kernel_parameter boot_mode)
+readonly ROOT_DEVICE=$(get_kernel_parameter root_device)
 
 if [ -z "$ISCSI_TARGET_IQN" ]; then
   err_msg "iscsi_target_iqn is not defined"
   troubleshoot
 fi
 
-t=0
-while ! target_disk=$(find_disk "$DISK"); do
-  if [ $t -eq 10 ]; then
-    break
-  fi
-  t=$(($t + 1))
-  sleep 1
-done
+target_disk=
+if [[ $ROOT_DEVICE ]]; then
+    target_disk="$(get_root_device)"
+else
+    t=0
+    while ! target_disk=$(find_disk "$DISK"); do
+      if [ $t -eq 10 ]; then
+        break
+      fi
+      t=$(($t + 1))
+      sleep 1
+    done
+fi
 
 if [ -z "$target_disk" ]; then
   err_msg "Could not find disk to use."
