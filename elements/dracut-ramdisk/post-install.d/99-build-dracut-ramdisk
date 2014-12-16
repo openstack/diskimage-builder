@@ -35,7 +35,14 @@ populate_init
 SCRIPT_HOME=/tmp/in_target.d/bin TMP_HOOKS_PATH=/tmp/in_target.d run_d ramdisk-install
 MODULE_PATH="/usr/lib/dracut/modules.d"
 cp -r "$MODULE" "$MODULE_PATH/80deploy-ramdisk"
-cp "$TMP_MOUNT_PATH/init" "$MODULE_PATH/80deploy-ramdisk/init.sh"
+mv "$TMP_MOUNT_PATH/init" "$MODULE_PATH/80deploy-ramdisk/init.sh"
+
+# NOTE(bnemec): Workaround for bug in Dracut.  This fix has been proposed to
+# Dracut as well in https://github.com/haraldh/dracut/pull/34 , and once it has
+# been released for all of our supported platforms we can remove this.  Until then
+# this makes --include work correctly and will be a noop if we're running a fixed
+# Dracut version.
+sed -i 's|cp --reflink=auto --sparse=auto -fa -t "$s" "$i"$|cp --reflink=auto --sparse=auto -fa -t "${initdir}/${tgt}" "$i"|g' $(which dracut)
 
 # Notes on the options passed to Dracut:
 # -N: Do not build a host-specific ramdisk.  We want to be able to run this ramdisk
@@ -53,7 +60,7 @@ cp "$TMP_MOUNT_PATH/init" "$MODULE_PATH/80deploy-ramdisk/init.sh"
 dracut -N \
     --install "$(cat /etc/dib_binary_deps)" \
     --kernel-cmdline "rd.shell rd.debug rd.neednet=1 rd.driver.pre=ahci" \
-    --include "$TMP_MOUNT_PATH/init-func" /init-func \
+    --include "$TMP_MOUNT_PATH/" / \
     --kver "${KERNEL_VERSION}" \
     --add-drivers "virtio virtio_net virtio_blk" \
     -o "dash plymouth" \
