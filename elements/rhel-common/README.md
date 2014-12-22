@@ -14,6 +14,7 @@ IMPORTANT NOTE:
 The 00-rhsm script is specific to RHEL6.  If you use the REG_ variables to
 use with RHEL7, you do not need to set any DIB_RHSM variables.  The scripts
 named with "rhel-registration" have not been developed or tested for RHEL6.
+For information on building RHEL6 images, please see the rhel element README.
 
 Environment Variables For Image Creation
 ----------------------------------------
