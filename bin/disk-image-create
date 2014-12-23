@@ -158,6 +158,11 @@ fi
 # NOTE: Tuning the rootfs uuid works only for ext filesystems.
 # Rely on the below environment variable only for ext filesystems.
 export DIB_IMAGE_ROOT_FS_UUID=$(uuidgen -r)
+if echo "$FS_TYPE" | grep -q "^ext" && [ -z "${DIB_IMAGE_ROOT_FS_UUID}" ]; then
+    echo "ext filesystem detected but no DIB_IMAGE_ROOT_FS_UUID found."
+    echo "Is the uuidgen utility installed on your system?"
+    exit 1
+fi
 
 # FS_TYPE isn't available until after we source img-defaults
 if [ -z "$DIB_ROOT_LABEL" ]; then
