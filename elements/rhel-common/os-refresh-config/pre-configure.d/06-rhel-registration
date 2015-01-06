@@ -64,12 +64,20 @@ if [ -n "${REG_SERVER_URL:-}" ]; then
     opts="$opts --serverurl=$REG_SERVER_URL"
 fi
 
-if [ -n "${REG_USER:-}" ]; then
-    opts="$opts --username $REG_USER"
-fi
+if [ -n "${REG_ACTIVATION_KEY:-}" ]; then
+    opts="$opts --activationkey=$REG_ACTIVATION_KEY"
 
-if [ -n "${REG_PASSWORD:-}" ]; then
-    opts="$opts --password $REG_PASSWORD"
+    if [ -z "${REG_ORG:-}" ]; then
+        echo "WARNING: REG_ACTIVATION_KEY set without REG_ORG."
+    fi
+else
+    if [ -n "${REG_PASSWORD:-}" ]; then
+        opts="$opts --password $REG_PASSWORD"
+    fi
+
+    if [ -n "${REG_USER:-}" ]; then
+        opts="$opts --username $REG_USER"
+    fi
 fi
 
 if [ -n "${REG_MACHINE_NAME:-}" ]; then
@@ -79,18 +87,19 @@ fi
 if [ -n "${REG_ORG:-}" ]; then
     opts="$opts --org $REG_ORG"
 fi
+
+if [ -n "${REG_REPOS:-}" ]; then
+    for repo in $REG_REPOS; do
+        repos="$repos --enable $repo"
+    done
+fi
+
+if [ -n "${REG_TYPE:-}" ]; then
+    opts="$opts --type=$REG_TYPE"
+fi
+
 case "${REG_METHOD:-}" in
     portal)
-        if [ -n "${REG_ACTIVATION_KEY:-}" ]; then
-            echo "WARNING: Activation keys are not supported by the customer portal at this time."
-        fi
-
-        if [ -n "${REG_REPOS:-}" ]; then
-            for repo in $REG_REPOS; do
-                repos="$repos --enable $repo"
-            done
-        fi
-
         subscription-manager register $opts
         if [ -z "${REG_AUTO_ATTACH:-}" ]; then
             subscription-manager attach $attach_opts
@@ -99,12 +108,6 @@ case "${REG_METHOD:-}" in
         ;;
     satellite)
         repos="$repos --enable ${satellite_repo}"
-        if [ -n "${REG_REPOS:-}" ]; then
-            for repo in $REG_REPOS; do
-                repos="$repos --enable $repo"
-            done
-        fi
-
         rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
         subscription-manager register $opts
         subscription-manager $repos
@@ -115,5 +118,5 @@ case "${REG_METHOD:-}" in
         ;;
     *)
         echo "WARNING: only 'portal' and 'satellite' are valid values for REG_METHOD."
-        exit 0
+        exit 0 # keeps the stack from failing if you don't set a value in REG_METHOD
 esac
