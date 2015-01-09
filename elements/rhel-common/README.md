@@ -71,7 +71,7 @@ the hostname.
 #### REG\_METHOD
 Sets the method of registration.  Use "portal" to register a system with the
 Red Hat Customer Portal.  Use "satellite" to register a system with Red
-Hat Satellite 6.
+Hat Satellite 6.  Use "disable" to skip the registration process.
 
 #### REG\_ORG
 Gives the organization to which to join the system.
@@ -204,7 +204,8 @@ Heat metadata can be used to configure the rhel-common element.
         method:
             # Sets the method of registration.  Use "portal" to register a
             # system with the Red Hat Customer Portal.  Use "satellite" to
-            # register a system with Red Hat Satellite 6.
+            # register a system with Red Hat Satellite 6.  Use "disable" to
+            # skip the registration process.
 
 Configuration Registration Examples
 ------------------------------------
