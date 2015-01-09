@@ -1,4 +1,5 @@
 readonly IRONIC_API_URL=$(get_kernel_parameter ironic_api_url)
+readonly IRONIC_BOOT_OPTION=$(get_kernel_parameter boot_option)
 
 if [ -z "$ISCSI_TARGET_IQN" ]; then
   err_msg "iscsi_target_iqn is not defined"
@@ -59,3 +60,52 @@ nc -l -p 10000
 echo "stop iSCSI target on $target_disk"
 
 stop_iscsi_target
+
+# If localboot is set, install a bootloader
+if [ "$IRONIC_BOOT_OPTION" = "local" ]; then
+    echo "Installing bootloader"
+
+    # We need to run partprobe to ensure all partitions are visible
+    partprobe $target_disk
+
+    # root partition is always the last partition of the disk
+    readonly root_part=$(ls $target_disk* | tr " " "\n" | tail -n1)
+    readonly root_part_mount=/mnt/rootfs
+
+    mkdir -p $root_part_mount
+
+    mount $root_part $root_part_mount
+    mount -o bind /dev $root_part_mount/dev
+    mount -o bind /sys $root_part_mount/sys
+    mount -o bind /proc $root_part_mount/proc
+
+    # TODO(lucasagomes): Add extlinux as a fallback
+    # Find grub version
+    V=
+    if [ -x $root_part_mount/usr/sbin/grub2-install ]; then
+        V=2
+    fi
+
+    # Install grub
+    ret=1
+    if chroot $root_part_mount /bin/bash -c "/usr/sbin/grub$V-install ${target_disk}"; then
+        echo "Generating the grub configuration file"
+
+        # tell GRUB2 to preload its "lvm" module to gain LVM booting on direct-attached disks
+        if [ "$V" = "2" ]; then
+            echo "GRUB_PRELOAD_MODULES=lvm" >> $root_part_mount/etc/default/grub
+        fi
+
+        chroot $root_part_mount /bin/bash -c "/usr/sbin/grub$V-mkconfig -o /boot/grub$V/grub.cfg"
+        ret=$?
+    fi
+
+    umount $root_part_mount/dev
+    umount $root_part_mount/sys
+    umount $root_part_mount/proc
+    umount $root_part_mount
+
+    if [ $ret -eq 0 ]; then
+         echo "Bootloader successfully installed"
+    fi
+fi
