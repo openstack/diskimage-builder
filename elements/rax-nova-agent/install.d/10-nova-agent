@@ -1,0 +1,137 @@
+#!/bin/bash
+# Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+#
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -eu
+set -o pipefail
+
+cd /tmp/nova-agent
+./installer.sh
+
+cat > /etc/cloud/cloud.cfg.d/80_restart_network.cfg <<'EOF'
+# Restart networking if it's got no IP. This is to catch if we're on RAX
+# and the baked in dhcp config didn't work, but is now probably reconfigured
+# by nova-agent
+runcmd:
+    - ip addr show eth0 | grep inet || ( ifdown -a ; ifup -a )
+EOF
+
+DIST=$(lsb_release -is)
+[ -n "$DIST" ]
+case $DIST in
+    'Ubuntu'|'Debian')
+
+    # cloud-init / nova-agent sad panda hacks
+    cat > /etc/init/nova-agent.conf <<'EOF'
+# nova-agent - start before cloud-init and hup network interfaces
+start on starting cloud-init-local
+
+task
+
+console output
+
+script
+    /etc/init.d/nova-agent start
+    sleep 13
+    ifdown -a
+    ifup -a
+end script
+EOF
+
+    cat > /etc/init/xe-linux-distribution.conf <<'EOF'
+# xe-linux-distribution - start the xentools before nova-agent runs
+start on starting nova-agent
+
+task
+
+console output
+
+script
+    /etc/init.d/xe-linux-distribution start
+    sleep 2
+end script
+EOF
+
+    # stop nova-agent from starting twice since we start it from upstart now
+    update-rc.d -f nova-agent remove
+    update-rc.d -f xe-linux-distribution remove
+
+    # console fix for PV Ubuntus
+    cat > /etc/init/hvc0.conf <<'EOF'
+
+# hvc0 - getty
+#
+# This service maintains a getty on hvc0 from the point the system is
+# started until it is shut down again.
+
+start on stopped rc RUNLEVEL=[2345]
+stop on runlevel [!2345]
+
+respawn
+exec /sbin/getty -L 115200 hvc0 vt102
+EOF
+    ;;
+    'Fedora'|'CentOS' | 'openSUSE project')
+
+    cat > /usr/local/bin/run-nova-agent.sh <<'EOF'
+#!/bin/bash
+/etc/init.d/nova-agent start
+sleep 13
+ifdown -a
+ifup -a
+EOF
+    chmod 0755 /usr/local/bin/run-nova-agent.sh
+
+    cat > /usr/local/bin/run-xe-linux-distribution.sh <<'EOF'
+#!/bin/bash
+/etc/init.d/xe-linux-distribution start
+sleep 2
+EOF
+    chmod 0755 /usr/local/bin/run-xe-linux-distribution.sh
+
+    cat > /etc/systemd/system/nova-agent.service <<EOF
+[Unit]
+Description=Rackspace nova-agent
+Before=cloud-init-local
+Wants=cloud-init-local
+
+[Service]
+ExecStart=/usr/local/bin/run-nova-agent.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    cat > /etc/systemd/system/xe-linux-distribution.service <<'EOF'
+[Unit]
+Description=xentools agent
+Before=nova-agent
+Wants=nova-agent
+
+[Service]
+ExecStart=/usr/local/bin/run-xe-linux-distribution.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    # stop nova-agent from starting twice since we start it from systemd now
+    chkconfig nova-agent off
+    chkconfig xe-linux-distribution off
+
+    systemctl enable nova-agent
+    systemctl enable xe-linux-distribution
+    ;;
+esac
