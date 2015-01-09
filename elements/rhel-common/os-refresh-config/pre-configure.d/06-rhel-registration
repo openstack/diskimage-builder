@@ -71,6 +71,8 @@ if [ -n "${REG_ACTIVATION_KEY:-}" ]; then
         echo "WARNING: REG_ACTIVATION_KEY set without REG_ORG."
     fi
 else
+    echo "WARNING: Support for registering with a username and password is deprecated."
+    echo "Please use activation keys instead.  See the README for more information."
     if [ -n "${REG_PASSWORD:-}" ]; then
         opts="$opts --password $REG_PASSWORD"
     fi
@@ -85,7 +87,7 @@ if [ -n "${REG_MACHINE_NAME:-}" ]; then
 fi
 
 if [ -n "${REG_ORG:-}" ]; then
-    opts="$opts --org $REG_ORG"
+    opts="$opts --org=$REG_ORG"
 fi
 
 if [ -n "${REG_REPOS:-}" ]; then

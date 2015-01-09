@@ -68,7 +68,7 @@ if [ -n "${REG_MACHINE_NAME:-}" ]; then
 fi
 
 if [ -n "${REG_ORG:-}" ]; then
-    opts="$opts --org $REG_ORG"
+    opts="$opts --org=$REG_ORG"
 fi
 
 if [ -n "${REG_REPOS:-}" ]; then
