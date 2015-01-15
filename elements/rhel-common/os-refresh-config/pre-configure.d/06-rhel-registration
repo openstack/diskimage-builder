@@ -23,7 +23,7 @@ REG_METHOD="$(os-apply-config --key rh_registration.method --type raw --key-defa
 opts=
 attach_opts=
 repos="repos --enable rhel-7-server-rpms"
-satellite_repo="rhel-7-server-rh-common-beta-rpms"
+satellite_repo="rhel-7-server-rh-common-rpms"
 if [ -n "${REG_AUTO_ATTACH:-}" ]; then
     opts="$opts --auto-attach"
 
@@ -115,7 +115,6 @@ case "${REG_METHOD:-}" in
         subscription-manager $repos
         yum install -y katello-agent || true # needed for errata reporting to satellite6
         katello-package-upload
-        # beta-rpms repo only needed to support the katello-ca rpm above.
         subscription-manager repos --disable ${satellite_repo}
         ;;
     disable)
