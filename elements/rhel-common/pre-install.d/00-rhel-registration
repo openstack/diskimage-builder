@@ -5,7 +5,7 @@ set -o pipefail
 opts=
 attach_opts=
 repos="repos --enable rhel-7-server-rpms"
-satellite_repo="rhel-7-server-rh-common-beta-rpms"
+satellite_repo="rhel-7-server-rh-common-rpms"
 
 if [ -n "${REG_AUTO_ATTACH:-}" ]; then
     opts="$opts --auto-attach"
@@ -94,8 +94,7 @@ case "${REG_METHOD:-}" in
         rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
         subscription-manager register $opts
         subscription-manager $repos
-        # beta-rpms repo only needed to support the katello-ca rpm above.
-        subscription-manager repos --disable rhel-7-server-rh-common-beta-rpms
+        subscription-manager repos --disable ${satellite_repo}
         ;;
     disable)
         echo "Disabling RHEL registration"
