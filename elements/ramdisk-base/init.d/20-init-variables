@@ -18,7 +18,14 @@ readonly _BOOTIF_=$(get_kernel_parameter BOOTIF)
 readonly _IP_=$(get_kernel_parameter ip)
 readonly BOOT_MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g" | \
                             sed -e "s/^01://g" | tr 'a-f' 'A-F')
-readonly BOOT_SERVER=$(echo "$_IP_" | cut -d':' -f2)
+
+# If bootloader did not pass on network info, we fallback to a kernel
+# parameter to locate the address of the boot server.
+if [ -n "$_IP_" ]; then
+    readonly BOOT_SERVER=$(echo "$_IP_" | cut -d':' -f2)
+else
+    readonly BOOT_SERVER=$(get_kernel_parameter boot_server)
+fi
 
 # IP address, netmask, gateway can be set a later point of time if
 # IP address is assigned by dhcp (for non-pxe boots).
