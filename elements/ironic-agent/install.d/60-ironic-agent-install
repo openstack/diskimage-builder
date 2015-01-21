@@ -13,6 +13,8 @@ Description=Ironic Python Agent\n
 [Service]
 ExecStart=/usr/bin/ironic-python-agent
 Restart=always
-RestartSec=30s\n' > /usr/lib/systemd/system/ironic-python-agent.service
+RestartSec=30s\n
+[Install]
+WantedBy=multi-user.target\n' > /usr/lib/systemd/system/ironic-python-agent.service
 
 sudo systemctl enable ironic-python-agent.service
