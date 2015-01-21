@@ -10,6 +10,8 @@ example package-installs.yaml::
    phase: pre-install.d
  networkmanager:
    uninstall: True
+ os-collect-config:
+   installtype: source
 
 example package-installs.json::
 
@@ -17,14 +19,20 @@ example package-installs.json::
     "libxml2": null,
     "grub2": {"phase": "pre-install.d"},
     "networkmanager": {"uninstall": true}
+    "os-collect-config": {"installtype": "source"}
     }
 
 
-Setting phase or uninstall properties for a package overrides the following
-default values::
+Setting phase, uninstall, or installtype properties for a package overrides
+the following default values::
 
     phase: install.d
     uninstall: False
+    installtype: * (Install package for all installtypes)
+
+Setting the installtype property causes the package only to be installed if
+the specified installtype would be used for the element. See the
+diskimage-builder docs for more information on installtypes.
 
 
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or

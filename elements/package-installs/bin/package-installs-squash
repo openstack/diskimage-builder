@@ -23,6 +23,12 @@ import os
 import yaml
 
 
+def get_element_installtype(element_name):
+    default = os.environ.get("DIB_DEFAULT_INSTALLTYPE", "source")
+    element_name.replace('-', '_')
+    return os.environ.get("DIB_INSTALLTYPE_%s" % element_name, default)
+
+
 def collect_data(data, filename, element_name):
     try:
         objs = json.load(open(filename))
@@ -36,7 +42,11 @@ def collect_data(data, filename, element_name):
         if 'uninstall' in params:
             install = "uninstall"
 
-        data[phase][install].append((pkg_name, element_name))
+        # Filter out incorrect installtypes
+        installtype = params.get('installtype', None)
+        elem_installtype = get_element_installtype(element_name)
+        if installtype is None or installtype == elem_installtype:
+            data[phase][install].append((pkg_name, element_name))
     return data
 
 
