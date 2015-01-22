@@ -50,7 +50,7 @@ function extract_image() {
 
             qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $WORKING/$RAW_FILE
 
-            ROOT_PARTITON=p1
+            ROOT_PARTITON=p$(sudo kpartx -l $WORKING/$RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
 
             # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
             # loop device and creates it if it doesn't exist
