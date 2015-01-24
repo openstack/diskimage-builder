@@ -2,6 +2,12 @@
 set -eu
 set -o pipefail
 
+OK=/mnt/state/var/lib/rhsm/rhsm.ok
+
+if [ -e $OK ] ; then
+    exit 0
+fi
+
 REG_ACTIVATION_KEY="$(os-apply-config --key rh_registration.activation_key --type raw --key-default '')"
 REG_AUTO_ATTACH="$(os-apply-config --key rh_registration.auto_attach --type raw --key-default 'true')"
 REG_BASE_URL="$(os-apply-config --key rh_registration.base_url --type raw --key-default '')"
@@ -124,3 +130,6 @@ case "${REG_METHOD:-}" in
         echo "WARNING: only 'portal', 'satellite', and 'disable' are valid values for REG_METHOD."
         exit 0
 esac
+
+mkdir -p $(dirname $OK)
+touch $OK
