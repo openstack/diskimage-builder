@@ -24,20 +24,6 @@ function fullpath() {
   fi
 }
 
-function cleanup () {
-  if [ "$RAMDISK_ELEMENT" != "dracut-ramdisk" ]; then
-    unmount_dir "$TMP_BUILD_DIR/mnt"
-  fi
-  if [ -f "$TMP_IMAGE_PATH" ]; then
-    loopdev=`sudo losetup -j "$TMP_IMAGE_PATH" | cut -d: -f1`
-    if [ -n "$loopdev" ]; then
-      detach_loopback "$loopdev"
-    fi
-  fi
-  unmount_dir "$TMP_BUILD_DIR"
-  rm -rf --one-file-system "$TMP_BUILD_DIR"
-}
-
 function create_ramdisk_base () {
   echo "Creating base system"
 

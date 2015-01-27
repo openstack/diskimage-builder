@@ -251,13 +251,11 @@ if [ "$IS_RAMDISK" == "0" ]; then
   for IMAGE_TYPE in ${IMAGE_TYPES[@]} ; do
     compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
   done
-  rm $TMP_IMAGE_PATH
-  cleanup_dirs
-else
-  # This is a ramdisk build, we have already extracted the kernel and ramdisk
-  # by this point.
-  rm $TMP_IMAGE_PATH
 fi
+
+# Always cleanup after ourselves
+rm $TMP_IMAGE_PATH
+cleanup_dirs
 
 case "$IMAGE_ELEMENT" in
   *ironic-agent*)

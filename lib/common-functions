@@ -173,7 +173,7 @@ function cleanup_dirs () {
     sudo rm -rf $TMP_BUILD_DIR/built
     sudo rm -rf $TMP_BUILD_DIR/mnt
     sudo umount -f  $TMP_BUILD_DIR $TMP_IMAGE_DIR || true
-    rm -rf $TMP_BUILD_DIR $TMP_IMAGE_DIR
+    rm -rf --one-file-system $TMP_BUILD_DIR $TMP_IMAGE_DIR
 }
 
 # Run a directory of hooks outside the target (that is, no chrooting).
