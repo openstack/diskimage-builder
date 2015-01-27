@@ -1,4 +1,15 @@
-readonly DISCOVERD_URL=$(get_kernel_parameter discoverd_callback_url)
+DISCOVERD_URL=$(get_kernel_parameter discoverd_callback_url)
+if [ -z "$DISCOVERD_URL" ]; then
+    # Some old ramdisks are around
+    DISCOVERD_URL=$(get_kernel_parameter ironic_callback_url)
+    if [ -z "$DISCOVERD_URL" ]; then
+        echo "No discoverd_callback_url supplied"
+        troubleshoot
+    else
+        echo "WARNING: deprecated option ironic_callback_url"
+        echo "WARNING: use discoverd_callback_url instead"
+    fi
+fi
 
 function request_curl(){
     HTTP_METHOD=$1
