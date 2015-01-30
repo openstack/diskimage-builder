@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+
+TARGET_DIR="/tmp/in_target.d/"
+
+EXTRA_DRIVERS=
+
+for _FILE in $(ls ${TARGET_DIR}/dracut-drivers.d/) ; do
+    _FILE="${TARGET_DIR}/dracut-drivers.d/${_FILE}"
+    if [ -s $_FILE ]; then
+        for _LINE in $(cat $_FILE) ; do
+            EXTRA_DRIVERS="${EXTRA_DRIVERS} $_LINE"
+        done
+    fi
+done
+
+if [ "$EXTRA_DRIVERS" = "" ]; then
+    echo "No extra drivers found"
+else
+    DRIVERS_OUTPUT="/etc/dib_dracut_drivers"
+    echo "Creating extra drivers record at: ${DRIVERS_OUTPUT}"
+    echo "$EXTRA_DRIVERS" >${DRIVERS_OUTPUT}
+fi

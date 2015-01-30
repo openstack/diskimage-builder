@@ -66,7 +66,7 @@ dracut -N \
     --kernel-cmdline "rd.shell rd.debug rd.neednet=1 rd.driver.pre=ahci" \
     --include "$TMP_MOUNT_PATH/" / \
     --kver "${KERNEL_VERSION}" \
-    --add-drivers "virtio virtio_net virtio_blk" \
+    --add-drivers "$(cat /etc/dib_dracut_drivers)" \
     -o "dash plymouth" \
     /tmp/ramdisk
 
