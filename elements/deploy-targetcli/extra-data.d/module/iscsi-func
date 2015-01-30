@@ -1,0 +1,22 @@
+function start_iscsi_target() {
+    local iqn=$1
+    local dev=$2
+    local cli=$3
+
+    # used by tgtd
+    mkdir -p /var/run
+
+    ln -s /usr/bin/targetcli /targetcli_bin.py
+    /targetcli-wrapper /backstores/block create block1 dev=$dev
+    /targetcli-wrapper /iscsi create $iqn
+    /targetcli-wrapper /iscsi/$iqn/tpg1/luns create /backstores/block/block1 1
+    /targetcli-wrapper /iscsi/$iqn/tpg1/portals create $BOOT_IP_ADDRESS
+    /targetcli-wrapper /iscsi/$iqn/tpg1 set attribute authentication=0
+    /targetcli-wrapper /iscsi/$iqn/tpg1 set attribute demo_mode_write_protect=0
+    /targetcli-wrapper /iscsi/$iqn/tpg1 set attribute generate_node_acls=1
+
+}
+
+function stop_iscsi_target() {
+    /targetcli-wrapper clearconfig confirm=True
+}

@@ -1,0 +1,21 @@
+function start_iscsi_target() {
+    local iqn=$1
+    local dev=$2
+    local cli=$3
+
+    # used by tgtd
+    mkdir -p /var/run
+
+    tgtd
+    wait_for 10 0.5 check_tgtd_socket
+
+    tgtadm --lld iscsi --mode target --op new --tid 1 --targetname "$iqn"
+    tgtadm --lld iscsi --mode logicalunit --op new --tid 1 --lun 1 --backing-store "$dev"
+    tgtadm --lld iscsi --mode target --op bind --tid 1 --initiator-address "$cli"
+}
+
+function stop_iscsi_target() {
+    tgtadm --lld iscsi --mode logicalunit --op delete --tid 1 --lun 1
+    tgtadm --lld iscsi --mode target --op delete --tid 1
+    killall tgtd
+}

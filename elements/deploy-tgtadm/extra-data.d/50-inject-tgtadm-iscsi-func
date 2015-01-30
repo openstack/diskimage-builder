@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+
+RAMDISK_SCRIPT_PATH="$TMP_MOUNT_PATH/tmp/ramdisk-build/scripts/d"
+mkdir -p ${RAMDISK_SCRIPT_PATH}
+cp $(dirname $0)/scripts/iscsi-func ${RAMDISK_SCRIPT_PATH}

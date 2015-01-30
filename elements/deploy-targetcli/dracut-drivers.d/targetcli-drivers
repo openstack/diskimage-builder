@@ -1,0 +1,6 @@
+target_core_mod
+iscsi_target_mod
+target_core_iblock
+target_core_file
+target_core_pscsi
+configfs
