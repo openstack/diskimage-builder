@@ -18,7 +18,7 @@ set -eu
 set -o pipefail
 
 # exit directly if DIB_DPKG_MANIFEST is not defined properly
-if [ -z "$DIB_DPKG_MANIFEST" ]; then
+if [ -z "${DIB_DPKG_MANIFEST:-}" ]; then
     echo "DIB_DPKG_MANIFEST must be set to the location of a manifest file you wish to use"
     exit 0
 elif [ ! -f "$DIB_DPKG_MANIFEST" -o ! -s "$DIB_DPKG_MANIFEST" ]; then

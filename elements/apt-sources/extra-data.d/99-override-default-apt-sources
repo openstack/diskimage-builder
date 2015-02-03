@@ -5,9 +5,9 @@ set -eu
 set -o pipefail
 
 # exit directly if DIB_APT_SOURCES is not defined properly
-if [ -z "$DIB_APT_SOURCES" ] ; then
+if [ -z "${DIB_APT_SOURCES:-}" ] ; then
     echo "DIB_APT_SOURCES must be set to the location of a sources.list file you wish to use"
-    exit 1
+    exit 0
 elif [ ! -f "$DIB_APT_SOURCES" -o ! -s "$DIB_APT_SOURCES" ] ; then
     echo "$DIB_APT_SOURCES  is not a valid sources.list file."
     echo "You should assign proper sources.list file in DIB_APT_SOURCES"
