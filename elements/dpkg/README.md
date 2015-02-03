@@ -14,6 +14,6 @@ The dpkg specific version of install-packages is also kept here.
   added to the key ring before any apt-get commands take place.
 * DIB\_APT\_LOCAL\_CACHE: You can use this variable to disable the internal cache
   of the /var/cache/apt/archives directory by setting it to 0. The default is to bind
-  mount the ~/.cache/image-create/apt/$DISTRO_NAME directory in
+  mount the $DIB_IMAGE_CACHE/apt/$DISTRO_NAME directory in
   /var/cache/apt/archives, this to cache the .deb files downloaded during the image
   creation.
