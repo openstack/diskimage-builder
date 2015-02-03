@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
 import argparse
 import collections
 import os
@@ -115,16 +116,17 @@ def expand_dependencies(user_elements, elements_dir=None):
 def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('elements', nargs='+',
-                        help='elements to inspect')
+                        help='display dependencies of the given elements')
     parser.add_argument('--expand-dependencies', '-d', action='store_true',
                         default=False,
-                        help='Print expanded dependencies of all args')
+                        help=('(DEPRECATED) print expanded dependencies '
+                              'of all args'))
 
     args = parser.parse_args(argv[1:])
 
     if args.expand_dependencies:
-        print(' '.join(expand_dependencies(args.elements)))
-        return 0
+        print("WARNING: expand-dependencies flag is deprecated,  "
+              "and is now on by default.", file=sys.stderr)
 
-    sys.stderr.write("ERROR: please choose an option.\n")
-    return -1
+    print(' '.join(expand_dependencies(args.elements)))
+    return 0
