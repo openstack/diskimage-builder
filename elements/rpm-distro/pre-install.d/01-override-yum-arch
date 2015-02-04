@@ -9,6 +9,12 @@ if [ "i386" = "$ARCH" ]; then
 elif [ "amd64" = "$ARCH" ]; then
     basearch=x86_64
     arch=x86_64
+elif [[ "$ARCH" = "ppc64" ]]; then
+    basearch=ppc64
+    arch=ppc64
+elif [[ "$ARCH" = "ppc64el" ]]; then
+    basearch=ppc64el
+    arch=ppc64el
 else
     echo "********************"
     echo "Unknown arch '$ARCH'"
