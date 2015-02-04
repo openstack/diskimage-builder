@@ -42,5 +42,5 @@ save_image /tmp/ramdisk
 # In the past save_image did this for us. If EXIT handler is not
 # reset ramdisk image builds fail.
 trap EXIT
-cp /boot/vmlinuz-${KERNEL_VERSION} /tmp/kernel
+cp /boot/vmlinu[zx]-${KERNEL_VERSION} /tmp/kernel
 chmod o+r /tmp/kernel

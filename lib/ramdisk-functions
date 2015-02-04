@@ -226,10 +226,10 @@ function populate_udev () {
 }
 
 function find_kernel_version () {
-  _TMP=$(ls /boot/vmlinuz-* | sort | tail -1)
+  _TMP=$(ls /boot/vmlinu* | sort | tail -1)
   if [ "$_TMP" == "" ]; then
     echo "Unable to find a suitable kernel" >>/dev/stderr
     exit 1
   fi
-  echo ${_TMP##/boot/vmlinuz-}
+  echo ${_TMP##/boot/vmlinu[zx]-}
 }
