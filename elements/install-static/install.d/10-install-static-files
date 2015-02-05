@@ -1,0 +1,11 @@
+#!/bin/bash
+# Note that this relies on the detail that all elements share one dir inside
+# the chroot. This will copy all the files that elements have added to
+# element/static into the image. Mode, symlinks etc will be respected.
+set -eux
+set -o pipefail
+
+STATIC_SOURCE="$(dirname $0)/../static"
+[ -d "${STATIC_SOURCE}" ] || exit 0
+
+rsync -lCr "${STATIC_SOURCE}"/ /
