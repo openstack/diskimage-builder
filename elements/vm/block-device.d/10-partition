@@ -5,14 +5,23 @@ set -o pipefail
 source $_LIB/die
 [ -n "$IMAGE_BLOCK_DEVICE" ] || die "Image block device not set"
 
+# Create 2 partitions for PPC, one for PReP boot and other for root
+if [[ "$ARCH" =~ "ppc" ]] ; then
+    sudo sfdisk --force $IMAGE_BLOCK_DEVICE << EOF
+0,8,41 *
+,,L
+;
+EOF
+else
 # Create 1 partition far enough up the disk to permit grub to be installed on
 # the MBR.
-sudo sfdisk $IMAGE_BLOCK_DEVICE << EOF
+    sudo sfdisk $IMAGE_BLOCK_DEVICE << EOF
 1 - - *
 0 0;
 0 0;
 0 0;
 EOF
+fi
 
 sudo partprobe $IMAGE_BLOCK_DEVICE
 
@@ -31,10 +40,15 @@ if [ ! -e "${IMAGE_BLOCK_DEVICE}p1" ]; then
     else
         sudo kpartx -asv $TMP_IMAGE_PATH
     fi
+elif [[ "$ARCH" =~ "ppc" ]]; then
+    sudo kpartx -asv $TMP_IMAGE_PATH
 fi
 
 if [ -n "$DM" ]; then
     echo "IMAGE_BLOCK_DEVICE=${DM}p1"
+elif [[ "$ARCH" =~ "ppc" ]]; then
+    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
+    echo "IMAGE_BLOCK_DEVICE=${DM}p2"
 else
     echo "IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1"
 fi
