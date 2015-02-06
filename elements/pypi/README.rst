@@ -16,18 +16,18 @@ To disable the pypi.python.org index without using --offline (e.g. when working
 behind a corporate firewall that prohibits pypi.python.org) set
 DIB\_NO\_PYPI\_PIP to any non-empty value.
 
-To use an arbitrary mirror set PYPI\_MIRROR\_URL=http[s]://somevalue/
+To use an arbitrary mirror set DIB\_PYPI\_MIRROR\_URL=http[s]://somevalue/
 
-Additional mirrors can be added by exporting PYPI\_MIRROR\_URL\_1=... etc. Only
-the one mirror can be used by easy-install, but since wheels need to be in the
-first mirror to be used, the last listed mirror is used as the pydistutils
-index. NB: The sort order for these variables is a simple string sort - if
-you have more than 9 additional mirrors, some care will be needed.
+Additional mirrors can be added by exporting DIB\_PYPI\_MIRROR\_URL\_1=... etc.
+Only the one mirror can be used by easy-install, but since wheels need to be in
+the first mirror to be used, the last listed mirror is used as the pydistutils
+index. NB: The sort order for these variables is a simple string sort - if you
+have more than 9 additional mirrors, some care will be needed.
 
 A typical use of this element is thus:
-export PYPI\_MIRROR\_URL=http://site/pypi/Ubuntu-13.10
-export PYPI\_MIRROR\_URL\_1=http://site/pypi/
-export PYPI\_MIRROR\_URL\_2=file:///tmp/pypi
+export DIB\_PYPI\_MIRROR\_URL=http://site/pypi/Ubuntu-13.10
+export DIB\_PYPI\_MIRROR\_URL\_1=http://site/pypi/
+export DIB\_PYPI\_MIRROR\_URL\_2=file:///tmp/pypi
 
 [devpi-server](https://git.openstack.org/cgit/openstack-infra/pypi-mirro://pypi.python.org/pypi/devpi-server)
 can be useful in making a partial PyPI mirror suitable for building images. For
@@ -41,9 +41,9 @@ instance:
 
 * Re-export your variables to point at the new mirror:
 
-    export PYPI\_MIRROR\_URL=http://machinename:3141/
-    unset PYPI\__MIRROR\_URL\_1
-    unset PYPI\__MIRROR\_URL\_1
+    export DIB\_PYPI\_MIRROR\_URL=http://machinename:3141/
+    unset DIB\_PYPI\__MIRROR\_URL\_1
+    unset DIB\_PYPI\__MIRROR\_URL\_2
 
 The next time packages are installed, they'll be cached on the local devpi
 server; subsequent runs pointed at the same mirror will use the local cache if
