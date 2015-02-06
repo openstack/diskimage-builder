@@ -1,6 +1,0 @@
-#!/bin/bash
-
-set -eu
-set -o pipefail
-
-install-packages -m base ccache_package

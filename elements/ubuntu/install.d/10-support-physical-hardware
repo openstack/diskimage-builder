@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -eu
-set -o pipefail
-
-# Ubuntu's cloud images don't include drivers for real hardware.
-install-packages linux-image-generic
-
