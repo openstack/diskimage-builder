@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+set -eu
+set -o pipefail
+if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
+    . ${TARGET_ROOT}/.extra_settings
+fi
+
+[ -n "$DISTRO_NAME" ]
+[ -n "$DIB_RELEASE" ]
+
+DIB_DEBOOTSTRAP_EXTRA_ARGS=${DIB_DEBOOTSTRAP_EXTRA_ARGS:-}
+DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://archive.ubuntu.com/ubuntu}
+http_proxy=${http_proxy:-}
+
+set -x
+if [ -n "$DIB_OFFLINE" -o -n "${DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE:-}" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
+    echo $DEBOOTSTRAP_TARBALL found in cache. Using.
+    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
+else
+
+    KEYRING_OPT=
+    if [ -n "${DIB_DEBIAN_KEYRING:-}" ] ; then
+        KEYRING_OPT="--keyring=${DIB_DEBIAN_KEYRING}"
+    fi
+
+    # Have to --include=python because of dib-run-parts
+    # Have to --include=sudo for pre-install.d use of sudoers files
+    sudo sh -c "http_proxy=$http_proxy debootstrap --verbose \
+        --variant=minbase \
+        --include=python,sudo \
+        --components=main,restricted,universe \
+        --arch=${ARCH} \
+        $KEYRING_OPT \
+        $DIB_DEBOOTSTRAP_EXTRA_ARGS \
+        $DIB_RELEASE \
+        $TARGET_ROOT \
+        $DIB_DISTRIBUTION_MIRROR \
+        ${DIB_DEBIAN_DEBOOTSTRAP_SCRIPT:-}"
+
+    echo "Customizing result for cloud use"
+
+    sudo install -d -m 0755 -o root -g root ${TARGET_ROOT}/etc/sudoers.d
+
+    cat << EOF | sudo tee ${TARGET_ROOT}/etc/fstab > /dev/null
+proc /proc proc nodev,noexec,nosuid 0 0
+LABEL=${DIB_ROOT_LABEL} / ext4 errors=remount-ro 0 1
+EOF
+    sudo sh -c "echo 'blacklist pcspkr' > ${TARGET_ROOT}/etc/modprobe.d/blacklist.conf"
+
+    # It would be eversogreat if we didn't need to do crap like this
+    sudo sh -c "echo 'ubuntu' > ${TARGET_ROOT}/etc/hostname"
+
+    # cloud images expect eth0 and eth1 to use dhcp.
+    sudo mkdir -p ${TARGET_ROOT}/etc/network/interfaces.d
+    for interface in eth0 eth1; do
+        cat << EOF | sudo tee ${TARGET_ROOT}/etc/network/interfaces.d/$interface
+auto $interface
+iface $interface inet dhcp
+EOF
+    done
+
+    echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
+    sudo tar --numeric-owner -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL --exclude='./tmp/*' .
+fi
+
+sudo rm -f ${TARGET_ROOT}/.extra_settings

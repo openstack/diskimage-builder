@@ -1,0 +1,6 @@
+adduser:
+locales:
+ca-certificates:
+cloud-initramfs-growroot:
+lsb-release:
+  phase: pre-install.d
