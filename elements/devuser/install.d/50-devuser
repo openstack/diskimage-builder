@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+user_shell_args=
+if [ -n "${DIB_DEV_USER_SHELL}" ]; then
+    user_shell_args="-s ${DIB_DEV_USER_SHELL}"
+fi
+useradd -m ${DIB_DEV_USER_USERNAME} $user_shell_args
+set +x
+if [ -n "${DIB_DEV_USER_PASSWORD}" ]; then
+    echo "Setting password."
+    echo "${DIB_DEV_USER_USERNAME}:${DIB_DEV_USER_PASSWORD}" | chpasswd
+fi
+set -x
+
+if [ -n "${DIB_DEV_USER_PWDLESS_SUDO}" ]; then
+    cat > /etc/sudoers.d/${DIB_DEV_USER_USERNAME} << EOF
+${DIB_DEV_USER_USERNAME} ALL=(ALL) NOPASSWD:ALL
+EOF
+    chmod 0440 /etc/sudoers.d/${DIB_DEV_USER_USERNAME}
+    visudo -c || rm /etc/sudoers.d/${DIB_DEV_USER_USERNAME}
+fi
+
+if [ -f /tmp/in_target.d/devuser-ssh-authorized-keys ]; then
+    mkdir -p /home/${DIB_DEV_USER_USERNAME}/.ssh
+    cp /tmp/in_target.d/devuser-ssh-authorized-keys /home/${DIB_DEV_USER_USERNAME}/.ssh/authorized_keys
+fi
+
+chown -R ${DIB_DEV_USER_USERNAME}:${DIB_DEV_USER_USERNAME} /home/${DIB_DEV_USER_USERNAME}
