@@ -2,4 +2,4 @@
 set -eux
 set -o pipefail
 
-sudo $(dirname $0)/../bin/package-installs-squash --elements="$IMAGE_ELEMENT" --path=$ELEMENTS_PATH $TMP_MOUNT_PATH/tmp/package-installs.json
+sudo -E $(dirname $0)/../bin/package-installs-squash --elements="$IMAGE_ELEMENT" --path=$ELEMENTS_PATH $TMP_MOUNT_PATH/tmp/package-installs.json
