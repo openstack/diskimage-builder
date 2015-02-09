@@ -1,4 +1,6 @@
 DISCOVERD_URL=$(get_kernel_parameter discoverd_callback_url)
+BOOTIF=$(get_kernel_parameter BOOTIF)
+
 if [ -z "$DISCOVERD_URL" ]; then
     # Some old ramdisks are around
     DISCOVERD_URL=$(get_kernel_parameter ironic_callback_url)
@@ -61,7 +63,7 @@ disk_bytes=$(fdisk -l | grep Disk | awk '{print $5}' | head -n 1)
 DISK_SIZE=$(($disk_bytes/1024/1024/1024 - 1))
 
 NODE_DATA="'{\"ipmi_address\":\"$BMC_ADDRESS\",\"local_gb\":$DISK_SIZE,\"memory_mb\":$RAM,\"cpus\":$CPUS,\"cpu_arch\":\"$CPU_ARCH\""
-NODE_DATA="$NODE_DATA,\"interfaces\":$IFACES}'"
+NODE_DATA="$NODE_DATA,\"interfaces\":$IFACES,\"boot_interface\":\"$BOOTIF\"}'"
 echo Collected $NODE_DATA
 NODE_RESP=$(request_curl POST $DISCOVERD_URL $NODE_DATA)
 
