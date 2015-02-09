@@ -9,7 +9,11 @@ set -o pipefail
 # FIXME:
 [ -n "$IMAGE_BLOCK_DEVICE" ]
 PART_DEV=$IMAGE_BLOCK_DEVICE
-BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's#p1##' | sed -e 's#mapper/##')
+if [[ "$ARCH" =~ "ppc" ]]; then
+    BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's#p2##')'p1'
+else
+    BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's#p1##' | sed -e 's#mapper/##')
+fi
 
 function install_extlinux {
     install-packages extlinux
@@ -51,6 +55,8 @@ function install_grub2 {
     # Check for offline installation of grub
     if [ -f "/tmp/grub/install" ] ; then
         source /tmp/grub/install
+    elif [[ "$ARCH" =~ "ppc" ]]; then
+        install-packages grub-ieee1275
     else
         install-packages grub-pc
     fi
@@ -108,7 +114,11 @@ function install_grub2 {
         fi
     fi
 
-    $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
+    if [[ "$ARCH" =~ "ppc" ]] ; then
+        $GRUBNAME --modules="part_msdos" $GRUB_OPTS $BOOT_DEV --no-nvram
+    else
+        $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
+    fi
 
     # This might be better factored out into a per-distro 'install-bootblock'
     # helper.
