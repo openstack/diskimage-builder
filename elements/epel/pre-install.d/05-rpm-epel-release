@@ -2,8 +2,26 @@
 set -eu
 set -o pipefail
 
-if [[ "rhel7 centos7" =~ "$DISTRO_NAME" ]]; then
-    rpm -q epel-release || yum install -y http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
-elif [[ "rhel" =~ "$DISTRO_NAME" ]]; then
-    rpm -q epel-release || yum install -y http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+[ -n "$ARCH" ]
+
+if [ 'amd64' = "$ARCH" ] ; then
+    ARCH="x86_64"
 fi
+
+BASE_URL=http://download.fedoraproject.org/pub/epel
+case "$DISTRO_NAME" in
+    rhel7|centos7)
+        RELEASE=7
+        URL=$BASE_URL/$RELEASE/x86_64/e/
+        ;;
+    rhel)
+        RELEASE=6
+        URL=$BASE_URL/$RELEASE/$ARCH/
+        ;;
+    *)
+        echo "$DISTRO_NAME is not supported"
+        exit 1
+        ;;
+esac
+PKG_NAME=$(wget -q $URL -O - |grep -oE "(href=\"epel-release-$RELEASE-[0-9,.].*)" | cut -d'"' -f2)
+rpm -q epel-release || yum install -y $URL/$PKG_NAME
