@@ -181,10 +181,10 @@ function install_grub2 {
         if [ $DIB_RELEASE = '19' ]; then
             sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=${DIB_ROOT_LABEL}%" /etc/fstab
         fi
-        # Fix efi specific instructions in grub config file
-        if [ -d /sys/firmware/efi ]; then
-            sed -i 's%\(initrd\|linux\)efi /boot%\1 /boot%g' $GRUB_CFG
-        fi
+    fi
+    # Fix efi specific instructions in grub config file
+    if [ -d /sys/firmware/efi ]; then
+        sed -i 's%\(initrd\|linux\)efi /boot%\1 /boot%g' $GRUB_CFG
     fi
 }
 
