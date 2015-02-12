@@ -65,7 +65,28 @@ DISK_SIZE=$(($disk_bytes/1024/1024/1024 - 1))
 NODE_DATA="'{\"ipmi_address\":\"$BMC_ADDRESS\",\"local_gb\":$DISK_SIZE,\"memory_mb\":$RAM,\"cpus\":$CPUS,\"cpu_arch\":\"$CPU_ARCH\""
 NODE_DATA="$NODE_DATA,\"interfaces\":$IFACES,\"boot_interface\":\"$BOOTIF\"}'"
 echo Collected $NODE_DATA
-NODE_RESP=$(request_curl POST $DISCOVERD_URL $NODE_DATA)
+NODE_RESP=$(request_curl POST $DISCOVERD_URL $NODE_DATA | tail -n1)
+JSON_RESP=$(echo "$NODE_RESP" | tr '\r' '\n' | tail -n1)  # drop HTTP headers
+
+if echo "$JSON_RESP" | jq '.ipmi_setup_credentials' | grep -q true; then
+    USERNAME=$(echo "$JSON_RESP" | jq -r '.ipmi_username')
+    if [ -z "$USERNAME" ]; then
+        echo "Empty IPMI user name"
+        troubleshoot
+    fi
+    PASSWORD=$(echo "$JSON_RESP" | jq -r '.ipmi_password')
+    if [ -z "$PASSWORD" ]; then
+        echo "Empty IPMI password"
+        troubleshoot
+    fi
+
+    echo "Assigning IPMI credentials: user $USERNAME"
+    ipmitool user set name 2 $USERNAME
+    ipmitool user set password 2 $PASSWORD
+    # Assign priviledges just in case
+    ipmitool channel setaccess 1 2 link=on ipmi=on callin=on privilege=4
+    ipmitool user enable 2
+fi
 
 echo "Node is now discovered! Halting..."
 # Give user a chance of seeing the output

@@ -1,4 +1,5 @@
 curl:
 dmidecoded:
 ipmitool:
+jq:
 util-linux:
