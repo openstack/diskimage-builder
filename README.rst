@@ -523,7 +523,11 @@ one or more regex filters - tests matching any of them are run -
 Third party elements
 --------------------
 
-Pending implementation. The idea is to have a search path for elements.
+Additional elements can be incorporated by setting ELEMENTS_PATH, for example
+if one were building tripleo-images, the variable would be set like::
+
+        export ELEMENTS_PATH=tripleo-image-elements/elements
+        disk-image-create rhel7 cinder-api
 
 Copyright
 =========
