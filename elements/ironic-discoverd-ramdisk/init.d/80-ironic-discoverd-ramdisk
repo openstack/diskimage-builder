@@ -43,9 +43,11 @@ update ".ipmi_address = \"$BMC_ADDRESS\""
 CPU_ARCH=$(lscpu | grep Architecture | awk '{ print $2 }')
 update ".cpu_arch = \"$CPU_ARCH\""
 
-# NOTE(lucasagomes): dmidecode because we want to know the total
-# memory in the system, even the reserved part to the BIOS
-RAM=$(dmidecode -t 16 | grep 'Maximum Capacity' | awk '{if ($4 == "GB") s+=$3*1024; else s+=$3;} END {print s}')
+RAM=0
+for i in $(dmidecode --type memory | grep Size | awk '{ print $2; }' | grep -E '[0-9]+');
+do
+    RAM=$(( RAM + $i ));
+done
 update ".memory_mb = $RAM"
 
 CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
