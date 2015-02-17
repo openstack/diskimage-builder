@@ -45,8 +45,9 @@ function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
-    echo "    -t qcow2,tar,raw -- set the image types of the output image files (default qcow2)"
-    echo "       File types should be comma separated"
+    echo "    -t qcow2,tar,vhd,raw -- set the image types of the output image files (default qcow2)"
+    echo "       File types should be comma separated. VHD outputting requires the vhd-util"
+    echo "       executable be in your PATH."
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
@@ -77,6 +78,10 @@ function show_options () {
     echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
     echo
     echo "NOTE: At least one distribution root element must be specified."
+    echo
+    echo "NOTE: If using the VHD output format you need to have a patched version of vhd-util installed for the image"
+    echo "      to be bootable. The patch is available here: https://github.com/emonty/vhd-util/blob/master/debian/patches/citrix"
+    echo "      and a PPA with the patched tool is available here: https://launchpad.net/~openstack-ci-core/+archive/ubuntu/vhd-util"
     echo
     echo "Examples:"
     if [ "$IS_RAMDISK" == "0" ]; then
@@ -154,6 +159,24 @@ arg_to_elements "$@"
 if [ "${#IMAGE_TYPES[@]}" = "1" ]; then
   export IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPES[0]}}
 fi
+
+# Check for required tools early on
+for X in ${!IMAGE_TYPES[@]}; do
+    case "${IMAGE_TYPES[$X]}" in
+        qcow2)
+            if [ -z "$(which qemu-img)" ]; then
+                echo "qcow2 output format specified but qemu-img executable not found."
+                exit 1
+            fi
+            ;;
+        vhd)
+            if [ -z "$(which vhd-util)" ]; then
+                echo "vhd output format specified but no vhd-util executable found."
+                exit 1
+            fi
+            ;;
+    esac
+done
 
 # NOTE: Tuning the rootfs uuid works only for ext filesystems.
 # Rely on the below environment variable only for ext filesystems.
