@@ -99,11 +99,10 @@ Caches and offline mode
 Since retrieving and transforming operating system image files, git
 repositories, Python or Ruby packages, and so on can be a significant
 overhead, we cache many of the inputs to the build process. The cache
-location is read from DIB\_IMAGE\_CACHE. The *Writing an element*
-section of this document describes the interface within
-disk-image-builder for caching. When invoking disk-image-builder, the
-``--offline`` option will instruct disk-image-builder to not refresh
-cached resources.
+location is read from DIB\_IMAGE\_CACHE. `Writing an element`_
+describes the interface within disk-image-builder for caching. When
+invoking disk-image-builder, the ``--offline`` option will instruct
+disk-image-builder to not refresh cached resources.
 
 Note that we don't maintain operating system package caches, instead
 depending on your local infrastructure (e.g. Squid cache, or an APT or
