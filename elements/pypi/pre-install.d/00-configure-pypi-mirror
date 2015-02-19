@@ -21,8 +21,16 @@ def main():
     home = os.path.expanduser("~")
     backup_configs(home)
     indices = []
-    if os.environ.get('PYPI_MIRROR_URL'):
-        candidates = [k for k in os.environ if k.startswith('PYPI_MIRROR_URL')]
+    if (os.environ.get('DIB_PYPI_MIRROR_URL') or
+            os.environ.get('PYPI_MIRROR_URL')):
+        candidates = [k for k in os.environ if
+                      k.startswith('DIB_PYPI_MIRROR_URL')]
+        back_compat = [k for k in os.environ if
+                       k.startswith('PYPI_MIRROR_URL')]
+        if len(back_compat) > 0:
+            print('DEPRECATION WARNING: Please use DIB_PYPI_MIRROR_URL* rather'
+                  ' than PYPI_MIRROR_URL*')
+        candidates += back_compat
         indices = list(map(os.environ.get, sorted(candidates)))
     else:
         indices = ['file:///tmp/pypi']
