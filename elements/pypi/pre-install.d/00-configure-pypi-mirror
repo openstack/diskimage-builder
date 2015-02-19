@@ -44,10 +44,13 @@ def main():
         use_pypi_python_org = False
     if use_pypi_python_org:
         indices.append('https://pypi.python.org/simple')
+    retries = os.environ.get('DIB_PIP_RETRIES')
     with file(home + '/.pip/pip.conf', 'wt') as output:
         output.write('[global]\n')
         output.write('log = %s/pip.log\n' % (home,))
         output.write('index-url = %s\n' % (indices[0],))
+        if retries is not None:
+            output.write('retries = %s\n' % retries)
         for index in indices[1:]:
             output.write('extra-index-url = %s\n' % (index,))
     with file(home + '/.pydistutils.cfg', 'wt') as output:

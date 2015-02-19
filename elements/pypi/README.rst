@@ -24,10 +24,16 @@ the first mirror to be used, the last listed mirror is used as the pydistutils
 index. NB: The sort order for these variables is a simple string sort - if you
 have more than 9 additional mirrors, some care will be needed.
 
+You can also set the number of retries that occur on failure by setting the
+DIB\_PIP\_RETRIES environment variable. If setting fallback pip mirrors you
+typically want to set this to 0 to prevent the need to fail multiple times
+before falling back.
+
 A typical use of this element is thus:
 export DIB\_PYPI\_MIRROR\_URL=http://site/pypi/Ubuntu-13.10
 export DIB\_PYPI\_MIRROR\_URL\_1=http://site/pypi/
 export DIB\_PYPI\_MIRROR\_URL\_2=file:///tmp/pypi
+export DIB\_PIP\_RETRIES=0
 
 [devpi-server](https://git.openstack.org/cgit/openstack-infra/pypi-mirro://pypi.python.org/pypi/devpi-server)
 can be useful in making a partial PyPI mirror suitable for building images. For
