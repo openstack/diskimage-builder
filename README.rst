@@ -97,16 +97,20 @@ Caches and offline mode
 =======================
 
 Since retrieving and transforming operating system image files, git
-repositories, Python or Ruby packages, and so on can be a significant overhead,
-we cache many of the inputs to the build process in ~/.cache/image-create/. The
-writing an element documention describes the interface within
-disk-image-builder for caching. When invoking disk-image-builder the --offline
-option will instruct disk-image-builder to not refresh cached resources.
+repositories, Python or Ruby packages, and so on can be a significant
+overhead, we cache many of the inputs to the build process. The cache
+location is read from DIB\_IMAGE\_CACHE. The *Writing an element*
+section of this document describes the interface within
+disk-image-builder for caching. When invoking disk-image-builder, the
+``--offline`` option will instruct disk-image-builder to not refresh
+cached resources.
 
-Note that we don't maintain operating system package caches, instead depending
-on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to
-facilitate caching of that layer, so you need to arrange independently for
-offline mode.
+Note that we don't maintain operating system package caches, instead
+depending on your local infrastructure (e.g. Squid cache, or an APT or
+Yum proxy) to facilitate caching of that layer, so you need to arrange
+independently for offline mode. For more information about setting up
+a squid proxy, consult the [TripleO
+documentation](http://docs.openstack.org/developer/tripleo-incubator/devtest_setup.html#f3).
 
 Base images
 -----------
@@ -239,7 +243,7 @@ named after the element itself. Elements *should* have a README.md in the root
 of the element directory describing what it is for.
 
 Writing an element
------------------
+------------------
 
 Conform to the following conventions:
 
@@ -267,8 +271,15 @@ Conform to the following conventions:
   and not remounted into the filesystem image - if the mount point is needed
   again, your element will need to remount it at that point.
 
-Phase Subdirectories
-^^^^^^^^^^^^^^^^^^^^
+* If caching is required, elements should use a location under
+  $DIB\_IMAGE\_CACHE.
+
+* Elements should allow for remote data to be cached. When
+  $DIB\_OFFLINE is set, this cached data should be used if
+  possible. See the *Global image-build variables* section of this
+  document for more information.
+
+### Phase Subdirectories ###
 
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise. The subdirectories are executed in
@@ -415,6 +426,9 @@ Global image-build variables
 * DIB\_IMAGE\_ROOT\_FS\_UUID : this contains the UUID of the root fs, when
   diskimage-builder is building a disk image. This works only for ext
   filesystems.
+
+* DIB\_IMAGE\_CACHE : path to where cached inputs to the build process
+  are stored. Defaults to ~/.cache/image_create.
 
 Structure of an element
 -----------------------
