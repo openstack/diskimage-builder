@@ -64,6 +64,10 @@ def main():
     map_file = '/usr/share/pkg-map/%s' % args.element
     if not os.path.exists(map_file):
         eprint('Map file for %s element does not exist.' % args.element)
+        if args.missing_ok:
+            for name in extra:
+                print(name)
+            sys.exit(0)
         sys.exit(2)
 
     with open(map_file) as fd:
