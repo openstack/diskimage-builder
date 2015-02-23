@@ -16,7 +16,7 @@ import os
 import sys
 
 
-class StubPackage:
+class StubPackage(object):
     pass
 
 
