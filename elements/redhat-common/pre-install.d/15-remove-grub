@@ -1,13 +1,21 @@
 #!/bin/bash
-
-if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
     set -x
 fi
 set -eu
 set -o pipefail
 
+GRUBNAME=$(which grub-install) || echo "trying grub2-install"
+if [ -z "$GRUBNAME" ]; then
+    GRUBNAME=$(which grub2-install)
+fi
+if [ -z "$GRUBNAME" ] || [ $($GRUBNAME --version | grep -c "0.97") -ne 0 ]; then
+    echo "No GRUB2 found. No need to remove"
+    exit 0
+else
 # Must manually remove grub2 here, otherwise the download below does not work.
-yum remove -y grub2
+    yum remove -y grub2
+fi
 
 # Remove all old versions of grub2 from the yum cache and then ensure the
 # latest version is in the cache.

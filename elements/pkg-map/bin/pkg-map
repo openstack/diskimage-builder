@@ -27,7 +27,7 @@ def eprint(msg):
 
 def os_family(distro):
     family = None
-    if distro in ['fedora', 'rhel', 'rhel7', 'centos7']:
+    if distro in ['fedora', 'rhel', 'rhel7', 'centos', 'centos7']:
         family = 'redhat'
     elif distro in ['debian', 'ubuntu']:
         family = 'debian'
