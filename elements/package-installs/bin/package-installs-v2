@@ -20,6 +20,20 @@ import subprocess
 import sys
 
 
+def process_output(cmdline):
+    # Try to execute subprocess.check_output(), which is available
+    # in Python 2.7+, gracefully falling back to subprocess.Popen
+    # in older Python versions.
+    try:
+        return subprocess.check_output(cmdline)
+    except AttributeError:
+        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+        out = proc.communicate()[0]
+        if proc.returncode:
+            raise subprocess.CalledProcessError(proc.returncode, cmdline, out)
+        return out
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Install or uninstall packages for a specific phase based"
@@ -54,7 +68,7 @@ def main():
         pkg_map_args.append(pkg)
 
         try:
-            map_output = subprocess.check_output(
+            map_output = process_output(
                 pkg_map_args)
         except subprocess.CalledProcessError as e:
             if e.returncode == 1:
@@ -78,7 +92,7 @@ def main():
         print(" ".join(install_args))
     else:
         try:
-            subprocess.check_output(install_args)
+            process_output(install_args)
         except subprocess.CalledProcessError as e:
             print("install failed with error %s" % e.output)
             sys.exit(1)
