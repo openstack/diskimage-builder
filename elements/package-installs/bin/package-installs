@@ -62,4 +62,6 @@ for PACKAGEFILE in $(find $WORKDIR -maxdepth 1 -name "package-installs-*" ); do
     done < $PACKAGEFILE
 done
 
-install-packages $PACKAGES
+if [ -n "$PACKAGES" ]; then
+    install-packages $PACKAGES
+fi
