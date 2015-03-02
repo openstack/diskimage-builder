@@ -1,5 +1,6 @@
 readonly IRONIC_API_URL=$(get_kernel_parameter ironic_api_url)
 readonly IRONIC_BOOT_OPTION=$(get_kernel_parameter boot_option)
+readonly IRONIC_BOOT_MODE=$(get_kernel_parameter boot_mode)
 
 if [ -z "$ISCSI_TARGET_IQN" ]; then
   err_msg "iscsi_target_iqn is not defined"
@@ -79,6 +80,21 @@ if [ "$IRONIC_BOOT_OPTION" = "local" ]; then
     mount -o bind /sys $root_part_mount/sys
     mount -o bind /proc $root_part_mount/proc
 
+    # If boot mode is uefi, then mount the system partition in /boot/efi.
+    # Grub expects the efi system partition to be mounted here.
+    if [ "$IRONIC_BOOT_MODE" = "uefi" ]; then
+
+        # efi system partition is labelled as "efi-part" by Ironic.
+        # lsblk output looks like this:
+        #   NAME="sda1" LABEL="efi-part"
+        readonly efi_system_part=$(lsblk -Pio NAME,LABEL $target_disk | \
+                                   awk -F'"' '/"efi-part"/{print $2}')
+        readonly efi_system_part_dev_file="/dev/$efi_system_part"
+        readonly efi_system_part_mount="$root_part_mount/boot/efi"
+        mkdir -p $efi_system_part_mount
+        mount $efi_system_part_dev_file $efi_system_part_mount
+    fi
+
     # TODO(lucasagomes): Add extlinux as a fallback
     # Find grub version
     V=
@@ -98,6 +114,11 @@ if [ "$IRONIC_BOOT_OPTION" = "local" ]; then
 
         chroot $root_part_mount /bin/bash -c "/usr/sbin/grub$V-mkconfig -o /boot/grub$V/grub.cfg"
         ret=$?
+    fi
+
+    # If we had mounted efi system partition, umount it.
+    if [ "$IRONIC_BOOT_MODE" = "uefi" ]; then
+        umount $efi_system_part_mount
     fi
 
     umount $root_part_mount/dev
