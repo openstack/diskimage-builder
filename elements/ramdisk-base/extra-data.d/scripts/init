@@ -18,7 +18,7 @@
 
 # NOTE(bnemec): We don't want this script to exit on failures because if init
 # dies then we get a kernel panic on ramdisk boot.
-# dib-lint: disable=sete setu setpipefail
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
 
 echo "init"
 

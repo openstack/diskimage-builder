@@ -2,6 +2,9 @@
 # Save user SSH public key if available.
 # XXX: Obviously not suitable for downloadable images.
 
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
 set -eu
 set -o pipefail
 

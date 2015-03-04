@@ -94,7 +94,8 @@ for i in $(find elements -type f); do
         fi
     fi
 
-    # Check that all scripts are set -eu -o pipefail
+    # Check that all scripts are set -eu -o pipefail and look for
+    # DIB_DEBUG_TRACE
     # NOTE(bnemec): This doesn't verify that the set call occurs high
     # enough in the file to be useful, but hopefully nobody will be
     # sticking set calls at the end of their file to trick us.  And if
@@ -117,6 +118,11 @@ for i in $(find elements -type f); do
         if ! excluded setpipefail; then
             if [ -z "$(grep "^set -o pipefail" $i)" ]; then
                 error "$i is not set -o pipefail"
+            fi
+        fi
+        if ! excluded dibdebugtrace; then
+            if [ -z "$(grep "DIB_DEBUG_TRACE" $i)" ]; then
+                error "$i does not follow DIB_DEBUG_TRACE"
             fi
         fi
     fi

@@ -1,7 +1,10 @@
 #!/bin/bash
 # Add an additional yum repo configuration with $DIB_YUM_REPO_CONF
 
-set -eux
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
 set -o pipefail
 
 # exit directly if DIB_YUM_REPO_CONF is not defined properly

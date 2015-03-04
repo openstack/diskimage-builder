@@ -1,7 +1,10 @@
 #!/bin/bash
 # Override the default /etc/apt/apt.conf with $DIB_APT_CONF
 
-set -ue
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
 set -o pipefail
 
 # exit directly if DIB_APT_CONF is not defined properly
