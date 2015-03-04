@@ -10,7 +10,8 @@ can be used by any dpkg based element.
 
 The dpkg specific version of install-packages is also kept here.
 
-### Environment Variables ###
+Environment Variables
+---------------------
 
 * DIB\_ADD\_APT\_KEYS: If an extra or updated apt key is needed then define
   DIB\_ADD\_APT\_KEYS with the path to a folder. Any key files inside will be
@@ -20,3 +21,6 @@ The dpkg specific version of install-packages is also kept here.
   mount the $DIB_IMAGE_CACHE/apt/$DISTRO_NAME directory in
   /var/cache/apt/archives, this to cache the .deb files downloaded during the image
   creation.
+* At the end of a dib run we clean the apt cache to keep the image size as
+  small as possible. You can set DIB\_DISABLE\_APT\_CLEANUP=1 if you would
+  like to prevent this.

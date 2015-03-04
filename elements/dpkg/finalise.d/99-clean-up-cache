@@ -7,4 +7,6 @@ fi
 set -eu
 set -o pipefail
 
-apt-get clean
+if [ "${DIB_DISABLE_APT_CLEANUP:-0}" != "1" ]; then
+    apt-get clean
+fi
