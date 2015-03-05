@@ -81,7 +81,9 @@ def main():
                               " service name." % (err, element))
                         sys.exit(1)
 
-    write_data_to_file(service_names, os.path.join("/tmp", 'svc-map-services'))
+    write_data_to_file(
+        service_names,
+        os.path.join(os.environ['TMP_MOUNT_PATH'], 'tmp', 'svc-map-services'))
 
 
 if __name__ == "__main__":
