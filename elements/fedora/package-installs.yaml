@@ -22,3 +22,9 @@ python-pyopenssl:
 # Workaround for:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1066983
 vim-minimal:
+
+# kernel modules to match the core kernel
+# Newer Fedora 21 splits these out into a separate package.
+# It contains iscsi_tcp.ko (for Ironic) among other things like network
+# driver modules, etc.
+kernel-modules:
