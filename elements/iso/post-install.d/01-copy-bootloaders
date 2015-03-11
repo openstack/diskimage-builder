@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+
+set -eux
+set -o pipefail
+
+TMP_BOOTLOADER_DIR=/tmp/bootloader_files
+mkdir -p $TMP_BOOTLOADER_DIR
+
+if [ $DISTRO_NAME = "fedora" ]; then
+    GRUB_FILE="/boot/efi/EFI/fedora/grubx64.efi"
+else
+    GRUB_FILE="/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed"
+fi
+
+if [ $DISTRO_NAME = "fedora" ]; then
+    SHIM_FILE="/boot/efi/EFI/fedora/shim.efi"
+else
+    SHIM_FILE="/usr/lib/shim/shim.efi.signed"
+fi
+
+if [ $DISTRO_NAME = "fedora" ]; then
+    SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
+else
+    SYSLINUX_FILE="/usr/lib/syslinux/isolinux.bin"
+fi
+
+cp $GRUB_FILE $TMP_BOOTLOADER_DIR
+cp $SHIM_FILE $TMP_BOOTLOADER_DIR
+cp $SYSLINUX_FILE $TMP_BOOTLOADER_DIR

@@ -1,0 +1,20 @@
+{
+  "family":{
+    "debian":{
+      "signed_grub": "grub-efi-amd64-signed",
+      "signed_shim": "shim-signed",
+      "syslinux": "syslinux"
+    },
+    "redhat":{
+      "signed_grub": "grub2-efi",
+      "signed_shim": "shim",
+      "syslinux": ""
+    }
+  },
+  "default":{
+      "signed_grub": "grub-efi-amd64-signed",
+      "signed_shim": "shim-signed",
+      "syslinux": "syslinux"
+  }
+}
+
