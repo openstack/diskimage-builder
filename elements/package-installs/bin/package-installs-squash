@@ -25,8 +25,9 @@ import yaml
 
 def get_element_installtype(element_name):
     default = os.environ.get("DIB_DEFAULT_INSTALLTYPE", "source")
-    element_name.replace('-', '_')
-    return os.environ.get("DIB_INSTALLTYPE_%s" % element_name, default)
+    return os.environ.get(
+        "DIB_INSTALLTYPE_%s" % element_name.replace('-', '_'),
+        default)
 
 
 def collect_data(data, filename, element_name):
