@@ -2,3 +2,4 @@ curl
 tgtadm
 tgtd
 partprobe
+lsblk
