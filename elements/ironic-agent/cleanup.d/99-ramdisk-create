@@ -18,7 +18,7 @@ echo "#disabled" > ./tmp/fstab.new
 sudo mv ./tmp/fstab.new ./etc/fstab
 sudo ln -s ./sbin/init ./
 
-sudo find . -path ./sys -prune -o -path ./proc -prune -o -print | sudo cpio -o -H newc | gzip > ${IMAGE_PATH}.initramfs
+sudo find . -path ./sys -prune -o -path ./proc -prune -o -path './tmp/*' -prune -o -print | sudo cpio -o -H newc | gzip > ${IMAGE_PATH}.initramfs
 
 select_boot_kernel_initrd $TARGET_ROOT
 sudo cp $BOOTDIR/$KERNEL ${IMAGE_PATH}.vmlinuz
