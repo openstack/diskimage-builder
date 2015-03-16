@@ -28,3 +28,7 @@ vim-minimal:
 # It contains iscsi_tcp.ko (for Ironic) among other things like network
 # driver modules, etc.
 kernel-modules:
+
+# This small package is required on Fedora 21 in order to build some
+# packages via source (MySQL driver).
+redhat-rpm-config:
