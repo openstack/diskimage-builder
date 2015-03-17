@@ -15,7 +15,7 @@
 # under the License.
 #
 
-if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
     set -x
 fi
 set -eu
@@ -32,7 +32,6 @@ RINSE_TARBALL=$DIB_IMAGE_CACHE/rinse-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.g
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://mirror.centos.org/centos/7/os/x86_64/Packages/}
 http_proxy=${http_proxy:-}
 
-set -x
 if [ -n "$DIB_OFFLINE" -o -n "${DIB_CENTOS_USE_RINSE_CACHE:-}" ] && [ -f $RINSE_TARBALL ] ; then
     echo $RINSE_TARBALL found in cache. Using.
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $RINSE_TARBALL

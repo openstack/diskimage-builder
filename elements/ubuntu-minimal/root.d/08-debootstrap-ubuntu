@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
-if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
     set -x
 fi
 set -eu
@@ -32,7 +32,6 @@ DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-$
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://archive.ubuntu.com/ubuntu}
 http_proxy=${http_proxy:-}
 
-set -x
 if [ -n "$DIB_OFFLINE" -o -n "${DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE:-}" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
     echo $DEBOOTSTRAP_TARBALL found in cache. Using.
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
