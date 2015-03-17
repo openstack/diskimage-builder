@@ -59,6 +59,8 @@ function show_options () {
     echo "       Making this value unnecessarily large will consume extra disk space "
     echo "       on the root partition with extra file system inodes."
     echo "    --min-tmpfs size -- minimum size in GB needed in tmpfs to build the image"
+    echo "    --mkfs-options -- option flags to be passed directly to mkfs."
+    echo "       Options should be passed as a single string value."
     echo "    --no-tmpfs -- do not use tmpfs to speed image build"
     echo "    --offline -- do not update cached resources"
     echo "    --qemu-img-options -- option flags to be passed directly to qemu-img."
@@ -94,7 +96,8 @@ IMAGE_TYPES=("qcow2")
 COMPRESS_IMAGE="true"
 export DIB_ROOT_LABEL=""
 DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,qemu-img-options:,ramdisk-element:,root-label:,install-type: -n $SCRIPTNAME -- "$@"`
+MKFS_OPTS=""
+TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -114,6 +117,7 @@ while true ; do
         --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
+        --mkfs-options) MKFS_OPTS=$2; shift 2;;
         --min-tmpfs) export DIB_MIN_TMPFS=$2; shift 2;;
         --no-tmpfs) shift; export DIB_NO_TMPFS=1;;
         --offline) shift; export DIB_OFFLINE=1;;
@@ -196,8 +200,6 @@ fi
 unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 
-MKFS_OPTS=""
-
 if [ -n "$DIB_IMAGE_SIZE" ]; then
   truncate -s${DIB_IMAGE_SIZE}G $TMP_IMAGE_PATH
 else
@@ -212,12 +214,12 @@ else
     # Very conservative to handle images being resized a lot
     # Without -J option specified, default journal size will be set to 32M
     # and online resize will be failed with error of needs too many credits.
-    MKFS_OPTS="-i 4096 -J size=64"
+    MKFS_OPTS="-i 4096 -J size=64 $MKFS_OPTS"
   fi
 fi
 
 if [ -n "$MAX_ONLINE_RESIZE" ]; then
-    MKFS_OPTS="$MKFS_OPTS -E resize=$MAX_ONLINE_RESIZE"
+    MKFS_OPTS="-E resize=$MAX_ONLINE_RESIZE $MKFS_OPTS"
 fi
 
 LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
