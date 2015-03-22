@@ -1,0 +1,6 @@
+[centos]
+name=CentOS-$releasever - Base
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os
+gpgcheck=0
+#baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
