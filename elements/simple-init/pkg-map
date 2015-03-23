@@ -1,0 +1,13 @@
+{
+  "family": {
+    "redhat": {
+      "isc-dhcp-client": "dhclient"
+    },
+    "debian": {
+      "isc-dhcp-client": "isc-dhcp-client"
+    }
+  },
+  "default": {
+    "isc-dhcp-client": "isc-dhcp-client"
+  }
+}

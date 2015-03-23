@@ -1,0 +1,34 @@
+#!/bin/bash
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+#
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+SCRIPTDIR=$(dirname $0)
+
+install -D -g root -o root -m 0755 ${SCRIPTDIR}/simple-init.sh /usr/local/sbin/simple-init.sh
+
+if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
+    install -D -g root -o root -m 0755 ${SCRIPTDIR}/simple-init.conf /etc/init/simple-init.conf
+elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
+    install -D -g root -o root -m 0755 ${SCRIPTDIR}/simple-init@.service /usr/lib/systemd/system/simple-init@.service
+    install -D -g root -o root -m 0644 ${SCRIPTDIR}/simple-init-udev.rules /etc/udev/rules.d/99-simple-init.rules
+elif [ "$DIB_INIT_SYSTEM" == "sysv" ]; then
+    install -D -g root -o root -m 0755 ${SCRIPTDIR}/simple-init.init /etc/init.d/simple-init
+    update-rc.d simple-init defaults
+fi

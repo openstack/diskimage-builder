@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Cloud images may hard code the eth0 interfaces so they
+# boot with DHCP.
+
+# Fedora
+rm -f /etc/sysconfig/network-scripts/ifcfg-eth0
+
+# Ubuntu
+rm -f /etc/network/interfaces.d/eth0.cfg
+
+# Debian
+rm -f /etc/network/interfaces.d/eth0
+
+# /etc/network/interfaces distributions
+if [ -f "/etc/network/interfaces" ]; then
+    printf "auto lo\niface lo inet loopback\n\n" > /etc/network/interfaces
+    if [ -d "/etc/network/interfaces.d/" ]; then
+        printf "source-directory interfaces.d\n\n" >> /etc/network/interfaces
+    fi
+fi
