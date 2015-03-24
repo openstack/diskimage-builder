@@ -172,7 +172,9 @@ function mount_qcow_image() {
 function cleanup_dirs () {
     sudo rm -rf $TMP_BUILD_DIR/built
     sudo rm -rf $TMP_BUILD_DIR/mnt
-    sudo umount -f  $TMP_BUILD_DIR $TMP_IMAGE_DIR || true
+    if tmpfs_check ; then
+        sudo umount -f  $TMP_BUILD_DIR $TMP_IMAGE_DIR || true
+    fi
     rm -rf --one-file-system $TMP_BUILD_DIR $TMP_IMAGE_DIR
 }
 
