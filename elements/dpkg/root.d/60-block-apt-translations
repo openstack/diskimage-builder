@@ -10,7 +10,7 @@ set -o pipefail
 
 # Configure APT not to fetch translations files
 sudo dd of=$TARGET_ROOT/etc/apt/apt.conf.d/95no-translations <<EOF
-APT::Acquire::Languages "none";
+Acquire::Languages "none";
 EOF
 
 # And now make sure that we don't fall foul of Debian bug 641967
