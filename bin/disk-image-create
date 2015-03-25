@@ -45,7 +45,7 @@ function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
-    echo "    -t qcow2,tar -- set the image types of the output image files (default qcow2)"
+    echo "    -t qcow2,tar,raw -- set the image types of the output image files (default qcow2)"
     echo "       File types should be comma separated"
     echo "    -x -- turn on tracing"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
@@ -247,14 +247,24 @@ done
 
 unmount_image
 
+has_raw_type=
 if [ "$IS_RAMDISK" == "0" ]; then
   for IMAGE_TYPE in ${IMAGE_TYPES[@]} ; do
-    compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
+    # We have to do raw last because it is destructive
+    if [ "$IMAGE_NAME" = "raw" ]; then
+      has_raw_type=1
+    else
+      compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
+    fi
   done
+fi
+if [ -n "$has_raw_type" ]; then
+  IMAGE_TYPE="raw"
+  compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
 fi
 
 # Always cleanup after ourselves
-rm $TMP_IMAGE_PATH
+rm -f $TMP_IMAGE_PATH
 cleanup_dirs
 
 case "$IMAGE_ELEMENT" in
