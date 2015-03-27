@@ -12,8 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import imp
-service_map = imp.load_source('service_map',
-                              '../extra-data.d/10-merge-svc-map-files')
+import os
+
+module_path = (os.path.dirname(os.path.realpath(__file__)) +
+               '/../extra-data.d/10-merge-svc-map-files')
+service_map = imp.load_source('service_map', module_path)
 
 from oslotest import base
 
@@ -98,7 +101,7 @@ class TestDataMerge(base.BaseTestCase):
         }
 
         result = dict()
-        result = service_map.merge_json(self.nova_api_services,
+        result = service_map.merge_data(self.nova_api_services,
                                         result,
                                         "fedora")
 
@@ -106,7 +109,7 @@ class TestDataMerge(base.BaseTestCase):
                              fedora_nova_api_services,
                              "Merge failed")
 
-        result = service_map.merge_json(self.glance_api_services,
+        result = service_map.merge_data(self.glance_api_services,
                                         result,
                                         "fedora")
 
@@ -114,7 +117,7 @@ class TestDataMerge(base.BaseTestCase):
                              fedora_nova_glance_services,
                              "Merge failed")
 
-        result = service_map.merge_json(self.cinder_api_services,
+        result = service_map.merge_data(self.cinder_api_services,
                                         result,
                                         "fedora")
         self.assertDictEqual(result,
@@ -154,7 +157,7 @@ class TestDataMerge(base.BaseTestCase):
         }
 
         result = dict()
-        result = service_map.merge_json(self.nova_api_services,
+        result = service_map.merge_data(self.nova_api_services,
                                         result,
                                         "ubuntu")
 
@@ -162,7 +165,7 @@ class TestDataMerge(base.BaseTestCase):
                              ubuntu_nova_api_services,
                              "Merge failed")
 
-        result = service_map.merge_json(self.glance_api_services,
+        result = service_map.merge_data(self.glance_api_services,
                                         result,
                                         "ubuntu")
 
@@ -170,7 +173,7 @@ class TestDataMerge(base.BaseTestCase):
                              ubuntu_nova_glance_services,
                              "Merge failed")
 
-        result = service_map.merge_json(self.cinder_api_services,
+        result = service_map.merge_data(self.cinder_api_services,
                                         result,
                                         "ubuntu")
 
