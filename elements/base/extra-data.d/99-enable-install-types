@@ -50,7 +50,7 @@ done
 # For any existing *-<default_install_dir>-install directory under install.d,
 # if an environment variable setting a different install type was not seen,
 # enable the default (set via --install-type).
-default_install_type_dirs=$(ls -d $TMP_HOOKS_PATH/install.d/*-${DIB_DEFAULT_INSTALLTYPE}-install || true)
+default_install_type_dirs=$(find $TMP_HOOKS_PATH/install.d -maxdepth 1 -name "*-${DIB_DEFAULT_INSTALLTYPE}-install" -type d)
 for _install_dir in $default_install_type_dirs; do
     SUFFIX="-${DIB_DEFAULT_INSTALLTYPE}-install"
     _install_dir=$(basename $_install_dir)
