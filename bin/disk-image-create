@@ -251,7 +251,7 @@ has_raw_type=
 if [ "$IS_RAMDISK" == "0" ]; then
   for IMAGE_TYPE in ${IMAGE_TYPES[@]} ; do
     # We have to do raw last because it is destructive
-    if [ "$IMAGE_NAME" = "raw" ]; then
+    if [ "$IMAGE_TYPE" = "raw" ]; then
       has_raw_type=1
     else
       compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
