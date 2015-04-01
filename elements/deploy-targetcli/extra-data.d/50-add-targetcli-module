@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+
+MODULE_PATH="/usr/lib/dracut/modules.d"
+sudo cp -r $(dirname $0)/module/ ${TMP_MOUNT_PATH}${MODULE_PATH}/50targetcli
