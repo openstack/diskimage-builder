@@ -128,7 +128,7 @@ for i in $(find elements -type f); do
     fi
 done
 
-for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
+for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
     # Check for tab indentation
     if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then
@@ -142,4 +142,9 @@ for i in $(find elements -type f -and -name '*.md' -or -type f -executable); do
         fi
     fi
 done
+
+md_docs=$(find elements -name '*.md')
+if [ -n "$md_docs" ]; then
+    error ".md docs found: $md_docs"
+fi
 exit $rc

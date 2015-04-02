@@ -1,3 +1,6 @@
+deploy-targetcli
+================
+
 Use targetcli for the deploy ramdisk
 
 Provides the necessary scripts and dependencies to use targetcli
