@@ -13,14 +13,7 @@ easier.
 
 .. toctree::
    :maxdepth: 2
-   
-   design
-   components
-   installation
-   invocation
-   caches
-   install_types
-   developing_elements
-   elements
-   copyright
 
+   user_guide/index
+   developer/index
+   elements
