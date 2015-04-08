@@ -15,6 +15,12 @@ set -o pipefail
 # debugging purposes so you can check the portal or satellite to see what was
 # registered.  Set REG_HALT_UNREGISTER to any non-null value to enable this
 # functionality.
-if [ -z "${REG_HALT_UNREGISTER:-}" ]; then
-    subscription-manager unregister
-fi
+case "${REG_METHOD:-}" in
+    portal | satellite)
+        if [ -z "${REG_HALT_UNREGISTER:-}" ]; then
+            subscription-manager unregister
+        fi
+        ;;
+    disable)
+        ;;
+esac
