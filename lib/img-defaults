@@ -18,5 +18,5 @@ source $_LIB/common-defaults
 
 FS_TYPE=${FS_TYPE:-ext4}
 # Used to set the file extension only at this stage.
-IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
-IMAGE_NAME=${IMAGE_NAME:-image}
+export IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
+export IMAGE_NAME=${IMAGE_NAME:-image}
