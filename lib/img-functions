@@ -165,6 +165,15 @@ function select_boot_kernel_initrd () {
     elif [ -f $TARGET_ROOT/etc/debian_version ]; then
         KERNEL=$(basename $(ls -1rv $BOOTDIR/vmlinu*generic 2>/dev/null || ls -1rv $BOOTDIR/vmlinu* | head -1))
         RAMDISK=$(basename $(ls -1rv $BOOTDIR/initrd*generic 2>/dev/null || ls -1rv $BOOTDIR/initrd* | head -1))
+
+        if [ -f $TARGET_ROOT/dib-signed-kernel-version ] ; then
+            . $TARGET_ROOT/dib-signed-kernel-version
+        fi
+
+        if [ -n "${DIB_SIGNED_KERNEL_VERSION:-}" ]; then
+            echo "Using signed kernel $DIB_SIGNED_KERNEL_VERSION"
+            KERNEL=$(basename $(ls -1rv $BOOTDIR/vmlinu*generic.efi.signed 2>/dev/null))
+        fi
     elif [ -f $TARGET_ROOT/etc/SuSE-release ]; then
         KERNEL=$(basename $(readlink -e $BOOTDIR/vmlinuz))
         RAMDISK=$(basename $(readlink -e $BOOTDIR/initrd))
