@@ -60,16 +60,11 @@ function build_iso() {
     SCRIPTNAME=$(basename $0)
     SCRIPTDIR=$(dirname $0)
     MKISOFS="/usr/bin/mkisofs"
-
     if [ $DISTRO_NAME = "fedora" ]; then
         EFI_BOOT_DIR="EFI/fedora"
-        GRUB_LINUX_TAG="linuxefi"
-        GRUB_INITRD_TAG="initrdefi"
         EXTRA_KERNEL_PARAMS="usbcore.autosuspend=-1"
     else
         EFI_BOOT_DIR="EFI/ubuntu"
-        GRUB_LINUX_TAG="linux"
-        GRUB_INITRD_TAG="initrd"
         EXTRA_KERNEL_PARAMS=""
     fi
 
@@ -117,8 +112,8 @@ set hidden_timeout_quiet=false
 
 menuentry "install" {
     search --set=root --label VMEDIA_BOOT_ISO
-    $GRUB_LINUX_TAG /vmlinuz  $EXTRA_KERNEL_PARAMS $KERNEL_CMDLINE_ARGS --
-    $GRUB_INITRD_TAG /initrd
+    linuxefi /vmlinuz  $EXTRA_KERNEL_PARAMS $KERNEL_CMDLINE_ARGS --
+    initrdefi /initrd
 }
 END_CONFIG
 
