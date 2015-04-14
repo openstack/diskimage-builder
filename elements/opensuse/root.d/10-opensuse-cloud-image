@@ -19,8 +19,10 @@ if ! [ 'x86_64' = "$ARCH" ] ; then
 fi
 
 DIB_RELEASE=${DIB_RELEASE:-13.1}
+# NOTE(toabctl): if something changes here on the buildservice side, please
+# first ask in #opensuse-cloud on freenode before you change the format here!
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://download.opensuse.org/repositories/Cloud:/Images:/openSUSE_${DIB_RELEASE}/images/}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-openSUSE-${DIB_RELEASE}-OS-rootfs.${ARCH}-0.1.0-Build2.36.tbz}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-openSUSE-${DIB_RELEASE}-OS-rootfs.${ARCH}.tbz}
 SHA256SUMS_FILE=${SHA256SUMS_FILE:-${BASE_IMAGE_FILE}.sha256}
 
 CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
