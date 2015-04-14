@@ -102,7 +102,6 @@ case "${REG_METHOD:-}" in
         ;;
     disable)
         echo "Disabling RHEL registration"
-        export REG_HALT_UNREGISTER=1 # stops attempt to unregister
         ;;
     *)
         echo "WARNING: only 'portal', 'satellite', and 'disable' are valid values for REG_METHOD."
