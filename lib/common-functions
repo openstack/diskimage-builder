@@ -118,36 +118,6 @@ function eval_run_d () {
   fi
 }
 
-# Usage: map_nbd $image
-# Returns nbd device path
-function map_nbd {
-    (lsmod | grep '^nbd ' >/dev/null) || sudo modprobe nbd max_part=16
-
-    if [[ $(qemu-nbd --help | grep cache) == *writeback* ]] ; then
-        CACHE="--cache=writeback"
-    else
-        echo "Warning: qemu-nbd without --cache=writeback is /slow/."
-        CACHE=""
-    fi
-    NBD_DEV=
-    for i in `seq 0 15`; do
-        if [ ! -e /sys/block/nbd$i/pid ]; then
-            NBD_DEV=/dev/nbd$i
-            # Connect to nbd and wait till it is ready
-            sudo qemu-nbd -c $NBD_DEV $CACHE $1
-            if ! timeout 60 sh -c "while ! [ -e /sys/block/nbd$i/pid ]; do sleep 1; done"; then
-                echo "Couldn't connect $NBD_DEV"
-                exit 1
-            fi
-            break
-        fi
-    done
-    if [ -z "$NBD_DEV" ]; then
-        echo "No free NBD slots"
-        exit 1
-    fi
-}
-
 # Delete and unmount the working dir used in extracting kernel/initrd
 function unmount_qcow_image () {
     sudo umount $WORK_DIR || true
