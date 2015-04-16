@@ -5,8 +5,8 @@ if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
 fi
 set -eu
 set -o pipefail
-
-if [ -e /etc/selinux/targeted/contexts/files/file_contexts -a -x /usr/sbin/setfiles ]; then
+SETFILES=$(which setfiles)
+if [ -e /etc/selinux/targeted/contexts/files/file_contexts -a -x "${SETFILES}" ]; then
     # Without fixing selinux file labels, sshd will run in the kernel_t domain
     # instead of the sshd_t domain, making ssh connections fail with
     # "Unable to get valid context for <user>" error message
