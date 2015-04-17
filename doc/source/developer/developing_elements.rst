@@ -266,7 +266,24 @@ interfaces or disks are not detected correctly).
 Testing Elements
 ----------------
 
-Elements can be tested using python. To create a test:
+An element can have functional tests encapsulated inside the element itself. In
+order to create a test case, follow these steps:
+
+* Create a directory called 'test-elements' inside your element.
+
+* Inside the test-elements directory, create a directory with the name of your
+  test case. The test case directory should have the same structure as an
+  element.
+  i.e. elements/apt-sources/test-elements/test-case-1
+
+* Assert state during each of the element build phases you would like to test.
+  You can exit 1 to indicate a failure.
+
+* To exit early and indicate a success, touch a file /tmp/dib-test-should-fail
+  in the image chroot, then exit 1.
+
+Additionally, elements can be tested using python unittests. To create a
+a python test:
 
 * Create a directory called 'tests' in the element directory.
 

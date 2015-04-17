@@ -79,7 +79,8 @@ function run_d_in_target () {
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       check_break before-$1 run_in_target bash
-      trap "check_break after-error run_in_target bash" ERR
+      [ -z "$break_outside_target" ] && in_target_arg="run_in_target" || in_target_arg=
+      trap "check_break after-error $in_target_arg ${break_cmd:-bash}" ERR
       run_in_target dib-run-parts /tmp/in_target.d/$1.d
       trap - ERR
       check_break after-$1 run_in_target bash
