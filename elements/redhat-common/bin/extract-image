@@ -48,12 +48,11 @@ function extract_image() {
             trap "$EACTION" EXIT
             echo "Working in $WORKING"
 
-            RAW_FILE=$(basename $BASE_IMAGE_FILE)
-            RAW_FILE=${RAW_FILE%.qcow2}.raw
+            RAW_FILE=$(mktemp --tmpdir=$WORKING XXXXXX.raw)
 
-            qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $WORKING/$RAW_FILE
+            qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $RAW_FILE
 
-            ROOT_PARTITON=p$(sudo kpartx -l $WORKING/$RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
+            ROOT_PARTITON=p$(sudo kpartx -l $RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
             sudo udevadm settle
 
             # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
@@ -62,7 +61,7 @@ function extract_image() {
 
             # XXX: Parsing stdout is dangerous, would like a better way to discover
             #      the device used for the image.
-            ROOT_LOOPDEV=$(sudo kpartx -av $WORKING/$RAW_FILE | \
+            ROOT_LOOPDEV=$(sudo kpartx -av $RAW_FILE | \
                 awk "/loop[0-9]+$ROOT_PARTITON/ {print \$3}")
             # If running inside Docker, make our nodes manually, because udev will not be working.
             if [ -f /.dockerenv ]; then
@@ -72,7 +71,7 @@ function extract_image() {
                 echo "Error: Could not find /dev/mapper/$ROOT_LOOPDEV"
                 exit 1
             fi
-            EACTION="sudo kpartx -d $WORKING/$RAW_FILE ; $EACTION"
+            EACTION="sudo kpartx -d $RAW_FILE ; $EACTION"
             trap "$EACTION" EXIT
             mkdir $WORKING/mnt
             sudo mount /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt
