@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# dib-lint: disable=setu sete setpipefail dibdebugtrace
+# dib-lint: disable=dibdebugtrace
 
 set -eu
 set -o pipefail
@@ -109,21 +109,34 @@ if [ -n "${REG_TYPE:-}" ]; then
     opts="$opts --type=$REG_TYPE"
 fi
 
+sanitized_opts=$(echo "$opts" | sed 's/--password \([^ ]*\)/--password ***/g')
+sanitized_opts=$(echo "$sanitized_opts" | sed 's/--activationkey=\([^ ]*\)/--activationkey=***/g')
+
 case "${REG_METHOD:-}" in
     portal)
+        echo "Registering with options: $sanitized_opts"
         subscription-manager register $opts
         if [ -z "${REG_AUTO_ATTACH:-}" ]; then
+            echo "Attaching with options: $attach_opts"
             subscription-manager attach $attach_opts
         fi
+        echo "Enabling repos: $repos"
         subscription-manager $repos
         ;;
     satellite)
+        # Save an unmodified copy of the repo list for logging
+        user_repos=$repos
         repos="$repos --enable ${satellite_repo}"
+        echo "Installing satellite dependencies"
         rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
+        echo "Registering with options: $sanitized_opts"
         subscription-manager register $opts
+        echo "Enabling repos: $user_repos"
         subscription-manager $repos
+        echo "Installing katello-agent"
         yum install -y katello-agent || true # needed for errata reporting to satellite6
         katello-package-upload
+        echo "Disabling satellite repo because it is no longer needed"
         subscription-manager repos --disable ${satellite_repo}
         ;;
     disable)
