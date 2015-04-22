@@ -1,0 +1,5 @@
+dracut:
+kernel:
+initscripts:
+man-pages:
+redhat-lsb-core:

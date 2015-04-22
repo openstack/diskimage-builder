@@ -1,0 +1,8 @@
+{
+  "family": {
+    "redhat": {
+      "lsb_release": "redhat-lsb-core"
+    }
+  }
+}
+
