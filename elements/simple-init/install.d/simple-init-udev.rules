@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="simple-init@$name.service"
