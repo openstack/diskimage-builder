@@ -63,7 +63,7 @@ test_formats="tar raw qcow2 docker aci"
 for binary in qemu-img docker ; do
     if [ -z "$(which $binary)" ]; then
         echo "Warning: No $binary binary found, cowardly refusing to run tests."
-        exit 0
+        exit 1
     fi
 done
 
