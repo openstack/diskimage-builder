@@ -8,4 +8,5 @@ if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
 fi
 
 MODULE_PATH="/usr/lib/dracut/modules.d"
+sudo mkdir -p ${TMP_MOUNT_PATH}${MODULE_PATH}
 sudo cp -r $(dirname $0)/module/ ${TMP_MOUNT_PATH}${MODULE_PATH}/50targetcli
