@@ -46,7 +46,14 @@ def collect_data(data, filename, element_name):
         # Filter out incorrect installtypes
         installtype = params.get('installtype', None)
         elem_installtype = get_element_installtype(element_name)
-        if installtype is None or installtype == elem_installtype:
+        valid_installtype = (installtype is None or
+                             installtype == elem_installtype)
+
+        # Filter out incorrect ARCH versions
+        arch = params.get('arch', None)
+        valid_arch = arch is None or arch == os.environ['ARCH']
+
+        if valid_installtype and valid_arch:
             data[phase][install].append((pkg_name, element_name))
     return data
 
