@@ -105,6 +105,10 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
+    # generate the default en_US locale
+    sudo sed -i -e "0,/^[# ]*en_US.UTF-8 UTF-8 *$/ s/^[# ]*en_US.UTF-8 UTF-8 *$/en_US.UTF-8 UTF-8/" ${TARGET_ROOT}/etc/locale.gen
+    sudo chroot ${TARGET_ROOT} dpkg-reconfigure -f noninteractive locales
+
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
     sudo tar -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL --exclude='./tmp/*' .
 fi
