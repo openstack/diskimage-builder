@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ -n "$DIB_DEV_USER_AUTHORIZED_KEYS" ]; then
+    if [ -f "$DIB_DEV_USER_AUTHORIZED_KEYS" ]; then
+        cat $DIB_DEV_USER_AUTHORIZED_KEYS >> $TMP_HOOKS_PATH/devuser-ssh-authorized-keys
+    fi
+else
+    for fmt in "rsa dsa"; do
+        if [ -f "$HOME/.ssh/id_$fmt.pub" ]; then
+            cat $HOME/.ssh/id_$fmt.pub >> $TMP_HOOKS_PATH/devuser-ssh-authorized-keys
+            break
+        fi
+    done
+fi
