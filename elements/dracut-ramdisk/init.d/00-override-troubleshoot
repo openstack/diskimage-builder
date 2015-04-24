@@ -1,0 +1,7 @@
+# NOTE(bnemec): Dracut provides its own emergency shell, and it doesn't
+# seem to allow directly starting bash as the existing troubleshoot function
+# does.
+function troubleshoot() {
+    echo "Starting troubleshooting shell."
+    emergency_shell
+}
