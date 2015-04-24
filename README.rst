@@ -45,6 +45,9 @@ What tools are there?
 
 * element-info : Extract information about elements.
 
+* tests/run_functests.sh
+  This runs a set of functional tests for diskimage-builder.
+
 Why?
 ----
 
