@@ -142,7 +142,7 @@ function install_grub2 {
             sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
             GRUB_MKCONFIG=update-grub
         ;;
-        'fedora'|'centos7')
+        'fedora'|'centos7'|'centos')
             echo 'GRUB_CMDLINE_LINUX="nofb nomodeset vga=normal"' >>/etc/default/grub
         ;;
         'opensuse')
