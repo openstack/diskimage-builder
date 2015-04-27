@@ -185,7 +185,7 @@ possible approach to this would be to label elements as either a "driver",
 "service", or "config" element. Below are some examples.
 
 - Driver-specific elements should only contain the necessary bits for that
-  driver:
+  driver::
 
       elements/
          driver-mellanox/
@@ -194,7 +194,7 @@ possible approach to this would be to label elements as either a "driver",
                10-mlx      - package installation
 
 - An element that installs and configures Nova might be a bit more complex,
-  containing several scripts across several phases:
+  containing several scripts across several phases::
 
       elements/
          service-nova/

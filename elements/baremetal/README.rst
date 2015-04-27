@@ -1,3 +1,5 @@
+.. _element-baremetal:
+
 =========
 baremetal
 =========

@@ -26,7 +26,7 @@ risk.
 
 IMPORTANT NOTE:
 ----------------
-The 00-rhsm script is specific to RHEL6.  If you use the REG_ variables to
+The 00-rhsm script is specific to RHEL6.  If you use the REG\_ variables to
 use with RHEL7, you do not need to set any DIB_RHSM variables.  The scripts
 named with "rhel-registration" have not been developed or tested for RHEL6.
 For information on building RHEL6 images, please see the rhel element README.
@@ -214,7 +214,7 @@ Heat metadata can be used to configure the rhel-common element.
 Configuration Registration Examples
 ------------------------------------
 To register with Satellite 6, a common example would be to use the following
-metadata:
+metadata::
 
     {
         "rh_registration":{
@@ -222,13 +222,13 @@ metadata:
             "org": "tripleo",
             "environment": "Library",
             "activation_key": "my-key-SQQkh4",
-            "method":"satellite"
+            "method":"satellite",
             "repos": "rhel-ha-for-rhel-7-server-rpms"
         }
     }
 
 To register with the Red Hat Customer Portal, a common example would be to
-use the following metadata:
+use the following metadata::
 
     {
         "rh_registration":{
