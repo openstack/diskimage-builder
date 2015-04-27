@@ -71,6 +71,11 @@ rc=0
 TMPDIR=$(mktemp -d /tmp/tmp.XXXXXXXXXX)
 trap "rm -rf $TMPDIR" EXIT
 
+# Elements have a README.rst file
+for i in $(find $ELEMENTS_DIR -mindepth 1 -maxdepth 1 -type d); do
+    [ -f "${i}/README.rst" ] || error "$i lacks a README.rst"
+done
+
 # note .py files are run through flake8 directly in tox.ini
 for i in $(find $ELEMENTS_DIR -type f \
                 -not -name \*.rst     \
