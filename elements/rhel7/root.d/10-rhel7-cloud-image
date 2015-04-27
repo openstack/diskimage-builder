@@ -11,6 +11,9 @@ set -o pipefail
 
 if [ 'amd64' = "$ARCH" ] ; then
     ARCH="x86_64"
+else
+    echo 'rhel7 root element only support the amd64 $ARCH value.'
+    exit 1
 fi
 
 DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-""}
