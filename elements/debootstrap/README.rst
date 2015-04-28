@@ -1,14 +1,11 @@
-======
-debian
-======
-Create an image based on Debian. We default to unstable but DIB_RELEASE
-is mapped to any series of Debian.
+===========
+debootstrap
+===========
 
-Note that the default Debian series is `unstable`, and the default
-mirrors for Debian can be problematic for `unstable`. Because apt does
-not handle changing Packages files well across multiple out of sync
-mirrors, it is recommended that you choose a single mirror of debian,
-and pass it in via `DIB_DISTRIBUTION_MIRROR`.
+Base element for creating minimal debian-based images.
+
+This element is incomplete by itself, you'll want to use the debian-minimal
+or ubuntu-minimal elements to get an actual base image.
 
 If necessary, a custom apt keyring and debootstrap script can be
 supplied to the `debootstrap` command via `DIB_APT_KEYRING` and

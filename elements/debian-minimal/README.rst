@@ -1,7 +1,8 @@
-======
-debian
-======
-Create an image based on Debian. We default to unstable but DIB_RELEASE
+==============
+debian-minimal
+==============
+
+Create a minimal image based on Debian. We default to unstable but DIB_RELEASE
 is mapped to any series of Debian.
 
 Note that the default Debian series is `unstable`, and the default
@@ -17,7 +18,8 @@ use of absolute rather than relative paths.
 
 Use of this element will also require the tool 'debootstrap' to be
 available on your system. It should be available on Ubuntu, Debian,
-and Fedora.
+and Fedora. It is also recommended that the 'debian-keyring' package
+be installed.
 
 The `DIB_OFFLINE` or more specific `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`
 variables can be set to prefer the use of a pre-cached root filesystem

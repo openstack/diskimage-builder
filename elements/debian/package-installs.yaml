@@ -1,0 +1,10 @@
+openssh-server:
+file:
+less:
+kbd:
+curl:
+rsync:
+bash-completion:
+cloud-init:
+cloud-utils:
+cloud-initramfs-growroot:

@@ -10,7 +10,7 @@ Create a minimal image based on Ubuntu. We default to trusty but DIB_RELEASE
 is mapped to any series of Ubuntu.
 
 If necessary, a custom apt keyring and debootstrap script can be
-supplied to the `debootstrap` command via `DIB_DEBIAN_KEYRING` and
+supplied to the `debootstrap` command via `DIB_APT_KEYRING` and
 `DIB_DEBIAN_DEBOOTSTRAP_SCRIPT` respectively. Both options require the
 use of absolute rather than relative paths.
 
@@ -25,4 +25,4 @@ tarball.
 The `DIB_DEBOOTSTRAP_EXTRA_ARGS` environment variable may be used to
 pass extra arguments to the debootstrap command used to create the
 base filesystem image. If --keyring is is used in `DIB_DEBOOTSTRAP_EXTRA_ARGS`,
-it will override `DIB_DEBIAN_KEYRING` if that is used as well.
+it will override `DIB_APT_KEYRING` if that is used as well.
