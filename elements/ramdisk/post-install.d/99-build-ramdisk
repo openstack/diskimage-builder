@@ -17,7 +17,18 @@ source $_LIB/img-functions
 source $_LIB/ramdisk-functions
 
 KERNEL_VERSION=${DIB_KERNEL_VERSION:-$(find_kernel_version)}
+
 MODULE_DIR=$MODULE_ROOT/lib/modules/$KERNEL_VERSION
+if [ -f /dib-signed-kernel-version ] ; then
+    . /dib-signed-kernel-version
+fi
+if [ -n "${DIB_SIGNED_KERNEL_VERSION:-}" ]; then
+    # Though kernel name is suffixed with efi.signed, modules directory is
+    # without that suffix
+    MOD_KERNEL_NAME=`echo "$DIB_SIGNED_KERNEL_VERSION" |sed "s/\.efi\.signed//g"`
+    MODULE_DIR=$MODULE_ROOT/lib/modules/$MOD_KERNEL_NAME
+fi
+
 FIRMWARE_DIR=$MODULE_ROOT/lib/firmware
 LIB_UDEV=$LIB_UDEV_ROOT/lib/udev
 INIT="$_LIB/scripts/init"
@@ -46,4 +57,13 @@ save_image /tmp/ramdisk
 # reset ramdisk image builds fail.
 trap EXIT
 cp /boot/vmlinu[zx]-${KERNEL_VERSION} /tmp/kernel
+if [ -n "${DIB_SIGNED_KERNEL_VERSION:-}" ]; then
+    cp /boot/vmlinu[zx]-${DIB_SIGNED_KERNEL_VERSION} /tmp/kernel
+fi
+
 chmod o+r /tmp/kernel
+
+if [ -f /dib-signed-kernel-version ] ; then
+    echo "Removing /dib-signed-kernel-version"
+    rm -f /dib-signed-kernel-version
+fi

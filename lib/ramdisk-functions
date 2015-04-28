@@ -166,6 +166,16 @@ function populate_lib () {
     copy_required_libs "$path"
   done
 
+  if [ -f /dib-signed-kernel-version ] ; then
+      . /dib-signed-kernel-version
+  fi
+  if [ -n "${DIB_SIGNED_KERNEL_VERSION:-}" ]; then
+      # Secure kernel module directory does not have efi.signed suffix to
+      # kernel version.
+      if echo $KERNEL_VERSION | grep -q 'efi.signed'; then
+          KERNEL_VERSION=`echo "$KERNEL_VERSION" |sed "s/\.efi\.signed//g"`
+      fi
+  fi
   cp -a "$MODULE_DIR" "$TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION"
   echo "Removing kernel framebuffer drivers to enforce text mode consoles..."
   find $TMP_MOUNT_PATH/lib/modules/$KERNEL_VERSION/kernel/drivers/video -name '*fb.ko' -exec rm -v {} +
