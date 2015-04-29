@@ -83,8 +83,16 @@ function build_iso() {
     echo "Copying isolinux.bin"
 
     ISOLINUX_BIN=$TMP_BOOTLOADER_DIR/isolinux.bin
+    LDLINUX_BIN=$TMP_BOOTLOADER_DIR/ldlinux.c32
 
     cp $ISOLINUX_BIN "$TMP_IMAGE_DIR/isolinux"
+
+    # Starting from SYSLINUX 5.00, the isolinux.bin is dependent
+    # on ldlinux.c32.
+    # http://www.syslinux.org/wiki/index.php/Library_modules
+    if [ -f "$LDLINUX_BIN" ]; then
+        cp $LDLINUX_BIN "$TMP_IMAGE_DIR/isolinux"
+    fi
 
     # Copy initrd, kernel
     echo "Copying kernel to $TMP_IMAGE_DIR/vmlinuz"
