@@ -6,10 +6,17 @@ fi
 set -eu
 set -o pipefail
 
-install-packages python-dev python-pip qemu-utils parted hdparm util-linux genisoimage gcc
+install-packages python-dev qemu-utils parted hdparm util-linux genisoimage gcc
+
+# Install the latest version of pip and setuptools which has some
+# fixes for building behind proxy.
+curl -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
+python /tmp/get-pip.py
+pip install -U setuptools
 
 pip install -r /tmp/ironic-python-agent/requirements.txt
 pip install /tmp/ironic-python-agent
+rm -f /tmp/get-pip.py
 
 sudo echo $'[Unit]
 Description=Ironic Python Agent\n
