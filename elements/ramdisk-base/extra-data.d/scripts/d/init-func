@@ -19,27 +19,39 @@ function configure_vmedia_dir() {
     VMEDIA_MOUNT_POINT="/vfloppy_mnt"
     VMEDIA_DIR="/vfloppy"
     VMEDIA_CONFIG_FILE="parameters.txt"
-
-    SYSFS_DEVICE_MODELS="/sys/class/block/*/device/model"
-    SYSFS_VMEDIA_DEVICE_MODEL="virtual media"
+    VMEDIA_DEVICE_BY_LABEL="/dev/disk/by-label/ir-vfd-dev"
 
     # Wait for some seconds for kernel to finish initializing the
     # virtual media devices.
-    wait_for 5 1 "grep -q -i \"$SYSFS_VMEDIA_DEVICE_MODEL\" $SYSFS_DEVICE_MODELS"
+    wait_for 5 1 "ls $VMEDIA_DEVICE_BY_LABEL"
     if [[ $? != 0 ]]; then
-        echo "Error finding the virtual floppy device on the node."
-        troubleshoot
-    fi
 
-    # Find the virtual media device from the kernel sysfs file system.
-    VMEDIA_DEVICE=$(grep -l -i "$SYSFS_VMEDIA_DEVICE_MODEL" $SYSFS_DEVICE_MODELS | awk -F'/' '{print $5}')
-    if [[ -z $VMEDIA_DEVICE ]]; then
-        echo "Error finding the virtual floppy device on the node."
-        troubleshoot
+        # TODO(rameshg87): This block of code is there only for backward
+        # compatibility to older versions of Ironic. Remove this after 2
+        # releases. Ironic will now assign labels to Virtual Media devices.
+        SYSFS_DEVICE_MODELS="/sys/class/block/*/device/model"
+        SYSFS_VMEDIA_DEVICE_MODEL="virtual media"
+
+        # Wait for some seconds for kernel to finish initializing the
+        # virtual media devices.
+        wait_for 5 1 "grep -q -i \"$SYSFS_VMEDIA_DEVICE_MODEL\" $SYSFS_DEVICE_MODELS"
+        if [[ $? != 0 ]]; then
+            echo "Error finding the virtual floppy device on the node."
+            troubleshoot
+        fi
+
+        # Find the virtual media device from the kernel sysfs file system.
+        VMEDIA_DEVICE=$(grep -l -i "$SYSFS_VMEDIA_DEVICE_MODEL" $SYSFS_DEVICE_MODELS | awk -F'/' '{print $5}')
+        if [[ -z $VMEDIA_DEVICE ]]; then
+            echo "Error finding the virtual floppy device on the node."
+            troubleshoot
+        fi
+        VMEDIA_DEVICE_FILE="/dev/$VMEDIA_DEVICE"
+    else
+        VMEDIA_DEVICE_FILE="$VMEDIA_DEVICE_BY_LABEL"
     fi
 
     # Mount the virtual media device
-    VMEDIA_DEVICE_FILE="/dev/$VMEDIA_DEVICE"
     mkdir -p $VMEDIA_MOUNT_POINT
     mount $VMEDIA_DEVICE_FILE $VMEDIA_MOUNT_POINT
     if [[ $? != 0 ]]; then
