@@ -74,7 +74,14 @@ function extract_image() {
             EACTION="sudo kpartx -d $RAW_FILE ; $EACTION"
             trap "$EACTION" EXIT
             mkdir $WORKING/mnt
-            sudo mount /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt
+            if [ "xfs" = "$(sudo blkid -o value -s TYPE /dev/mapper/$ROOT_LOOPDEV)" ]; then
+                # mount xfs with nouuid, just in case that uuid is already mounted
+                MOUNTOPTS="-o nouuid"
+            else
+                MOUNTOPTS=""
+            fi
+
+            sudo mount $MOUNTOPTS /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt
             EACTION="sudo umount -f $WORKING/mnt ; $EACTION"
             trap "$EACTION" EXIT
 
