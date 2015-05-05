@@ -32,12 +32,11 @@ if [ $DISTRO_NAME = 'ubuntu' ] ; then
     KERNEL='generic'
 else
     case $ARCH in
-        amd64) KERNEL='amd64' ; break ;;
-        i386) KERNEL='686' ; break ;;
+        amd64) KERNEL='amd64' ;;
+        i386) KERNEL='686' ;;
         arm7)
             [ -n "$DIB_ARM_KERNEL" ]
             KERNEL="$DIB_ARM_KERNEL"
-            break
             ;;
     esac
 fi
