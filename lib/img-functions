@@ -56,18 +56,16 @@ function ensure_sudo () {
 
 # Helper function to run a command inside the chroot
 function run_in_target () {
-    # Force the inclusion of a typical set of dirs in PATH, this is needed for guest
-    # distros that have path elements not in the host PATH.
-    # Note that we're not expanding PATH during argument processing, the \$
-    # will preserve the PATH syntax until after the sh command runs
-    cmd="PATH=\$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin ; $@"
+    cmd="$@"
     # -E to preserve http_proxy
     ORIG_HOME=$HOME
     export HOME=/root
     # Force an empty TMPDIR inside the chroot. There is no need to use an user
     # defined tmp dir which may not exist in the chroot.
     # Bug: #1330290
-    sudo -E TMPDIR= chroot $TMP_MOUNT_PATH sh -c "$cmd"
+    # Force the inclusion of a typical set of dirs in PATH, this is needed for guest
+    # distros that have path elements not in the host PATH.
+    sudo -E TMPDIR= chroot $TMP_MOUNT_PATH env PATH="\$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" sh -c "$cmd"
     export HOME=$ORIG_HOME
 }
 
