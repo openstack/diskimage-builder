@@ -28,7 +28,7 @@ Components
 
     **DEPRECATED** Extract the appropriate kernel and ramdisk to use when doing
     PXE boot using filename as the image for a machine. Consider using the
-    :ref:`baremetal` element, rather than this tool.
+    :ref:`element-baremetal` element, rather than this tool.
 
 
 `element-info`

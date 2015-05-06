@@ -2,6 +2,7 @@ Copyright
 =========
 
 Copyright 2012 Hewlett-Packard Development Company, L.P.
+
 Copyright (c) 2012 NTT DOCOMO, INC.
 
 All Rights Reserved.

@@ -18,6 +18,7 @@ Provides the following:
    the one of 3 sections for the distro/family/ and or default.
    The family is set automatically within svc-map based on
    the supplied distro name. Families include:
+
      + redhat: includes centos, fedora, and rhel distros
      + debian: includes debian and ubuntu distros
      + suse: includes the opensuse distro
@@ -30,7 +31,7 @@ Provides the following:
    the source name against systemd and upstart and return that name if it
    exists instead of the mapped name.
 
-    Example format for Nova:
+    Example format for Nova::
 
       nova-api:
         default: openstack-nova-api
@@ -49,7 +50,7 @@ Provides the following:
         debian: nova-console
 
 
-    Example format for Glance
+    Example format for Glance::
 
       glance-api:
         debian: glance-api
@@ -59,7 +60,7 @@ Provides the following:
         default: openstack-glance-registry
 
 
-    If the distro is of the debian family the combined services file would be:
+    If the distro is of the debian family the combined services file would be::
 
         nova-cert: nova-cert
         nova-compute: nova-compute
@@ -70,7 +71,7 @@ Provides the following:
         nova-consoleauth: nova-console
 
 
-    If the distro is of the suse or redhat families the combined services file would be:
+    If the distro is of the suse or redhat families the combined services file would be::
 
         nova-cert: openstack-nova-cert
         nova-compute: openstack-nova-compute
@@ -81,19 +82,19 @@ Provides the following:
         nova-api: openstack-nova-api
 
 
-   Example commands using this format:
+   Example commands using this format::
 
-   svc-map nova-compute
+       svc-map nova-compute
 
-   Returns: openstack-nova-compute
+       Returns: openstack-nova-compute
 
-   svc-map nova-compute
+       svc-map nova-compute
 
-   Returns: openstack-nova-compute
+       Returns: openstack-nova-compute
 
-   svc-map nova-compute
+       svc-map nova-compute
 
-   Returns: nova-compute
+       Returns: nova-compute
 
  * This output can be used to filter what other tools actually install
    (install-services can be modified to use this for example)
