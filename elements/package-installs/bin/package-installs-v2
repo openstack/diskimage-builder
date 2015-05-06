@@ -30,7 +30,9 @@ def process_output(cmdline):
         proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
         out = proc.communicate()[0]
         if proc.returncode:
-            raise subprocess.CalledProcessError(proc.returncode, cmdline, out)
+            e = subprocess.CalledProcessError(proc.returncode, cmdline)
+            e.output = out
+            raise e
         return out
 
 
