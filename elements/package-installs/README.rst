@@ -16,6 +16,8 @@ example package-installs.yaml::
    uninstall: True
  os-collect-config:
    installtype: source
+ linux-image-amd64:
+   arch: amd64
 
 example package-installs.json::
 
@@ -33,11 +35,15 @@ the following default values::
     phase: install.d
     uninstall: False
     installtype: * (Install package for all installtypes)
+    arch: * (Install package for all architectures)
 
 Setting the installtype property causes the package only to be installed if
 the specified installtype would be used for the element. See the
 diskimage-builder docs for more information on installtypes.
 
+Setting the arch property causes the package only to be installed for the
+specified target architecture. See documentation about the ARCH variable
+for more information.
 
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or
 post-install.d directories called package-installs-<element-name> will cause
