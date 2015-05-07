@@ -11,8 +11,11 @@ sudo apt-get install -y --force-yes \
         inetutils-ping \
         lsb-release \
         kpartx \
+        python-lzma \
         qemu-utils \
-        uuid-runtime || \
+        rpm \
+        uuid-runtime \
+        yum-utils || \
     sudo yum -y install \
         debootstrap \
         docker \
@@ -22,4 +25,6 @@ sudo apt-get install -y --force-yes \
         app-emulation/qemu \
         dev-python/pyyaml \
         sys-block/parted \
-        sys-fs/multipath-tools
+        sys-fs/multipath-tools \
+        qemu-img \
+        yum-utils
