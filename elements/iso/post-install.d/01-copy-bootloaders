@@ -24,10 +24,19 @@ fi
 
 if [ $DISTRO_NAME = "fedora" ]; then
     SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
+    LDLINUX_FILE="/usr/share/syslinux/ldlinux.c32"
 else
     SYSLINUX_FILE="/usr/lib/syslinux/isolinux.bin"
+    LDLINUX_FILE="/usr/lib/syslinux/ldlinux.c32"
 fi
 
 cp $GRUB_FILE $TMP_BOOTLOADER_DIR
 cp $SHIM_FILE $TMP_BOOTLOADER_DIR
 cp $SYSLINUX_FILE $TMP_BOOTLOADER_DIR
+
+# Starting from SYSLINUX 5.00, the isolinux.bin is dependent
+# on ldlinux.c32.
+# http://www.syslinux.org/wiki/index.php/Library_modules
+if [ -f "$LDLINUX_FILE" ]; then
+    cp $LDLINUX_FILE $TMP_BOOTLOADER_DIR
+fi
