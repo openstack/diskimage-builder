@@ -206,7 +206,7 @@ mk_build_dir
 create_base
 # This variable needs to be propagated into the chroot
 mkdir -p $TMP_HOOKS_PATH/environment.d
-echo "export DIB_DEFAULT_INSTALLTYPE=\"${DIB_DEFAULT_INSTALLTYPE}\"" > $TMP_HOOKS_PATH/environment.d/11-dib-install-type.bash
+echo "export DIB_DEFAULT_INSTALLTYPE=\${DIB_DEFAULT_INSTALLTYPE:-\"${DIB_DEFAULT_INSTALLTYPE}\"}" > $TMP_HOOKS_PATH/environment.d/11-dib-install-type.bash
 run_d extra-data
 # Run pre-install scripts. These do things that prepare the chroot for package installs
 run_d_in_target pre-install
