@@ -1,7 +1,6 @@
 {
   "family": {
     "redhat": {
-      "vlan_package": "vconfig",
       "iscsi_package": "iscsi-initiator-utils"
     },
     "suse": {
@@ -11,7 +10,6 @@
   "default": {
     "ccache_package": "ccache",
     "dkms_package": "dkms",
-    "vlan_package": "vlan",
     "iscsi_package": "open-iscsi"
   }
 }

@@ -7,4 +7,4 @@ fi
 set -eu
 set -o pipefail
 
-install-packages -m base vlan_package iscsi_package
+install-packages -m base iscsi_package
