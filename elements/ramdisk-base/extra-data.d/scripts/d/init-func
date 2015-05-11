@@ -26,15 +26,14 @@ function configure_vmedia_dir() {
     wait_for 5 1 "ls $VMEDIA_DEVICE_BY_LABEL"
     if [[ $? != 0 ]]; then
 
-        # TODO(rameshg87): This block of code is there only for backward
-        # compatibility to older versions of Ironic. Remove this after 2
-        # releases. Ironic will now assign labels to Virtual Media devices.
+        # TODO(rameshg87) - 04/29/15 : This block of code is there only
+        # for backward compatibility to older versions of Ironic. Remove this
+        # after 2 releases. Ironic will now assign labels to Virtual Media
+        # devices.
         SYSFS_DEVICE_MODELS="/sys/class/block/*/device/model"
         SYSFS_VMEDIA_DEVICE_MODEL="virtual media"
 
-        # Wait for some seconds for kernel to finish initializing the
-        # virtual media devices.
-        wait_for 5 1 "grep -q -i \"$SYSFS_VMEDIA_DEVICE_MODEL\" $SYSFS_DEVICE_MODELS"
+        grep -q -i "$SYSFS_VMEDIA_DEVICE_MODEL" $SYSFS_DEVICE_MODELS
         if [[ $? != 0 ]]; then
             echo "Error finding the virtual floppy device on the node."
             troubleshoot
