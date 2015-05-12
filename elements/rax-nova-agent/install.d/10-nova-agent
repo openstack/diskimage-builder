@@ -32,10 +32,8 @@ runcmd:
     - ip addr show eth0 | grep inet || ( ifdown -a ; ifup -a )
 EOF
 
-DIST=$(lsb_release -is)
-[ -n "$DIST" ]
-case $DIST in
-    'Ubuntu'|'Debian')
+case "$DISTRO_NAME" in
+    'ubuntu'|'debian')
 
     # cloud-init / nova-agent sad panda hacks
     cat > /etc/init/nova-agent.conf <<'EOF'
@@ -87,7 +85,7 @@ respawn
 exec /sbin/getty -L 115200 hvc0 vt102
 EOF
     ;;
-    'Fedora'|'CentOS' | 'openSUSE project')
+    'fedora'|'centos'|'centos7'|'opensuse')
 
     cat > /usr/local/bin/run-nova-agent.sh <<'EOF'
 #!/bin/bash

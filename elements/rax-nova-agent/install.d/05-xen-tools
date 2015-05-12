@@ -21,19 +21,16 @@ fi
 set -eu
 set -o pipefail
 
-DIST=$(lsb_release -is)
-[ -n "$DIST" ]
-
 XS_TOOLS_DIR=$(mktemp -d)
 mount -o loop /tmp/xs-tools.iso $XS_TOOLS_DIR
 pushd $XS_TOOLS_DIR/Linux
-case $DIST in
-    'Ubuntu'|'Debian')
+case "$DISTRO_NAME" in
+    'ubuntu'|'debian')
         # Seriously
         source versions.deb
         dpkg -i $XE_GUEST_UTILITIES_PKG_FILE_amd64
         ;;
-    'Fedora'|'CentOS' | 'openSUSE project')
+    'fedora'|'centos'|'centos7'|'opensuse')
         source versions.rpm
         rpm -Uvh $XE_GUEST_UTILITIES_PKG_FILE_x86_64
         ;;
