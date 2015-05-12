@@ -9,6 +9,15 @@ set -o pipefail
 
 # cloud-init May not actually be installed
 mkdir -p /etc/cloud/cloud.cfg.d
-dd of=/etc/cloud/cloud.cfg.d/10_etc_hosts.cfg << EOF
-manage_etc_hosts: localhost
+
+if [ ! -v DIB_CLOUD_INIT_ETC_HOSTS ]; then
+    echo "WARNING: In the future the default setting for manage_etc_hosts will not be overridden by this element."
+    echo "WARNING: Set DIB_CLOUD_INIT_ETC_HOSTS to 'localhost' to preserve current behavior."
+fi
+
+DIB_CLOUD_INIT_ETC_HOSTS=${DIB_CLOUD_INIT_ETC_HOSTS-localhost}
+if [ -n "$DIB_CLOUD_INIT_ETC_HOSTS" ]; then
+    dd of=/etc/cloud/cloud.cfg.d/10_etc_hosts.cfg << EOF
+manage_etc_hosts: $DIB_CLOUD_INIT_ETC_HOSTS
 EOF
+fi
