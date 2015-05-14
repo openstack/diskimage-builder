@@ -23,7 +23,7 @@ if [ -n "$DIB_LOCAL_IMAGE" ]; then
     BASE_IMAGE_FILE=$(basename $DIB_LOCAL_IMAGE)
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
 else
-    DIB_RELEASE=${DIB_RELEASE:-GenericCloud-20140929_01}
+    DIB_RELEASE=${DIB_RELEASE:-GenericCloud}
     DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/7/images}
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-CentOS-7-x86_64-$DIB_RELEASE.qcow2}
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
