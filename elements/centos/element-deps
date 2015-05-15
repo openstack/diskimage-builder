@@ -1,5 +1,6 @@
 cache-url
 dib-run-parts
+epel
 redhat-common
 rpm-distro
 yum
