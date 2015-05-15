@@ -32,15 +32,15 @@ function create_ramdisk_base () {
   # cjk adding for discovery support
   mkdir -p "${TMP_MOUNT_PATH}/"{lib/udev/rules.d,var/{lib/dhcp,run}}
 
-  DISTRO=`lsb_release -si` || true
-
-  if [[ "Fedora RedHatEnterpriseServer \"openSUSE project\"" =~ "$DISTRO" ]]; then
-    mkdir -p "$TMP_MOUNT_PATH/usr"
-    ln -s ../lib "$TMP_MOUNT_PATH/usr/lib"
-    if [ "`uname -m`" = "x86_64" ]; then
+  case "$DISTRO_NAME" in
+    fedora|rhel|rhel7|opensuse)
+      mkdir -p "$TMP_MOUNT_PATH/usr"
+      ln -s ../lib "$TMP_MOUNT_PATH/usr/lib"
+      if [ "`uname -m`" = "x86_64" ]; then
         ln -s lib "$TMP_MOUNT_PATH/lib64"
-    fi
-  fi
+      fi
+      ;;
+  esac
 
   if [ -e $LIB_UDEV/rules.d/50-firmware.rules ]; then
     cp -a "$LIB_UDEV/rules.d/50-firmware.rules" "$TMP_MOUNT_PATH/lib/udev/rules.d"
