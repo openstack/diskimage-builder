@@ -134,7 +134,19 @@ Each element can use the following files to define or affect dependencies:
   on element B and element C includes element B in its "element-provides"
   file and A and C are included when building an image, then B is not used.
 
+Operating system elements
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Some elements define the base structure for an operating system -- for example,
+the ``opensuse`` element builds a base openSUSE system. Such elements have
+more requirements than the other elements:
+
+* they must have ``operating-system`` in their element-provides, so this
+  indicates they are an "operating system".
+
+* they must export the ``DISTRO_NAME`` environment variable with the name
+  of the distribution built, using an environment.d script. For example,
+  the ``opensuse`` element exports ``DISTRO_NAME=opensuse``.
 
 Ramdisk Elements
 ^^^^^^^^^^^^^^^^
