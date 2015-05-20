@@ -41,6 +41,9 @@ if blkid -t LABEL="config-2" ; then
     /usr/local/bin/glean --ssh --skip-network
 fi
 
+if [ -f /usr/bin/dpkg ] ; then
+    test -f /etc/ssh/ssh_host_rsa_key || dpkg-reconfigure openssh-server
+fi
 
 if [ -n "$INTERFACE" ]; then
     /usr/local/bin/glean --interface $INTERFACE
