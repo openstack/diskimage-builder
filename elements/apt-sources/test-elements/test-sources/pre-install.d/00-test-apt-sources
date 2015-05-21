@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eux
+set -o pipefail
+
+echo "Verifying apt sources.list content"
+[ -f /etc/apt/sources.list ]
+[ "$(cat /etc/apt/sources.list)" = "testdata" ]
+
+touch /tmp/dib-test-should-fail && exit 1
