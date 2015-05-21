@@ -14,14 +14,16 @@ if [ -z "$DIB_CLOUD_INIT_DATASOURCES" ] ; then
     exit 1
 fi
 
-# DatasourceNone doesn't exist in Ubuntu 12.04 (Precise)
-# which uses cloud-init version 0.6.3
-if [ "$(lsb_release -cs)" = 'precise' ] ; then
-    cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
+if [ -d /etc/cloud/cloud.cfg.d ]; then
+    # DatasourceNone doesn't exist in Ubuntu 12.04 (Precise)
+    # which uses cloud-init version 0.6.3
+    if [ "$(lsb_release -cs)" = 'precise' ] ; then
+        cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
 datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES ]
 EOF
-else
-    cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
+    else
+        cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
 datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES, None ]
 EOF
+    fi
 fi
