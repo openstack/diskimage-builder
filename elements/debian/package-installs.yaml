@@ -8,3 +8,4 @@ bash-completion:
 cloud-init:
 cloud-utils:
 cloud-initramfs-growroot:
+locales-all:
