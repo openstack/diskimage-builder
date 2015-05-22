@@ -12,7 +12,8 @@ increases image building speed when building multiple images, especially on
 slow connections.  This is more effective than using an HTTP proxy as a yum
 cache since the same rpm from different mirrors is often requested.
 
-A custom yum repository configuration can also be applied by defining
-`DIB_YUM_REPO_CONF` to the path to a repo configuration file. The file will
-be copied to /etc/yum.repos.d/dib-yum-repo-conf.repo during the image build,
-and then removed at the end of the build.
+Custom yum repository configurations can also be applied by defining
+`DIB_YUM_REPO_CONF` to a space separated list of repo configuration files. The
+files will be copied to /etc/yum.repos.d/ during the image build, and then
+removed at the end of the build. Each repo file should be named differently to
+avoid a filename collision.
