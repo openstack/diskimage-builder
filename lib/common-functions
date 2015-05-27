@@ -22,7 +22,7 @@ function tmpfs_check() {
   # the double of the minimum tmpfs size required
   RAM_NEEDED=$(($DIB_MIN_TMPFS * 2))
   [ $total_kB -lt $(($RAM_NEEDED*1024*1024)) ] || return 0
-  echo "Not enough RAM to use tmpfs for build. ($total_kB < ${RAM_NEEDED}G)"
+  echo "WARNING: Not enough RAM to use tmpfs for build. Using ${TMP_DIR:-/tmp}. ($total_kB < ${RAM_NEEDED}G)"
   return 1
 }
 
