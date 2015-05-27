@@ -50,7 +50,7 @@ function run_element_test() {
             echo "No image $dest_dir/image.tar found!"
             exit 1
         else
-            if tar -l $dest_dir/image.tar | grep -q /tmp/dib-test-should-fail; then
+            if tar -t $dest_dir/image.tar | grep -q /tmp/dib-test-should-fail; then
                 echo "Error: Element: $element, test-element $test_element should have failed, but passed."
                 exit 1
             else
