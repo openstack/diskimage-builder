@@ -24,6 +24,9 @@ EXTRA_ARGS=
 ACTION=install
 MAP_ELEMENT=
 
+# allow override for dnf, as shipped by default with >=F22
+YUM=${YUM:-yum}
+
 SCRIPTNAME=$(basename $0)
 function show_options () {
     echo "Usage: $SCRIPTNAME [package ...]"
@@ -42,7 +45,7 @@ eval set -- "$TEMP"
 
 while true ; do
     case "$1" in
-        -u) yum -y update; exit 0;;
+        -u) ${YUM} -y update; exit 0;;
         -d) EXTRA_ARGS="--downloadonly"; shift;;
         -e) ACTION="erase"; shift;;
         -m) MAP_ELEMENT=$2; shift 2;;
@@ -51,6 +54,7 @@ while true ; do
         *) echo "Error: unsupported option $1."; exit 1;;
     esac
 done
+
 
 # Packages that aren't available in the distro but requested for installation
 # can be ignored by adding them to the exclude list
@@ -87,7 +91,7 @@ if [ -n "$WHITELIST" ]; then
         echo "Not running install-packages $ACTION with empty packages list"
     else
         echo "Running install-packages ${ACTION}. Package list: $PKGS"
-        yum -y $ACTION $EXTRA_ARGS $PKGS
+        ${YUM} -v -y $ACTION $EXTRA_ARGS $PKGS
         for pkg in "$@"; do
             if [ "$pkg" = "python-pip" ] ; then
                 alternatives --install /usr/bin/pip pip /usr/bin/pip-python 10
