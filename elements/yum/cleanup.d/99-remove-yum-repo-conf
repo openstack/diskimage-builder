@@ -6,4 +6,12 @@ fi
 set -eu
 set -o pipefail
 
-sudo rm -f $TMP_MOUNT_PATH/etc/yum.repos.d/dib-yum-repo-conf.repo
+# exit directly if DIB_YUM_REPO_CONF is not defined properly
+if [ -z "${DIB_YUM_REPO_CONF:-}" ] ; then
+    echo "DIB_YUM_REPO_CONF is not set - no repo configurations will be cleaned up"
+    exit 0
+fi
+
+for file in $DIB_YUM_REPO_CONF; do
+    sudo rm -f $TMP_MOUNT_PATH/etc/yum.repos.d/$(basename $file)
+done
