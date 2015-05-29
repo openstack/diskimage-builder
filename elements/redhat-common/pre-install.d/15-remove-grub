@@ -5,35 +5,17 @@ fi
 set -eu
 set -o pipefail
 
-GRUBNAME=$(which grub-install) || echo "trying grub2-install"
-if [ -z "$GRUBNAME" ]; then
-    GRUBNAME=$(which grub2-install)
-fi
-if [ -z "$GRUBNAME" ] || [ $($GRUBNAME --version | grep -c "0.97") -ne 0 ]; then
-    echo "No GRUB2 found. No need to remove"
+# grub2 isn't available on rhel6/centos6; they are setup to use
+# extlinux.  skip this
+# you would think we could match on $DISTRO or something else; but
+# we can't because the rhel/centos elements are a bit mixed up;
+# centos-minimal for example sets distro to "centos".  so the best
+# check is just for the original "grub-install" script
+if [ -f /sbin/grub-install ]; then
     exit 0
-else
-# Must manually remove grub2 here, otherwise the download below does not work.
-    yum remove -y grub2
 fi
 
-# Remove all old versions of grub2 from the yum cache and then ensure the
-# latest version is in the cache.
-basearch=$(cat /etc/yum/vars/basearch)
-find /tmp/yum/$basearch -regex ".*/grub2-[0-9].*\.rpm" -exec rm -f {} +
-install-packages -d grub2
-
-# Copy grub2 rpm out of mounted yum cache for install during finalise
-mkdir -p /tmp/grub
-cp $(find /tmp/yum/$basearch -regex ".*/grub2-[0-9].*\.rpm") /tmp/grub
+# download the latest grub2 package and setup the install script which
+# will be called later by vm/finalise.d/51-bootloader
+install-packages -d /tmp/grub grub2
 echo "rpm -i /tmp/grub/*.rpm" > /tmp/grub/install
-
-#GRUB_CFG=/boot/grub2/grub.cfg
-
-#[ -f "$GRUB_CFG" ]
-
-# Update the config to have the search UUID of the image being built.
-# When partition staging is moved to a separate stage, this will need to happen
-# there. This generates a non-UUID config, which is irrelevant for booting with
-# hypervisor kernel + ramdisk, and fixed up by 51-grub for vm images.
-#GRUB_DISABLE_LINUX_UUID=true grub2-mkconfig -o $GRUB_CFG
