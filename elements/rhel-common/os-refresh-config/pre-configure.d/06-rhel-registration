@@ -116,7 +116,7 @@ case "${REG_METHOD:-}" in
     portal)
         echo "Registering with options: $sanitized_opts"
         subscription-manager register $opts
-        if [ -z "${REG_AUTO_ATTACH:-}" ]; then
+        if [ -z "${REG_AUTO_ATTACH:-}" -a -z "${REG_ACTIVATION_KEY:-}" ]; then
             echo "Attaching with options: $attach_opts"
             subscription-manager attach $attach_opts
         fi
