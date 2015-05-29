@@ -90,7 +90,7 @@ function do_vendor_passthru_and_wait {
          "-H 'Accept: application/json'" \
          "-H 'Content-Type: application/json'" \
          -d "$data" \
-         "$IRONIC_API_URL/nodes/$DEPLOYMENT_ID/vendor_passthru/$vendor_passhru_name"
+         "$IRONIC_API_URL/v1/nodes/$DEPLOYMENT_ID/vendor_passthru/$vendor_passhru_name"
 
     echo "Waiting for notice of complete"
     nc -l -p 10000
