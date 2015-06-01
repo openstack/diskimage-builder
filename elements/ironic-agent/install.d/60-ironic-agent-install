@@ -12,11 +12,11 @@ install-packages python-dev qemu-utils parted hdparm util-linux genisoimage gcc
 # fixes for building behind proxy.
 curl -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
 python /tmp/get-pip.py
+rm -f /tmp/get-pip.py
 pip install -U setuptools
 
 pip install -r /tmp/ironic-python-agent/requirements.txt
 pip install /tmp/ironic-python-agent
-rm -f /tmp/get-pip.py
 
 sudo echo $'[Unit]
 Description=Ironic Python Agent\n
