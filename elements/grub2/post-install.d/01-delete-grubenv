@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+
+set -eu
+set -o pipefail
+
+
+# Delete /boot/grub2/grubenv if it exists because
+# it will fail while doing grub-install again.
+rm -f /boot/grub2/grubenv

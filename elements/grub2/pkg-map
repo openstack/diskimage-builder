@@ -1,0 +1,20 @@
+{
+  "family":{
+    "debian":{
+      "signed_grub_efi": "grub-efi-amd64-signed",
+      "signed_shim_efi": "shim-signed",
+      "grub_bios": "grub-pc-bin"
+    },
+    "redhat":{
+      "signed_grub_efi": "efibootmgr grub2-efi-modules grub2-efi",
+      "signed_shim_efi": "shim",
+      "grub_bios": "grub2"
+    }
+  },
+  "default":{
+      "signed_grub_efi": "grub-efi-amd64-signed",
+      "signed_shim_efi": "shim-signed",
+      "grub_bios": "grub-pc-bin"
+  }
+}
+
