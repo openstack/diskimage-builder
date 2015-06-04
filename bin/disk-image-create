@@ -274,7 +274,10 @@ for X in ${!IMAGE_TYPES[@]} ; do
   fi
 done
 
+# Unmount and cleanup the /mnt and /build subdirectories, to save
+# space before converting the image to some other format.
 unmount_image
+cleanup_build_dir
 
 has_raw_type=
 if [ "$IS_RAMDISK" == "0" ]; then
@@ -292,9 +295,8 @@ if [ -n "$has_raw_type" ]; then
   compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
 fi
 
-# Always cleanup after ourselves
-rm -f $TMP_IMAGE_PATH
-cleanup_dirs
+# Remove the leftovers, i.e. the temporary image directory.
+cleanup_image_dir
 
 case "$IMAGE_ELEMENT" in
   *ironic-agent*)
