@@ -61,7 +61,11 @@ error() {
 rc=0
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
-for i in $(find elements -type f); do
+for i in $(find elements -type f \
+                -not -name \*~ \
+                -not -name \*.rst \
+                -not -name \*.py \
+                -not -name \*.pyc); do
     exclusions=("$(parse_exclusions $i)")
     # Check that files starting with a shebang are +x
     firstline=$(head -n 1 "$i")
