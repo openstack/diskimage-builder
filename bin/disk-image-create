@@ -45,7 +45,7 @@ function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
-    echo "    -t qcow2,tar,vhd,raw -- set the image types of the output image files (default qcow2)"
+    echo "    -t qcow2,tar,vhd,docker,raw -- set the image types of the output image files (default qcow2)"
     echo "       File types should be comma separated. VHD outputting requires the vhd-util"
     echo "       executable be in your PATH."
     echo "    -x -- turn on tracing"
@@ -71,6 +71,7 @@ function show_options () {
     echo "       Defaults to 'ramdisk'.  Should be set to 'dracut-ramdisk' for platforms such"
     echo "       as RHEL and CentOS that do not package busybox."
     echo "    --install-type -- specify the default installation type. Defaults to 'source'. Set to 'package' to use package based installations by default."
+    echo "    --docker-target -- specify the repo and tag to use if the output type is docker. Defaults to the value of output imagename"
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
         echo "    -p package[,package,package] -- list of packages to install in the image"
@@ -102,7 +103,8 @@ COMPRESS_IMAGE="true"
 export DIB_ROOT_LABEL=""
 DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
 MKFS_OPTS=""
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type: -n $SCRIPTNAME -- "$@"`
+DOCKER_TARGET=""
+TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -130,6 +132,7 @@ while true ; do
         --root-label) export DIB_ROOT_LABEL=$2; shift 2;;
         --ramdisk-element) RAMDISK_ELEMENT=$2; shift 2;;
         --install-type) DIB_DEFAULT_INSTALLTYPE=$2; shift 2;;
+        --docker-target) export DOCKER_TARGET=$2; shift 2 ;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -176,6 +179,16 @@ for X in ${!IMAGE_TYPES[@]}; do
         vhd)
             if [ -z "$(which vhd-util)" ]; then
                 echo "vhd output format specified but no vhd-util executable found."
+                exit 1
+            fi
+            ;;
+        docker)
+            if [ -z "$(which docker)" ]; then
+                echo "docker output format specified but no docker executable found."
+                exit 1
+            fi
+            if [ -z "$DOCKER_TARGET" ]; then
+                echo "Please set --docker-target."
                 exit 1
             fi
             ;;
@@ -270,6 +283,11 @@ for X in ${!IMAGE_TYPES[@]} ; do
     sudo tar -C ${TMP_BUILD_DIR}/mnt -cf $IMAGE_NAME.tar --exclude ./sys \
              --exclude ./proc --xattrs --xattrs-include=\* .
     sudo chown $USER: $IMAGE_NAME.tar
+    unset IMAGE_TYPES[$X]
+  elif [ "${IMAGE_TYPES[$X]}" == "docker" ]; then
+    sudo tar -C ${TMP_BUILD_DIR}/mnt -cf - --exclude ./sys \
+             --exclude ./proc --xattrs --xattrs-include=\* . \
+        | docker import - $DOCKER_TARGET
     unset IMAGE_TYPES[$X]
   fi
 done
