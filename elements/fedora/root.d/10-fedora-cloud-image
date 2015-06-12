@@ -23,7 +23,7 @@ if [ -n "$DIB_LOCAL_IMAGE" ]; then
     BASE_IMAGE_FILE=`basename $DIB_LOCAL_IMAGE`
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
 else
-    DIB_RELEASE=${DIB_RELEASE:-21}
+    # note default DIB_RELEASE set in environment setup
     DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.fedoraproject.org}
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-fedora-$DIB_RELEASE.$ARCH.qcow2}
     BASE_IMAGE_TAR=$DIB_RELEASE-Cloud-$ARCH-$DIB_RELEASE.tgz
