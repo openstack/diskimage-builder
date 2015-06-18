@@ -3,15 +3,20 @@ Caches and offline mode
 
 Since retrieving and transforming operating system image files, git
 repositories, Python or Ruby packages, and so on can be a significant overhead,
-we cache many of the inputs to the build process in ~/.cache/image-create/. The
-writing an element documentation describes the interface within
-disk-image-builder for caching. When invoking disk-image-builder the --offline
-option will instruct disk-image-builder to not refresh cached resources.
+we cache many of the inputs to the build process.
+
+The cache location is read from DIB\_IMAGE\_CACHE. :ref:`developing-elements`
+describes the interface within disk-image-builder for caching.
+
+When invoking disk-image-builder, the ``--offline`` option will instruct
+disk-image-builder to not refresh cached resources.
 
 Note that we don't maintain operating system package caches, instead depending
 on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to
 facilitate caching of that layer, so you need to arrange independently for
-offline mode.
+offline mode. For more information about setting up a squid proxy, consult the
+`TripleO documentation
+<http://docs.openstack.org/developer/tripleo-incubator/devtest_setup.html#f3>`_.
 
 Base images
 -----------

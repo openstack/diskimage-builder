@@ -29,4 +29,8 @@ Components
 
     Extract information about elements.
 
+`tests/run_functests.sh`
+
+    This runs a set of functional tests for diskimage-builder.
+
 elements can be found in the top level elements directory.
