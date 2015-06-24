@@ -9,7 +9,8 @@ from git and pbr from a tarball would be
 *File : elements/custom-element/source-repository-ironic*
 
     #<name> <type> <destination> <location> [<ref>]
-    # <ref> defaults to master if not specified
+    # <ref> defaults to master if not specified.
+    # A value of "*" prunes and fetches all heads and tags.
     ironic git /usr/local/ironic git://git.openstack.org/openstack/ironic.git
 
 *File : elements/custom-element/source-repository-pbr*
