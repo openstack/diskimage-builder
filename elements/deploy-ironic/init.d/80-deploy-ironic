@@ -113,7 +113,7 @@ if [[ $ROOT_DEVICE ]]; then
 else
     t=0
     while ! target_disk=$(find_disk "$DISK"); do
-      if [ $t -eq 10 ]; then
+      if [ $t -eq 60 ]; then
         break
       fi
       t=$(($t + 1))
