@@ -37,8 +37,8 @@ function mk_build_dir () {
   if tmpfs_check ; then
     sudo mount -t tmpfs tmpfs $TMP_BUILD_DIR
     sudo mount -t tmpfs tmpfs $TMP_IMAGE_DIR
+    sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR $TMP_IMAGE_DIR
   fi
-  sudo chown $(id -u):$(id -g) $TMP_BUILD_DIR $TMP_IMAGE_DIR
   trap trap_cleanup EXIT
   echo Building in $TMP_BUILD_DIR
   export TMP_IMAGE_PATH=$TMP_IMAGE_DIR/image.raw
