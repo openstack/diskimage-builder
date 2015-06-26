@@ -39,7 +39,7 @@ if blkid -t LABEL="config-2" ; then
     # Mount config drive
     mkdir -p /mnt/config
     mount -o mode=0700 $(blkid -t LABEL="config-2" | cut -d ':' -f 1) /mnt/config || true
-    glean --ssh --skip-network
+    glean --ssh --skip-network --hostname
 fi
 
 if [ -f /usr/bin/dpkg ] ; then
