@@ -1,0 +1,8 @@
+# Place this file in your /etc/yum.repos.d/ directory
+
+[oat]
+name=oat 2.2 packages and dependencies
+baseurl=http://repos.fedorapeople.org/repos/gwei3/oat/fedora-$releasever/$basearch/
+enabled=1
+skip_if_unavailable=1
+gpgcheck=0
