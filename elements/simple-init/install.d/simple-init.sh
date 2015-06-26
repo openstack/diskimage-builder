@@ -17,6 +17,7 @@
 set -eu
 set -o pipefail
 
+PATH=/usr/local/bin:/bin:/sbin:/usr/bin:/usr/sbin
 INTERFACE=${1:-} #optional, if not specified configure all available interfaces
 
 function config_exists() {
@@ -38,7 +39,7 @@ if blkid -t LABEL="config-2" ; then
     # Mount config drive
     mkdir -p /mnt/config
     mount -o mode=0700 $(blkid -t LABEL="config-2" | cut -d ':' -f 1) /mnt/config || true
-    /usr/local/bin/glean --ssh --skip-network
+    glean --ssh --skip-network
 fi
 
 if [ -f /usr/bin/dpkg ] ; then
@@ -46,7 +47,7 @@ if [ -f /usr/bin/dpkg ] ; then
 fi
 
 if [ -n "$INTERFACE" ]; then
-    /usr/local/bin/glean --interface $INTERFACE
+    glean --interface $INTERFACE
 else
-    /usr/local/bin/glean
+    glean
 fi
