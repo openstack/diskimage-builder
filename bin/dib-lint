@@ -59,7 +59,7 @@ error() {
 }
 
 rc=0
-TMPDIR=$(mktemp -d)
+TMPDIR=$(mktemp -d /tmp/tmp.XXXXXXXXXX)
 trap "rm -rf $TMPDIR" EXIT
 for i in $(find elements -type f \
                 -not -name \*~ \
@@ -80,7 +80,7 @@ for i in $(find elements -type f \
             flake8 $i
         else
             if ! excluded indent ; then
-                if grep -q "^ \{4\}* \{1,3\}[^ ]" ${i}; then
+                if grep -q "^\( \{4\}\)* \{1,3\}[^ ]" ${i}; then
                     error "$i should use 4 spaces indent"
                 fi
             fi
