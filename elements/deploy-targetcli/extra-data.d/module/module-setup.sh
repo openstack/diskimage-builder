@@ -19,7 +19,9 @@ install() {
     # TODO(bnemec): At some point this will need to be extended to support
     # Python 3, but for the moment we aren't using that anyway.
     inst /usr/bin/python
+    local all_of_python=()
     while IFS='' read -r -d '' i; do
-        inst "$i"
-    done < <(find /usr/lib64/python2.7/ /usr/lib/python2.7/ -type f -print0)
+        all_of_python+=("$i")
+    done < <(find /usr/lib64/python2.7/ /usr/lib/python2.7/ -type f -not -name "*.pyc" -not -name "*.pyo" -print0)
+    inst_multiple "${all_of_python[@]}"
 }
