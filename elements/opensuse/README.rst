@@ -15,10 +15,13 @@ images.
 
 Notes:
 
-* The filename of the base image in the above repository is currently not
-  stable (e.g. it includes a build number and image version). A fix for that
-  will be rolled out to the repositories soon. A tempoary workaround to figure
-  out the correct filename has been added to root.d/10-opensuse-cloud-image.
+* There are very frequently new automated builds that include changes that
+  happen during the product maintenance. The download directories contain an
+  unversioned name and a versioned name. The unversioned name will always
+  point to the latest image, but will frequently change its content. The versioned
+  one will never change content, but will frequently be deleted and replaced
+  by a newer build with a higher version-release number.
+
 * Building with DIB\_EXTLINUX=1 doesn't work.  It fails with:
   /tmp/in\_target.d/finalise.d/51-bootloader: line 14: 16286 Segmentation fault
   extlinux --install /boot/syslinux
