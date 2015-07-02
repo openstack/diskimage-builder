@@ -33,7 +33,10 @@ Phase Subdirectories
 Make as many of the following subdirectories as you need, depending on what
 part of the process you need to customise. The subdirectories are executed in
 the order given here. Scripts within the subdirectories should be named with a
-two-digit numeric prefix, and are executed in numeric order.
+two-digit numeric prefix, and are executed in numeric order. Only files which
+are marked executable (+x) will be run, so other files can be stored in these
+directories if needed. As a convention, we try to only store executable scripts
+in the phase subdirectories and store data files elsewhere in the element.
 
 * root.d: Create or adapt the initial root filesystem content. This is where
   alternative distribution support is added, or customisations such as
