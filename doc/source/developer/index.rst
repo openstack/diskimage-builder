@@ -10,3 +10,4 @@ Developer Documentation
    caches
    install_types
    developing_elements
+   stable_interfaces
