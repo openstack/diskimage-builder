@@ -1,0 +1,21 @@
+{
+  "distro": {
+    "rhel": {
+      "tgt": "targetcli"
+    },
+    "centos":{
+      "tgt": "scsi-target-utils"
+    }
+  },
+  "family": {
+    "redhat": {
+      "tgt": "scsi-target-utils"
+    },
+    "debian": {
+      "tgt": "tgt"
+    }
+  },
+  "default": {
+    "tgt": "tgt"
+  }
+}
