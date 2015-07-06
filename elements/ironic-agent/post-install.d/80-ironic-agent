@@ -10,11 +10,3 @@ install-packages -e python-dev git cloud-init
 rm -rf /tmp/ironic-python-agent
 
 sudo systemctl disable iptables.service
-
-#configs for additional interfaces
-SYSCONFIG_PATH=/etc/sysconfig/network-scripts
-for IFACE_NUM in 1 2
-do
-    sudo cp $SYSCONFIG_PATH/ifcfg-eth0 $SYSCONFIG_PATH/ifcfg-eth$IFACE_NUM
-    sudo sed -i "s/eth0/eth$IFACE_NUM/g" $SYSCONFIG_PATH/ifcfg-eth$IFACE_NUM
-done
