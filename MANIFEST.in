@@ -1,5 +1,4 @@
 include bin/disk-image-create
-include bin/disk-image-get-kernel
 include bin/element-info
 include bin/ramdisk-image-create
 graft lib
