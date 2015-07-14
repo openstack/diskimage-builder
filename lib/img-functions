@@ -36,7 +36,8 @@ function trap_cleanup() {
 
 function cleanup () {
     unmount_image
-    cleanup_dirs
+    cleanup_build_dir
+    cleanup_image_dir
 }
 
 function ensure_nbd () {
