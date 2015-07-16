@@ -36,7 +36,7 @@ function create_ramdisk_base () {
     fedora|rhel|rhel7|opensuse)
       mkdir -p "$TMP_MOUNT_PATH/usr"
       ln -s ../lib "$TMP_MOUNT_PATH/usr/lib"
-      if [ "`uname -m`" = "x86_64" ]; then
+      if [[ "`uname -m`" =~ x86_64|ppc64 ]]; then
         ln -s lib "$TMP_MOUNT_PATH/lib64"
       fi
       ;;
