@@ -25,5 +25,11 @@ else
     exit 1
 fi
 
-echo $basearch > /etc/yum/vars/basearch
-echo $arch > /etc/yum/vars/arch
+if [ $DIB_RELEASE -ge 22 ]; then
+    mkdir -p /etc/dnf/vars
+    echo $basearch > /etc/dnf/vars/basearch
+    echo $arch > /etc/dnf/vars/basearch
+else
+    echo $basearch > /etc/yum/vars/basearch
+    echo $arch > /etc/yum/vars/arch
+fi

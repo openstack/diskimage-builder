@@ -6,5 +6,11 @@ fi
 set -eu
 set -o pipefail
 
-sed -i 's/keepcache=1/keepcache=0/' /etc/yum.conf
-sed -i 's/cachedir=\/tmp\/yum/cachedir=\/var\/cache\/yum/' /etc/yum.conf
+if [ $DIB_RELEASE -ge 22 ]; then
+    cfg=/etc/dnf/dnf.conf
+else
+    cfg=/etc/yum.conf
+fi
+
+sed -i 's/keepcache=1/keepcache=0/' $cfg
+sed -i 's/cachedir=\/tmp\/yum/cachedir=\/var\/cache\/yum/' $cfg
