@@ -12,25 +12,38 @@ function build_test_image() {
         format="qcow2"
     fi
     dest_dir=$(mktemp -d)
+    base_dest=$(basename $dest_dir)
 
     trap "rm -rf $dest_dir" EXIT
+    trap "docker rmi $base_dest/image" EXIT
 
     ELEMENTS_PATH=$DIB_ELEMENTS:$TEST_ELEMENTS \
-        $DIB_CMD -x $type_arg -o $dest_dir/image -n fake-os
+        $DIB_CMD -x $type_arg --docker-target=$base_dest/image \
+        -o $dest_dir/image -n fake-os
 
     format=$(echo $format | tr ',' ' ')
     for format in $format; do
-        img_path="$dest_dir/image.$format"
-        if ! [ -f "$img_path" ]; then
-            echo "Error: No image with name $img_path found!"
-            exit 1
+        if [ $format != 'docker' ]; then
+            img_path="$dest_dir/image.$format"
+            if ! [ -f "$img_path" ]; then
+                echo "Error: No image with name $img_path found!"
+                exit 1
+            else
+                echo "Found image $img_path."
+            fi
         else
-            echo "Found image $img_path."
+            if ! docker image | grep $base_dest/image ; then
+                echo "Error: No docker image with name $base_dest/image found!"
+                exit 1
+            else
+                echo "Found docker image $base_dest/image"
+            fi
         fi
     done
 
     trap EXIT
     rm -rf $dest_dir
+    docker rmi $base_dest/image
 }
 
 function run_element_test() {
