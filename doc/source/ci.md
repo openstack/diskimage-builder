@@ -11,7 +11,7 @@ Jenkins
 * IRC notification service, notify-only on #triple on freenode, port 7000 ssl.
 * Github OAuth plugin, permit all from tripleo organisation, and organisation
   members as service admins.
-* Grant jenkin builders sudo [may want lxc containers or cloud instances for
+* Grant jenkins builders sudo [may want lxc containers or cloud instances for
   security isolation]
 * Jobs to build:
  * base ubuntu VM.
