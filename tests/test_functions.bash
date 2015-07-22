@@ -14,8 +14,7 @@ function build_test_image() {
     dest_dir=$(mktemp -d)
     base_dest=$(basename $dest_dir)
 
-    trap "rm -rf $dest_dir" EXIT
-    trap "docker rmi $base_dest/image" EXIT
+    trap "rm -rf $dest_dir; docker rmi $base_dest/image" EXIT
 
     ELEMENTS_PATH=$DIB_ELEMENTS:$TEST_ELEMENTS \
         $DIB_CMD -x $type_arg --docker-target=$base_dest/image \
