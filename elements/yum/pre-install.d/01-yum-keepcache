@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [ $DIB_RELEASE -ge 22 ]; then
+if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 22 ]]; then
     # dnf is slightly different; doesn't have these by default
     cfg=/etc/dnf/dnf.conf
     echo "keepcache=1" >> $cfg
