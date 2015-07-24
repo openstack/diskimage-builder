@@ -1,13 +1,17 @@
 ========
 opensuse
 ========
-Use an openSUSE cloud image as the baseline for built disk images. The base
-image is located here:
+Use an openSUSE cloud image as the baseline for built disk images. The images are
+located in distribution specific sub directories under
 
-    http://download.opensuse.org/repositories/Cloud:/Images/images/
+    http://download.opensuse.org/repositories/Cloud:/Images:/
 
-This image should currently be considered experimental. Right now, we've only
-got a 64 bit image, and no 32 bit image. But it's a start.
+For example, the images of openSUSE 13.2 can be found here:
+
+    http://download.opensuse.org/repositories/Cloud:/Images:/openSUSE_13.2/images/
+
+These images should be considered experimental. There are curently only x86_64
+images.
 
 Notes:
 
