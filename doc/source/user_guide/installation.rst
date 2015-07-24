@@ -7,8 +7,8 @@ the elements then we recommend you run the tool out of the source repository
 as this installation requires minimal extra effort and does not require an
 extra install step for your changes to take effect.
 
-Once installed, you will be able to `build images <building_an_image>` using
-disk-image-create and the elements included in the main diskimage-builder
+Once installed, you will be able to :doc:`build images <building_an_image>`
+using disk-image-create and the elements included in the main diskimage-builder
 repository.
 
 
