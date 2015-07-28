@@ -1,0 +1,26 @@
+#!/bin/bash
+# Note that this relies on the detail that all elements share one dir inside
+# the chroot. This will copy all the files that elements have added to
+# element/static into the image. Mode, symlinks etc will be respected.
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+scripts_dir="$(dirname $0)../init-scripts/$DIB_INIT_SYSTEM/"
+if [ -d "$scripts_dir" ]; then
+    dest=
+    case $DIB_INIT_SYSTEM in
+        upstart) dest=/etc/init/ ;;
+        systemd) dest=/usr/lib/systemd/system/ ;;
+        sysv) dest=/etc/init.d/ ;;
+    esac
+
+    if [ -z "$dest" ]; then
+        echo "ERROR: DIB_INIT_SYSTEM ($DIB_INIT_SYSTEM) is not an unknown type"
+        exit 1
+    fi
+    rsync -lCr "$scripts_dir" $dest
+fi
