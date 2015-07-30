@@ -2,14 +2,17 @@
   "distro": {
     "rhel": {
       "tgt": "targetcli"
+      "ironic-python-agent": "openstack-ironic-python-agent"
     },
     "centos":{
       "tgt": "scsi-target-utils"
+      "ironic-python-agent": "openstack-ironic-python-agent"
     }
   },
   "family": {
     "redhat": {
       "tgt": "scsi-target-utils"
+      "ironic-python-agent": "openstack-ironic-python-agent"
     },
     "debian": {
       "tgt": "tgt"
@@ -17,5 +20,6 @@
   },
   "default": {
     "tgt": "tgt"
+    "ironic-python-agent": "openstack-ironic-python-agent"
   }
 }
