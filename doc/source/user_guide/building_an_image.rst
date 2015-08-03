@@ -40,3 +40,17 @@ Other elements modify our image in some way. The 'vm' element in our example
 above ensures that our image has a bootloader properly installed. This is only
 needed for certain use cases and certain output formats and therefore it is
 not performed by default.
+
+Output Formats
+--------------
+
+By default a qcow2 image is created by the disk-image-create command. Other
+output formats may be specified using the `-t <format>` argument. Multiple
+output formats can also be specified by comma separation. The supported output
+formats are:
+
+ * qcow2
+ * tar
+ * vhd
+ * docker
+ * raw
