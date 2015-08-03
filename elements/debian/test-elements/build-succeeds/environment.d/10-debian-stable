@@ -1,0 +1,2 @@
+# We don't want to build against Debian unstable
+export DIB_RELEASE="stable"
