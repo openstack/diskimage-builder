@@ -17,10 +17,26 @@ if [[ "$ARCH" =~ "ppc" ]] ; then
 ;
 EOF
 else
-# Create 1 partition far enough up the disk to permit grub to be installed on
-# the MBR.
-    sudo sfdisk $IMAGE_BLOCK_DEVICE << EOF
-1 - - *
+    # sfdisk changed around 2.26 and was largely rewritten.  The old
+    # version defaults to c/h/s and interprets arguments as cylinders.
+    # The new version defaults to sectors.
+    #
+    # Luckily, the old version has a -uS flag (ignored by the new
+    # version) to interpret arguments as sectors.  However, it
+    # incorrectly calculates the c/h/s offset when finding free space,
+    # and gets upset [1], requiring the use of --force.
+    #
+    # TODO: switch this to parted, or something saner (is there such a
+    # thing when talking about partitioning?)
+    #
+    # The below command creates a partition that starts at 1MiB --
+    # which is the standard place to start a partition these days --
+    # and fills up the disk.  The zeros are to ignore the other 3
+    # primary partitions (probably not needed, but left for safety).
+    #
+    # [1] https://bugs.launchpad.net/ubuntu/+source/util-linux/+bug/1481158
+    sudo sfdisk -uS --force $IMAGE_BLOCK_DEVICE << EOF
+2048 + L *
 0 0;
 0 0;
 0 0;
