@@ -1,0 +1,12 @@
+[Unit]
+Description=Ironic Python Agent
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ironic-python-agent
+Restart=always
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target
+

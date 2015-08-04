@@ -6,6 +6,7 @@ fi
 set -eu
 set -o pipefail
 
+SCRIPTDIR=$(dirname $0)
 install-packages python-dev qemu-utils parted hdparm util-linux genisoimage gcc
 
 # Install the latest version of pip and setuptools which has some
@@ -18,13 +19,24 @@ pip install -U setuptools
 pip install -r /tmp/ironic-python-agent/requirements.txt
 pip install /tmp/ironic-python-agent
 
-sudo echo $'[Unit]
-Description=Ironic Python Agent\n
-[Service]
-ExecStart=/usr/bin/ironic-python-agent
-Restart=always
-RestartSec=30s\n
-[Install]
-WantedBy=multi-user.target\n' > /usr/lib/systemd/system/ironic-python-agent.service
+if [ ! -f /usr/bin/ironic-python-agent ]; then
+    ln -s /usr/local/bin/ironic-python-agent /usr/bin/ironic-python-agent
+fi
 
-sudo systemctl enable ironic-python-agent.service
+case "$DIB_INIT_SYSTEM" in
+    upstart)
+        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.conf /etc/init/ironic-python-agent.conf
+        ;;
+    systemd)
+        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.service /usr/lib/systemd/system/ironic-python-agent.service
+        systemctl enable ironic-python-agent.service
+        ;;
+    sysv)
+        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.init /etc/init.d/ironic-python-agent.init
+        update-rc.d ironic-python-agent.init defaults
+        ;;
+    *)
+        echo "Unsupported init system"
+        exit 1
+        ;;
+esac
