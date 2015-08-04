@@ -4,7 +4,7 @@ Caches and offline mode
 Since retrieving and transforming operating system image files, git
 repositories, Python or Ruby packages, and so on can be a significant overhead,
 we cache many of the inputs to the build process in ~/.cache/image-create/. The
-writing an element documention describes the interface within
+writing an element documentation describes the interface within
 disk-image-builder for caching. When invoking disk-image-builder the --offline
 option will instruct disk-image-builder to not refresh cached resources.
 

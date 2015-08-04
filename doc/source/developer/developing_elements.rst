@@ -267,7 +267,7 @@ comma-delimited string. Some examples:
 Images are built such that the Linux kernel is instructed not to switch into
 graphical consoles (i.e. it will not activate KMS). This maximises
 compatibility with remote console interception hardware, such as HP's iLO.
-However, you will typicallly only see kernel messages on the console - init
+However, you will typically only see kernel messages on the console - init
 daemons (e.g. upstart) will usually be instructed to output to a serial
 console so nova's console-log command can function. There is an element in the
 tripleo-image-elements repository called "remove-serial-console" which will
