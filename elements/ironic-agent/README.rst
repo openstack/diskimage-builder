@@ -2,7 +2,7 @@
 ironic-agent
 ============
 Builds a ramdisk with ironic-python-agent.  More information can be found at:
-    https://github.com/openstack/ironic-python-agent/
+    https://git.openstack.org/cgit/openstack/ironic-python-agent/
 
 Beyond installing the ironic-python-agent, this element does the following:
 
