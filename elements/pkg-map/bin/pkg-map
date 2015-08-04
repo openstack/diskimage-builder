@@ -63,7 +63,8 @@ def main():
 
     map_file = '/usr/share/pkg-map/%s' % args.element
     if not os.path.exists(map_file):
-        eprint('Map file for %s element does not exist.' % args.element)
+        if os.environ.get('DIB_DEBUG_TRACE') != '0':
+            eprint('Map file for %s element does not exist.' % args.element)
         if args.missing_ok:
             for name in extra:
                 print(name)
