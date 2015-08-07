@@ -1,1 +1,2 @@
+export DIB_RELEASE=GenericCloud
 export DISTRO_NAME=centos7

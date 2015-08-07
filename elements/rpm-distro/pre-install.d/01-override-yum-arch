@@ -25,7 +25,7 @@ else
     exit 1
 fi
 
-if [ $DIB_RELEASE -ge 22 ]; then
+if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 22 ]]; then
     mkdir -p /etc/dnf/vars
     echo $basearch > /etc/dnf/vars/basearch
     echo $arch > /etc/dnf/vars/basearch

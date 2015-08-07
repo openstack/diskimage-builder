@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [ $DIB_RELEASE -ge 22 ]; then
+if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 22 ]]; then
     cfg=/etc/dnf/dnf.conf
 else
     cfg=/etc/yum.conf
