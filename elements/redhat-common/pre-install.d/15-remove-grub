@@ -15,7 +15,33 @@ if [ -f /sbin/grub-install ]; then
     exit 0
 fi
 
-# download the latest grub2 package and setup the install script which
-# will be called later by vm/finalise.d/51-bootloader
+# remove grub2 package.  As described in
+# elements/ubuntu/pre-install.d/00-remove-grub; the grub post-kernel
+# install hook will barf if the block device can't be found (as
+# happens in a chroot).
+#
+# XXX : it is not clear this is necessary for fedora/centos7 and it's
+# install hooks.  Investigation is required.
+if rpm -q grub2; then
+    install-packages -e grub2
+fi
+
+# now configure things to re-install grub at the end.  We don't want
+# to rely on vm/finalise.d/51-bootloader to simply reinstall the
+# package via the package-manager, because at that point (during
+# finalise) the build-time yum-cache has been unmounted (hence the
+# local-cache looks empty) and yum may try to repopulate the
+# local-cache with all the grub2 dependencies.  This is slow, and
+# potentially fills up the disk.
+#
+# XXX : At this point, keepcache=0 *should* probably be set for
+# yum/dnf.  We have not standarised/documented that this will be done,
+# however.  This would *probably* stop dependencies being populated
+# into the cache.  We could investigate this, and possibly remove this
+# all together if we standardise some of these behaviours.
+
+# So we download the latest grub2 package and setup the install script
+# to just install the single-package, which will be called later by
+# vm/finalise.d/51-bootloader
 install-packages -d /tmp/grub grub2
 echo "rpm -i /tmp/grub/*.rpm" > /tmp/grub/install
