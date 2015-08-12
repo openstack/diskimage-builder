@@ -22,9 +22,15 @@ else
     SHIM_FILE="/usr/lib/shim/shim.efi.signed"
 fi
 
+#fedora
 if [ $DISTRO_NAME = "fedora" ]; then
     SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
     LDLINUX_FILE="/usr/share/syslinux/ldlinux.c32"
+#debian
+elif [ $DISTRO_NAME = "debian" ]; then
+    SYSLINUX_FILE="/usr/lib/ISOLINUX/isolinux.bin"
+    LDLINUX_FILE="/usr/lib/syslinux/modules/bios/ldlinux.c32"
+#ubuntu
 else
     SYSLINUX_FILE="/usr/lib/syslinux/isolinux.bin"
     LDLINUX_FILE="/usr/lib/syslinux/ldlinux.c32"
