@@ -9,7 +9,7 @@ fi
 set -eu
 set -o pipefail
 
-scripts_dir="$(dirname $0)../init-scripts/$DIB_INIT_SYSTEM/"
+scripts_dir="$(dirname $0)/../init-scripts/$DIB_INIT_SYSTEM/"
 if [ -d "$scripts_dir" ]; then
     dest=
     case $DIB_INIT_SYSTEM in
@@ -22,5 +22,5 @@ if [ -d "$scripts_dir" ]; then
         echo "ERROR: DIB_INIT_SYSTEM ($DIB_INIT_SYSTEM) is not an unknown type"
         exit 1
     fi
-    rsync -lCr "$scripts_dir" $dest
+    cp -RP $scripts_dir. $dest || true
 fi
