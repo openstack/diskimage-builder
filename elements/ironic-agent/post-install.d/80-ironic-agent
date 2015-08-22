@@ -17,9 +17,11 @@ case "$DIB_INIT_SYSTEM" in
         ;;
     systemd)
         systemctl disable iptables.service
+        systemctl enable openstack-ironic-python-agent.service
         ;;
     sysv)
         update-rc.d iptables disable
+        update-rc.d openstack-ironic-python-agent enable
         ;;
     *)
         echo "Unsupported init system"
