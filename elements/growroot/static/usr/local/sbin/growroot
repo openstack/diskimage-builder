@@ -1,0 +1,26 @@
+#!/bin/bash
+# dib-lint: disable=dibdebugtrace
+
+set -exu
+set -o pipefail
+
+root_dev=$(df -P / | tail -n 1 | awk '/.*/ { print $1 }')
+minor_dev_no=$(stat --printf="%T" $root_dev)
+major_dev_no=$(stat --printf="%t" $root_dev)
+
+# The last digit of our minor number should, on a partitioned block device,
+# be the partition number of the device (starting at 1). We need to convert
+# this value to decimal from hex for use in growpart.
+part_no=$(echo $minor_dev_no | tail -c 2)
+part_no=$((16#$part_no))
+
+disk=$(find /sys/dev/block -name "$((16#$major_dev_no)):${minor_dev_no::-1}0")
+disk="/dev/$(source ${disk}/uevent; echo $DEVNAME)"
+
+set +e
+growpart $disk $part_no
+# Error code 1 means no change
+if [ "$?" -le 1 ]; then
+    # always return true because this might not work if were are non ext4
+    resize2fs $root_dev || true
+fi
