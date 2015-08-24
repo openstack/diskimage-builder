@@ -15,3 +15,6 @@ Beyond installing the ironic-python-agent, this element does the following:
 * When installing from source, ``python-dev`` and ``gcc`` are also installed
   in order to support source based installation of ironic-python-agent and its
   dependencies.
+
+.. note::
+   Using the ramdisk will require at least 1.5GB of ram
