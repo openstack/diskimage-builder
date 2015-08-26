@@ -1,25 +1,30 @@
 {
   "distro": {
     "rhel": {
-      "tgt": "targetcli"
+      "tgt": "targetcli",
+      "curl": "curl",
       "ironic-python-agent": "openstack-ironic-python-agent"
     },
     "centos":{
-      "tgt": "scsi-target-utils"
+      "tgt": "scsi-target-utils",
+      "curl": "curl",
       "ironic-python-agent": "openstack-ironic-python-agent"
     }
   },
   "family": {
     "redhat": {
-      "tgt": "scsi-target-utils"
+      "tgt": "scsi-target-utils",
+      "curl": "curl",
       "ironic-python-agent": "openstack-ironic-python-agent"
     },
     "debian": {
-      "tgt": "tgt"
+      "tgt": "tgt",
+      "curl": "curl"
     }
   },
   "default": {
-    "tgt": "tgt"
+    "tgt": "tgt",
+    "curl": "curl",
     "ironic-python-agent": "openstack-ironic-python-agent"
   }
 }
