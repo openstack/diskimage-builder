@@ -1,4 +1,4 @@
-# vim: syntax=sh ts=4 sts=4 sw=2:et
+#!/bin/bash
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # All Rights Reserved.
 #
