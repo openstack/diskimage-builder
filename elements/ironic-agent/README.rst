@@ -17,4 +17,9 @@ Beyond installing the ironic-python-agent, this element does the following:
   dependencies.
 
 .. note::
+   The package based install currently only enables the service when using the
+   systemd init system. This can easily be changed if there is an agent
+   package which includes upstart or sysv packaging.
+
+.. note::
    Using the ramdisk will require at least 1.5GB of ram

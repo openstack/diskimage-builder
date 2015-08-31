@@ -28,8 +28,7 @@ case "$DIB_INIT_SYSTEM" in
         install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.conf /etc/init/ironic-python-agent.conf
         ;;
     systemd)
-        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.service /usr/lib/systemd/system/ironic-python-agent.service
-        systemctl enable ironic-python-agent.service
+        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.service /usr/lib/systemd/system/$(svc-map ironic-python-agent).service
         ;;
     sysv)
         install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.init /etc/init.d/ironic-python-agent.init
