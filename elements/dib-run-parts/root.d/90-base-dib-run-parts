@@ -6,6 +6,10 @@ fi
 set -eu
 set -o pipefail
 
+# Abort early if dib-run-parts is not found to prevent a meaningless
+# error message from the subsequent install command
+DIB_RUN_PARTS=$(which dib-run-parts)
+
 exec sudo install -m 0755 -o root -g root -D \
-    $(which dib-run-parts) \
+    $DIB_RUN_PARTS \
     $TARGET_ROOT/usr/local/bin/dib-run-parts
