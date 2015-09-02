@@ -3,6 +3,4 @@ include bin/element-info
 include bin/ramdisk-image-create
 graft lib
 graft elements
-graft docs
-graft scripts
-include README.md
+include README.rst
