@@ -13,14 +13,28 @@ The dpkg specific version of install-packages is also kept here.
 Environment Variables
 ---------------------
 
-* DIB\_ADD\_APT\_KEYS: If an extra or updated apt key is needed then define
-  DIB\_ADD\_APT\_KEYS with the path to a folder. Any key files inside will be
-  added to the key ring before any apt-get commands take place.
-* DIB\_APT\_LOCAL\_CACHE: You can use this variable to disable the internal cache
-  of the /var/cache/apt/archives directory by setting it to 0. The default is to bind
-  mount the $DIB_IMAGE_CACHE/apt/$DISTRO_NAME directory in
-  /var/cache/apt/archives, this to cache the .deb files downloaded during the image
-  creation.
-* At the end of a dib run we clean the apt cache to keep the image size as
-  small as possible. You can set DIB\_DISABLE\_APT\_CLEANUP=1 if you would
-  like to prevent this.
+DIB_APT_KEYS
+  :Required: No
+  :Default: None
+  :Description: If an extra or updated apt key is needed then define
+    ``DIB_ADD_APT_KEYS`` with the path to a folder. Any key files inside will be
+    added to the key ring before any apt-get commands take place.
+  :Example: ``DIB_APT_KEYS=/etc/apt/trusted.gpg.d``
+
+DIB_APT_LOCAL_CACHE
+  :Required: No
+  :Default: 1
+  :Description: By default the ``$DIB_IMAGE_CACHE/apt/$DISTRO_NAME`` directory is
+    mounted in ``/var/cache/apt/archives`` to cache the .deb files downloaded
+    during the image creation. Use this variable if you wish to disable the
+    internal cache of the ``/var/cache/apt/archives`` directory
+  :Example: ``DIB_APT_LOCAL_CACHE=0`` will disable internal caching.
+
+DIB_DISABLE_APT_CLEANUP
+  :Required: No
+  :Default: 0
+  :Description: At the end of a dib run we clean the apt cache to keep the image
+    size as small as possible. Use this variable to prevent cleaning the apt cache
+    at the end of a dib run.
+  :Example: ``DIB_DISABLE_APT_CLEANUP=1`` will disable cleanup.
+
