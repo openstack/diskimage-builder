@@ -1,0 +1,4 @@
+ironic-python-agent:
+  default: openstack-ironic-python-agent
+  redhat: openstack-ironic-python-agent
+  debian: ironic-python-agent
