@@ -124,6 +124,13 @@ if [ -n "$WHITELIST" ]; then
 
     ${YUM} -v -y $ACTION $EXTRA_ARGS $PKGS
 
+    if [ "$ACTION" == "install" ]; then
+        if [ ${YUM} == "dnf" ]; then
+            # Make sure dnf won't autoremove these packages
+            dnf mark install $PKGS
+        fi
+    fi
+
     # probably not the right place for this; but python-pip package on
     # fedora/rh calls pip "pip-python" while the rest of the work
     # expects it to be just called "pip"
