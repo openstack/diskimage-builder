@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Add hpdsa repository
+echo 'deb https://downloads.linux.hp.com/SDR/repo/ubuntu-hpdsa' $DIB_RELEASE ' main' \
+    >> /etc/apt/sources.list.d/ubuntu-hpdsa.list
+
+# Add the key
+curl https://downloads.linux.hp.com/SDR/hpPublicKey2048_key1.pub | apt-key add -

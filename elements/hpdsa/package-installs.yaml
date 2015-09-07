@@ -1,0 +1,5 @@
+build-essential:
+curl:
+  phase: pre-install.d
+linux-headers-generic:
+hpdsa-dkms:

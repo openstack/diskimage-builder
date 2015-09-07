@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ 'ubuntu' != $DISTRO_NAME ] ; then
+    echo "Only ubuntu is supported for hpdsa driver. The DISTRO is set to $DISTRO_NAME"
+    exit 1
+fi
+
+if [ 'trusty' != $DIB_RELEASE ] ; then
+    echo "Only trusty is supported for hpdsa driver. The DIB_RELEASE is set to $DIB_RELEASE"
+    exit 1
+fi
