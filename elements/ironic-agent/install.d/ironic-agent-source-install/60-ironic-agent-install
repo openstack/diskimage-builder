@@ -7,7 +7,6 @@ set -eu
 set -o pipefail
 
 SCRIPTDIR=$(dirname $0)
-install-packages python-dev qemu-utils parted hdparm util-linux genisoimage gcc
 
 # Install the latest version of pip and setuptools which has some
 # fixes for building behind proxy.
