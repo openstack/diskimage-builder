@@ -64,6 +64,7 @@ trap "rm -rf $TMPDIR" EXIT
 for i in $(find elements -type f \
                 -not -name \*~ \
                 -not -name \*.rst \
+                -not -name \*.yaml \
                 -not -name \*.py \
                 -not -name \*.pyc); do
     exclusions=("$(parse_exclusions $i)")
@@ -151,4 +152,27 @@ md_docs=$(find elements -name '*.md')
 if [ -n "$md_docs" ]; then
     error ".md docs found: $md_docs"
 fi
+
+for i in $(find elements -name '*.yaml' \
+                -o \( -name pkg-map -type f -a \! -executable \)); do
+    py_check="
+import json
+import yaml
+import sys
+try:
+    objs = json.load(open('$i'))
+    sys.exit(0)
+except ValueError:
+    pass
+try:
+    objs = yaml.load(open('$i'))
+    sys.exit(0)
+except yaml.parser.ParserError:
+    pass
+sys.exit(1)"
+    if ! python -c "$py_check"; then
+        error "$i is not a valid yaml/json file"
+    fi
+done
+
 exit $rc
