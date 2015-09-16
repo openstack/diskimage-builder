@@ -1,3 +1,5 @@
+.. _developing-elements:
+
 Developing Elements
 ===================
 
@@ -26,6 +28,14 @@ Conform to the following conventions:
   then it will be automatically unmounted when the build tree is unmounted -
   and not remounted into the filesystem image - if the mount point is needed
   again, your element will need to remount it at that point.
+
+* If caching is required, elements should use a location under
+  $DIB\_IMAGE\_CACHE.
+
+* Elements should allow for remote data to be cached. When
+  $DIB\_OFFLINE is set, this cached data should be used if
+  possible. See the *Global image-build variables* section of this
+  document for more information.
 
 Phase Subdirectories
 ^^^^^^^^^^^^^^^^^^^^
@@ -191,6 +201,9 @@ Global image-build variables
   diskimage-builder is building a disk image. This works only for ext
   filesystems.
 
+* DIB\_IMAGE\_CACHE : path to where cached inputs to the build process
+  are stored. Defaults to ~/.cache/image_create.
+
 Structure of an element
 -----------------------
 
@@ -315,6 +328,8 @@ one or more regex filters - tests matching any of them are run -
 Third party elements
 --------------------
 
-Pending implementation. The idea is to have a search path for elements.
+Additional elements can be incorporated by setting ELEMENTS_PATH, for example
+if one were building tripleo-images, the variable would be set like::
 
-
+        export ELEMENTS_PATH=tripleo-image-elements/elements
+        disk-image-create rhel7 cinder-api
