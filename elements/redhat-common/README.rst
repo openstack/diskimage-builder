@@ -3,6 +3,13 @@ redhat-common
 =============
 Image installation steps common to RHEL, CentOS, and Fedora.
 
+Requirements:
+
+If used to build an image form a cloud image compress with xz
+(the default in centos), this element uses "unxz" to decompress
+the image. Depending on your distro you may need to install either
+the xz or xz-utils package.
+
 Overrides:
 
 DIB_LOCAL_IMAGE
