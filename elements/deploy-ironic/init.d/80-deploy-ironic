@@ -83,14 +83,14 @@ function install_bootloader {
 function do_vendor_passthru_and_wait {
 
     local data=$1
-    local vendor_passhru_name=$2
+    local vendor_passthru_name=$2
 
     eval curl -i -X POST \
          "$TOKEN_HEADER" \
          "-H 'Accept: application/json'" \
          "-H 'Content-Type: application/json'" \
          -d "$data" \
-         "$IRONIC_API_URL/v1/nodes/$DEPLOYMENT_ID/vendor_passthru/$vendor_passhru_name"
+         "$IRONIC_API_URL/v1/nodes/$DEPLOYMENT_ID/vendor_passthru/$vendor_passthru_name"
 
     echo "Waiting for notice of complete"
     nc -l -p 10000
