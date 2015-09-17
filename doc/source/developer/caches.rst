@@ -5,11 +5,12 @@ Since retrieving and transforming operating system image files, git
 repositories, Python or Ruby packages, and so on can be a significant overhead,
 we cache many of the inputs to the build process.
 
-The cache location is read from DIB\_IMAGE\_CACHE. :ref:`developing-elements`
+The cache location is read from ``DIB_IMAGE_CACHE``. :ref:`developing-elements`
 describes the interface within disk-image-builder for caching.
 
 When invoking disk-image-builder, the ``--offline`` option will instruct
-disk-image-builder to not refresh cached resources.
+disk-image-builder to not refresh cached resources. Alternatively you can set
+``DIB_OFFLINE=1``.
 
 Note that we don't maintain operating system package caches, instead depending
 on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to
@@ -21,23 +22,24 @@ offline mode. For more information about setting up a squid proxy, consult the
 Base images
 -----------
 
-These are cached by the standard elements - fedora, redhat, ubuntu,
-debian and opensuse.
+These are cached by the standard elements - :doc:`../elements/fedora/README`,
+:doc:`../elements/redhat-common/README`, :doc:`../elements/ubuntu/README`,
+:doc:`../elements/debian/README` and :doc:`../elements/opensuse/README`.
 
 source-repositories
 -------------------
 
-Git repositories and tarballs obtained via the source-repositories element will
-be cached.
+Git repositories and tarballs obtained via the
+:doc:`../elements/source-repositories/README` element will be cached.
 
 C and C++ compilation
 ---------------------
 
-Ccache is configured by the base element. Any compilation that honours ccache
-will be cached.
+Ccache is configured by the :doc:`../elements/base/README` element. Any
+compilation that honours ccache will be cached.
 
 PyPI
 ----
 
-The pypi element will bind mount a PyPI mirror from the cache dir and configure
-pip and easy-install to use it.
+The :doc:`../elements/pypi/README` element will bind mount a PyPI mirror from
+the cache dir and configure pip and easy-install to use it.
