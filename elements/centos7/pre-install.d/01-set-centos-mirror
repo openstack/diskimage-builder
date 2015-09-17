@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
+
+[ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
+
+# Only set the mirror for the Base, Extras and Updates repositories
+# The others arn't enabled and do not exist on all mirrors
+sed -e "s|^#baseurl=http://mirror.centos.org/centos|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
