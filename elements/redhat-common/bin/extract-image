@@ -50,6 +50,13 @@ function extract_image() {
 
             RAW_FILE=$(mktemp --tmpdir=$WORKING XXXXXX.raw)
 
+            if [ "${CACHED_IMAGE: -3}" == ".xz" ] ; then
+                QCOW2_FILE=$(mktemp --tmpdir=$WORKING XXXXXX.qcow2)
+                # This leaves the old image in place so cache-url wont get it again
+                unxz --stdout $CACHED_IMAGE > $QCOW2_FILE
+                CACHED_IMAGE=$QCOW2_FILE
+            fi
+
             qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $RAW_FILE
 
             ROOT_PARTITON=p$(sudo kpartx -l $RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
