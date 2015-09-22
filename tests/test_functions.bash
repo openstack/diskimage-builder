@@ -45,7 +45,7 @@ function build_test_image() {
     docker rmi $base_dest/image
 }
 
-function run_element_test() {
+function run_disk_element_test() {
     test_element=$1
     element=$2
 
@@ -80,4 +80,27 @@ function run_element_test() {
 
     trap EXIT
     rm -rf $dest_dir /tmp/dib-test-should-fail
+}
+
+function run_ramdisk_element_test() {
+    test_element=$1
+    element=$2
+
+    dest_dir=$(mktemp -d)
+
+    if ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
+        $DIB_CMD -o $dest_dir/image $element $test_element; then
+        # TODO(dtantsur): test also kernel presence once we sort out its naming
+        # problem (vmlinuz vs kernel)
+        if ! [ -f "$dest_dir/image.initramfs" ]; then
+            echo "Error: Build failed for element: $element, test-element: $test_element."
+            echo "No image $dest_dir/image.initramfs found!"
+            exit 1
+        else
+            echo "PASS: Element $element, test-element: $test_element"
+        fi
+    else
+        echo "Error: Build failed for element: $element, test-element: $test_element."
+        exit 1
+    fi
 }
