@@ -63,7 +63,8 @@ function config_exists() {
 
 function inspect_interface() {
     local interface=$1
-    local mac_addr_type="$(cat /sys/class/net/${interface}/addr_assign_type)"
+    local mac_addr_type
+    mac_addr_type=$(cat /sys/class/net/${interface}/addr_assign_type)
 
     echo -n "Inspecting interface: $interface..."
     if config_exists $interface; then
@@ -72,25 +73,20 @@ function inspect_interface() {
         echo "Device has generated MAC, skipping."
     else
         ip link set dev $interface up &>/dev/null
-        HAS_LINK="$(get_if_link $interface)"
 
-        TRIES=10
-        while [ "$HAS_LINK" == "0" -a $TRIES -gt 0 ]; do
-            HAS_LINK="$(get_if_link $interface)"
-            if [ "$HAS_LINK" == "1" ]; then
-                break
-            else
-                sleep 1
-            fi
-            TRIES=$(( TRIES - 1 ))
+        local has_link
+        local tries
+        for ((tries = 0; tries < 10; tries++)); do
+            has_link=$(get_if_link $interface)
+            [ "$has_link" == "1" ] && break
+            sleep 1
         done
-        if [ "$HAS_LINK" == "1" ] ; then
+        if [ "$has_link" == "1" ]; then
             enable_interface "$interface"
         else
             echo "No link detected, skipping"
         fi
     fi
-
 }
 
 if [ -n "$INTERFACE" ]; then
