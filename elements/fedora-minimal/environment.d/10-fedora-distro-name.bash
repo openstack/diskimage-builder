@@ -1,2 +1,2 @@
 export DISTRO_NAME=fedora
-export DIB_RELEASE=${DIB_RELEASE:-21}
+export DIB_RELEASE=${DIB_RELEASE:-22}
