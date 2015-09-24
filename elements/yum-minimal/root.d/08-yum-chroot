@@ -59,7 +59,10 @@ else
             ${DISTRO_NAME}-repos
         RELEASE_RPMS="${RELEASE_RPMS} ${DISTRO_NAME}-repos"
     fi
-    sudo rpm --root $TARGET_ROOT -ivh $WORKING/*rpm
+
+    # --nodeps works around these wanting /bin/sh in some fedora
+    # releases, see rhbz#1265873
+    sudo rpm --root $TARGET_ROOT --nodeps -ivh $WORKING/*rpm
 
     YUM_CACHE=$DIB_IMAGE_CACHE/yum
 
