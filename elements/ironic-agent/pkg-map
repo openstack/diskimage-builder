@@ -15,7 +15,9 @@
     "redhat": {
       "tgt": "scsi-target-utils",
       "curl": "curl",
-      "ironic-python-agent": "openstack-ironic-python-agent"
+      "ironic-python-agent": "openstack-ironic-python-agent",
+      "qemu-utils": "qemu-img",
+      "python-dev": "python2-devel"
     },
     "debian": {
       "tgt": "tgt",
@@ -25,6 +27,8 @@
   "default": {
     "tgt": "tgt",
     "curl": "curl",
-    "ironic-python-agent": "openstack-ironic-python-agent"
+    "ironic-python-agent": "openstack-ironic-python-agent",
+    "qemu-utils": "qemu-utils",
+    "python-dev": "python-dev"
   }
 }
