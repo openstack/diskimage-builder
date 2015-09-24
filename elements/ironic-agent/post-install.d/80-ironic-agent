@@ -7,11 +7,6 @@ set -eu
 set -o pipefail
 
 install-packages -e python-dev git cloud-init
-# dnf removes unused dependencies by default. As we installed cloud-init before
-# dmidecode, dnf removes dmidecode above as an unused dependency.
-# TODO(dtantsur): use `dnf mark` from dnf 1.1.1 in install-packages once this
-# command is widely available.
-install-packages dmidecode
 
 rm -rf /tmp/ironic-python-agent
 

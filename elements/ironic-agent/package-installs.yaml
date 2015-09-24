@@ -1,6 +1,5 @@
 tgt:
 curl:
-# this one requires workaround with dnf - see 80-ironic-agent for details
 dmidecode:
 ipmitool:
 qemu-utils:
