@@ -24,4 +24,10 @@ sudo find . -name "*.pyc" -or -name "*.pyo" -delete
 sudo find . -path ./sys -prune -o -path ./proc -prune -o -path './tmp/*' -prune -o -path './boot/*' -prune -o -path './root/*' -prune -o -path './usr/lib/locale/*' -prune -o -path './usr/share/doc/*' -prune -o -path './usr/share/man/*' -prune -o -path './usr/share/info/*' -prune -o -path './usr/share/licenses/*' -prune -o -path './usr/share/misc/*' -prune -o -print | sudo cpio -o -H newc | gzip > ${IMAGE_PATH}.initramfs
 
 select_boot_kernel_initrd $TARGET_ROOT
-sudo cp $BOOTDIR/$KERNEL ${IMAGE_PATH}.vmlinuz
+sudo cp $BOOTDIR/$KERNEL ${IMAGE_PATH}.kernel
+
+# TODO(lucasagomes): Create a hard link for the .vmlinuz file to keep
+# it backward compatible. Remove it after it has been consistent and
+# documented in both places for at least one full OpenStack release cycle
+echo "WARNING: The kernel extension .vmlinuz has been deprecated. Please rely on the file with the extension .kernel instead."
+sudo ln ${IMAGE_PATH}.kernel ${IMAGE_PATH}.vmlinuz
