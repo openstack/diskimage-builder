@@ -33,13 +33,7 @@ YUMCHROOT_TARBALL=$DIB_IMAGE_CACHE/yumchroot-${DISTRO_NAME}-${DIB_RELEASE}-${ARC
 # TODO Maybe deal with DIB_DISTRIBUTION_MIRROR
 http_proxy=${http_proxy:-}
 
-set -x
-if [ -n "$DIB_OFFLINE" -o -n "${DIB_YUMCHROOT_USE_CACHE:-}" ] && [ -f $YUMCHROOT_TARBALL ] ; then
-    echo $YUMCHROOT_TARBALL found in cache. Using.
-    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $YUMCHROOT_TARBALL
-else
-    sudo mkdir -p $TARGET_ROOT/var/lib/rpm
-    sudo rpm --root $TARGET_ROOT --initdb
+function _do_yum {
 
     WORKING=$(mktemp --tmpdir=${TMP_DIR:-/tmp} -d)
     EACTION="rm -r $WORKING"
@@ -103,6 +97,16 @@ else
     done
     sudo rm $TARGET_ROOT/etc/resolv.conf
     sudo umount $TMP_MOUNT_PATH/tmp/yum
+}
+
+if [ -n "$DIB_OFFLINE" -o -n "${DIB_YUMCHROOT_USE_CACHE:-}" ] && [ -f $YUMCHROOT_TARBALL ] ; then
+    echo $YUMCHROOT_TARBALL found in cache. Using.
+    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $YUMCHROOT_TARBALL
+else
+    sudo mkdir -p $TARGET_ROOT/var/lib/rpm
+    sudo rpm --root $TARGET_ROOT --initdb
+
+    _do_yum
 
     echo Caching result in $YUMCHROOT_TARBALL
     sudo tar --numeric-owner -C $TARGET_ROOT -zcf $YUMCHROOT_TARBALL --exclude='./tmp/*' .
