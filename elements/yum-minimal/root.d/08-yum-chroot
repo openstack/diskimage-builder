@@ -33,23 +33,32 @@ YUMCHROOT_TARBALL=$DIB_IMAGE_CACHE/yumchroot-${DISTRO_NAME}-${DIB_RELEASE}-${ARC
 # TODO Maybe deal with DIB_DISTRIBUTION_MIRROR
 http_proxy=${http_proxy:-}
 
-function _do_yum {
+WORKING=$(mktemp --tmpdir=${TMP_DIR:-/tmp} -d)
+EACTION="rm -r $WORKING"
+trap "$EACTION" EXIT
 
-    WORKING=$(mktemp --tmpdir=${TMP_DIR:-/tmp} -d)
-    EACTION="rm -r $WORKING"
-    trap "$EACTION" EXIT
+YUM_CACHE=$DIB_IMAGE_CACHE/yum
 
+# install the [fedora|centos]-[release|repo] packages inside the
+# chroot, which are needed to bootstrap yum/dnf
+#
+# note this runs outside the chroot, where we're assuming the platform
+# has yum/yumdownloader
+function _install_repos {
     yumdownloader \
+        --releasever=$DIB_RELEASE \
+        --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
+        --destdir=$WORKING \
+        ${DISTRO_NAME}-release
+    RELEASE_RPMS="${DISTRO_NAME}-release"
+
+    # after fedora21, this is split into into a separate -repos
+    # package
+    if [ $DISTRO_NAME = fedora ] ; then
+        yumdownloader \
             --releasever=$DIB_RELEASE \
             --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
             --destdir=$WORKING \
-        ${DISTRO_NAME}-release
-    RELEASE_RPMS="${DISTRO_NAME}-release"
-    if [ $DISTRO_NAME = fedora ] ; then
-        yumdownloader \
-                --releasever=$DIB_RELEASE \
-                --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
-                --destdir=$WORKING \
             ${DISTRO_NAME}-repos
         RELEASE_RPMS="${RELEASE_RPMS} ${DISTRO_NAME}-repos"
     fi
@@ -57,37 +66,72 @@ function _do_yum {
     # --nodeps works around these wanting /bin/sh in some fedora
     # releases, see rhbz#1265873
     sudo rpm --root $TARGET_ROOT --nodeps -ivh $WORKING/*rpm
+}
 
-    YUM_CACHE=$DIB_IMAGE_CACHE/yum
+# _install_pkg_manager packages...
+#
+# install the package manager packages.  This is done outside the chroot
+# and with yum from the build system.
+# TODO: one day build systems will be dnf only, but we don't handle
+# that right now
+function _install_pkg_manager {
+    # Install into the chroot, using the gpg keys from the release
+    # rpm's installed in the chroot
+    sudo sed -i "s,/etc/pki/rpm-gpg,$TARGET_ROOT/etc/pki/rpm-gpg,g" \
+        $TARGET_ROOT/etc/yum.repos.d/*repo
 
-    # Install yum into the chroot but use the gpg keys we've installed
-    # directly into the chroot for the purpose
-    sudo sed -i "s,/etc/pki/rpm-gpg,$TARGET_ROOT/etc/pki/rpm-gpg,g" $TARGET_ROOT/etc/yum.repos.d/*repo
     sudo yum -y \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --installroot $TARGET_ROOT \
-        install yum
+        install $@
 
-    # Set gpg path back because subsequent actions will take place in the chroot
-    sudo sed -i "s,$TARGET_ROOT/etc/pki/rpm-gpg,/etc/pki/rpm-gpg,g" $TARGET_ROOT/etc/yum.repos.d/*repo
+    # Set gpg path back because subsequent actions will take place in
+    # the chroot
+    sudo sed -i "s,$TARGET_ROOT/etc/pki/rpm-gpg,/etc/pki/rpm-gpg,g" \
+        $TARGET_ROOT/etc/yum.repos.d/*repo
+}
 
-    # We have to do this next bit outside of the chroot to get far enough
-    # that dib-run-parts can operate
+if [ -n "$DIB_OFFLINE" -o -n "${DIB_YUMCHROOT_USE_CACHE:-}" ] && [ -f $YUMCHROOT_TARBALL ] ; then
+    echo $YUMCHROOT_TARBALL found in cache. Using.
+    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $YUMCHROOT_TARBALL
+else
+    # initalize rpmdb
+    sudo mkdir -p $TARGET_ROOT/var/lib/rpm
+    sudo rpm --root $TARGET_ROOT --initdb
+
+    # this makes sure that running yum/dnf in the chroot it can get
+    # out to download stuff
+    sudo mkdir $TARGET_ROOT/etc
     sudo cp /etc/resolv.conf $TARGET_ROOT/etc/resolv.conf
 
-    # Same logic as in the yum element to provide for yum caching
-    # copied here because the sequencing is wrong otherwise
+    # Bind mount the external yum cache inside the chroot.  Same logic
+    # as in the yum element to provide for yum caching copied here
+    # because the sequencing is wrong otherwise
     sudo mkdir -p $TMP_MOUNT_PATH/tmp/yum
     sudo mount --bind $YUM_CACHE $TMP_MOUNT_PATH/tmp/yum
-    sudo chroot $TARGET_ROOT yum -y --releasever=$DIB_RELEASE \
+
+    _install_repos
+
+    if [ $DIB_RELEASE -ge 22 ]; then
+        # install dnf for >= f22
+        _install_pkg_manager dnf dnf-plugins-core yum
+    else
+        _install_pkg_manager yum
+    fi
+
+    # bootstrap the environment within the chroot
+    sudo chroot $TARGET_ROOT ${YUM} -y --releasever=$DIB_RELEASE \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
         install $RELEASE_RPMS
-
-    sudo chroot $TARGET_ROOT yum makecache
-    sudo chroot $TARGET_ROOT yum -y \
+    sudo chroot $TARGET_ROOT ${YUM} makecache
+    sudo chroot $TARGET_ROOT ${YUM} -y \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
         install passwd findutils sudo util-linux-ng
+
+    # cleanup
+    sudo rm $TARGET_ROOT/etc/resolv.conf
+    sudo umount $TMP_MOUNT_PATH/tmp/yum
 
     # RPM doesn't know whether files have been changed since install
     # At this point though, we know for certain that we have changed no
@@ -95,21 +139,11 @@ function _do_yum {
     for newfile in $(sudo find $TARGET_ROOT -type f -name '*rpmnew') ; do
         sudo mv $newfile $(echo $newfile | sed 's/.rpmnew$//')
     done
-    sudo rm $TARGET_ROOT/etc/resolv.conf
-    sudo umount $TMP_MOUNT_PATH/tmp/yum
-}
-
-if [ -n "$DIB_OFFLINE" -o -n "${DIB_YUMCHROOT_USE_CACHE:-}" ] && [ -f $YUMCHROOT_TARBALL ] ; then
-    echo $YUMCHROOT_TARBALL found in cache. Using.
-    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $YUMCHROOT_TARBALL
-else
-    sudo mkdir -p $TARGET_ROOT/var/lib/rpm
-    sudo rpm --root $TARGET_ROOT --initdb
-
-    _do_yum
 
     echo Caching result in $YUMCHROOT_TARBALL
-    sudo tar --numeric-owner -C $TARGET_ROOT -zcf $YUMCHROOT_TARBALL --exclude='./tmp/*' .
+    sudo tar --numeric-owner \
+        -C $TARGET_ROOT \
+        -zcf $YUMCHROOT_TARBALL --exclude='./tmp/*' .
 fi
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings
