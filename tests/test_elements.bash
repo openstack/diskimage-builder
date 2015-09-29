@@ -10,6 +10,10 @@ for test_element in $basedir/../elements/*/test-elements/*; do
     if [ -d "$test_element" ]; then
         # our element name is two dirs up
         element_name=$(basename $(dirname $(dirname $test_element)))
-        run_element_test "$(basename $test_element)" "$element_name"
+        element_type=disk
+        if [ -f "$test_element/element-type" ]; then
+            element_type=$(cat "$test_element/element-type")
+        fi
+        run_${element_type}_element_test "$(basename $test_element)" "$element_name"
     fi
 done
