@@ -31,7 +31,7 @@ function build_test_image() {
                 echo "Found image $img_path."
             fi
         else
-            if ! docker image | grep $base_dest/image ; then
+            if ! docker images | grep $base_dest/image ; then
                 echo "Error: No docker image with name $base_dest/image found!"
                 exit 1
             else
@@ -42,7 +42,9 @@ function build_test_image() {
 
     trap EXIT
     rm -rf $dest_dir
-    docker rmi $base_dest/image
+    if docker images | grep $base_dest/image ; then
+        docker rmi $base_dest/image
+    fi
 }
 
 function run_disk_element_test() {
