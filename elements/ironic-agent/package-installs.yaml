@@ -9,3 +9,4 @@ parted:
 hdparm:
 util-linux:
 genisoimage:
+gdisk:
