@@ -63,6 +63,7 @@ TMPDIR=$(mktemp -d /tmp/tmp.XXXXXXXXXX)
 trap "rm -rf $TMPDIR" EXIT
 for i in $(find elements -type f \
                 -not -name \*~ \
+                -not -name \*.orig \
                 -not -name \*.rst \
                 -not -name \*.yaml \
                 -not -name \*.py \
@@ -81,8 +82,11 @@ for i in $(find elements -type f \
             flake8 $i
         else
             if ! excluded indent ; then
-                if grep -q "^\( \{4\}\)* \{1,3\}[^ ]" ${i}; then
+                indent_regex='^\( \{4\}\)* \{1,3\}[^ ]'
+                if grep -q "$indent_regex" ${i}; then
                     error "$i should use 4 spaces indent"
+                    # outline the failing lines with line number
+                    grep -n "$indent_regex" ${i}
                 fi
             fi
         fi
