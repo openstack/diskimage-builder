@@ -310,6 +310,18 @@ order to create a test case, follow these steps:
 * To exit early and indicate a success, touch a file /tmp/dib-test-should-fail
   in the image chroot, then exit 1.
 
+To run functional tests locally, install and start docker, then use
+the following tox command::
+
+    tox -efunc
+
+Note that running functional tests requires *sudo* rights, thus you may be
+asked for your password.
+
+To run functional tests for one element, append its name to the command::
+
+    tox -efunc ironic-agent
+
 Additionally, elements can be tested using python unittests. To create a
 a python test:
 
