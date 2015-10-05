@@ -67,7 +67,12 @@ function create_ramdisk_base () {
   fi
 
   mkdir -p "$TMP_MOUNT_PATH/etc/modprobe.d"
-  echo "blacklist evbug" > "$TMP_MOUNT_PATH/etc/modprobe.d/blacklist.conf"
+  # The directory may or may not exist in the image. If the directory exists in
+  # the image, all the files under it should get copied to the ramdisk.
+  if [ -d "/etc/modprobe.d/" ] ; then
+      find /etc/modprobe.d -name '*.conf' -type f -exec cp -a {} "$TMP_MOUNT_PATH/etc/modprobe.d" \;
+  fi
+  echo "blacklist evbug" > "$TMP_MOUNT_PATH/etc/modprobe.d/blacklist-dib-ramdisk.conf"
 
   # cjk adding for hwdiscovery support
   touch "$TMP_MOUNT_PATH/etc/fstab"
