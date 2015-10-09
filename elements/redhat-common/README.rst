@@ -10,7 +10,8 @@ If used to build an image form a cloud image compress with xz
 the image. Depending on your distro you may need to install either
 the xz or xz-utils package.
 
-Overrides:
+Environment Variables
+---------------------
 
 DIB_LOCAL_IMAGE
   :Required: No
