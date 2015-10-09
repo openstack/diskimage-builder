@@ -5,7 +5,8 @@ fedora
 Use Fedora cloud images as the baseline for built disk images. For further
 details see the redhat-common README.
 
-Overrides:
+Environment Variables
+---------------------
 
 DIB_DISTRIBUTION_MIRROR:
    :Required: No
