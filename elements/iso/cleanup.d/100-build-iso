@@ -63,6 +63,11 @@ function build_iso() {
     if [ $DISTRO_NAME = "fedora" ]; then
         EFI_BOOT_DIR="EFI/fedora"
         EXTRA_KERNEL_PARAMS="usbcore.autosuspend=-1"
+    #debian
+    elif [ $DISTRO_NAME = "debian" ]; then
+        EFI_BOOT_DIR="EFI/debian"
+        EXTRA_KERNEL_PARAMS=""
+    #ubuntu:
     else
         EFI_BOOT_DIR="EFI/ubuntu"
         EXTRA_KERNEL_PARAMS=""
