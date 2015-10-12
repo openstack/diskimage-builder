@@ -2,10 +2,20 @@
 apt-preferences
 ===============
 
-This element creates package pins for apt systems if packages need to be held
-back.
+This element generates the APT preferences file based on the provided manifest
+provided by the :doc:`../manifests/README` element.
 
-For APT based systems, you specify package priorities in the apt preferences file.
-This element reads the given manifest file, specified in `DIB_DPKG_MANIFEST`, to
-set pins to enable pinning of older versions for the given packages.
+The APT preferences file can be used to control which versions of packages will
+be selected for installation. APT uses a priority system to make this
+determination. For more information about APT preferences, see the apt_preferences(5)
+man page.
+
+Environment Variables
+---------------------
+
+DIB_DPKG_MANIFEST:
+   :Required: No
+   :Default: None
+   :Description: The manifest file to generate the APT preferences file from.
+   :Example: ``DIB\_DPKG\_MANIFEST=~/image.d/dib-manifests/dib-manifest-dpkg-image``
 
