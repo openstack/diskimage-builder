@@ -11,7 +11,7 @@ if [ -n "$DIB_DEV_USER_AUTHORIZED_KEYS" ]; then
         cat $DIB_DEV_USER_AUTHORIZED_KEYS >> $TMP_HOOKS_PATH/devuser-ssh-authorized-keys
     fi
 else
-    for fmt in "rsa dsa"; do
+    for fmt in rsa dsa; do
         if [ -f "$HOME/.ssh/id_$fmt.pub" ]; then
             cat $HOME/.ssh/id_$fmt.pub >> $TMP_HOOKS_PATH/devuser-ssh-authorized-keys
             break
