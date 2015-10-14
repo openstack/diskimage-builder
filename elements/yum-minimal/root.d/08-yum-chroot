@@ -52,7 +52,6 @@ function _install_repos {
         --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
         --destdir=$WORKING \
         ${DISTRO_NAME}-release
-    RELEASE_RPMS="${DISTRO_NAME}-release"
 
     # after fedora21, this is split into into a separate -repos
     # package
@@ -62,7 +61,6 @@ function _install_repos {
             --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
             --destdir=$WORKING \
             ${DISTRO_NAME}-repos
-        RELEASE_RPMS="${RELEASE_RPMS} ${DISTRO_NAME}-repos"
     fi
 
     # --nodeps works around these wanting /bin/sh in some fedora
