@@ -121,9 +121,6 @@ else
     fi
 
     # bootstrap the environment within the chroot
-    sudo chroot $TARGET_ROOT ${YUM} -y --releasever=$DIB_RELEASE \
-        --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
-        install $RELEASE_RPMS
     sudo chroot $TARGET_ROOT ${YUM} makecache
     sudo chroot $TARGET_ROOT ${YUM} -y \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
