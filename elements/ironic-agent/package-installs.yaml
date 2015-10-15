@@ -10,3 +10,4 @@ hdparm:
 util-linux:
 genisoimage:
 gdisk:
+kmod:
