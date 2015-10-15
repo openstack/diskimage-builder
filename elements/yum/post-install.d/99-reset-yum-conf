@@ -8,9 +8,11 @@ set -o pipefail
 
 if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 22 ]]; then
     cfg=/etc/dnf/dnf.conf
+    cachedir=/var/cache/dnf
 else
     cfg=/etc/yum.conf
+    cachedir=/var/cache/yum
 fi
 
-sed -i 's/keepcache=1/keepcache=0/' $cfg
-sed -i 's/cachedir=\/tmp\/yum/cachedir=\/var\/cache\/yum/' $cfg
+sed -i "/^keepcache/c\keepcache=0" $cfg
+sed -i "/^cachedir/c\cachedir=${cachedir}" $cfg
