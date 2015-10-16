@@ -1,5 +1,6 @@
 dhcp-all-interfaces
 package-installs
+pip-and-virtualenv
 pkg-map
 source-repositories
 svc-map

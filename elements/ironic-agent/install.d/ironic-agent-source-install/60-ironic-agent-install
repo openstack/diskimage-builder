@@ -7,27 +7,25 @@ set -eu
 set -o pipefail
 
 SCRIPTDIR=$(dirname $0)
+IPADIR=/usr/share/ironic-python-agent
 
-# Install the latest version of pip and setuptools which has some
-# fixes for building behind proxy.
-curl -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-python /tmp/get-pip.py
-rm -f /tmp/get-pip.py
-pip install -U setuptools
+# create the virtual environment
+virtualenv $IPADIR/venv
 
-pip install -r /tmp/ironic-python-agent/requirements.txt
-pip install /tmp/ironic-python-agent
+# install IPA inside the virtual environment
+$IPADIR/venv/bin/pip install $IPADIR
 
-if [ ! -f /usr/bin/ironic-python-agent ]; then
-    ln -s /usr/local/bin/ironic-python-agent /usr/bin/ironic-python-agent
-fi
+# FIXME(lucasagomes): Figure out how we can use the "--install-option"
+# parameter for pip install so we don't have to manually create a symlink
+# create the launcher link so services can use it
+ln -s $IPADIR/venv/bin/ironic-python-agent /usr/local/bin/ironic-python-agent
 
 case "$DIB_INIT_SYSTEM" in
     upstart)
         install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.conf /etc/init/ironic-python-agent.conf
         ;;
     systemd)
-        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.service /usr/lib/systemd/system/$(svc-map ironic-python-agent).service
+        install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.service /usr/lib/systemd/system/ironic-python-agent.service
         ;;
     sysv)
         install -D -g root -o root -m 0755 ${SCRIPTDIR}/ironic-python-agent.init /etc/init.d/ironic-python-agent.init
