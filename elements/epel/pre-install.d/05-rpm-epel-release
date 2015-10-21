@@ -12,7 +12,7 @@ if [ 'amd64' = "$ARCH" ] ; then
     ARCH="x86_64"
 fi
 
-BASE_URL=http://download.fedoraproject.org/pub/epel
+BASE_URL=${DIB_EPEL_MIRROR:-http://download.fedoraproject.org/pub/epel}
 case "$DISTRO_NAME" in
     rhel7|centos7)
         RELEASE=7
