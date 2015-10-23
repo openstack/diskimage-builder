@@ -41,6 +41,11 @@ trap "$EACTION" EXIT
 YUM_CACHE=$DIB_IMAGE_CACHE/yum
 mkdir -p $YUM_CACHE
 
+# Note, on Debian/Ubuntu, %_dbpath is set in the RPM macros as
+# ${HOME}/.rpmdb/ -- this makes sense as RPM isn't the system
+# packager.  This path is relative to the "--root" argument
+_RPM="rpm --dbpath=/var/lib/rpm"
+
 # install the [fedora|centos]-[release|repo] packages inside the
 # chroot, which are needed to bootstrap yum/dnf
 #
@@ -67,7 +72,7 @@ function _install_repos {
 
     # --nodeps works around these wanting /bin/sh in some fedora
     # releases, see rhbz#1265873
-    sudo rpm --root $TARGET_ROOT --nodeps -ivh $WORKING/*rpm
+    sudo $_RPM --root $TARGET_ROOT --nodeps -ivh $WORKING/*rpm
 }
 
 # _install_pkg_manager packages...
@@ -82,12 +87,29 @@ function _install_pkg_manager {
     sudo sed -i "s,/etc/pki/rpm-gpg,$TARGET_ROOT/etc/pki/rpm-gpg,g" \
         $TARGET_ROOT/etc/yum.repos.d/*repo
 
-    sudo -E yum -y \
+    # See notes on $_RPM variable -- we need to override the
+    # $HOME-based dbpath set on debian/ubuntu here.  Unfortunately,
+    # yum does not have a way to override rpm macros from the command
+    # line.  So we modify the user's ~/.rpmmacros to set %_dbpath back
+    # to "/var/lib/rpm" (note, this is taken relative to the
+    # --installroot).
+    #
+    # Also note, we only want this done around this call -- this is
+    # the only place we are using yum outside the chroot, and hence
+    # picking up the base-system's default rpm macros.  For example,
+    # the yumdownloader calls above in _install_repos want to use
+    # ~/.rpmdb/ ... there is nothing in the build-system /var/lib/rpm!
+    (
+        flock -w 1200 9 || die "Can not lock .rpmmacros"
+        echo "%_dbpath /var/lib/rpm" >> $HOME/.rpmmacros
+        sudo -E yum -y \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --installroot $TARGET_ROOT \
-        install $@
-
+            install $@
+        sed -i '$ d' $HOME/.rpmmacros
+    ) 9>$HOME/.rpmmacros.dib.lock
+    rm $HOME/.rpmmacros.dib.lock
     # Set gpg path back because subsequent actions will take place in
     # the chroot
     sudo sed -i "s,$TARGET_ROOT/etc/pki/rpm-gpg,/etc/pki/rpm-gpg,g" \
@@ -110,7 +132,7 @@ else
 
     # initalize rpmdb
     sudo mkdir -p $TARGET_ROOT/var/lib/rpm
-    sudo rpm --root $TARGET_ROOT --initdb
+    sudo $_RPM --root $TARGET_ROOT --initdb
 
     # this makes sure that running yum/dnf in the chroot it can get
     # out to download stuff
