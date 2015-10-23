@@ -38,6 +38,7 @@ EACTION="rm -r $WORKING"
 trap "$EACTION" EXIT
 
 YUM_CACHE=$DIB_IMAGE_CACHE/yum
+mkdir -p $YUM_CACHE
 
 # install the [fedora|centos]-[release|repo] packages inside the
 # chroot, which are needed to bootstrap yum/dnf
