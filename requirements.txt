@@ -6,3 +6,4 @@ argparse
 dib-utils # Apache-2.0
 PyYAML>=3.1.0
 flake8<=2.4.1,>=2.2.4
+six>=1.9.0
