@@ -1,4 +1,5 @@
 cloud-init-datasources
 dib-init-system
 install-types
+pip-and-virtualenv
 source-repositories
