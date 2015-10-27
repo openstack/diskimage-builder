@@ -1,0 +1,4 @@
+python-pip:
+  installtype: package
+python-virtualenv:
+  installtype: package
