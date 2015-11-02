@@ -238,7 +238,7 @@ unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 
 if [ -n "$DIB_IMAGE_SIZE" ]; then
-  truncate -s${DIB_IMAGE_SIZE}G $TMP_IMAGE_PATH
+  du_size=$(echo "$DIB_IMAGE_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
 else
   # in kb*0.60 - underreport to get a slightly bigger device
   # Rounding down size so that is is a multiple of 64, works around a bug in
@@ -246,17 +246,17 @@ else
   # of 64k. https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1180021
   du_size=$(sudo du --block-size=600 -x -s ${TMP_BUILD_DIR}/built |\
             awk ' { print $1 }')
-  if [ "$FS_TYPE" = "ext4" ] ; then
-    # Very conservative to handle images being resized a lot
-    # We set journal size to 64M so our journal is large enough when we
-    # perform an FS resize.
-    MKFS_OPTS="-i 4096 -J size=64 $MKFS_OPTS"
-    du_size=$(( $du_size + 65536 ))
-  fi
-
-  _NEEDED_SIZE=$(echo "$du_size" | awk ' { print $1 + 64 - ( $1 % 64) } ')
-  truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
 fi
+if [ "$FS_TYPE" = "ext4" ] ; then
+  # Very conservative to handle images being resized a lot
+  # We set journal size to 64M so our journal is large enough when we
+  # perform an FS resize.
+  MKFS_OPTS="-i 4096 -J size=64 $MKFS_OPTS"
+  du_size=$(( $du_size + 65536 ))
+fi
+
+_NEEDED_SIZE=$(echo "$du_size" | awk ' { print $1 + 64 - ( $1 % 64) } ')
+truncate -s${_NEEDED_SIZE}K $TMP_IMAGE_PATH
 
 if [ -n "$MAX_ONLINE_RESIZE" ]; then
     MKFS_OPTS="-E resize=$MAX_ONLINE_RESIZE $MKFS_OPTS"
