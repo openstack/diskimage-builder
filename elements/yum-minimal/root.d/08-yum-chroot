@@ -32,6 +32,7 @@ DIB_YUMCHROOT_EXTRA_ARGS=${DIB_YUMCHROOT_EXTRA_ARGS:-}
 YUMCHROOT_TARBALL=$DIB_IMAGE_CACHE/yumchroot-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
 # TODO Maybe deal with DIB_DISTRIBUTION_MIRROR
 http_proxy=${http_proxy:-}
+YUM=${YUM:-yum}
 
 WORKING=$(mktemp --tmpdir=${TMP_DIR:-/tmp} -d)
 EACTION="rm -r $WORKING"
