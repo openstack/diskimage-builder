@@ -81,7 +81,7 @@ function _install_pkg_manager {
     sudo sed -i "s,/etc/pki/rpm-gpg,$TARGET_ROOT/etc/pki/rpm-gpg,g" \
         $TARGET_ROOT/etc/yum.repos.d/*repo
 
-    sudo yum -y \
+    sudo -E yum -y \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --installroot $TARGET_ROOT \
@@ -122,8 +122,8 @@ else
     fi
 
     # bootstrap the environment within the chroot
-    sudo chroot $TARGET_ROOT ${YUM} makecache
-    sudo chroot $TARGET_ROOT ${YUM} -y \
+    sudo -E chroot $TARGET_ROOT ${YUM} makecache
+    sudo -E chroot $TARGET_ROOT ${YUM} -y \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
         install passwd findutils sudo util-linux-ng
 
