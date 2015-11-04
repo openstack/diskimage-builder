@@ -129,7 +129,7 @@ function prepend_dev() {
 function whole_disk_name() {
     local dev=`prepend_dev "$1"`
     case "$dev" in
-    /dev/sd*|/dev/hd*|/dev/vd*)
+    /dev/sd*|/dev/hd*|/dev/vd*|/dev/xvd*)
         echo "$dev" | sed -e 's/[0-9]*$//'
         ;;
     /dev/cciss/*)
@@ -146,7 +146,7 @@ function partition_name() {
     local dev=`prepend_dev "$1"`
     local part=$2
     case "$dev" in
-    /dev/sd*|/dev/hd*|/dev/vd*)
+    /dev/sd*|/dev/hd*|/dev/vd*|/dev/xvd*)
         echo "${dev}${part}"
         ;;
     /dev/cciss/*)
