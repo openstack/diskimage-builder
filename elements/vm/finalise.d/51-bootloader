@@ -80,7 +80,9 @@ function install_grub2 {
 
     echo "Installing GRUB2..."
 
-    GRUB_OPTS=${GRUB_OPTS:-""}
+    # We need --force so grub does not fail due to being installed on the
+    # root partition of a block device.
+    GRUB_OPTS=${GRUB_OPTS:-"--force"}
     # XXX: This is buggy:
     # - --target=i386-pc is invalid for non-i386/amd64 architectures
     # - and for UEFI too.
