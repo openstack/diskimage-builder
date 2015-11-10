@@ -6,6 +6,17 @@ fi
 set -eu
 set -o pipefail
 
+# The RPM postinst packages for "kernel-core" have used kernel-install
+# to (quoting from man)
+#
+#   add KERNEL-VERSION KERNEL-IMAGE
+#    kernel-install creates the directory /boot/MACHINE-ID/KERNEL-VERSION/
+#    and calls every executable /usr/lib/kernel/install.d/*.install and
+#           /etc/kernel/install.d/*.install ...
+#
+# We just want the initrd in /boot.  Our later grub scripts will fix
+# up the bootloader configuration
+
 initrd=$(find /boot -name initrd)
 kernel_version=$(rpm -qa | grep kernel | sort | head -n 1 | cut -d '-' -f 2,3)
 
