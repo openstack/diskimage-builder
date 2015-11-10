@@ -96,10 +96,11 @@ for i in $(find elements -type f \
     if [ $(basename $i) = "element-deps" ]; then
         UNSORTED=${TMPDIR}/element-deps.unsorted
         SORTED=${TMPDIR}/element-deps.sorted
-        grep -v '^#' $i > ${UNSORTED}
+        grep -v -e '^#' -e '^$' $i > ${UNSORTED}
         sort ${UNSORTED} > ${SORTED}
         if [ -n "$(diff -c ${UNSORTED} ${SORTED})" ]; then
             error "$i is not sorted alphabetically"
+            diff -y ${UNSORTED} ${SORTED}
         fi
     fi
 
