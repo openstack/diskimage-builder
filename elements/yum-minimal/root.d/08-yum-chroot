@@ -98,6 +98,16 @@ if [ -n "$DIB_OFFLINE" -o -n "${DIB_YUMCHROOT_USE_CACHE:-}" ] && [ -f $YUMCHROOT
     echo $YUMCHROOT_TARBALL found in cache. Using.
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $YUMCHROOT_TARBALL
 else
+    # Note this is not usually done for root.d elements (see
+    # lib/common-functions:mount_proc_dev_sys) but it's important that
+    # we have things like /dev/urandom around inside the chroot for
+    # the rpm [pre|post]inst scripts within the packages.
+    sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
+    sudo mount -t proc none $TARGET_ROOT/proc
+    sudo mount --bind /dev $TARGET_ROOT/dev
+    sudo mount --bind /dev/pts $TARGET_ROOT/dev/pts
+    sudo mount -t sysfs none $TARGET_ROOT/sys
+
     # initalize rpmdb
     sudo mkdir -p $TARGET_ROOT/var/lib/rpm
     sudo rpm --root $TARGET_ROOT --initdb
@@ -129,8 +139,14 @@ else
         install passwd findutils sudo util-linux-ng
 
     # cleanup
+    # TODO : move this into a exit trap; and reconsider how
+    # this integrates with the global exit cleanup path.
     sudo rm $TARGET_ROOT/etc/resolv.conf
     sudo umount $TMP_MOUNT_PATH/tmp/yum
+    sudo umount $TARGET_ROOT/proc
+    sudo umount $TARGET_ROOT/dev/pts
+    sudo umount $TARGET_ROOT/dev
+    sudo umount $TARGET_ROOT/sys
 
     # RPM doesn't know whether files have been changed since install
     # At this point though, we know for certain that we have changed no
