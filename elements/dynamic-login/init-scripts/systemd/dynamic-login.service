@@ -1,0 +1,10 @@
+[Unit]
+Description=Dynamic Login
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/dynamic-login
+
+[Install]
+WantedBy=multi-user.target
+

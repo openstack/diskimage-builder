@@ -1,0 +1,31 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          dynamic-login
+# Required-Start:    $local_fs networking
+# Required-Stop:     $local_fs
+# Default-Start:     S
+# Default-Stop:      0 6
+# X-Start-Before:
+# Short-Description: Dynamic Login
+# Description:       Execute Dynamic Login
+### END INIT INFO
+
+NAME=dynamic-login
+INIT_NAME=/etc/init.d/${NAME}
+SCRIPT_NAME=/usr/local/bin/${NAME}
+
+[ -x $SCRIPT_NAME ] || exit 0
+
+case "$1" in
+    start)
+        $SCRIPT_NAME
+        ;;
+    stop)
+        ;;
+    *)
+        echo "Usage: $INIT_NAME {start}"
+        exit 1
+        ;;
+esac
+
+exit 0
