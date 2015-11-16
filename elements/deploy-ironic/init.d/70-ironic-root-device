@@ -25,6 +25,11 @@ function _exec_lsblk() {
 }
 
 
+function _exec_scsi_id() {
+    /lib/udev/scsi_id --whitelisted --export -d $1 | grep $2 | cut -d "=" -f 2
+}
+
+
 # Get the block device size in GiB
 function get_size() {
     echo $(( (512 * $(cat /sys/block/$1/size) ) / 2**30))
@@ -54,6 +59,16 @@ function get_wwn() {
 }
 
 
+function get_wwn_with_extension() {
+    normalize "$(_exec_scsi_id "$1" ID_WWN_WITH_EXTENSION)"
+}
+
+
+function get_wwn_vendor_extension() {
+    normalize "$(_exec_scsi_id "$1" ID_WWN_VENDOR_EXTENSION)"
+}
+
+
 function get_serial() {
     normalize "$(_exec_lsblk "$1" SERIAL)"
 }
@@ -76,6 +91,12 @@ function parse_hints() {
                 ;;
                 wwn=*)
                     CHECK_WWN=`normalize "${i#wwn=}"`
+                ;;
+                wwn_with_extension=*)
+                    CHECK_WWN_WITH_EXT=`normalize "${i#wwn_with_extension=}"`
+                ;;
+                wwn_vendor_extension=*)
+                    CHECK_WWN_VENDOR_EXT=`normalize "${i#wwn_vendor_extension=}"`
                 ;;
                 serial=*)
                     CHECK_SERIAL=`normalize "${i#serial=}"`
@@ -107,6 +128,8 @@ function get_root_device() {
         [[ $CHECK_VENDOR != false && $(get_vendor "$DEV_NAME") != $CHECK_VENDOR ]] && continue || :
         [[ $CHECK_SERIAL != false && $(get_serial "$DEV_NAME") != $CHECK_SERIAL ]] && continue || :
         [[ $CHECK_WWN != false && $(get_wwn "$DEV_NAME") != $CHECK_WWN ]] && continue || :
+        [[ $CHECK_WWN_WITH_EXT!= false && $(get_wwn_with_extension "$DEV_NAME") != $CHECK_WWN_WITH_EXT ]] && continue || :
+        [[ $CHECK_WWN_VENDOR_EXT != false && $(get_wwn_vendor_extension "$DEV_NAME") != $CHECK_WWN_VENDOR_EXT ]] && continue || :
 
         # A device that matches all hints was found
         echo "$DEV_PATH"
