@@ -1,4 +1,5 @@
 dracut:
+grubby:
 kernel:
 initscripts:
 man-pages:
