@@ -21,4 +21,7 @@ set -o pipefail
 
 SCRIPTDIR=$(dirname $0)
 
+# Ensure the 8021q module is loaded so that glean can support tagged interfaces
+echo "8021q" >> /etc/modules
+
 glean-install
