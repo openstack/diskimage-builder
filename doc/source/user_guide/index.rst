@@ -7,3 +7,4 @@ User Guide
    supported_distros
    installation
    building_an_image
+   install_types
