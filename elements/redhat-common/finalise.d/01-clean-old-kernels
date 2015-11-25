@@ -6,6 +6,16 @@ fi
 set -eu
 set -o pipefail
 
-install-packages yum-utils
+YUM=${YUM:-yum}
 
-package-cleanup --oldkernels -y --count=1
+if [[ ${YUM} == "dnf" ]]; then
+    # cribbed from
+    #  http://dnf.readthedocs.org/en/latest/cli_vs_yum.html
+    _old_kernels="$(dnf repoquery --installonly --latest-limit -1 -q)"
+    if [[ -n "${_old_kernels}" ]]; then
+        dnf remove -y ${_old_kernels}
+    fi
+else
+    install-packages yum-utils
+    package-cleanup --oldkernels -y --count=1
+fi
