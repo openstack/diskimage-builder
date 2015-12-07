@@ -6,9 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-which which || install-packages which
-
-python_path=$(which python2 || which python3)
+python_path=$(command -v python2 || command -v python3)
 if [ -z "$python_path" ]; then
     echo "Could not find python2 or python3 executable."
     exit 1
