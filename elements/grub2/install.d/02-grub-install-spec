@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# grub-efi-amd64-signed in ubuntu post will try to call grub-efi-amd64 to install grub into root
+# device which definitely fail at this stage
+# the workaround is to skip error and remove postinst script
+if [[ "ubuntu" =~ "$DISTRO_NAME" ]]; then
+    if ! install-packages grub-efi-amd64-signed; then
+        rm -f /var/lib/dpkg/info/grub-efi-amd64-signed.postinst
+        rm -f /var/lib/dpkg/info/grub-efi-amd64.postinst
+    fi
+    dpkg --configure grub-efi-amd64
+    dpkg --configure grub-efi-amd64-signed
+fi
