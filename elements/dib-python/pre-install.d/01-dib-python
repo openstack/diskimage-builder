@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+which which || install-packages which
+
+python_path=$(which python2 || which python3)
+if [ -z "$python_path" ]; then
+    echo "Could not find python2 or python3 executable."
+    exit 1
+fi
+
+ln -s $python_path /usr/local/bin/dib-python
