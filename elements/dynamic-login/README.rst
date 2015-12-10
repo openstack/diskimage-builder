@@ -27,13 +27,13 @@ rootpwd
   :Description: If the operator append rootpwd="$ENCRYPTED_PASSWORD" to the
                 kernel command line on boot, the helper script will set the
                 root password to the one specified by this option. Note that
-                this password should be **encrypted**. Encrypted passwords
+                this password must be **encrypted**. Encrypted passwords
                 can be generated using the ``openssl`` command, e.g:
                 *openssl passwd -1*.
 
 
 .. note::
-   The value of these parameters should be **quoted**, e.g: sshkey="ssh-rsa
+   The value of these parameters must be **quoted**, e.g: sshkey="ssh-rsa
    BBBA1NBzaC1yc2E ..."
 
 
