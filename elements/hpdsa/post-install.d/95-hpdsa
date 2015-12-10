@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+# Blacklist the ahci driver for hpdsa to recognize the disks.
+# It can also be done with element "modprobe-blacklist" which
+# would add the ahci driver to /etc/modprobe.d/blacklist.conf.
+# To be on safer side, blacklist the driver ahci without the
+# element "modprobe-blacklist" also.
+echo "blacklist ahci" >> /etc/modprobe.d/install-hpdsa.conf
+echo "hpdsa" >> /etc/modules
