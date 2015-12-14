@@ -169,10 +169,18 @@ else
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
         install passwd findutils sudo util-linux-ng
 
+    # Put in a dummy /etc/resolv.conf over the temporary one we used
+    # to bootstrap.  systemd has a bug/feature [1] that it will assume
+    # you want systemd-networkd as the network manager and create a
+    # broken symlink to /run/... if the base image doesn't have one.
+    # This broken link confuses things like dhclient.
+    # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1197204
+    echo -e "# This file intentionally left blank\n" | \
+        sudo tee $TARGET_ROOT/etc/resolv.conf
+
     # cleanup
     # TODO : move this into a exit trap; and reconsider how
     # this integrates with the global exit cleanup path.
-    sudo rm $TARGET_ROOT/etc/resolv.conf
     sudo umount $TMP_MOUNT_PATH/tmp/yum
     sudo umount $TARGET_ROOT/proc
     sudo umount $TARGET_ROOT/dev/pts
