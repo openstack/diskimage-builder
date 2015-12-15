@@ -54,3 +54,20 @@ formats are:
  * vhd
  * docker
  * raw
+
+Filesystem Caveat
+-----------------
+
+By default, disk-image-create uses a 4k byte-to-inode ratio when creating the
+filesystem in the image. This allows large 'whole-system' images to utilize
+several TB disks without exhausting inodes. In contrast, when creating images
+intended for tenant instances, this ratio consumes more disk space than an
+end-user would expect (e.g. a 50GB root disk has 47GB avail.). If the image is
+intended to run within a tens to hundrededs of gigabyte disk, setting the
+byte-to-inode ratio to the ext4 default of 16k will allow for more usable space
+on the instance. The default can be overridden by passing --mkfs-options like
+this::
+
+    disk-image-create --mkfs-options '-i 16384' <distro> vm
+
+
