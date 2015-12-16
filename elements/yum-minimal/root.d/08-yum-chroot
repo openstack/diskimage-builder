@@ -97,12 +97,23 @@ function _install_pkg_manager {
     # picking up the base-system's default rpm macros.  For example,
     # the yumdownloader calls above in _install_repos want to use
     # ~/.rpmdb/ ... there is nothing in the build-system /var/lib/rpm!
+    #
+    # Another issue we hit is having to set --releasedir here.  yum
+    # determines $releasevar based on (more or less) "rpm -q
+    # --whatprovides $distroverpkg".  By default, this is
+    # "redhat-release" (fedora-release provides redhat-release) but
+    # some platforms like CentOS override it in /etc/yum.conf (to
+    # centos-release in their case).  You can't override this (see
+    # [1]), but setting --releasever works around this.
+    #
+    # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1287333
     (
         flock -w 1200 9 || die "Can not lock .rpmmacros"
         echo "%_dbpath /var/lib/rpm" >> $HOME/.rpmmacros
         sudo -E yum -y \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
+            --releasever=$DIB_RELEASE \
             --installroot $TARGET_ROOT \
             install $@
         sed -i '$ d' $HOME/.rpmmacros
