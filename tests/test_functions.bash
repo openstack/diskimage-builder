@@ -56,7 +56,7 @@ function run_disk_element_test() {
     trap "rm -rf $dest_dir /tmp/dib-test-should-fail" EXIT
 
     if break="after-error" break_outside_target=1 \
-        break_cmd="cp \$TMP_MOUNT_PATH/tmp/dib-test-should-fail /tmp/ || true" \
+        break_cmd="cp \$TMP_MOUNT_PATH/tmp/dib-test-should-fail /tmp/ 2>&1 > /dev/null || true" \
         ELEMENTS_PATH=$DIB_ELEMENTS:$DIB_ELEMENTS/$element/test-elements \
         $DIB_CMD -t tar -o $dest_dir/image -n $element $test_element; then
         if ! [ -f "$dest_dir/image.tar" ]; then
