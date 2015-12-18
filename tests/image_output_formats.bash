@@ -5,7 +5,7 @@ set -o pipefail
 
 source $(dirname $0)/test_functions.bash
 
-test_formats="tar raw qcow2 docker"
+test_formats="tar raw qcow2 docker aci"
 for binary in qemu-img docker ; do
     if [ -z "$(which $binary)" ]; then
         echo "Warning: No $binary binary found, cowardly refusing to run tests."
