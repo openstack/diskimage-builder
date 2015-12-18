@@ -173,7 +173,10 @@ function mount_qcow_image() {
 }
 
 function cleanup_build_dir () {
-    sudo rm -rf $TMP_BUILD_DIR/built
+    if ! timeout 5  sh -c " while ! sudo rm -rf $TMP_BUILD_DIR/built; do sleep 1; done"; then
+        echo "ERROR: unable to cleanly remove $TMP_BUILD_DIR/built"
+        exit 1
+    fi
     sudo rm -rf $TMP_BUILD_DIR/mnt
     if tmpfs_check 0; then
         sudo umount -f $TMP_BUILD_DIR || true
