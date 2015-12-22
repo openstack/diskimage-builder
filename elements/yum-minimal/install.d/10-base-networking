@@ -28,10 +28,17 @@ NETWORKING_IPV6=yes
 NOZEROCONF=yes
 EOF
 
-for interface in eth0 eth1; do
-    cat << EOF | tee /etc/sysconfig/network-scripts/ifcfg-$interface > /dev/null
+# If you want eth0 and eth1 created as DHCP based interfaces, enable
+# this.  You don't want this if systemd is going to call the
+# interfaces on the real system something else, or if you're using a
+# network-manager like cloud-init, glean or network-manager that will
+# handle the interfaces dynamically.
+if [[ "${DIB_YUM_MINIMAL_CREATE_INTERFACES:-0}" -eq "1" ]]; then
+    for interface in eth0 eth1; do
+        cat << EOF | tee /etc/sysconfig/network-scripts/ifcfg-$interface > /dev/null
 DEVICE=$interface
 BOOTPROTO=dhcp
 ONBOOT=on
 EOF
-done
+    done
+fi
