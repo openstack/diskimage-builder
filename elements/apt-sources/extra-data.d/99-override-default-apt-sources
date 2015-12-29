@@ -8,18 +8,37 @@ set -eu
 set -o pipefail
 
 # exit directly if DIB_APT_SOURCES is not defined properly
-if [ -z "${DIB_APT_SOURCES:-}" ] ; then
-    echo "DIB_APT_SOURCES must be set to the location of a sources.list file you wish to use"
+if [ -z "${DIB_APT_SOURCES:-}" -a -z "${DIB_APT_SOURCES_INLINE:-}" ] ; then
+    echo "DIB_APT_SOURCES must be set to the location of a sources.list file you wish to use or"
+    echo "DIB_APT_SOURCES_INLINE must be set to an array of the mirror strings"
     exit 0
-elif [ ! -f "$DIB_APT_SOURCES" -o ! -s "$DIB_APT_SOURCES" ] ; then
+elif [ -n "${DIB_APT_SOURCES:-}" -a ! -f "$DIB_APT_SOURCES" -o ! -s "$DIB_APT_SOURCES" ] ; then
     echo "$DIB_APT_SOURCES  is not a valid sources.list file."
     echo "You should assign proper sources.list file in DIB_APT_SOURCES"
     exit 1
 fi
+if [ -n "${DIB_APT_SOURCES:-}" ]; then
 
-DIB_APT_SOURCES=`readlink -f $DIB_APT_SOURCES`
+    DIB_APT_SOURCES=`readlink -f $DIB_APT_SOURCES`
 
-# copy the sources.list to cloudimg
-pushd $TMP_MOUNT_PATH/etc/apt/
-sudo cp -f $DIB_APT_SOURCES sources.list
-popd
+    # copy the sources.list to cloudimg
+    pushd $TMP_MOUNT_PATH/etc/apt/
+    sudo cp -f $DIB_APT_SOURCES sources.list
+    popd
+elif [ -n "${DIB_APT_SOURCES_INLINE:-}" ]; then
+
+    # replace sources.list with content of the array DIB_APT_SOURCES_INLINE, one element per line
+    if [ -f $TMP_MOUNT_PATH/etc/apt/sources.list ];
+    then
+        rm -f $TMP_MOUNT_PATH/etc/apt/sources.list
+    fi
+    for index in `seq 0 ${#DIB_APT_SOURCES_INLINE[*]}`;
+    do
+        echo adding ${DIB_APT_SOURCES_INLINE[index]} to sources.list
+        echo ${DIB_APT_SOURCES_INLINE[index]} >> $TMP_MOUNT_PATH/etc/apt/sources.list
+    done
+else
+    echo "No DIB_APT_SOURCES or DIB_APT_SOURCES_INLINE is defined"
+    exit -1
+fi
+exit 0
