@@ -208,8 +208,9 @@ function detach_loopback() {
     # If setup on a rhel or derivative the map was created with kpartx not losetup
     # and subsequently needs to be removed.
     loopdev_name=$(echo $loopdev | sed 's/\/dev\///g')
-    mapper_name=$(sudo dmsetup ls | grep $loopdev_name | awk '{ print $1 }')
-    if [ "$mapper_name" ]; then
+
+    if sudo dmsetup ls | grep $loopdev_name; then
+        mapper_name=$(sudo dmsetup ls | grep $loopdev_name | awk '{ print $1 }')
         sudo dmsetup --noudevsync remove $mapper_name
     fi
 
@@ -282,7 +283,7 @@ function mount_proc_dev_sys () {
 
 function unmount_dir () {
     local pattern="$1" mnts=""
-    if [ -n "$pattern" ]; then
+    if [ -n "$pattern" ] && awk '{print $2}' < /proc/mounts | grep "^$pattern"; then
         mnts=`awk '{print $2}' < /proc/mounts | grep "^$pattern" | sort -r`
     fi
     if [ -n "$mnts" ]; then
