@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# Copyright 2016 Matthew Thode
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[ -n "${ARCH}" ]
+[ -n "${TARGET_ROOT}" ]
+
+if [ 'amd64' = "${ARCH}" ] ; then
+    ARCH='x86_64'
+fi
+
+if ! [ 'x86_64' = "${ARCH}" ] ; then
+    echo "Only x86_64 images are currently available but ARCH is set to ${ARCH}."
+    exit 1
+fi
+
+# get the element location so we can refrence things relative to it
+ELEMENT_DIR=${ELEMENT_DIR:-"${ELEMENTS_PATH}/gentoo"}
+# valid gentoo profiles are as follows
+# default/linux/amd64/13.0
+# default/linux/amd64/13.0/no-multilib
+# hardened/linux/amd64
+# hardened/linux/amd64/no-multilib
+GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/13.0'}
+if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/13.0" ]]; then
+    FILENAME_BASE='gentoo-stage4'
+    SIGNED_SOURCE_SUFFIX='cloud'
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/13.0/no-multilib" ]]; then
+    FILENAME_BASE='gentoo-stage4-nomultilib'
+    SIGNED_SOURCE_SUFFIX='cloud-nomultilib'
+elif [[ "${GENTOO_PROFILE}" == "hardened/linux/amd64" ]]; then
+    FILENAME_BASE='gentoo-stage4-hardened'
+    SIGNED_SOURCE_SUFFIX='hardened+cloud'
+elif [[ "${GENTOO_PROFILE}" == "hardened/linux/amd64/no-multilib" ]]; then
+    FILENAME_BASE='gentoo-stage4-hardened-nomultilib'
+    SIGNED_SOURCE_SUFFIX='hardened+cloud-nomultilib'
+else
+    echo 'invalid profile, please select from the following profiles'
+    echo 'default/linux/amd64/13.0'
+    echo 'default/linux/amd64/13.0/no-multilib'
+    echo 'hardened/linux/amd64'
+    echo 'hardened/linux/amd64/no-multilib'
+    exit 1
+fi
+
+DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage4-amd64-${SIGNED_SOURCE_SUFFIX}.txt"}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/$(curl ${DIB_CLOUD_SOURCE} -s | tail -n 1 | cut -d\  -f 1)"}
+SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.DIGESTS.asc}"
+CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.tar.bz2"
+CACHED_SIGNATURE_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.asc"
+
+if [ -n "${DIB_OFFLINE}" -a -f "${CACHED_FILE}" ] ; then
+    echo "Not checking freshness of cached ${CACHED_FILE}"
+else
+    echo 'Fetching Base Image'
+    "${TMP_HOOKS_PATH}"/bin/cache-url "${SIGNATURE_FILE}" "${CACHED_SIGNATURE_FILE}"
+    "${TMP_HOOKS_PATH}"/bin/cache-url "${BASE_IMAGE_FILE}" "${CACHED_FILE}"
+    pushd "${DIB_IMAGE_CACHE}"
+    # import the key
+    # this key can be verified at one of the following places
+    # https://wiki.gentoo.org/wiki/Project:RelEng#Keys
+    # https://dev.gentoo.org/~dolsen/releases/keyrings/gentoo-keys-*.tar.xz
+    # http://distfiles.gentoo.org/distfiles/gentoo-keys-*.tar.xz
+    GPGDIR=$(mktemp -d -t)
+    gpg --no-default-keyring --keyring "${GPGDIR}"/gentookeys.gpg --import "${ELEMENT_DIR}"/gentoo-releng.gpg
+    # check the sig file
+    gpgv --keyring "${GPGDIR}"/gentookeys.gpg "${CACHED_SIGNATURE_FILE}"
+    if [[ "${?}" != 0 ]]; then
+        echo 'invalid signature file'
+        exit 1
+    fi
+    rm -rf "${GPGDIR}"
+    echo 'valid key used'
+    CACHED_SHA512SUM=$(grep -A1 -e 'SHA512' "${CACHED_SIGNATURE_FILE}" | grep -e 'tar.bz2$' | cut -d\  -f 1)
+    ACTUAL_SHA512SUM=$(sha512sum "${CACHED_FILE}" | cut -d\  -f 1)
+    if [[ "${ACTUAL_SHA512SUM}" != "${CACHED_SHA512SUM}" ]]; then
+        echo "invalid checksum on downloaded tarball: ${CACHED_FILE}"
+        exit 1
+    fi
+    echo 'valid checksum'
+    popd
+fi
+
+# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+# image tarball and host OS)
+sudo tar -C "${TARGET_ROOT}" --numeric-owner --xattrs -xjpf "${CACHED_FILE}"

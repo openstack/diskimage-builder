@@ -19,7 +19,7 @@ else
 fi
 
 function install_extlinux {
-    install-packages extlinux
+    install-packages -m base extlinux
 
     echo "Installing Extlinux..."
 
@@ -59,9 +59,9 @@ function install_grub2 {
     if [ -f "/tmp/grub/install" ] ; then
         source /tmp/grub/install
     elif [[ "$ARCH" =~ "ppc" ]]; then
-        install-packages grub-ieee1275
+        install-packages -m base grub-ieee1275
     else
-        install-packages grub-pc
+        install-packages -m base grub-pc
     fi
 
     # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually

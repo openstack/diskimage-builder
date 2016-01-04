@@ -5,6 +5,11 @@
     },
     "suse": {
       "dkms_package": ""
+    },
+    "gentoo": {
+      "dkms_package": "",
+      "grub-pc": "grub",
+      "extlinux": "syslinux"
     }
   },
   "default": {

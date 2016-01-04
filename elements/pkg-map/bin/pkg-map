@@ -33,6 +33,8 @@ def os_family(distro):
         family = 'debian'
     elif distro == 'opensuse':
         family = 'suse'
+    elif distro == 'gentoo':
+        family = 'gentoo'
 
     return family
 

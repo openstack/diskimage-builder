@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+
+# Copyright 2016 Matthew Thode
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+if [[ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+ACTION='install'
+
+SCRIPTNAME="$(basename $0)"
+function show_options {
+    echo "Usage: ${SCRIPTNAME} [package ...]"
+    echo
+    echo 'Options:'
+    echo '    -u          -- update all packages'
+    echo '    -e          -- erase/remove packages'
+    exit 0
+}
+
+function fix_shm {
+    if [[ "${RUN_ONCE_SHM}" == '1' ]]; then
+        mv /dev/shm /dev/shm.orig
+        mkdir /dev/shm
+        mount -t tmpfs none /dev/shm
+        chmod 1777 /dev/shm
+        RUN_ONCE_SHM='0'
+    fi
+}
+
+function unfix_shm {
+    if [[ "${RUN_ONCE_SHM}" == '0' ]]; then
+        umount /dev/shm
+        rmdir /dev/shm
+        mv /dev/shm.orig /dev/shm
+    fi
+}
+
+function install_gentoo_packages {
+    RUN_ONCE_SHM='1'
+    fix_shm
+    emerge "$@"
+    unfix_shm
+}
+
+TEMP="$(getopt -o huem: -n ${SCRIPTNAME} -- ${@})"
+if [[ "${?}" != 0 ]]; then
+    echo 'Terminating...' >&2
+    exit 1
+fi
+eval set -- "${TEMP}"
+
+while true; do
+    case "${1}" in
+        -u )
+            emerge-webrsync -q
+            install_gentoo_packages -uDNv --with-bdeps=y --jobs=2 @world
+            install_gentoo_packages --verbose=n --depclean
+            install_gentoo_packages -v --usepkg=n @preserved-rebuild
+            etc-update --automode -5
+            eselect news read new
+            exit 0;
+            ;;
+        -e )
+            ACTION='remove'
+            shift
+            ;;
+        -m )
+            MAP_ELEMENT="${2}"
+            shift 2
+            ;;
+        -h )
+            show_options
+            ;;
+        -- )
+            shift
+            break
+            ;;
+        * )
+            echo "Error: unsupported option ${1}."
+            exit 1
+            ;;
+    esac
+done
+
+PKGS="${@}"
+if [[ -n "${MAP_ELEMENT:-}" ]]; then
+    PKGS="$(pkg-map --element ${MAP_ELEMENT} ${@})"
+    if [[ "${?}" != 0 ]]; then
+        echo "bin/pkg-map error. ${PKGS}"
+        exit 1
+    fi
+fi
+
+if [[ -z "${PKGS}" ]]; then
+    echo "Not running install-packages ${ACTION} with empty packages list"
+else
+    if [[ "${ACTION}" == 'install' ]]; then
+        emerge-webrsync -q
+        install_gentoo_packages -q --jobs=2 --changed-use "${PKGS}"
+    elif [[ "${ACTION}" == 'remove' ]]; then
+        emerge-webrsync -q
+        install_gentoo_packages -C "${PKGS}"
+    else
+        echo 'something when really wrong, install action is not install or remove'
+    fi
+fi

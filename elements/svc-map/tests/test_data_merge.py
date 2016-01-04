@@ -13,12 +13,11 @@
 #    under the License.
 import imp
 import os
+from oslotest import base
 
 module_path = (os.path.dirname(os.path.realpath(__file__)) +
                '/../extra-data.d/10-merge-svc-map-files')
 service_map = imp.load_source('service_map', module_path)
-
-from oslotest import base
 
 
 class TestDataMerge(base.BaseTestCase):
