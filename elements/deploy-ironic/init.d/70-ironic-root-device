@@ -128,7 +128,7 @@ function get_root_device() {
         [[ $CHECK_VENDOR != false && $(get_vendor "$DEV_NAME") != $CHECK_VENDOR ]] && continue || :
         [[ $CHECK_SERIAL != false && $(get_serial "$DEV_NAME") != $CHECK_SERIAL ]] && continue || :
         [[ $CHECK_WWN != false && $(get_wwn "$DEV_NAME") != $CHECK_WWN ]] && continue || :
-        [[ $CHECK_WWN_WITH_EXT!= false && $(get_wwn_with_extension "$DEV_NAME") != $CHECK_WWN_WITH_EXT ]] && continue || :
+        [[ $CHECK_WWN_WITH_EXT != false && $(get_wwn_with_extension "$DEV_NAME") != $CHECK_WWN_WITH_EXT ]] && continue || :
         [[ $CHECK_WWN_VENDOR_EXT != false && $(get_wwn_vendor_extension "$DEV_NAME") != $CHECK_WWN_VENDOR_EXT ]] && continue || :
 
         # A device that matches all hints was found
