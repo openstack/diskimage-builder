@@ -1,0 +1,1 @@
+get-pip-py file /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
