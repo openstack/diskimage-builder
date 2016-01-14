@@ -1,0 +1,17 @@
+{
+  "family": {
+    "gentoo": {
+      "dkms_package": "",
+      "extlinux": "syslinux",
+      "grub-pc": "grub"
+    },
+    "suse": {
+      "dkms_package": ""
+    }
+  },
+  "default": {
+    "dkms_package": "dkms",
+    "extlinux": "extlinux",
+    "grub-pc": "grub-pc"
+  }
+}
