@@ -74,7 +74,11 @@ def main():
         sys.exit(2)
 
     with open(map_file) as fd:
-        package_names = json.loads(fd.read())
+        try:
+            package_names = json.loads(fd.read())
+        except ValueError:
+            eprint('Unable to parse %s' % map_file)
+            raise
 
     # Parse mapping data in this form using distro/family/default
     # Most specific takes priority (distro is most specific).
