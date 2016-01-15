@@ -7,6 +7,10 @@
     },
     "suse": {
       "dkms_package": ""
+    },
+    "redhat": {
+      "extlinux": "syslinux-extlinux",
+      "grub-pc": "grub2-tools grub2"
     }
   },
   "default": {
