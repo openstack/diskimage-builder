@@ -70,4 +70,19 @@ this::
 
     disk-image-create --mkfs-options '-i 16384' <distro> vm
 
+Speedups
+--------
+If you have 4GB of available physical RAM (as reported by /proc/meminfo
+MemTotal), or more, diskimage-builder will create a tmpfs mount to build the
+image in. This will improve image build time by building it in RAM.
+By default, the tmpfs file system uses 50% of the available RAM.
+Therefore, the RAM should be at least the double of the minimum tmpfs
+size required.
+For larger images, when no sufficient amount of RAM is available, tmpfs
+can be disabled completely by passing --no-tmpfs to disk-image-create.
+ramdisk-image-create builds a regular image and then within that image
+creates ramdisk.
+If tmpfs is not used, you will need enough room in /tmp to store two
+uncompressed cloud images. If tmpfs is used, you would still need /tmp space
+for one uncompressed cloud image and about 20% of that image for working files.
 
