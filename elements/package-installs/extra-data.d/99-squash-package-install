@@ -5,4 +5,6 @@ fi
 set -eu
 set -o pipefail
 
-sudo -E $(dirname $0)/../bin/package-installs-squash --elements="$IMAGE_ELEMENT" --path=$ELEMENTS_PATH $TMP_MOUNT_PATH/tmp/package-installs.json
+python_path=$(command -v python2 || command -v python3)
+
+sudo -E $python_path $(dirname $0)/../bin/package-installs-squash --elements="$IMAGE_ELEMENT" --path=$ELEMENTS_PATH $TMP_MOUNT_PATH/tmp/package-installs.json
