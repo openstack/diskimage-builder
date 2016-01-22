@@ -12,4 +12,4 @@ if [ -z "$python_path" ]; then
     exit 1
 fi
 
-ln -s $python_path /usr/local/bin/dib-python
+ln -sf $python_path /usr/local/bin/dib-python
