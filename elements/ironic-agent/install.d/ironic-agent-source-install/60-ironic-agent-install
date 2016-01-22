@@ -11,8 +11,7 @@ SCRIPTDIR=$(dirname $0)
 # Install the latest version of pip and setuptools which has some
 # fixes for building behind proxy.
 curl -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-#python /tmp/get-pip.py
-pip install pip==7.1.2
+python /tmp/get-pip.py
 rm -f /tmp/get-pip.py
 pip install -U setuptools
 
