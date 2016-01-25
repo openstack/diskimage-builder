@@ -1,0 +1,12 @@
+[Unit]
+Description=Grow root partition
+After=local-fs.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/sbin/growroot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
