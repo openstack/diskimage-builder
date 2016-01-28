@@ -14,12 +14,13 @@ if [ -d "$scripts_dir" ]; then
     dest=
     case $DIB_INIT_SYSTEM in
         upstart) dest=/etc/init/ ;;
+        openrc) dest=/etc/init.d/ ;;
         systemd) dest=/usr/lib/systemd/system/ ;;
         sysv) dest=/etc/init.d/ ;;
     esac
 
     if [ -z "$dest" ]; then
-        echo "ERROR: DIB_INIT_SYSTEM ($DIB_INIT_SYSTEM) is not an unknown type"
+        echo "ERROR: DIB_INIT_SYSTEM ($DIB_INIT_SYSTEM) is not a known type"
         exit 1
     fi
     cp -RP $scripts_dir. $dest || true
