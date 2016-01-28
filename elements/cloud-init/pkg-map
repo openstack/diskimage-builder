@@ -1,0 +1,7 @@
+{
+  "family": {
+    "gentoo": {
+      "cloud-init": "app-emulation/cloud-init"
+    }
+  }
+}
