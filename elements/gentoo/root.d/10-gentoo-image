@@ -42,16 +42,16 @@ ELEMENT_DIR=${ELEMENT_DIR:-"${ELEMENTS_PATH}/gentoo"}
 GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/13.0'}
 if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/13.0" ]]; then
     FILENAME_BASE='gentoo-stage4'
-    SIGNED_SOURCE_SUFFIX='cloud'
+    SIGNED_SOURCE_SUFFIX='minimal'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/13.0/no-multilib" ]]; then
     FILENAME_BASE='gentoo-stage4-nomultilib'
-    SIGNED_SOURCE_SUFFIX='cloud-nomultilib'
+    SIGNED_SOURCE_SUFFIX='minimal-nomultilib'
 elif [[ "${GENTOO_PROFILE}" == "hardened/linux/amd64" ]]; then
     FILENAME_BASE='gentoo-stage4-hardened'
-    SIGNED_SOURCE_SUFFIX='hardened+cloud'
+    SIGNED_SOURCE_SUFFIX='hardened+minimal'
 elif [[ "${GENTOO_PROFILE}" == "hardened/linux/amd64/no-multilib" ]]; then
     FILENAME_BASE='gentoo-stage4-hardened-nomultilib'
-    SIGNED_SOURCE_SUFFIX='hardened+cloud-nomultilib'
+    SIGNED_SOURCE_SUFFIX='hardened+minimal-nomultilib'
 else
     echo 'invalid profile, please select from the following profiles'
     echo 'default/linux/amd64/13.0'
