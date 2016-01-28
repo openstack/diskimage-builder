@@ -281,12 +281,26 @@ function mount_proc_dev_sys () {
     sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
 }
 
-function unmount_dir () {
-    local pattern="$1" mnts=""
-    if [ -n "$pattern" ] && awk '{print $2}' < /proc/mounts | grep "^$pattern"; then
-        mnts=`awk '{print $2}' < /proc/mounts | grep "^$pattern" | sort -r`
+# Recursively unmount directories under a given directory DIR
+# usage:
+#  unmount_dir DIR
+function unmount_dir {
+    local dir="$1"
+    local real_dir
+    local mnts
+
+    if [ ! -d $dir ]; then
+        echo "*** $dir is not a directory"
+        return 1
     fi
-    if [ -n "$mnts" ]; then
-        sudo umount -fl $mnts || true
-    fi
+
+    # get rid of any symlink elements in the incoming path, because
+    # /proc/mounts is the real path
+    real_dir=$(readlink -e $dir)
+
+    mnts=$(awk '{print $2}' < /proc/mounts | grep "^$real_dir" | sort -r)
+    for m in $mnts; do
+        echo "Unmount $m"
+        sudo umount -fl $m || true
+    done
 }
