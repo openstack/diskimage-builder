@@ -1,0 +1,10 @@
+{
+  "family": {
+    "gentoo": {
+      "git": "dev-vcs/git"
+    }
+  },
+  "default": {
+    "git": "git"
+  }
+}
