@@ -10,4 +10,3 @@ net-tools:
 cloud-init:
 cloud-utils:
 cloud-initramfs-growroot:
-locales-all:
