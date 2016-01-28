@@ -1,0 +1,12 @@
+{
+    "family":{
+        "redhat": {
+            "growpart": "cloud-utils-growpart",
+            "e2fsprogs": "e2fsprogs"
+        },
+        "debian":{
+            "growpart": "cloud-utils",
+            "e2fsprogs": "e2fsprogs"
+        }
+    }
+}
