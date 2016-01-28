@@ -25,7 +25,7 @@ def process_output(cmdline):
     # in Python 2.7+, gracefully falling back to subprocess.Popen
     # in older Python versions.
     try:
-        return subprocess.check_output(cmdline)
+        return subprocess.check_output(cmdline).decode(encoding='utf-8')
     except AttributeError:
         proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
         out = proc.communicate()[0]
@@ -66,12 +66,12 @@ def main():
 
     for (pkg, element) in install_packages:
         print("%sing %s from %s" % (install, pkg, element))
-        pkg_map_args = ["pkg-map", "--missing-ok", "--element", element]
-        pkg_map_args.append(pkg)
+        pkg_map_args = ['pkg-map', '--missing-ok', '--element', element, pkg]
 
         try:
             map_output = process_output(
                 pkg_map_args)
+            pkgs.extend(map_output.strip().split('\n'))
         except subprocess.CalledProcessError as e:
             if e.returncode == 1:
                 if args.noop:
@@ -83,7 +83,6 @@ def main():
             elif e.returncode == 2:
                 pkgs.append(pkg)
                 continue
-        pkgs.extend(map_output.strip().split('\n'))
 
     install_args = ["install-packages"]
     if args.uninstall:
