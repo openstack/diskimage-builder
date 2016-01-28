@@ -1,0 +1,10 @@
+#!/sbin/runscript
+
+start() {
+    /usr/local/sbin/growroot
+    eend 0
+}
+
+depend() {
+    need localmount
+}
