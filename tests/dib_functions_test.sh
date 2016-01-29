@@ -37,7 +37,7 @@ fi
 # umount devices
 unmount_dir $TMP_MOUNT_PATH
 
-if [ $(grep "$TMP_DIR" /proc/mounts | wc -l) -ne 0 ]; then
+if grep -q "$TMP_DIR" /proc/mounts; then
     echo "*** FAILED due to mounts being left behind"
     return 1
 else
