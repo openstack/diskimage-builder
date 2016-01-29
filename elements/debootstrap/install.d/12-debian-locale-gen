@@ -21,6 +21,8 @@ fi
 set -eu
 set -o pipefail
 
+[ -f /etc/locale.gen ] && rm /etc/locale.gen
+
 debconf-set-selections - <<EOF
 locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8
 # Choices: None, C.UTF-8, en_US.UTF-8
