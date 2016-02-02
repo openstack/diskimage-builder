@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# gentoo
+if [[ "${DISTRO_NAME}" == "gentoo" ]]; then
+    rc-update add cloud-config default
+    rc-update add cloud-final default
+    rc-update add cloud-init-local default
+    rc-update add cloud-init default
+fi
