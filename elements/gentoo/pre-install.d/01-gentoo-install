@@ -7,3 +7,8 @@ set -eu
 set -o pipefail
 
 install -m 0755 -o root -g root $(dirname $0)/../bin/* /usr/local/bin
+
+# migrate pt_pax flags to xt_pax
+if [[ -a /usr/sbin/migrate-pax ]]; then
+    /usr/sbin/migrate-pax -m
+fi

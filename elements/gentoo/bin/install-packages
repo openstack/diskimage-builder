@@ -34,6 +34,12 @@ function show_options {
 
 function fix_shm {
     if [[ "${RUN_ONCE_SHM}" == '1' ]]; then
+        if [[ -L /dev/shm.orig ]]; then
+            rm /dev/shm.orig
+        fi
+        if [[ -d /dev/shm.orig ]]; then
+            rm -Rf /dev/shm.orig
+        fi
         mv /dev/shm /dev/shm.orig
         mkdir /dev/shm
         mount -t tmpfs none /dev/shm
@@ -53,7 +59,7 @@ function unfix_shm {
 function install_gentoo_packages {
     RUN_ONCE_SHM='1'
     fix_shm
-    emerge "$@"
+    emerge $@
     unfix_shm
 }
 

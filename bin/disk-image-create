@@ -217,6 +217,15 @@ if [ -z "$DIB_ROOT_LABEL" ]; then
     fi
 fi
 
+# xattr support cannot be relied upon with tmpfs builds
+# some kernels supoprt it, some don't
+if [[ -n "${GENTOO_PROFILE}" ]]; then
+    if [[ "${GENTOO_PROFILE}" =~ "hardened" ]]; then
+        echo 'disabling tmpfs for gentoo hardened build'
+        export DIB_NO_TMPFS=1
+    fi
+fi
+
 mk_build_dir
 create_base
 # This variable needs to be propagated into the chroot

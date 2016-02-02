@@ -5,6 +5,28 @@
     },
     "suse": {
       "dkms_package": ""
+    },
+    "gentoo": {
+      "ccache_package": "dev-util/ccache",
+      "curl": "net-misc/curl",
+      "dhcp_client": "net-misc/dhcp",
+      "dkms_package": "",
+      "extlinux": "sys-boot/syslinux",
+      "git": "dev-vcs/git",
+      "grub_bios": "sys-boot/grub",
+      "grub-pc": "sys-boot/grub",
+      "ironic-python-agent": "",
+      "iscsi_package": "sys-block/open-iscsi",
+      "isc-dhcp-client": "net-misc/dhcp",
+      "isolinux": "",
+      "ncat": "net-analyzer/netcat",
+      "qemu-utils": "app-emulation/qemu",
+      "python-dev": "",
+      "PyYAML": "dev-python/pyyaml",
+      "syslinux": "sys-boot/syslinux",
+      "syslinux-common": "",
+      "tftp": "net-ftp/tftp-hpa",
+      "tgt": "sys-block/tgt"
     }
   },
   "default": {

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [[ ${DIB_DEBUG_TRACE:-0} -gt 0 ]]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# make sure system is in a consistant state
+USE="-build" emerge -uDNv --with-bdeps=y --jobs=2 @world
+USE="-build" emerge --verbose=n --depclean
+USE="-build" emerge -v --usepkg=n @preserved-rebuild
+
+# update config files
+etc-update --automode -5
+
+# clean up portage files
+emerge --verbose=n --depclean
+emaint all -f
+eselect news read all
+eclean-dist --destructive
+
+# clean up files that may have been changed during build
+shopt -s extglob
+rm -Rf /tmp/!(ccache|in_target*|profiledir*)
+shopt -u extglob
+
+rm -Rf /root/.ccache/* /usr/portage/* /usr/src/* /var/cache/edb/dep/* /var/cache/genkernel/* /var/empty/* /var/run/* /var/state/* /var/tmp/* /var/cache/portage/distfiles
+rm -Rf /etc/*- /etc/*.old /etc/ssh/ssh_host_* /root/.*history /root/.lesshst /root/.ssh/known_hosts /root/.viminfo /usr/share/genkernel /usr/lib64/python*/site-packages/gentoolkit/test/eclean/testdistfiles.tar.gz
+
+# shrink a bit
+for i in $(find /var/log -type f); do echo > $i; done
+find /usr/share/man/ -mindepth 1  -maxdepth 1 -path "/usr/share/man/man*" -prune -o -exec rm -rf {} \;
+
+# make it so we don't have to reinstall grub
+if [[ -a /usr/sbin/grub2-install ]]; then
+    mkdir -p /tmp/grub
+    touch /tmp/grub/install
+fi
