@@ -372,6 +372,14 @@ In order to create a test case, follow these steps:
 * To exit early and indicate a success, touch a file
   ``/tmp/dib-test-should-fail`` in the image chroot, then exit 1.
 
+Tests are run with ``tools/run_functests.sh``.  Running
+``run_functests.sh -l`` will show available tests (the example above
+would be called ``apt-sources/test-case-1``, for example).  Specify
+your test (or a series of tests as separate arguments) on the command
+line to run it.  If it should not be run as part of the default CI
+run, you can submit a change with it added to ``DEFAULT_SKIP_TESTS``
+in that file.
+
 python
 """"""
 
