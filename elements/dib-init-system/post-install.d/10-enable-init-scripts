@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+SCRIPTS_DIR="$(dirname $0)/../init-scripts/${DIB_INIT_SYSTEM}/"
+if [[ -d "${SCRIPTS_DIR}" ]]; then
+    # figure out init prefix
+    case "${DIB_INIT_SYSTEM}" in
+        upstart) ;;
+        openrc)
+            # only gentoo needs manual runlevel adding
+            for INIT_SCRIPT in "${SCRIPTS_DIR}"*; do
+                rc-update add $(basename "${INIT_SCRIPT}") default
+            done
+            ;;
+        systemd) ;;
+        sysv) ;;
+        *)
+            echo "ERROR: DIB_INIT_SYSTEM (${DIB_INIT_SYSTEM}) is not a known type"
+            exit 1
+            ;;
+    esac
+fi
