@@ -14,6 +14,10 @@ case "$DIB_INIT_SYSTEM" in
     systemd)
         systemctl enable growroot.service
         ;;
+    openrc)
+        # let dib-init-system's postinstall handle enabling init scripts
+        exit 0
+        ;;
     *)
         echo "Unsupported init system"
         exit 1
