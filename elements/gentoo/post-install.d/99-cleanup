@@ -7,7 +7,6 @@ set -eu
 set -o pipefail
 
 # make sure system is in a consistant state
-USE="-build" emerge -uDNv --with-bdeps=y --jobs=2 @world
 USE="-build" emerge --verbose=n --depclean
 USE="-build" emerge -v --usepkg=n @preserved-rebuild
 
@@ -18,7 +17,6 @@ etc-update --automode -5
 emerge --verbose=n --depclean
 emaint all -f
 eselect news read all
-eclean-dist --destructive
 
 # clean up files that may have been changed during build
 shopt -s extglob
