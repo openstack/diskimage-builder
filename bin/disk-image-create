@@ -135,6 +135,7 @@ function show_options () {
         echo "    -p package[,package,package] -- list of packages to install in the image"
     fi
     echo "    -h|--help -- display this help and exit"
+    echo "    --version -- display version and exit"
     echo
     echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
     echo
@@ -155,6 +156,14 @@ function show_options () {
     fi
 }
 
+function show_version() {
+    if [ -n "$_DIB_PYTHON_INSTALL" ]; then
+        python -c "from diskimage_builder import version; print(version.version_info.version_string())"
+    else
+        echo "diskimage-builder is not installed."
+    fi
+}
+
 INSTALL_PACKAGES=""
 IMAGE_TYPES=("qcow2")
 COMPRESS_IMAGE="true"
@@ -163,7 +172,7 @@ DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
 MKFS_OPTS=""
 ACI_MANIFEST=${ACI_MANIFEST:-}
 DOCKER_TARGET=""
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -175,6 +184,7 @@ while true ; do
         -o) export IMAGE_NAME=$2; shift 2 ;;
         -t) IFS="," read -a IMAGE_TYPES <<< "$2"; export IMAGE_TYPES ; shift 2 ;;
         -h|--help) show_options; exit 0;;
+        --version) show_version; exit 0;;
         -x) shift; export DIB_DEBUG_TRACE=$(( $DIB_DEBUG_TRACE + 1 )); set -x;;
         -u) shift; export COMPRESS_IMAGE="";;
         -c) shift ; export CLEAR_ENV=1;;
