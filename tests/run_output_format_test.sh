@@ -26,7 +26,7 @@ function build_test_image() {
     dest_dir=$(mktemp -d)
     base_dest=$(basename $dest_dir)
 
-    trap "rm -rf $dest_dir; docker rmi $base_dest/image" EXIT
+    trap "rm -rf $dest_dir; sudo docker rmi $base_dest/image" EXIT
 
     ELEMENTS_PATH=$DIB_ELEMENTS:$TEST_ELEMENTS \
         $DIB_CMD -x $type_arg --docker-target=$base_dest/image \
@@ -43,7 +43,7 @@ function build_test_image() {
                 echo "Found image $img_path."
             fi
         else
-            if ! docker images | grep $base_dest/image ; then
+            if ! sudo docker images | grep $base_dest/image ; then
                 echo "Error: No docker image with name $base_dest/image found!"
                 exit 1
             else
@@ -54,8 +54,8 @@ function build_test_image() {
 
     trap EXIT
     rm -rf $dest_dir
-    if docker images | grep $base_dest/image ; then
-        docker rmi $base_dest/image
+    if sudo docker images | grep $base_dest/image ; then
+        sudo docker rmi $base_dest/image
     fi
 }
 

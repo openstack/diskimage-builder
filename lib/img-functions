@@ -121,7 +121,9 @@ function finalise_base () {
         fi
     fi
     # Cleanup /tmp in the guest, so there is less cruft left there
-    unmount_dir $TMP_MOUNT_PATH/tmp
+    if [ -d "$TMP_MOUNT_PATH/tmp" ]; then
+        unmount_dir $TMP_MOUNT_PATH/tmp
+    fi
     find $TMP_MOUNT_PATH/tmp -maxdepth 1 -mindepth 1 | xargs sudo rm -rf --one-file-system
 }
 
