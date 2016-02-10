@@ -14,4 +14,4 @@ Acquire::Languages "none";
 EOF
 
 # And now make sure that we don't fall foul of Debian bug 641967
-find $TARGET_ROOT/var/lib/apt/lists/ -type f -name '*_i18n_Translation-*' -exec sudo rm -f {} +
+find $TARGET_ROOT/var/lib/apt/lists/ -path $TARGET_ROOT/var/lib/apt/lists/partial -prune -o -type f -name '*_i18n_Translation-*' -print -exec sudo rm -f {} +
