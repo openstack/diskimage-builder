@@ -1,8 +1,13 @@
 ========================
 ironic-discoverd-ramdisk
 ========================
-ironic-discoverd [1] is a StackForge project for conducting hardware properties
-discovery via booting a special discovery ramdisk and interrogating hardware
+
+.. warning::
+   This element is deprecated.  Please use the ironic-agent element
+   instead.
+
+ironic-inspector [1] is a project for conducting hardware properties
+discovery via booting a special ramdisk and interrogating hardware
 from within it.
 
 This ramdisk collects hardware information from the machine
@@ -19,4 +24,4 @@ The hardware information collected by the ramdisk are:
 
 The machine is halted at the end of the process.
 
-[1] https://pypi.python.org/pypi/ironic-discoverd
+[1] https://pypi.python.org/pypi/ironic-inspector
