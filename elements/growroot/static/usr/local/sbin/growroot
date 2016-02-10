@@ -6,10 +6,26 @@ set -o pipefail
 
 root_dev=$(df -P / | tail -n 1 | awk '/.*/ { print $1 }')
 
-disk=$(find /sys/dev/block -name $(udevadm info --query=all --name $root_dev | grep ID_PART_ENTRY_DISK | cut -d= -f2))
-disk="/dev/$(source ${disk}/uevent; echo $DEVNAME)"
+if [ -z "${root_dev}" ]; then
+    echo "*** Root device not found?"
+    exit 1
+fi
 
-part_no=$(udevadm info --query=all --name $root_dev | grep ID_PART_ENTRY_NUMBER | cut -d= -f2)
+udev_root=$(udevadm info --query=all --name $root_dev)
+
+part=$(grep ID_PART_ENTRY_DISK <<< "${udev_root}" | cut -d= -f2)
+if [ -z "${part}" ]; then
+    echo "*** Root partition not found!"
+    exit 1
+fi
+part_no=$(grep ID_PART_ENTRY_NUMBER <<< "${udev_root}" | cut -d= -f2)
+if [ -z "${part_no}" ]; then
+    echo "*** Root partition number not found!"
+    exit 1
+fi
+
+disk=$(find /sys/dev/block -name ${part})
+disk="/dev/$(source ${disk}/uevent; echo $DEVNAME)"
 
 set +e
 growpart $disk $part_no
