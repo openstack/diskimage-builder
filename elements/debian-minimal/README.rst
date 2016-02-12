@@ -11,6 +11,12 @@ not handle changing Packages files well across multiple out of sync
 mirrors, it is recommended that you choose a single mirror of debian,
 and pass it in via `DIB_DISTRIBUTION_MIRROR`.
 
+By default only `main` component is used. If `DIB_DEBIAN_COMPONENTS` (comma
+separated) from the `debootstrap` element has been set, that list of
+components will be used instead.
+
+Backports are included unless `DIB_RELEASE` is `unstable`.
+
 If necessary, a custom apt keyring and debootstrap script can be
 supplied to the `debootstrap` command via `DIB_APT_KEYRING` and
 `DIB_DEBIAN_DEBOOTSTRAP_SCRIPT` respectively. Both options require the

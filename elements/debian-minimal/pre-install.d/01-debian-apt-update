@@ -21,14 +21,17 @@ fi
 set -eu
 set -o pipefail
 
+DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main}
+components=${DIB_DEBIAN_COMPONENTS//,/ }
+
 # We should manage this in a betterer way
 cat << EOF >/etc/apt/sources.list
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE main
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE $components
 EOF
 
 if [ $DIB_RELEASE != unstable ] ; then
     cat << EOF >>/etc/apt/sources.list
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-backports main
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-backports $components
 EOF
 fi
 
