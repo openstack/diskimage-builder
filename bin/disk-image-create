@@ -25,10 +25,67 @@ export DIB_ARGS="$@"
 export DIB_ENV=$(export | grep ' DIB_.*=')
 
 SCRIPTNAME=$(basename $0)
-SCRIPT_HOME=$(dirname $(readlink -f $0))
-if [ -d $SCRIPT_HOME/../share/diskimage-builder ]; then
+
+# this is a bit tricky to handle the case of being installed with "pip
+# -e" (i.e. setuptools develop mode) and a regular install
+#
+# When installed normally, the scripts are installed into /usr/bin/
+# and the other bits specified in "data_files" into
+# /usr/share/diskimage-builder/[elements|lib|scripts] (if you're in a
+# virtualenv, modulo all this with the right prefix-paths)
+#
+# When installed with -e, the scripts will still be installed into
+# /usr/bin, but the data_files will *not* be installed.  Because the
+# "diskimage_builder" python module will be linked to the source repo
+# (that's the idea of develop mode) what we can do is assume the
+# following:
+#
+# - if the python module directory has a "bin" directory, then it must
+#   be the source repo and hence we have been installed via develop
+#   mode.  Thus setup ourselves to use the scripts from the source
+#   repo.
+#
+# - otherwise, try to find libraires and elements have been installed
+#   into the system paths via a "normal" pip install
+#
+# - lastly, we might be running completely uninstalled.
+#   XXX : this might cause problems at some point; we might need to "cd"
+#         so python can find things, or use pip -e.
+#
+# This means if you want to develop your elements, then "pip -e" is
+# the way to go ... your disk-image-create runs will be referencing
+# the scripts from the editable source repo.  But note that changes to
+# anything in bin/ will *not* be applied; those files have been
+# statically copied in during install.  You'll need to iterate with
+# another run of "pip install -e" if you're actually working on those
+# bin/* scripts.
+
+export SCRIPT_HOME=$(dirname $(readlink -f $0))
+
+_DIB_PYTHON_INSTALL=$(python -c '
+
+import inspect
+import os
+import sys
+
+# this can fail if we are being run with pwd outside the source
+# directory *and* have not been installed
+try:
+    import diskimage_builder
+except ImportError:
+    sys.exit(0)
+
+print(os.path.dirname(inspect.getfile(diskimage_builder)))')
+
+if [ -n "$_DIB_PYTHON_INSTALL"  -a -d $_DIB_PYTHON_INSTALL/../bin ]; then
+    # we have been installed with "pip -e"
+    export SCRIPT_HOME=$_DIB_PYTHON_INSTALL/../bin
+    export _PREFIX=$SCRIPT_HOME/..
+elif [ -d $SCRIPT_HOME/../share/diskimage-builder ]; then
+    # we have been installed in /usr
     export _PREFIX=$SCRIPT_HOME/../share/diskimage-builder
 else
+    # we have not been installed in any way
     export _PREFIX=$SCRIPT_HOME/..
 fi
 export _LIB=$_PREFIX/lib
