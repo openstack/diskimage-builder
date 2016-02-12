@@ -1,6 +1,7 @@
 [Unit]
 Description=Grow root partition
-After=local-fs.target
+Wants=systemd-udev-settle.service
+After=systemd-udev-settle.service
 
 [Service]
 Type=oneshot
