@@ -50,3 +50,12 @@ post-install.d directories called package-installs-<element-name> will cause
 the list of packages in that file to be installed at the beginning of the
 respective phase.  If the package name in the file starts with a "-", then
 that package will be removed at the end of the install.d phase.
+
+Using post-install.d for cleanup
+================================
+
+Package removal is done in post-install.d at level 95.  If you a
+running cleanup functions before this, you need to be careful not
+to clean out any temporary files relied upon by this element.
+For this reason, generally post-install cleanup functions should
+occupy the higher levels between 96 and 99.
