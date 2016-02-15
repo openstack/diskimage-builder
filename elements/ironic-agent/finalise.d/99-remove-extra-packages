@@ -9,17 +9,20 @@ set -o pipefail
 # TODO(lucasagomes): optimize the ramdisk for other OSs
 if [ $DISTRO_NAME = 'fedora' ] ; then
 
-    install-packages -e kernel-debug-devel gcc fedora-logos python3 rsync sudo pykickstart grubby make genisoimage tcpdump man-db policycoreutils kbd-misc plymouth cronie
-
+    _remove_yum=''
     if [ $DIB_RELEASE -ge 22 ]; then
-        # Remove yum, >= F22 defaults to dnf
-        dnf remove yum -y
-        # Remove package manager cache
-        dnf clean all
-    else
-        # Remove package manager cache
-        yum clean all
+        # if we are on F22, we can remove yum if there, because it has
+        # been superseeded by dnf
+        _remove_yum='yum'
     fi
+
+    install-packages -e kernel-debug-devel gcc fedora-logos \
+                    python3 rsync sudo pykickstart \
+                    grubby make genisoimage tcpdump \
+                    man-db policycoreutils kbd-misc \
+                    plymouth cronie ${_remove_yum}
+
+    ${YUM:-yum} clean all
 
     # Rebuilding the rpm database after removing packages will reduce
     # its size
