@@ -72,7 +72,9 @@ else
         ${DIB_DEBIAN_DEBOOTSTRAP_SCRIPT:-}"
 
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
-    sudo tar --numeric-owner -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL --exclude='./tmp/*' .
+    if [ "${DIB_DEBOOTSTRAP_CACHE:-0}" != "0" ]; then
+        sudo tar --numeric-owner -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL --exclude='./tmp/*' .
+    fi
 fi
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings
