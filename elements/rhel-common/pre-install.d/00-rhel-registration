@@ -9,8 +9,8 @@ set -o pipefail
 
 opts=
 attach_opts=
-repos="repos --enable rhel-${RHEL_MAJ_VER}-server-rpms"
-satellite_repo="rhel-${RHEL_MAJ_VER}-server-rh-common-rpms"
+repos="repos --enable rhel-7-server-rpms"
+satellite_repo="rhel-7-server-rh-common-rpms"
 
 if [ -n "${REG_AUTO_ATTACH:-}" ]; then
     opts="$opts --auto-attach"
