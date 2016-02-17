@@ -52,21 +52,35 @@ _RPM="rpm --dbpath=/var/lib/rpm"
 # note this runs outside the chroot, where we're assuming the platform
 # has yum/yumdownloader
 function _install_repos {
+    local packages
+
+    # pre-install the base system packages via rpm.  We previously
+    # just left it up to yum to drag these in when we "yum install
+    # yum" in the chroot in _install_pkg_manager.  This raised a small
+    # problem that inside the empty chroot yum went ahead and did a
+    # mkdir for /var/run to put some pid file in, which then messed up
+    # the "filesystem" package making /var/run a symlink to /run
+    # ... which leads to odd issues with a running system.
+    #
+    # TODO: these packages still have some small %posttrans stuff that
+    # depends on other packages (see rhbz#1306489) ... maybe the idea
+    # is that they are only installed in one big transaction with the
+    # rest of the system?  but we don't want to use yum to do this
+    # (see above) so ...
+    packages="basesystem filesystem setup "
+
+    packages+="${DISTRO_NAME}-release "
+    # after fedora21, this is split into into a separate -repos
+    # package
+    if [ $DISTRO_NAME = fedora ]; then
+        packages+="${DISTRO_NAME}-repos "
+    fi
+
     yumdownloader \
         --releasever=$DIB_RELEASE \
         --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
         --destdir=$WORKING \
-        ${DISTRO_NAME}-release
-
-    # after fedora21, this is split into into a separate -repos
-    # package
-    if [ $DISTRO_NAME = fedora ] ; then
-        yumdownloader \
-            --releasever=$DIB_RELEASE \
-            --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
-            --destdir=$WORKING \
-            ${DISTRO_NAME}-repos
-    fi
+        ${packages}
 
     # --nodeps works around these wanting /bin/sh in some fedora
     # releases, see rhbz#1265873
