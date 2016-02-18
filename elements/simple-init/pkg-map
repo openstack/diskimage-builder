@@ -4,7 +4,8 @@
       "isc-dhcp-client": "dhclient"
     },
     "debian": {
-      "isc-dhcp-client": "isc-dhcp-client"
+      "isc-dhcp-client": "isc-dhcp-client",
+      "ifupdown": "ifupdown"
     },
     "gentoo": {
       "isc-dhcp-client": "net-misc/dhcp",
@@ -13,6 +14,7 @@
     }
   },
   "default": {
-    "isc-dhcp-client": "isc-dhcp-client"
+    "isc-dhcp-client": "isc-dhcp-client",
+    "ifupdown": ""
   }
 }

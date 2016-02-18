@@ -6,7 +6,9 @@ fi
 set -eu
 set -o pipefail
 
-if [[ -f /sbin/initctl ]]; then
+if [[ -f /usr/bin/systemctl ]]; then
+    echo "systemd"
+elif [[ -f /sbin/initctl ]]; then
     echo "upstart"
 elif [[ -f /etc/gentoo-release ]]; then
     if [[ "${GENTOO_PROFILE}" =~ systemd ]]; then
@@ -14,8 +16,6 @@ elif [[ -f /etc/gentoo-release ]]; then
     else
         echo "openrc"
     fi
-elif [[ -f /usr/bin/systemctl ]]; then
-    echo "systemd"
 elif [[ -f /sbin/init ]]; then
     if [[ -f /bin/systemd ]]; then
         echo "systemd"
