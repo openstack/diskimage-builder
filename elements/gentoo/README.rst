@@ -17,6 +17,9 @@ Notes:
   one will never change content, but will frequently be deleted and replaced
   by a newer build with a higher version-release number.
 
+* In order to run the package-installs element you will need to make sure
+  `dev-python/pyyaml` is installed on the host.
+
 * Other profiles can be used by exporting GENTOO_PROFILE with a valid profile.
   A list of valid profiles follows:
 

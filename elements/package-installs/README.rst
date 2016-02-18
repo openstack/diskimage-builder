@@ -6,6 +6,8 @@ The package-installs element allows for a declarative method of installing and
 uninstalling packages for an image build. This is done by creating a
 package-installs.yaml or package-installs.json file in the element directory.
 
+In order to work on Gentoo hosts you will need to manually install
+`dev-python/pyyaml`.
 
 example package-installs.yaml::
 

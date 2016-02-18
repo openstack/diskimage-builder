@@ -17,14 +17,15 @@ Requirements
 
 Most image formats require the qemu-img tool which is provided by the
 qemu-utils package on Ubuntu/Debian or the qemu package on
-Fedora/RHEL/opensuse.
+Fedora/RHEL/opensuse/Gentoo.
 
 Some image formats, such as VHD, may require additional tools. Please see
 the disk-image-create help output for more information.
 
 Individual elements can also have additional dependencies for the build host.
 It is recommended you check the documentation for each element you are using
-to determine if there are any additional dependencies.
+to determine if there are any additional dependencies. Of particular note is
+the need for the `dev-python/pyyaml` package on Gentoo hosts.
 
 
 Source Installation
