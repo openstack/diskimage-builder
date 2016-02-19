@@ -1,2 +1,2 @@
 export DISTRO_NAME=gentoo
-export GENTOO_PROFILE=$(eselect profile show | tail -n 1)
+export GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/13.0'}
