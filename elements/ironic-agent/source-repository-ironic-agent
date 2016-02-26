@@ -1,1 +1,1 @@
-ironic-agent git /tmp/ironic-python-agent https://git.openstack.org/openstack/ironic-python-agent
+ironic-agent git /usr/share/ironic-python-agent https://git.openstack.org/openstack/ironic-python-agent

@@ -12,7 +12,7 @@
 
 NAME=ironic-python-agent
 INIT_NAME=/etc/init.d/${NAME}
-SCRIPT_NAME=/usr/bin/${NAME}
+SCRIPT_NAME=/usr/local/bin/${NAME}
 
 [ -x $SCRIPT_NAME ] || exit 0
 

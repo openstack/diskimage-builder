@@ -3,7 +3,7 @@ Description=Ironic Python Agent
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/ironic-python-agent
+ExecStart=/usr/local/bin/ironic-python-agent
 Restart=always
 RestartSec=30s
 
