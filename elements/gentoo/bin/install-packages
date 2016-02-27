@@ -58,9 +58,13 @@ function unfix_shm {
 
 function install_gentoo_packages {
     RUN_ONCE_SHM='1'
-    fix_shm
-    emerge $@
-    unfix_shm
+    if ! grep -q /dev/shm /proc/mounts; then
+        fix_shm
+        emerge $@
+        unfix_shm
+    else
+        emerge $@
+    fi
 }
 
 TEMP="$(getopt -o huem: -n ${SCRIPTNAME} -- ${@})"
