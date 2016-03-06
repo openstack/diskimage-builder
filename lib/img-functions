@@ -24,6 +24,8 @@ function unmount_image () {
     # unmount from the chroot
     # Don't use TMP_MOUNT_PATH here, it might not have been set.
     unmount_dir "$TMP_BUILD_DIR/mnt"
+
+    # Left here for backward compatibility
     if [ -n "$EXTRA_UNMOUNT" ]; then
         $EXTRA_UNMOUNT
     fi
@@ -39,6 +41,9 @@ function cleanup () {
     unmount_image
     cleanup_build_dir
     cleanup_image_dir
+    if [ -n "$EXTRA_CLEANUP" ]; then
+        $EXTRA_CLEANUP
+    fi
 }
 
 function ensure_nbd () {
