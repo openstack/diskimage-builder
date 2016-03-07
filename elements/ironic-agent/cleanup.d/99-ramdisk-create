@@ -21,6 +21,10 @@ sudo ln -s ./sbin/init ./
 # Remove python object files, they're not particularly useful for a ramdisk
 sudo find ./usr -name "*.pyc" -or -name "*.pyo" -delete
 
+# Note: The pci.ids, which is used by lshw, locate on Ubuntu
+# in /usr/share/misc. Therefore we are removing only the
+# ./usr/share/misc/m* (will remove the magic and magic.mgc files).
+# on RHEL pci.ids is locate on /usr/share/hwdata/pci.ids.
 sudo find . -xdev \
     -path './sys/*' -prune -o \
     -path './tmp/*' -prune -o \
@@ -31,7 +35,7 @@ sudo find . -xdev \
     -path './usr/share/man/*' -prune -o \
     -path './usr/share/info/*' -prune -o \
     -path './usr/share/licenses/*' -prune -o \
-    -path './usr/share/misc/*' -prune -o \
+    -path './usr/share/misc/m*' -prune -o \
     -print | sudo cpio -o -H newc | gzip > ${IMAGE_PATH}.initramfs
 
 select_boot_kernel_initrd $TARGET_ROOT
