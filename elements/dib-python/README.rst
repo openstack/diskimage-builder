@@ -1,6 +1,6 @@
-===========
-dib=-python
-===========
+==========
+dib-python
+==========
 
 Adds a symlink to /usr/local/bin/dib-python which points at either a python2
 or python3 executable. This is useful for creating #! lines for scripts that
