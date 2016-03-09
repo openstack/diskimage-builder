@@ -12,6 +12,13 @@ and file system) is created and the tree copied into it. The file system
 created is an ext4 filesystem just large enough to hold the file system tree
 and can be resized up to 1PB in size.
 
+To produce the smallest image the utility fstrim is used. When deleting a file
+the space is simply marked as free on the disk, the file is still there until
+it is overwritten. fstrim informs the underlying disk to drop those bytes the
+end result of which is like writting zeros over those sectors. The same effect
+could be achieved by creating a large file full of zeros and removing that
+file, however that method is far more IO intensive.
+
 An element is a particular set of code that alters how the image is built, or
 runs within the chroot to prepare the image. E.g. the local-config element
 copies in the http proxy and ssh keys of the user running the image build

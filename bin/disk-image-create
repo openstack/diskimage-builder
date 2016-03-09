@@ -264,6 +264,14 @@ for X in ${!IMAGE_TYPES[@]}; do
     esac
 done
 
+# NOTE: fstrim is on most all recent systems. It is provided by the util-linux
+# package.
+if [[ -z "$(which fstrim)" ]]; then
+    echo "fstrim utility is not found. This is provided by util-linux package"
+    echo "Please check your PATH variable is set correctly"
+    exit 1
+fi
+
 # NOTE: Tuning the rootfs uuid works only for ext filesystems.
 # Rely on the below environment variable only for ext filesystems.
 export DIB_IMAGE_ROOT_FS_UUID=$(uuidgen -r)
@@ -386,6 +394,9 @@ for X in ${!IMAGE_TYPES[@]} ; do
     unset IMAGE_TYPES[$X]
   fi
 done
+
+# Prep filesystem by discarding all unused space
+fstrim_image
 
 # Unmount and cleanup the /mnt and /build subdirectories, to save
 # space before converting the image to some other format.
