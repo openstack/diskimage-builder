@@ -141,7 +141,9 @@ class TestElementDeps(testtools.TestCase):
                           element_dependencies.expand_dependencies,
                           ['circular1', 'operating-system'],
                           elements_dir=self.element_dir)
-        self.assertIn("provided by other included elements: operating-system",
+        # ensure we get the error message about what's providing the
+        # conflicting package
+        self.assertIn("operating-system : already provided by ['circular1']",
                       self.log_fixture.output)
 
 

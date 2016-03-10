@@ -91,6 +91,7 @@ def expand_dependencies(user_elements, elements_dir=None):
     final_elements = set(user_elements)
     check_queue = collections.deque(user_elements)
     provided = set()
+    provided_by = collections.defaultdict(list)
 
     while check_queue:
         # bug #1303911 - run through the provided elements first to avoid
@@ -98,10 +99,15 @@ def expand_dependencies(user_elements, elements_dir=None):
         element = check_queue.popleft()
         if element in provided:
             continue
-        deps = dependencies(element, elements_dir)
-        provided.update(provides(element, elements_dir))
-        check_queue.extend(deps - (final_elements | provided))
-        final_elements.update(deps)
+        element_deps = dependencies(element, elements_dir)
+        element_provides = provides(element, elements_dir)
+        # save which elements provide another element for potential
+        # error message
+        for provide in element_provides:
+            provided_by[provide].append(element)
+        provided.update(element_provides)
+        check_queue.extend(element_deps - (final_elements | provided))
+        final_elements.update(element_deps)
 
     if "operating-system" not in provided:
         logger.error(
@@ -110,9 +116,11 @@ def expand_dependencies(user_elements, elements_dir=None):
 
     conflicts = set(user_elements) & provided
     if conflicts:
-        logger.error("Following elements were explicitly required "
-                     "but are provided by other included elements: %s" %
-                     ", ".join(conflicts))
+        logger.error(
+            "The following elements are already provided by another element")
+        for element in conflicts:
+            logger.error("%s : already provided by %s" %
+                         (element, provided_by[element]))
         sys.exit(-1)
     return final_elements - provided
 
