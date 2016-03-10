@@ -27,11 +27,6 @@ It is recommended you check the documentation for each element you are using
 to determine if there are any additional dependencies. Of particular note is
 the need for the `dev-python/pyyaml` package on Gentoo hosts.
 
-If the zerofree utility is present on the build system and you are building
-an image with an ext filesystem zerofree will be used to zero out free
-blocks in the image. This makes the resulting images much smaller if
-compressed.
-
 
 Source Installation
 -------------------

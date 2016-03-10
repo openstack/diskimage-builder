@@ -335,9 +335,7 @@ if [ -n "$MAX_ONLINE_RESIZE" ]; then
 fi
 
 LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
-# Definied here for backward compat against set -u
-export EXTRA_UNMOUNT=""
-export EXTRA_CLEANUP="detach_loopback $LOOPDEV"
+export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
 export IMAGE_BLOCK_DEVICE=$LOOPDEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
 sudo mkfs $MKFS_OPTS -t $FS_TYPE -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
@@ -383,13 +381,6 @@ done
 # space before converting the image to some other format.
 unmount_image
 cleanup_build_dir
-
-# Write zeros to free blocks to aid compression of images.
-if echo "$FS_TYPE" | grep -q "^ext" && which zerofree ; then
-    sudo zerofree $IMAGE_BLOCK_DEVICE
-fi
-# We are done with the loopback device make sure it is detached.
-$EXTRA_CLEANUP
 
 has_raw_type=
 if [ "$IS_RAMDISK" == "0" ]; then

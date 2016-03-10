@@ -8,10 +8,8 @@ sudo apt-get install -y \
         debootstrap \
         inetutils-ping \
         kpartx \
-        zerofree \
         qemu-utils || \
     sudo yum -y install \
         debootstrap \
         kpartx \
-        zerofree \
         qemu-img
