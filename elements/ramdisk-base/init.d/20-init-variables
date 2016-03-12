@@ -16,8 +16,23 @@ fi
 
 readonly _BOOTIF_=$(get_kernel_parameter BOOTIF)
 readonly _IP_=$(get_kernel_parameter ip)
-readonly BOOT_MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g" | \
-                            sed -e "s/^01://g" | tr 'a-f' 'A-F')
+
+# _BOOTIF_ is the hardware type with the MAC address
+# see http://www.syslinux.org/wiki/index.php/PXELINUX
+if [[ $_BOOTIF_ =~ ^20.* && ${#_BOOTIF_} == 20 ]]; then
+    # InfiniBand hardware type is 20 with InfiniBand MAC
+    # For example InfiniBand GID:
+    # 80:00:02:08:fe:80:00:00:00:00:00:00:f4:52:14:03:00:3a:16:b1
+    # is converted to BOOTIF 20:f4:52:14:3a:16:b1
+    MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g" | \
+                  sed -e "s/^20://g" | tr 'a-f' 'A-F')
+else
+    # Ethernet BOOTIF hardware type is 01 with MAC
+    MAC_ADDRESS=$(echo "$_BOOTIF_" | sed -e "s/-/:/g" | \
+                  sed -e "s/^01://g" | tr 'a-f' 'A-F')
+fi
+
+readonly BOOT_MAC_ADDRESS=$MAC_ADDRESS
 
 # If bootloader did not pass on network info, we fallback to a kernel
 # parameter to locate the address of the boot server.

@@ -161,11 +161,24 @@ function partition_name() {
 
 function find_interface() {
     local mac=$1
-    eth=`ifconfig -a | grep -i "$mac" | awk {' print $1 '} | head -n 1`
-    if [ -n "$eth" ]; then
-        echo "$eth"
+    local interface
+    interface=$(ip link show | grep -B1 -i $mac | awk '/mtu/ { print $2 }')
+    if [ -n "$interface" ]; then
+        echo "${interface%:}"
         return 0
     else
+        # Note(moshele): try to find the InfinBand interface by
+        # matching the InfinBand MAC upper and lower
+        # 3 octets to the GUID lower and upper 3 octets.
+        local upper_octs=${mac:0:8}
+        local lower_octs=${mac:9:16}
+        ib_re="${upper_octs}:[A-F0-9][A-F0-9]:[A-F0-9][A-F0-9]:${lower_octs}"
+        interface=$(ip link show | grep -B1 -i ${ib_re} | grep mtu | \
+                   awk {'print $2'})
+        if [ -n "$interface" ]; then
+            echo "${interface%:}"
+            return 0
+        fi
         return 1
     fi
 }
