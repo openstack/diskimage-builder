@@ -40,7 +40,8 @@ install_deb_packages () {
     DEBIAN_FRONTEND=noninteractive \
         http_proxy=${http_proxy:-} https_proxy=${https_proxy:-} \
         no_proxy=${no_proxy:-} \
-        apt-get --option "Dpkg::Options::=--force-confold" --assume-yes "$@"
+        apt-get --option "Dpkg::Options::=--force-confold" \
+        --option "Dpkg::Options::=--force-confdef" --assume-yes "$@"
 }
 
 TEMP=$(getopt -o hudem: -n $SCRIPTNAME -- "$@")
