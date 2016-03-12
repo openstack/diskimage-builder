@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# sanity checks
+source $_LIB/die
+[ -n "$IMAGE_BLOCK_DEVICE" ] || die "Image block device not set"
+
+# execute sfdisk with the given partitioning schema
+sudo sfdisk -uS --force $IMAGE_BLOCK_DEVICE <<EOF
+$DIB_PARTITIONING_SFDISK_SCHEMA
+EOF
+sudo partprobe $IMAGE_BLOCK_DEVICE
+
+# To ensure no race conditions exist from calling partprobe
+sudo udevadm settle
+
+# If the partition isn't under /dev/loop*p1, create it with kpartx
+DM=
+if [ ! -e "${IMAGE_BLOCK_DEVICE}p1" ]; then
+    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
+    # If running inside Docker, make our nodes manually, because udev will not be working.
+    if [ -f /.dockerenv ]; then
+        # kpartx cannot run in sync mode in docker.
+        sudo kpartx -av $TMP_IMAGE_PATH
+        sudo dmsetup --noudevsync mknodes
+    else
+        sudo kpartx -asv $TMP_IMAGE_PATH
+    fi
+elif [[ "$ARCH" =~ "ppc" ]]; then
+    sudo kpartx -asv $TMP_IMAGE_PATH
+fi
+
+if [ -n "$DM" ]; then
+    echo "IMAGE_BLOCK_DEVICE=${DM}p1"
+elif [[ "$ARCH" =~ "ppc" ]]; then
+    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
+    echo "IMAGE_BLOCK_DEVICE=${DM}p2"
+else
+    echo "IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1"
+fi

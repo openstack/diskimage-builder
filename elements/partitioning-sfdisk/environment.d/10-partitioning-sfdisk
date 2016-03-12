@@ -1,0 +1,5 @@
+DEFAULT_SCHEMA="2048 + L *
+             0 0;
+             0 0;
+             0 0;"
+export DIB_PARTITIONING_SFDISK_SCHEMA=${DIB_PARTITIONING_SFDISK_SCHEMA:-$DEFAULT_SCHEMA}
