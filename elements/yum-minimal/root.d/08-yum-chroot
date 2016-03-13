@@ -177,8 +177,15 @@ else
         _install_pkg_manager yum
     fi
 
-    # bootstrap the environment within the chroot
-    sudo -E chroot $TARGET_ROOT ${YUM} makecache
+    # we just installed yum/dnf with "outside" tools (yum/rpm) which
+    # might have created /var/lib/[yum|rpm] (etc) that are slighlty
+    # incompatible.  Refresh everything with the in-chroot tools
+    sudo -E chroot $TARGET_ROOT rpm --rebuilddb
+    sudo -E chroot $TARGET_ROOT ${YUM} clean all
+
+    # bootstrap the environment within the chroot; bring in new
+    # metadata with an update and install some base packages we need.
+    sudo -E chroot $TARGET_ROOT ${YUM} -y update
     sudo -E chroot $TARGET_ROOT ${YUM} -y \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
         install passwd findutils sudo util-linux-ng
