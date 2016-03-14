@@ -1,0 +1,19 @@
+---
+fixes:
+
+  - We now use ``fstrim`` rather than ``zerofree`` to reduce final
+    image size.  This is considered current best practice.
+
+  - Fix an occasional failure to build ``centos-minimal`` and
+    ``fedora-minimal`` due to suspected rpmdb failures.  The main
+    symptom was ``dnf`` or ``yum`` thinking packages were not
+    installed when they were.
+
+  - The ``debian-minimal`` element now obeys ``DIB_DEBIAN_COMPONENTS``
+    for adding components.
+
+  - Fix some issues with Gentoo, and add to supported distributions.
+    Testing is currently non-voting
+
+other:
+  - Start using reno for release notes
