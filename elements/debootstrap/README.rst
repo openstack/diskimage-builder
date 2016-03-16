@@ -25,6 +25,11 @@ pass extra arguments to the debootstrap command used to create the
 base filesystem image. If --keyring is is used in `DIB_DEBOOTSTRAP_EXTRA_ARGS`,
 it will override `DIB_APT_KEYRING` if that is used as well.
 
+The `DIB_DEBOOTSTRAP_CACHE` variable can be used to cache the created root
+filesystem. By default this is 0 (disabled) and any other value enables this.
+If run in offline mode then the most recently cached rootfs is used instead of
+being built.
+
 -------------------
 Note on ARM systems
 -------------------
