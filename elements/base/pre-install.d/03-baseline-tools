@@ -12,6 +12,10 @@ case $DISTRO_NAME in
         # Note: add-apt-repository would be nice for RPM platforms too - so when we
         # need something like it, create a wrapper in dpkg/bin and fedora/bin.
         apt-get -y update
-        install-packages python-software-properties
+        if [ "${DIB_RELEASE}" = "precise" ]; then
+            install-packages python-software-properties
+        else
+            install-packages software-properties-common
+        fi
         ;;
 esac
