@@ -10,13 +10,13 @@ set -o pipefail
 # boot with DHCP.
 
 # Fedora
-rm -f /etc/sysconfig/network-scripts/ifcfg-eth0
+rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
 
 # Ubuntu
-rm -f /etc/network/interfaces.d/eth0.cfg
+rm -f /etc/network/interfaces.d/eth*
 
 # Debian
-rm -f /etc/network/interfaces.d/eth0
+rm -f /etc/network/interfaces.d/eth*
 
 # Gentoo
 rm -f /etc/conf.d/net*
