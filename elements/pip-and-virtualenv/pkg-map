@@ -1,0 +1,8 @@
+{
+  "family": {
+    "gentoo": {
+      "python-pip": "dev-python/pip",
+      "python-virtualenv": "dev-python/virtualenv"
+    }
+  }
+}
