@@ -15,6 +15,9 @@ Beyond installing the ironic-python-agent, this element does the following:
 * When installing from source, ``python-dev`` and ``gcc`` are also installed
   in order to support source based installation of ironic-python-agent and its
   dependencies.
+* Install the certificate if any, which is set to the environment variable
+  ``DIB_IPA_CERT`` for validating the authenticity by ironic-python-agent. The
+  certificate can be self-signed certificate or CA certificate.
 
 This element outputs three files:
 
