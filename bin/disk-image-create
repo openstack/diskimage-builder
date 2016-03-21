@@ -106,7 +106,7 @@ function show_options () {
     echo "       File types should be comma separated. VHD outputting requires the vhd-util"
     echo "       executable be in your PATH. ACI outputting requires the ACI_MANIFEST "
     echo "       environment variable be a path to a manifest file."
-    echo "    -x -- turn on tracing"
+    echo "    -x -- turn on tracing (use -x -x for very detailed tracing)"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
     echo "    --image-size size -- image size in GB for the created image"
