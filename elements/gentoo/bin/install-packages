@@ -58,12 +58,14 @@ function unfix_shm {
 
 function install_gentoo_packages {
     RUN_ONCE_SHM='1'
-    if ! grep -q /dev/shm /proc/mounts; then
+    if grep -q /dev/shm /proc/mounts; then
+        emerge $@
+    elif [[ -k /dev/shm ]]; then
+        emerge $@
+    else
         fix_shm
         emerge $@
         unfix_shm
-    else
-        emerge $@
     fi
 }
 

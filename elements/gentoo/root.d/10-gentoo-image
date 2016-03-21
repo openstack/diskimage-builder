@@ -34,7 +34,7 @@ if ! [ 'x86_64' = "${ARCH}" ] ; then
 fi
 
 # get the element location so we can refrence things relative to it
-ELEMENT_DIR=${ELEMENT_DIR:-"${ELEMENTS_PATH}/gentoo"}
+ELEMENT_DIR=${ELEMENT_DIR:-"${ELEMENTS_PATH##*:}/gentoo"}
 # valid gentoo profiles are as follows
 # default/linux/amd64/13.0
 # default/linux/amd64/13.0/no-multilib
