@@ -56,7 +56,15 @@ function config_exists() {
             return 0
         fi
     else
-        ifquery $interface >/dev/null 2>&1 && return 0 || return 1
+        if ifquery $interface >/dev/null 2>&1; then
+            if [ -z "$(ifquery $interface 2>&1)" ]; then
+                return 1
+            else
+                return 0
+            fi
+        else
+            return 1
+        fi
     fi
     return 1
 }
