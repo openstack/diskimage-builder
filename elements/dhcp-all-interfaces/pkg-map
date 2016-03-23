@@ -1,10 +1,14 @@
 {
   "family": {
+    "redhat": {
+      "isc-dhcp-client": "dhclient"
+    },
     "gentoo": {
       "dhcpcd": "net-misc/dhcpcd"
     }
   },
   "default": {
+    "isc-dhcp-client": "isc-dhcp-client",
     "dhcpcd": ""
   }
 }
