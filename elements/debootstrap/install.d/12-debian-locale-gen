@@ -30,3 +30,9 @@ locales locales/default_environment_locale select en_US.UTF-8
 EOF
 
 dpkg-reconfigure -f noninteractive locales
+
+# set on configuration
+cat > /etc/default/locale <<EOF
+LANG=$DIB_DEBOOTSTRAP_DEFAULT_LOCALE
+LC_ALL=$DIB_DEBOOTSTRAP_DEFAULT_LOCALE
+EOF

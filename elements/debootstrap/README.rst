@@ -30,6 +30,10 @@ filesystem. By default this is 0 (disabled) and any other value enables this.
 If run in offline mode then the most recently cached rootfs is used instead of
 being built.
 
+The `DIB_DEBOOTSTRAP_DEFAULT_LOCALE` environment variable may be used
+to configure the default locale of the base image. It defaults to
+C.UTF-8.
+
 -------------------
 Note on ARM systems
 -------------------
