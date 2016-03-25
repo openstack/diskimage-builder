@@ -15,6 +15,9 @@ case "$DIB_INIT_SYSTEM" in
         if [ -f /etc/init/ufw.conf ]; then
             mv /etc/init/ufw.conf /etc/init/ufw.conf.disabled
         fi
+        if [ -f /etc/init/tgt.conf ]; then
+            mv /etc/init/tgt.conf /etc/init/tgt.conf.disabled
+        fi
         ;;
     systemd)
         systemctl disable iptables.service
