@@ -8,7 +8,10 @@ set -o pipefail
 
 SCRIPTDIR=$(dirname $0)
 
-install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.sh /usr/local/sbin/dhcp-all-interfaces.sh
+# this script is not needed on Gentoo.
+if [ "$DISTRO_NAME" != "gentoo" ]; then
+    install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.sh /usr/local/sbin/dhcp-all-interfaces.sh
+fi
 
 DIB_INIT_SYSTEM=$(dib-init-system)
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
@@ -19,4 +22,10 @@ elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
 elif [ "$DIB_INIT_SYSTEM" == "sysv" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.init /etc/init.d/dhcp-all-interfaces
     update-rc.d dhcp-all-interfaces defaults
+elif [ "$DISTRO_NAME" == "gentoo" ]; then
+    # let ipv6 use normal slaac
+    sed -i 's/slaac/#slaac/g' /etc/dhcpcd.conf
+    # don't let dhcpcd set domain name or hostname
+    sed -i 's/domain_name\,\ domain_search\,\ host_name/domain_search/g' /etc/dhcpcd.conf
+    rc-update add dhcpcd default
 fi
