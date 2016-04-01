@@ -1,20 +1,20 @@
 {
   "family": {
     "redhat": {
-      "isc-dhcp-client": "dhclient"
+      "dhcp-client": "dhclient"
     },
     "debian": {
-      "isc-dhcp-client": "isc-dhcp-client",
+      "dhcp-client": "isc-dhcp-client",
       "ifupdown": "ifupdown"
     },
     "gentoo": {
-      "isc-dhcp-client": "net-misc/dhcp",
+      "dhcp-client": "net-misc/dhcp",
       "python-pip": "dev-python/pip",
       "net-tools": "sys-apps/net-tools"
     }
   },
   "default": {
-    "isc-dhcp-client": "isc-dhcp-client",
+    "dhcp-client": "isc-dhcp-client",
     "ifupdown": ""
   }
 }
