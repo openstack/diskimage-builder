@@ -324,12 +324,50 @@ unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 
 if [ -n "$DIB_IMAGE_SIZE" ]; then
-  du_size=$(echo "$DIB_IMAGE_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
+    du_size=$(echo "$DIB_IMAGE_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
 else
-  # in kb*0.60 - underreport to get a slightly bigger device
-  du_size=$(sudo du --block-size=600 -x -s ${TMP_BUILD_DIR}/built |\
-            awk ' { print $1 }')
+    du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
+
+    # the last line is the total size from "-c".
+    # scale this by 0.6 to create a slightly bigger image
+    du_size=$(echo "$du_output" | tail -n1 | cut -f1 | \
+                     awk '{print int($1 / 0.6)}')
 fi
+
+if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
+    if [ -z "$du_output" ]; then
+        du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
+    fi
+
+    # by default show the 10MiB and greater files & directories -- a
+    # dir with lots of little files will still show up, but this helps
+    # signal:noise ratio
+    if [[ ${DIB_SHOW_IMAGE_USAGE_FULL:-0} == 0 ]]; then
+        # numfmt will start giving a decimal place when < 10MiB
+        du_output_limit="| egrep 'MiB|GiB|TiB|PiB' | grep -v '\..MiB'"
+        echo "================================="
+        echo "Image size report (files > 10MiB)"
+        echo "================================="
+    else
+        du_output_limit=""
+        echo "================="
+        echo "Image size report"
+        echo "================="
+    fi
+
+    echo "$du_output" | sort -nr | \
+        numfmt --to=iec-i --padding=7 --suffix=B --field=1 --from-unit=1024 \
+               $du_output_limit
+    echo
+    echo "===== end image size report ====="
+    echo
+
+    $xtrace
+fi
+
 if [ "$FS_TYPE" = "ext4" ] ; then
   # Very conservative to handle images being resized a lot
   # We set journal size to 64M so our journal is large enough when we
