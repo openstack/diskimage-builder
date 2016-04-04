@@ -20,7 +20,9 @@ case "$DIB_INIT_SYSTEM" in
         fi
         ;;
     systemd)
-        systemctl disable iptables.service
+        if [[ $(systemctl --no-pager list-unit-files iptables) =~ 'enabled' ]]; then
+            systemctl disable iptables.service
+        fi
         systemctl enable $(svc-map ironic-python-agent).service
         ;;
     sysv)
