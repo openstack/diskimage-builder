@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Cloud images shouldn't have ssh host keys baked
+# in so that they are regenerated on first boot and
+# are unique.
+
+# TODO(greghaynes) This should be a thing we do for all images, not just
+# simple-init.
+
+if [ -d /etc/ssh ] ; then
+    sudo find /etc/ssh -name 'ssh_host*' -type f -delete
+fi
