@@ -14,5 +14,5 @@ set -o pipefail
 # simple-init.
 
 if [ -d /etc/ssh ] ; then
-    sudo find /etc/ssh -name 'ssh_host*' -type f -delete
+    sudo find $TARGET_ROOT/etc/ssh -name 'ssh_host*' -type f -delete
 fi
