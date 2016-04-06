@@ -323,21 +323,24 @@ fi
 unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 
+# save xtrace state, as we want to turn it off to avoid spamming the
+# logs with du output below.
+xtrace=$(set +o | grep xtrace)
+
 if [ -n "$DIB_IMAGE_SIZE" ]; then
     du_size=$(echo "$DIB_IMAGE_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
 else
+    set +o xtrace
     du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
-
     # the last line is the total size from "-c".
     # scale this by 0.6 to create a slightly bigger image
     du_size=$(echo "$du_output" | tail -n1 | cut -f1 | \
                      awk '{print int($1 / 0.6)}')
+    $xtrace
 fi
 
 if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
-    xtrace=$(set +o | grep xtrace)
     set +o xtrace
-
     if [ -z "$du_output" ]; then
         du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
     fi
