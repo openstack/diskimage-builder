@@ -16,6 +16,8 @@ export DIB_CMD=$BASE_DIR/bin/disk-image-create
 DEFAULT_SKIP_TESTS=(
     # we run version pinned test in gate (this just runs latest)
     fedora/build-succeeds
+    # in non-voting
+    gentoo/build-succeeds
 )
 
 # run_disk_element_test <test_element> <element>
