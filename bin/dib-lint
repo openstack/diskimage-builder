@@ -54,7 +54,7 @@ excluded() {
 }
 
 error() {
-    echo "ERROR: $1"
+    echo -e "ERROR: $1"
     rc=1
 }
 
@@ -146,6 +146,32 @@ for i in $(find elements -type f   \
             fi
         fi
     fi
+
+
+    # check that sudo calls in phases run outside the chroot look
+    # "safe"; meaning that they seem to operate within the chroot
+    # somehow.  This is not fool-proof, but catches egregious errors,
+    # and makes you think about it if you're doing something outside
+    # the box.
+    if ! excluded safe_sudo; then
+        if [[ $(dirname $i) =~ (root.d|extra-data.d|block-device.d|finalise.d|cleanup.d) ]]; then
+            while read LINE
+            do
+                if [[ $LINE =~ "sudo " ]]; then
+                    # messy regex ahead!  Don't match:
+                    #  - explicitly ignored
+                    #  - basic comments
+                    #  - install-packages ... sudo ...
+                    #  - any of the paths passed into the out-of-chroot elements
+                    if [[ $LINE =~ (dib-lint: safe_sudo|^#|install-packages|TARGET_ROOT|IMAGE_BLOCK_DEVICE|TMP_MOUNT_PATH|TMP_IMAGE_PATH) ]]; then
+                        continue
+                    fi
+                    error "$i : potentially unsafe sudo\n -- $LINE"
+                fi
+            done < $i
+        fi
+    fi
+
 done
 
 for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
