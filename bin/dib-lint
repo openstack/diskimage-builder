@@ -163,9 +163,11 @@ for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
     fi
 done
 
-md_docs=$(find elements -name '*.md')
-if [ -n "$md_docs" ]; then
-    error ".md docs found: $md_docs"
+if ! excluded mddocs; then
+    md_docs=$(find elements -name '*.md')
+    if [ -n "$md_docs" ]; then
+        error ".md docs found: $md_docs"
+    fi
 fi
 
 for i in $(find elements -name '*.yaml' \
