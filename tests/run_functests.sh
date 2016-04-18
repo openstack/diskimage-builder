@@ -32,6 +32,7 @@ function run_disk_element_test() {
 
     if break="after-error" break_outside_target=1 \
         break_cmd="cp \$TMP_MOUNT_PATH/tmp/dib-test-should-fail /tmp/ 2>&1 > /dev/null || true" \
+        DIB_SHOW_IMAGE_USAGE=1 \
         ELEMENTS_PATH=$DIB_ELEMENTS:$DIB_ELEMENTS/$element/test-elements \
         $DIB_CMD -x -t tar,qcow2 -o $dest_dir/image -n $element $test_element; then
 

@@ -331,6 +331,7 @@ if [ -n "$DIB_IMAGE_SIZE" ]; then
     du_size=$(echo "$DIB_IMAGE_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
 else
     set +o xtrace
+    echo "Calculating image size (this may take a minute)..."
     du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
     # the last line is the total size from "-c".
     # scale this by 0.6 to create a slightly bigger image
@@ -345,25 +346,27 @@ if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
         du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
     fi
 
+    du_output_show="sort -nr |
+                     numfmt --to=iec-i --padding=7
+                       --suffix=B --field=1 --from-unit=1024"
+
     # by default show the 10MiB and greater files & directories -- a
     # dir with lots of little files will still show up, but this helps
     # signal:noise ratio
     if [[ ${DIB_SHOW_IMAGE_USAGE_FULL:-0} == 0 ]]; then
         # numfmt will start giving a decimal place when < 10MiB
-        du_output_limit="| egrep 'MiB|GiB|TiB|PiB' | grep -v '\..MiB'"
+        du_output_show+="| egrep 'MiB|GiB|TiB|PiB' | grep -v '\..MiB'"
         echo "================================="
         echo "Image size report (files > 10MiB)"
         echo "================================="
     else
-        du_output_limit=""
         echo "================="
         echo "Image size report"
         echo "================="
     fi
 
-    echo "$du_output" | sort -nr | \
-        numfmt --to=iec-i --padding=7 --suffix=B --field=1 --from-unit=1024 \
-               $du_output_limit
+    eval ${du_output_show} <<< "$du_output"
+
     echo
     echo "===== end image size report ====="
     echo
