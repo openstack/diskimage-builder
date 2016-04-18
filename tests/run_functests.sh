@@ -33,7 +33,14 @@ function run_disk_element_test() {
     if break="after-error" break_outside_target=1 \
         break_cmd="cp \$TMP_MOUNT_PATH/tmp/dib-test-should-fail /tmp/ 2>&1 > /dev/null || true" \
         ELEMENTS_PATH=$DIB_ELEMENTS:$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -t tar -o $dest_dir/image -n $element $test_element; then
+        $DIB_CMD -x -t tar,qcow2 -o $dest_dir/image -n $element $test_element; then
+
+        if ! [ -f "$dest_dir/image.qcow2" ]; then
+            echo "Error: qcow2 build failed for element: $element, test-element: $test_element."
+            echo "No image $dest_dir/image.qcow2 found!"
+        fi
+
+        # check inside the tar for sentinel files
         if ! [ -f "$dest_dir/image.tar" ]; then
             echo "Error: Build failed for element: $element, test-element: $test_element."
             echo "No image $dest_dir/image.tar found!"
@@ -68,7 +75,7 @@ function run_ramdisk_element_test() {
     local dest_dir=$(mktemp -d)
 
     if ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -o $dest_dir/image $element $test_element; then
+        $DIB_CMD -x -o $dest_dir/image $element $test_element; then
         # TODO(dtantsur): test also kernel presence once we sort out its naming
         # problem (vmlinuz vs kernel)
         if ! [ -f "$dest_dir/image.initramfs" ]; then
