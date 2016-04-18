@@ -13,6 +13,6 @@ set -o pipefail
 # TODO(greghaynes) This should be a thing we do for all images, not just
 # simple-init.
 
-if [ -d /etc/ssh ] ; then
+if [ -d $TARGET_ROOT/etc/ssh ] ; then
     sudo find $TARGET_ROOT/etc/ssh -name 'ssh_host*' -type f -delete
 fi
