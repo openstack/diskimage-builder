@@ -124,15 +124,22 @@ function _install_pkg_manager {
     (
         flock -w 1200 9 || die "Can not lock .rpmmacros"
         echo "%_dbpath /var/lib/rpm" >> $HOME/.rpmmacros
+
         sudo -E yum -y \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --releasever=$DIB_RELEASE \
             --installroot $TARGET_ROOT \
-            install $@
+            install $@ && rc=$? || rc=$?
+
+        # We modified the base system - make sure we clean up always!
+        rm $HOME/.rpmmacros.dib.lock
         sed -i '$ d' $HOME/.rpmmacros
+        if [ $rc != 0 ]; then
+            die "Initial yum install to chroot failed!  Can not continue."
+        fi
     ) 9>$HOME/.rpmmacros.dib.lock
-    rm $HOME/.rpmmacros.dib.lock
+
     # Set gpg path back because subsequent actions will take place in
     # the chroot
     sudo sed -i "s,$TARGET_ROOT/etc/pki/rpm-gpg,/etc/pki/rpm-gpg,g" \
