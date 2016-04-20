@@ -42,6 +42,11 @@ Conform to the following conventions:
   See the :ref:`dev-global-image-build-variables` section of this document for
   more information.
 
+* Elements in the upstream diskimage-builder elements should not create
+  executables which run before 10- or after 90- in any of the phases if
+  possible. This is to give downstream elements the ability to easily make
+  executables which run after our upstream ones.
+
 .. _phase-subdirectories:
 
 Phase Subdirectories
