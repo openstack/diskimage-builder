@@ -81,7 +81,7 @@ for i in $(find elements -type f   \
 
         # Ensure 4 spaces indent are used
         if [ "$(file -b --mime-type $i)" = "text/x-python" ]; then
-            flake8 $i
+            flake8 $i || error "$i failed flake8"
         else
             if ! excluded indent ; then
                 indent_regex='^\( \{4\}\)* \{1,3\}[^ ]'
