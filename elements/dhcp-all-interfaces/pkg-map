@@ -1,0 +1,10 @@
+{
+  "family": {
+    "gentoo": {
+      "dhcpcd": "net-misc/dhcpcd"
+    }
+  },
+  "default": {
+    "dhcpcd": ""
+  }
+}

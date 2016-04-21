@@ -18,6 +18,9 @@ rm -f /etc/network/interfaces.d/eth*.cfg
 # Debian
 rm -f /etc/network/interfaces.d/eth*
 
+# Gentoo
+rm -f /etc/conf.d/net*
+
 # /etc/network/interfaces distributions
 if [ -f "/etc/network/interfaces" ]; then
     printf "auto lo\niface lo inet loopback\n\n" > /etc/network/interfaces
