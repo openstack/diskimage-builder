@@ -13,4 +13,9 @@ sudo apt-get install -y \
     sudo yum -y install \
         debootstrap \
         kpartx \
-        qemu-img
+        qemu-img || \
+    sudo emerge \
+        app-emulation/qemu \
+        dev-python/pyyaml \
+        sys-block/parted \
+        sys-fs/multipath-tools
