@@ -6,7 +6,8 @@
       "grub-pc": "grub"
     },
     "suse": {
-      "dkms_package": ""
+      "dkms_package": "",
+      "grub-pc": "grub2"
     },
     "redhat": {
       "extlinux": "syslinux-extlinux",

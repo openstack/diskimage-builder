@@ -5,6 +5,9 @@
     },
     "gentoo": {
       "dhcp-client": "net-misc/dhcpcd"
+    },
+    "suse": {
+      "dhcp-client": "dhcp-client"
     }
   },
   "default": {
