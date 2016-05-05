@@ -32,4 +32,5 @@ review`` to submit changes to the upstream gerrit.
    invocation
    caches
    developing_elements
+   dib_lint
    stable_interfaces
