@@ -5,11 +5,9 @@ set -o pipefail
 
 sudo touch $TARGET_ROOT/fake-os
 
-sudo mkdir -p $TARGET_ROOT/etc
-sudo mkdir -p $TARGET_ROOT/mnt
-sudo mkdir -p $TARGET_ROOT/proc
-sudo mkdir -p $TARGET_ROOT/dev
-sudo mkdir -p $TARGET_ROOT/sys
+for DIR in etc mnt proc dev sys tmp; do
+    sudo mkdir -p ${TARGET_ROOT}/${DIR}
+done
 
 # We need some size so the mkfs does not fail when making an fs of size 0
 # We also need to account for the journal size on the FS
