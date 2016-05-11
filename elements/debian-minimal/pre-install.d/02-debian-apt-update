@@ -1,0 +1,53 @@
+#!/bin/bash
+# Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+# Copyright (c) 2016 Andreas Florath (andreas@florath.net)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+#
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# The filename needs to be 02-...: because the install-package script
+# is installed in the dpkg/pre-install/01-dpkg and that has to be executed
+# first.
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Writes the apt sources files.
+# The description is passed in via line coded elements.
+# (The approach using associative arrays for configuration faild,
+#  because it looks that there is no way to handle defaults in
+#  this case - and additionally we run with '-u'.)
+function apt_sources_write {
+    local APT_SOURCES_CONF="$1"
+
+    mkdir -p /etc/apt/sources.list.d
+
+    echo "${APT_SOURCES_CONF}" \
+        | while read line; do
+            local name=$(echo ${line} | cut -d ":" -f 1)
+            local value=$(echo ${line} | cut -d ":" -f 2-)
+            echo "$value" >>/etc/apt/sources.list.d/${name}.list
+        done
+}
+
+apt_sources_write "${DIB_APT_SOURCES_CONF}"
+
+# Need to update to retrieve the signed Release file
+apt-get update
+
+apt-get clean
+install-packages -u

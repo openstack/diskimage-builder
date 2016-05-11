@@ -1,0 +1,4 @@
+# We don't want to build against Debian unstable
+# (Needs to be a 09- because must be executed before
+# debian-minimal 10-debian-minimal.bash.)
+export DIB_RELEASE="stable"
