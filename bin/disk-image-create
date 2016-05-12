@@ -414,7 +414,7 @@ eval_run_d block-device "IMAGE_BLOCK_DEVICE="
 sudo mkfs $MKFS_OPTS -t $FS_TYPE -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
 if echo "$FS_TYPE" | grep -q "^ext"; then
-    sudo tune2fs ${IMAGE_BLOCK_DEVICE} -U ${DIB_IMAGE_ROOT_FS_UUID}
+    sudo tune2fs -U ${DIB_IMAGE_ROOT_FS_UUID} ${IMAGE_BLOCK_DEVICE}
 fi
 mkdir $TMP_BUILD_DIR/mnt
 sudo mount ${IMAGE_BLOCK_DEVICE} $TMP_BUILD_DIR/mnt
