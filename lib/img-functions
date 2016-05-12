@@ -131,7 +131,7 @@ function compress_and_save_image () {
         OUT_IMAGE_PATH=$1-new
     else
         echo "Converting image using qemu-img convert"
-        qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw $TMP_IMAGE_PATH -O $IMAGE_TYPE $EXTRA_OPTIONS $1-new
+        qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw -O $IMAGE_TYPE $EXTRA_OPTIONS $TMP_IMAGE_PATH $1-new
     fi
 
     OUT_IMAGE_PATH=$1-new
