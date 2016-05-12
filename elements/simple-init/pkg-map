@@ -11,6 +11,9 @@
       "dhcp-client": "net-misc/dhcp",
       "python-pip": "dev-python/pip",
       "net-tools": "sys-apps/net-tools"
+    },
+    "suse": {
+      "dhcp-client": "dhcp-client"
     }
   },
   "default": {
