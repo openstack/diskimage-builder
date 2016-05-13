@@ -176,27 +176,35 @@ if ! excluded mddocs; then
     fi
 fi
 
-echo "Checking YAML & JSON parsing"
-
-for i in $(find elements -name '*.yaml' \
-                -o \( -name pkg-map -type f -a \! -executable \)); do
+echo "Checking YAML parsing..."
+for i in $(find elements -type f -name '*.yaml'); do
+    echo "Parsing  $i"
     py_check="
-import json
 import yaml
 import sys
 try:
-    objs = json.load(open('$i'))
-    sys.exit(0)
-except ValueError:
-    pass
-try:
     objs = yaml.load(open('$i'))
-    sys.exit(0)
 except yaml.parser.ParserError:
-    pass
-sys.exit(1)"
+    sys.exit(1)
+"
     if ! python -c "$py_check"; then
-        error "$i is not a valid yaml/json file"
+        error "$i is not a valid YAML file"
+    fi
+done
+echo "Checking pkg-map files..."
+for i in $(find elements -type f \
+                -name 'pkg-map' -a \! -executable); do
+    echo "Parsing  $i"
+    py_check="
+import json
+import sys
+try:
+    objs = json.load(open('$i'))
+except ValueError:
+    sys.exit(1)
+"
+    if ! python -c "$py_check"; then
+        error "$i is not a valid JSON file"
     fi
 done
 
