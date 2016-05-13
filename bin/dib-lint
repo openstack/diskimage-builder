@@ -58,6 +58,8 @@ error() {
     rc=1
 }
 
+echo "Running dib-lint in $(pwd)"
+
 rc=0
 TMPDIR=$(mktemp -d /tmp/tmp.XXXXXXXXXX)
 trap "rm -rf $TMPDIR" EXIT
@@ -69,6 +71,8 @@ for i in $(find elements -type f   \
                 -not -name \*.yaml \
                 -not -name \*.py   \
                 -not -name \*.pyc); do
+
+    echo "Checking $i"
 
     exclusions=("$(parse_exclusions $i)")
 
@@ -148,6 +152,8 @@ for i in $(find elements -type f   \
     fi
 done
 
+echo "Checking indents..."
+
 for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
     # Check for tab indentation
     if ! excluded tabindent; then
@@ -170,6 +176,8 @@ if ! excluded mddocs; then
     fi
 fi
 
+echo "Checking YAML & JSON parsing"
+
 for i in $(find elements -name '*.yaml' \
                 -o \( -name pkg-map -type f -a \! -executable \)); do
     py_check="
@@ -191,5 +199,11 @@ sys.exit(1)"
         error "$i is not a valid yaml/json file"
     fi
 done
+
+if [[ $rc == 0 ]]; then
+    echo "PASS"
+else
+    echo "*** FAIL: Some tests failed!"
+fi
 
 exit $rc
