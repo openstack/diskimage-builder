@@ -34,5 +34,13 @@ fi
 
 rm -f /tmp/hpssacli.rpm
 
-# Install proliantutils python module
-pip install proliantutils
+# Install proliantutils python module in the
+# virtual environment of ironic-python-agent.
+# This is pre-installed by
+# ironic-agent/install.d/ironic-agent-source-install/60-ironic-agent-install.
+IPA_VENV=/usr/share/ironic-python-agent/venv
+if [[ -d "$IPA_VENV" ]]; then
+    $IPA_VENV/bin/pip install proliantutils
+else
+    pip install proliantutils
+fi
