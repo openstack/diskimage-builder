@@ -6,30 +6,35 @@ fi
 set -eu
 set -o pipefail
 
-[ -n "$ARCH" ]
+if [[ ${DISTRO_NAME} =~ "centos" ]]; then
+    # Centos has "epel-release" in extras, which is default enabled.
+    yum install -y epel-release
+else
+    # For RHEL, we have to scrape the download page to find the latest
+    # release and install that
+    [ -n "$ARCH" ]
+    if [ 'amd64' = "$ARCH" ] ; then
+        ARCH="x86_64"
+    fi
 
-if [ 'amd64' = "$ARCH" ] ; then
-    ARCH="x86_64"
+    BASE_URL=${DIB_EPEL_MIRROR:-https://dl.fedoraproject.org/pub/epel}
+    case "$DISTRO_NAME" in
+        rhel7)
+            RELEASE=7
+            URL=$BASE_URL/$RELEASE/x86_64/e/
+            ;;
+        rhel)
+            RELEASE=6
+            URL=$BASE_URL/$RELEASE/$ARCH/
+            ;;
+        *)
+            echo "$DISTRO_NAME is not supported"
+            exit 1
+            ;;
+    esac
+    PKG_NAME=$(wget -q $URL -O - |grep -oE "(href=\"epel-release-$RELEASE-[0-9,.].*)" | cut -d'"' -f2)
+    rpm -q epel-release || yum install -y $URL/$PKG_NAME
 fi
-
-BASE_URL=${DIB_EPEL_MIRROR:-https://dl.fedoraproject.org/pub/epel}
-case "$DISTRO_NAME" in
-    rhel7|centos7)
-        RELEASE=7
-        URL=$BASE_URL/$RELEASE/x86_64/e/
-        ;;
-    rhel|centos)
-        RELEASE=6
-        URL=$BASE_URL/$RELEASE/$ARCH/
-        ;;
-    *)
-        echo "$DISTRO_NAME is not supported"
-        exit 1
-        ;;
-esac
-PKG_NAME=$(wget -q $URL -O - |grep -oE "(href=\"epel-release-$RELEASE-[0-9,.].*)" | cut -d'"' -f2)
-rpm -q epel-release || yum install -y $URL/$PKG_NAME
-
 
 DIB_EPEL_MIRROR=${DIB_EPEL_MIRROR:-}
 [ -n "$DIB_EPEL_MIRROR" ] || exit 0
