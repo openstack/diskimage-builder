@@ -113,12 +113,15 @@ function check_element () {
 # $1 is the hook to run
 # $2 is the regex to look for
 function eval_run_d () {
-  local TEMP=`run_d $1`
-  echo "$TEMP"
-  if [ `echo "$TEMP" | grep -s "$2"` ]; then
-      TEMP=`echo "$TEMP" | grep "$2"`
-      eval "$TEMP"
-  fi
+    local run_output=$(mktemp)
+    trap "rm -f $run_output; check_break after-error ${break_cmd:-bash}" ERR
+    run_d $1 $run_output
+    if grep -q "$2" $run_output; then
+        local temp=$(grep "$2" $run_output)
+        eval "$temp"
+    fi
+    rm $run_output
+    trap - ERR
 }
 
 # Usage: map_nbd $image
@@ -194,9 +197,16 @@ function cleanup_image_dir () {
 # Run a directory of hooks outside the target (that is, no chrooting).
 function run_d() {
     check_element
-    check_break before-$1 bash
+    check_break before-$1 ${break_cmd:-bash}
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
-      dib-run-parts ${TMP_HOOKS_PATH}/$1.d
+        if [ -n "$2" ]; then
+            dib-run-parts ${TMP_HOOKS_PATH}/$1.d | tee $2
+            if [[ $PIPESTATUS[0] != 0 ]]; then
+                return 1
+            fi
+        else
+            dib-run-parts ${TMP_HOOKS_PATH}/$1.d
+        fi
     fi
     check_break after-$1 bash
 }
