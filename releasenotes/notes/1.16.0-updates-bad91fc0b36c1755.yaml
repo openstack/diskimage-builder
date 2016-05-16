@@ -1,0 +1,17 @@
+---
+fixes:
+
+  - The ``yum-minimal`` element now correctly strips locale-archive
+    files, but leaves en.US/en.US-UTF8 for compatibility with remote
+    access.  Better failure detection has been added to avoid leaving
+    lock files behind if initial installs to the chroot fail.
+
+  - The ``epel`` element was fixed to not incorrectly install EPEL6 on
+    Centos 7.  EPEL is added as a requirement of ``centos-minimal``
+    (previously, it was tacitly required but not expressed).
+
+  - The ``dib-lint`` tool is now more verbose, has better
+    documentation and more correctly detects errors in JSON & YAML.
+
+  - The ``ironic-agent`` element no longer removes the ``sudo``
+    package in its cleanup phase.
