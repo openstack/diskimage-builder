@@ -67,7 +67,7 @@ mv /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
 
 # leave empty template behind as package does.  I think this stops
 # upgrades redoing things
-echo > /usr/locale/locale-archive.tmpl
+echo > /usr/lib/locale/locale-archive.tmpl
 
 # remove the unnecessary source locale files and iconv files
 pushd /usr/share/locale
