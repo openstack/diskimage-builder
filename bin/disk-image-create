@@ -216,6 +216,17 @@ if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   exec -c $0 "$@"
 fi
 
+
+# Display the current file/function/line in the debug output
+function _ps4 {
+    IFS=" " called=($(caller 0))
+    local f=$(readlink -f ${called[2]})
+    printf "%-80s " "$f:${called[1]}:${called[0]}"
+}
+export -f _ps4
+export PS4='+ $(_ps4):   '
+
+
 source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
