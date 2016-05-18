@@ -1,6 +1,6 @@
 [Unit]
 Description=Ironic Python Agent
-After=network.target
+After=network-online.target
 
 [Service]
 ExecStart=/usr/local/bin/ironic-python-agent
