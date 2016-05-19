@@ -8,10 +8,6 @@ fi
 set -eu
 set -o pipefail
 
-# To have access to FS_TYPE
-_LIB="/tmp/opensuse-extras"
-source $_LIB/img-defaults
-
 # This is to tell mkinitrd to include the right tools for the root filesystem
 # that will actually be used for the final image. This is likely something
 # different than what the chroot is currently on (which might currently be a
