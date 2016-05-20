@@ -16,18 +16,25 @@ Provides the following:
       --element ELEMENT  The element (namespace) to use for translation.
       --distro DISTRO    The distro name to use for translation. Defaults to
                          DISTRO_NAME
+      --release RELEASE  The release to use for translation.  Defaults to
+                         DIB_RELEASE
 
- * Any element may create its own pkg-map JSON config file using
-   the one of 3 sections for the distro/family/ and or default.
-   The family is set automatically within pkg-map based on
-   the supplied distro name. Families include:
+ * Any element may create its own pkg-map JSON config file using the
+   one of 4 sections for the release/distro/family/ and or default.
+   The family is set automatically within pkg-map based on the
+   supplied distro name. Families include:
 
      + redhat: includes centos, fedora, and rhel distros
      + debian: includes debian and ubuntu distros
      + suse: includes the opensuse distro
 
+   The release is a specification of distro; i.e. the distro and
+   release must mach for a translation.
+
    The most specific section takes priority.
+
    An empty package list can be provided.
+
    Example for Nova and Glance (NOTE: using fictitious package names
    for Fedora and package mapping for suse family to provide a good
    example!)
@@ -35,6 +42,13 @@ Provides the following:
    Example format::
 
     {
+      "release": {
+        "fedora": {
+          "23": {
+            "nova_package": "foo" "bar"
+          }
+        }
+      },
       "distro": {
         "fedora": {
           "nova_package": "openstack-compute",
