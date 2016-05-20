@@ -1,0 +1,12 @@
+{
+  "release": {
+    "ubuntu": {
+      "precise": {
+        "cloud-initramfs-growroot": "cloud-initramfs-growroot"
+       }
+     }
+   },
+  "default": {
+    "cloud-initramfs-growroot": ""
+  }
+}
