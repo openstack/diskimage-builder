@@ -181,16 +181,7 @@ function detach_loopback() {
         sudo dmsetup --noudevsync remove $mapper_name
     fi
 
-    # loopback dev may be tied up a bit by udev events triggered by partition events
-    for try in $(seq 10 -1 1) ; do
-        if ! sudo losetup $loopdev || sudo losetup -d $loopdev ; then
-            return 0
-        fi
-        echo $loopdev may be busy, sleeping up to $try more seconds...
-        sleep 1
-    done
-    echo Gave up trying to detach $loopdev
-    return 1
+    return 0
 }
 
 function arg_to_elements() {

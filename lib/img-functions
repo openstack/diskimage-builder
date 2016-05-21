@@ -24,6 +24,9 @@ function unmount_image () {
     # unmount from the chroot
     # Don't use TMP_MOUNT_PATH here, it might not have been set.
     unmount_dir "$TMP_BUILD_DIR/mnt"
+    if [ -n "$EXTRA_DETACH" ]; then
+        $EXTRA_DETACH
+    fi
     if [ -n "$EXTRA_UNMOUNT" ]; then
         $EXTRA_UNMOUNT
     fi

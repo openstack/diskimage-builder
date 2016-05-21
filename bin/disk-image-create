@@ -190,7 +190,7 @@ while true ; do
         -c) shift ; export CLEAR_ENV=1;;
         -n) shift; export SKIP_BASE="1";;
         -p) IFS="," read -a INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES ; shift 2 ;;
-        --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
+        --image-size) DIB_IMAGE_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
         --mkfs-options) MKFS_OPTS=$2; shift 2;;
@@ -400,17 +400,79 @@ fi
 # Rounding down size so that is is a multiple of 64, works around a bug in
 # qemu-img that may occur when compressing raw images that aren't a multiple
 # of 64k. https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1180021
-du_size=$(echo "$du_size" | awk ' { if ($1 % 64 != 0) print $1 + 64 - ( $1 % 64); else print $1; } ')
-truncate -s${du_size}K $TMP_IMAGE_PATH
+export DIB_IMAGE_SIZE=$(echo "$du_size" | awk ' { if ($1 % 64 != 0) print $1 + 64 - ( $1 % 64); else print $1; } ')
 
 if [ -n "$MAX_ONLINE_RESIZE" ]; then
     MKFS_OPTS="-E resize=$MAX_ONLINE_RESIZE $MKFS_OPTS"
 fi
 
-LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
-export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
-export IMAGE_BLOCK_DEVICE=$LOOPDEV
+export TMP_IMAGE_DIR
+# Try the 'old fashioned' way calling the block device
+# phase. If this gives no result, use the configuration based approach:
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
+if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
+    IMAGE_BLOCK_DEVICE=$(dib-block-device \
+                             --phase=create \
+                             --config="${DIB_BLOCK_DEVICE_CONFIG:-}" \
+                             --image-size="${DIB_IMAGE_SIZE}"KiB \
+                             --image-dir="${TMP_IMAGE_DIR}" \
+                             --build-dir="${TMP_BUILD_DIR}" )
+fi
+export IMAGE_BLOCK_DEVICE
+LOOPDEV=${IMAGE_BLOCK_DEVICE}
+export EXTRA_DETACH="detach_loopback $LOOPDEV"
+export EXTRA_UNMOUNT="dib-block-device --phase=umount \
+                      --build-dir=\"${TMP_BUILD_DIR}\""
+
+# Create the partitions and make them visible to the system
+
+# Create 2 partitions for PPC, one for PReP boot and other for root
+if [[ "$ARCH" =~ "ppc" ]] ; then
+    sudo parted -a optimal -s $IMAGE_BLOCK_DEVICE \
+        mklabel msdos \
+        mkpart primary 0 8cyl \
+        set 1 boot on \
+        set 1 prep on \
+        mkpart primary 9cyl 100%
+else
+    sudo parted -a optimal -s $IMAGE_BLOCK_DEVICE \
+        mklabel msdos \
+        mkpart primary 1MiB 100% \
+        set 1 boot on
+fi
+
+sudo partprobe $IMAGE_BLOCK_DEVICE
+
+# To ensure no race conditions exist from calling partprobe
+sudo udevadm settle
+
+# If the partition isn't under /dev/loop*p1, create it with kpartx
+DM=
+if [ ! -e "${IMAGE_BLOCK_DEVICE}p1" ]; then
+    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
+    # If running inside Docker, make our nodes manually, because udev will not be working.
+    if [ -f /.dockerenv ]; then
+        # kpartx cannot run in sync mode in docker.
+        sudo kpartx -av $TMP_IMAGE_PATH
+        sudo dmsetup --noudevsync mknodes
+    else
+        sudo kpartx -asv $TMP_IMAGE_PATH
+    fi
+elif [[ "$ARCH" =~ "ppc" ]]; then
+    sudo kpartx -asv $TMP_IMAGE_PATH
+fi
+
+if [ -n "$DM" ]; then
+    export IMAGE_BLOCK_DEVICE=${DM}p1
+elif [[ "$ARCH" =~ "ppc" ]]; then
+    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
+    export IMAGE_BLOCK_DEVICE=${DM}p2
+else
+    export IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1
+fi
+
+# End: Creation of the partitions
+
 sudo mkfs $MKFS_OPTS -t $FS_TYPE -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
 if echo "$FS_TYPE" | grep -q "^ext"; then
@@ -457,7 +519,11 @@ fi
 
 # Unmount and cleanup the /mnt and /build subdirectories, to save
 # space before converting the image to some other format.
+export EXTRA_UNMOUNT=""
 unmount_image
+export TMP_IMAGE_PATH=$(dib-block-device \
+                            --phase=umount \
+                            --build-dir="${TMP_BUILD_DIR}" )
 cleanup_build_dir
 
 if [[ (! $IMAGE_ELEMENT =~ no-final-image) && "$IS_RAMDISK" == "0" ]]; then

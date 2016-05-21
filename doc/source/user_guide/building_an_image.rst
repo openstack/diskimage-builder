@@ -55,6 +55,87 @@ formats are:
  * docker
  * raw
 
+Disk Image Layout
+-----------------
+
+When generating a block image (e.g. qcow2 or raw), by default one
+image with one partition holding all files is created.
+
+The appropriate functionality to use multiple partitions and even LVMs
+is currently under development; therefore the possible configuration
+is currently limited, but will get more flexible as soon as all the
+functionality is implemented.
+
+The configuration is done by means of the environment variable
+`DIB_BLOCK_DEVICE_CONFIG`.  This variable must hold JSON structured
+configuration data.
+
+In future this will be a list of four elements, each describing one
+level of block device setup - but because currently only the lowest
+level is implemented, it contains only the configuration of the first
+level of block device setup
+
+The default is:
+
+::
+
+    DIB_BLOCK_DEVICE_CONFIG='[
+        [["local_loop",
+          {"name": "rootdisk"}]]]'
+
+In general each module is configured in the way, that the first
+element in the list is the name of the module (e.g.  `local_loop`)
+followed by a dictionary of parameters (here `{"name": "rootdisk"}`).
+
+Level 0
++++++++
+
+Module: Local Loop
+..................
+
+This module generates a local image file and uses the loop device to
+create a block device from it.  The symbolic name for this module is
+`local_loop`.
+
+Configuration options:
+
+name
+  (mandatory) The name of the image.  This is used as the name for the
+  image in the file system and also as a symbolic name to be able to
+  reference this image (e.g. to create a partition table on this
+  disk).
+
+size
+  (optional) The size of the disk. The size can be expressed using
+  unit names like TiB (1024^4 bytes) or GB (1000^3 bytes).
+  Examples: 2.5GiB, 12KB.
+  If the size is not specified here, the size as given to
+  disk-image-create (--image-size) or the automatically computed size
+  is used.
+
+directory
+  (optional) The directory where the image is created.
+
+Example:
+
+::
+
+   DIB_BLOCK_DEVICE_CONFIG='[
+        [["local_loop",
+          {"name": "rootdisk"}],
+         ["local_loop",
+          {"name": "datadisk",
+           "size": "7.5GiB",
+           "directory": "/var/tmp"}]]]'
+
+This creates two image files and uses the loop device to use them as
+block devices.  One image file called `rootdisk` is created with
+default size in the default temp directory.  The second image has the
+size of 7.5GiB and is created in the `/var/tmp` folder.
+
+Please note that due to current implementation restrictions it is only
+allowed to specify one local loop image.
+
 Filesystem Caveat
 -----------------
 

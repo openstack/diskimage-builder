@@ -144,7 +144,7 @@ The phases are:
   operations here to only those necessary to affect the filesystem metadata and
   image itself. For most operations, ``post-install.d`` is preferred.
 
-  * runs: **in chroot** 
+  * runs: **in chroot**
 
 ``cleanup.d``
   Perform cleanup of the root filesystem content. For instance, temporary
