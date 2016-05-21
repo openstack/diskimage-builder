@@ -2,20 +2,44 @@
 debian-minimal
 ==============
 
-Create a minimal image based on Debian. We default to unstable but DIB_RELEASE
-is mapped to any series of Debian.
+Create a minimal image based on Debian. We default to unstable but `DIB_RELEASE`
+can be set to any series of Debian.
 
-Note that the default Debian series is `unstable`, and the default
-mirrors for Debian can be problematic for `unstable`. Because apt does
-not handle changing Packages files well across multiple out of sync
-mirrors, it is recommended that you choose a single mirror of debian,
-and pass it in via `DIB_DISTRIBUTION_MIRROR`.
+There are two ways to configure apt-sources:
 
-By default only `main` component is used. If `DIB_DEBIAN_COMPONENTS` (comma
-separated) from the `debootstrap` element has been set, that list of
-components will be used instead.
+1. Using the standard way of defining the default, backports, updates
+   and security repositories is the default. In this case you can
+   overwrite the two environment variables to adapt the behavior:
+   `DIB_DISTRIBUTION_MIRROR`: the mirror to use
+      default: http://httpredir.debian.org/debian
+   `DIB_DEBIAN_COMPONENTS`: (default) `main`
+      a comma separated list of components. For Debian this can be
+      e.g. `main,contrib,non-free`.
 
-Backports are included unless `DIB_RELEASE` is `unstable`.
+   Note that the default Debian series is `unstable`, and the default
+   mirrors for Debian can be problematic for `unstable`. Because apt
+   does not handle changing Packages files well across multiple out of
+   sync mirrors, it is recommended that you choose a single mirror of
+   Debian, and pass it in via `DIB_DISTRIBUTION_MIRROR`.
+
+   By default only `main` component is used. If
+   `DIB_DEBIAN_COMPONENTS` (comma separated) from the `debootstrap`
+   element has been set, that list of components will be used instead.
+
+   Backports, updates and security are included unless `DIB_RELEASE`
+   is `unstable`.
+
+2. Complete configuration given in the variable
+   `DIB_APT_SOURCES_CONF`.
+   Each line contains exactly one entry for the sources.list.d
+   directory.
+   The first word must be the logical name (which is used as file name
+   with `.list` automatically appended), followed by a colon `:`,
+   followed by the complete repository specification.
+   Example:
+   DIB_APT_SOURCES_CONF=\
+       "default:deb http://10.0.0.10/ stretch main contrib
+        mysecurity:deb http://10.0.0.10/ stretch-security main contrib"
 
 If necessary, a custom apt keyring and debootstrap script can be
 supplied to the `debootstrap` command via `DIB_APT_KEYRING` and

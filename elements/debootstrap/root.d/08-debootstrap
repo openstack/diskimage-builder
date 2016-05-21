@@ -71,6 +71,12 @@ else
         $DIB_DISTRIBUTION_MIRROR \
         ${DIB_DEBIAN_DEBOOTSTRAP_SCRIPT:-}"
 
+    # debootstrap creates sometimes a not-usable
+    # /etc/apt/sources.list: DIB wants to set up its own anyway
+    # and the old has to go.
+    sudo rm -fr ${TARGET_ROOT}/etc/apt/sources.list \
+        ${TARGET_ROOT}/etc/apt/sources.list.d
+
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
     if [ "${DIB_DEBOOTSTRAP_CACHE:-0}" != "0" ]; then
         sudo tar --numeric-owner -C $TARGET_ROOT -zcf $DEBOOTSTRAP_TARBALL --exclude='./tmp/*' .
