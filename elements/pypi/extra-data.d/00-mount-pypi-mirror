@@ -10,6 +10,6 @@ MIRROR_SOURCE=$DIB_IMAGE_CACHE/pypi/mirror/
 if [ -d "$MIRROR_SOURCE" ]; then
     MIRROR_TARGET=$TMP_MOUNT_PATH/tmp/pypi
 
-    sudo mkdir -p $MIRROR_SOURCE $MIRROR_TARGET
-    sudo mount --bind $MIRROR_SOURCE $MIRROR_TARGET
+    sudo mkdir -p $MIRROR_SOURCE $MIRROR_TARGET # dib-lint: safe_sudo
+    sudo mount --bind $MIRROR_SOURCE $MIRROR_TARGET # dib-lint: safe_sudo
 fi

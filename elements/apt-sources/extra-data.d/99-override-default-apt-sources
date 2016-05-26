@@ -21,5 +21,5 @@ DIB_APT_SOURCES=`readlink -f $DIB_APT_SOURCES`
 
 # copy the sources.list to cloudimg
 pushd $TMP_MOUNT_PATH/etc/apt/
-sudo cp -f $DIB_APT_SOURCES sources.list
+sudo cp -f $DIB_APT_SOURCES sources.list # dib-lint: safe_sudo
 popd

@@ -425,3 +425,30 @@ example if one were building tripleo-images, the variable would be set like:
 
       export ELEMENTS_PATH=tripleo-image-elements/elements
       disk-image-create rhel7 cinder-api
+
+Linting
+-------
+
+You should always run ``bin/dib-lint`` over your elements.  It will
+warn you of common issues.
+
+sudo
+""""
+
+Using ``sudo`` outside the chroot environment can cause breakout
+issues where you accidentally modify parts of the host
+system. ``dib-lint`` will warn if it sees ``sudo`` calls that do not
+use the path arguments given to elements running outside the chroot.
+
+To disable the error for a call you know is safe, add
+
+::
+
+   # dib-lint: safe_sudo
+
+to the end of the ``sudo`` command line.  To disable the check for an
+entire file, add
+
+::
+
+   # dib-lint: disable=safe_sudo

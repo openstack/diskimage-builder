@@ -31,9 +31,9 @@ if [ -e ${DIR} ]; then
     echo "${DIR} already exists!"
     exit 1
 fi
-sudo mkdir -p ${DIR}
+sudo mkdir -p ${DIR} # dib-lint: safe_sudo
 
 # Copy to DIR
 for KEY in $(find ${DIB_ADD_APT_KEYS} -type f); do
-    sudo cp -L ${KEY} ${DIR}
+    sudo cp -L ${KEY} ${DIR} # dib-lint: safe_sudo
 done
