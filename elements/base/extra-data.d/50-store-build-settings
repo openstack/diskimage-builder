@@ -7,7 +7,6 @@ fi
 set -eu
 set -o pipefail
 
-source $_LIB/die
 [ -n "$TMP_HOOKS_PATH" ] || die "Temp hook path not set"
 
 echo "$DIB_ENV" > $TMP_HOOKS_PATH/dib_environment

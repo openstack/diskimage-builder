@@ -8,7 +8,6 @@ fi
 set -eu
 set -o pipefail
 
-source $_LIB/die
 [ -n "$TMP_HOOKS_PATH" ] || die "Temp hook path not set"
 
 if [ -e ~/.ssh/authorized_keys ]; then
