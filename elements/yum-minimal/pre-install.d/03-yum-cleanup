@@ -23,57 +23,55 @@ set -o pipefail
 
 # effectively: febootstrap-minimize --keep-zoneinfo --keep-rpmdb --keep-services "$target"
 
-# Fedora 24 has a much better way to handle just installing some
-# languages; see bug.  We should support that at the right time.
-if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -gt 23 ]]; then
-    echo "Locale support for Fedora 24 is incomplete"
-    echo " see: https://bugs.launchpad.net/diskimage-builder/+bug/1571488"
-    die "Cannot cleanup locales on > Fedora 23"
+# This is only required on CentOS ... see notes in
+# root.d/08-yum-chroot about %_install_langs
+if [[ $DISTRO_NAME != "fedora" ]]; then
+
+    # Stripping *all* locales is a bad idea.  For now, we take the
+    # suggestion in [1] for reducing this
+    # [1] https://bugzilla.redhat.com/show_bug.cgi?id=156477
+
+    if [ ! -f /usr/lib/locale/locale-archive ]; then
+        die "locale-archive not found?  Can not do cleanup."
+    fi
+
+    # now the archive has everything in it, and is about 100MiB.  Strip it
+    # to just en_US (basically, this is the locale we support if you ssh
+    # in, other than POSIX)
+    localedef --delete-from-archive \
+        $(localedef --list-archive | grep -v '^en_US' | xargs)
+
+    # This removes the locales from the archive index but doesn't rebuild
+    # the file, so it is still the same size (maybe it is sparse?
+    # presumably as it's mmapped you don't want to fiddle with the offsets
+    # of locales in the archive on a live system.  We are not live).
+
+    # build-locale-archive is a tool provided by the RH packaging of
+    # glibc.  Documentation is scarce, but it takes the pre-built locales
+    # in the tmpl file and creates an archive.  It seems originally the
+    # installer would set some flags to rpm to tell the package what
+    # languages to pick out of the template, but along the way, this was
+    # reverted to install them (size considered less important than locale
+    # support).
+
+    # We hack this by moving the locale-archive we've removed the extra
+    # locales from to the template, then re-run the build.
+    mv /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
+
+    # rebuild archive from template
+    /usr/sbin/build-locale-archive
+
+    # leave empty template behind as package does.  I think this stops
+    # upgrades redoing things
+    echo > /usr/lib/locale/locale-archive.tmpl
+
+    # remove the unnecessary source locale files and iconv files
+    pushd /usr/share/locale
+    find . ! -name 'locale.alias' -delete
+    popd
+    rm -rf {lib.lib64}/gconv
+
 fi
-
-# Stripping *all* locales is a bad idea.  For now, we take the
-# suggestion in [1] for reducing this
-# [1] https://bugzilla.redhat.com/show_bug.cgi?id=156477
-
-if [ ! -f /usr/lib/locale/locale-archive ]; then
-    die "locale-archive not found?  Can not do cleanup."
-fi
-
-# now the archive has everything in it, and is about 100MiB.  Strip it
-# to just en_US (basically, this is the locale we support if you ssh
-# in, other than POSIX)
-localedef --delete-from-archive \
-    $(localedef --list-archive | grep -v '^en_US' | xargs)
-
-# This removes the locales from the archive index but doesn't rebuild
-# the file, so it is still the same size (maybe it is sparse?
-# presumably as it's mmapped you don't want to fiddle with the offsets
-# of locales in the archive on a live system.  We are not live).
-
-# build-locale-archive is a tool provided by the RH packaging of
-# glibc.  Documentation is scarce, but it takes the pre-built locales
-# in the tmpl file and creates an archive.  It seems originally the
-# installer would set some flags to rpm to tell the package what
-# languages to pick out of the template, but along the way, this was
-# reverted to install them (size considered less important than locale
-# support).
-
-# We hack this by moving the locale-archive we've removed the extra
-# locales from to the template, then re-run the build.
-mv /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
-
-# rebuild archive from template
-/usr/sbin/build-locale-archive
-
-# leave empty template behind as package does.  I think this stops
-# upgrades redoing things
-echo > /usr/lib/locale/locale-archive.tmpl
-
-# remove the unnecessary source locale files and iconv files
-pushd /usr/share/locale
-find . ! -name 'locale.alias' -delete
-popd
-rm -rf {lib.lib64}/gconv
 
 # docs
 rm -rf /usr/share/{doc,info,gnome/help}
