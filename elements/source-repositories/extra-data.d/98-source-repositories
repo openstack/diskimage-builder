@@ -122,7 +122,7 @@ function get_repos_for_element(){
                 if [ "$REPOREF" != "*" ] ; then
                     HAS_REF=$(git --git-dir=$CACHE_PATH/.git name-rev $REPOREF 2>/dev/null || true)
                 fi
-                if [ -z "$DIB_OFFLINE" -o -z "$HAS_REF" ] ; then
+                if [ -z "$DIB_OFFLINE" -o -z "${HAS_REF:-}" ] ; then
                     echo "Updating cache of $REPOLOCATION in $CACHE_PATH with ref $REPOREF"
                     # Copy named refs (which might be outside the usual heads
                     # pattern) - e.g. gerrit
