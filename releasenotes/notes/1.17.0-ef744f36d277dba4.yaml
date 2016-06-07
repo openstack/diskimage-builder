@@ -1,0 +1,34 @@
+---
+features:
+
+  - The ``dib-lint`` tool now has a best-effort sudo check to help
+    flag uses of ``sudo`` outside the chroot environment.  This can
+    help avoid some classes of breakout problems that can interfere
+    with the host system.
+
+  - Running with ``-x`` will give a more verbose log output that
+    includes function and line-numbers.  Work is ongoing to further
+    reduce noise in the verbose logs to make it as useful as possible.
+    Feedback is welcome on the new format.
+
+  - the ``pkg-map`` element can now install different packages based
+    on the distribution release.
+
+fixes:
+
+  - Locale stripping for ``yum-minimal`` has been reworked to be more
+    reliable for Fedora 23 and CentOS.
+
+  - The Ubuntu Precise kernel is too old to use the online
+    ``growroot`` element, so we returned to using
+    ``cloud-initramfs-growroot`` in the ``debootstrap`` element for
+    it.
+
+  - The ``dib-lint`` tool now better matches python files.
+
+  - The ``apt-sources`` element was fixed to work with the
+    ``debian-minimal`` element.
+
+  - Dependencies for the systemd target in ``dhcp-all-interfaces``
+    were updated to correctly wait for interfaces.
+
