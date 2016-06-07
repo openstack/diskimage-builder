@@ -30,8 +30,8 @@ function tmpfs_check() {
 }
 
 function mk_build_dir () {
-  TMP_BUILD_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
-  TMP_IMAGE_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} image.XXXXXXXX)
+  TMP_BUILD_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} dib_build.XXXXXXXX)
+  TMP_IMAGE_DIR=$(mktemp -t -d --tmpdir=${TMP_DIR:-/tmp} dib_image.XXXXXXXX)
   [ $? -eq 0 ] || die "Failed to create tmp directory"
   export TMP_BUILD_DIR
   if tmpfs_check ; then
