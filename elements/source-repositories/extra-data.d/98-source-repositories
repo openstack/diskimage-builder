@@ -37,18 +37,23 @@ function get_repos_for_element(){
 
     local REGEX="^([^ ]+) (git|tar|file|package) ?(/[^ ]+)? ?([^ ]+)? ?([^ ]*)$"
 
+    # this can be a rather long list (e.g. caching ~1000 openstack
+    # repos), so we make a rough count for progress display
+    local COUNT=1
+    local REPO_SOURCES_COUNT=$(grep -v '^$\|^\s*\#' $REPO_SOURCES | wc -l)
+
     while read line; do
-        # temporarily turn off globbing '*' (since it may be used as the REPOREF for tarballs)
-        set -f
 
-        # expand variables
-        line=$(eval echo $line)
-
-        # restore globbing
-        set +f
+        # temporarily turn off globbing '*' (since it may be used as
+        # the REPOREF for tarballs) and expand variables
+        set -f; line=$(eval echo $line); set +f
 
         # ignore blank lines and lines beginning in '#'
         [[ "$line" == \#* ]] || [[ -z "$line" ]] && continue
+
+        # rough progress counter
+        printf "(%04d / %04d)\n" ${COUNT} ${REPO_SOURCES_COUNT}
+        COUNT=$(( COUNT + 1))
 
         if [[ "$line" =~ $REGEX ]]  ; then
             local REPONAME=${BASH_REMATCH[1]}
@@ -115,7 +120,7 @@ function get_repos_for_element(){
 
                 if [ ! -e "$CACHE_PATH" ] ; then
                     echo "Caching $REPONAME from $REPOLOCATION in $CACHE_PATH"
-                    git clone $REPOLOCATION $CACHE_PATH.tmp
+                    git clone -q $REPOLOCATION $CACHE_PATH.tmp
                     mv ${CACHE_PATH}{.tmp,}
                 fi
 
@@ -126,7 +131,7 @@ function get_repos_for_element(){
                     echo "Updating cache of $REPOLOCATION in $CACHE_PATH with ref $REPOREF"
                     # Copy named refs (which might be outside the usual heads
                     # pattern) - e.g. gerrit
-                    if [ "$REPOREF" == "*" ] || ! git --git-dir=$CACHE_PATH/.git fetch --prune --update-head-ok $REPOLOCATION \
+                    if [ "$REPOREF" == "*" ] || ! git --git-dir=$CACHE_PATH/.git fetch -q --prune --update-head-ok $REPOLOCATION \
                             +${REPOREF}:${REPOREF} ; then
                         # Copy all heads from the remote repository - this permits
                         # using a SHA1 object reference so long as the object
@@ -134,12 +139,15 @@ function get_repos_for_element(){
                         # not permit arbitrary sha fetching from remote servers.
                         # This is a separate fetch to the prior one as the prior
                         # one will fail when REPOREF is a SHA1.
-                        git --git-dir=$CACHE_PATH/.git fetch --prune --update-head-ok $REPOLOCATION \
+                        git --git-dir=$CACHE_PATH/.git fetch -q --prune --update-head-ok $REPOLOCATION \
                             +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
                     fi
                     # Ensure that we have a reference to the revision.
                     if [ "$REPOREF" != "*" ] ; then
-                        git --git-dir=$CACHE_PATH/.git rev-parse -q --verify $REPOREF^{commit}
+                        if ! git --git-dir=$CACHE_PATH/.git rev-parse -q --verify $REPOREF^{commit} > /dev/null; then
+                            echo "Failed to find reference to $REPOREF"
+                            exit 1
+                        fi
                     fi
                 fi
 
@@ -151,7 +159,7 @@ function get_repos_for_element(){
                         echo "REPOLOCATIONS don't match ("$CACHE_PATH" != "$DESIRED")" >&2
                         exit 1
                     elif [[ "$REPOREF" != "*" ]]; then
-                        pushd $REPO_DEST
+                        pushd $REPO_DEST > /dev/null
                         # When we first clone we create a branch naming what we fetched
                         # that must match, or we are asking for two different references from the
                         # same repo, which is an error
@@ -159,22 +167,22 @@ function get_repos_for_element(){
                             echo "REPOREFS don't match - failed to get sha1 of fetch_$REPOREF" >&2
                             exit 1
                         fi
-                        popd
+                        popd > /dev/null
                     fi
                 else
-                    sudo git clone $CACHE_PATH $REPO_DEST
-                    pushd $REPO_DEST
+                    sudo git clone -q $CACHE_PATH $REPO_DEST
+                    pushd $REPO_DEST > /dev/null
                     if [[ "$REPOREF" == "*" ]]; then
-                        sudo git fetch --prune --update-head-ok $CACHE_PATH \
+                        sudo git fetch -q --prune --update-head-ok $CACHE_PATH \
                             +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
                         git_sha=$(git rev-parse HEAD)
                     else
-                        sudo git fetch $CACHE_PATH $REPOREF:fetch_$REPOREF
+                        sudo git fetch -q $CACHE_PATH $REPOREF:fetch_$REPOREF
                         sudo git reset --hard FETCH_HEAD
                         # Get the sha in use
                         git_sha=$(git rev-parse FETCH_HEAD)
                     fi
-                    popd
+                    popd > /dev/null
 
                     # Write the sha being used into the source-repositories manifest
                     echo "$REPONAME git $REPOPATH $REPOLOCATION $git_sha" >> $GIT_MANIFEST
@@ -226,7 +234,7 @@ function get_repos_for_element(){
 
             # Capture the in-instance repository path for later review / other
             # elements (like a pypi dependency cache).
-            echo "$REPOPATH" | sudo dd of=$TMP_MOUNT_PATH/etc/dib-source-repositories oflag=append conv=notrunc
+            echo "$REPOPATH" | sudo tee -a $TMP_MOUNT_PATH/etc/dib-source-repositories > /dev/null
 
         else
             echo "Couldn't parse '$line' as a source repository"
@@ -249,7 +257,7 @@ rm -f $GIT_MANIFEST
 for _SOURCEREPO in $(find $TMP_HOOKS_PATH -maxdepth 1 -name "source-repository-*" -not -name '*~'); do
     repo_flock=$CACHE_BASE/repositories_flock
     (
-        echo "Getting $repo_flock: $(date)"
+        echo "Getting $repo_flock: $(date) for $_SOURCEREPO"
         if ! flock -w 600 9 ; then
             echo "Did not get $repo_flock: $(date)"
             exit 1
