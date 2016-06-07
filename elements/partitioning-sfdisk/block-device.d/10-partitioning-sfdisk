@@ -9,7 +9,6 @@ set -eu
 set -o pipefail
 
 # sanity checks
-source $_LIB/die
 [ -n "$IMAGE_BLOCK_DEVICE" ] || die "Image block device not set"
 
 # execute sfdisk with the given partitioning schema

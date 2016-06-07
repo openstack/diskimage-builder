@@ -8,7 +8,6 @@ fi
 set -eu
 set -o pipefail
 
-source $_LIB/die
 [ -n "$IMAGE_BLOCK_DEVICE" ] || die "Image block device not set"
 
 # Create 2 partitions for PPC, one for PReP boot and other for root
