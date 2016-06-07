@@ -52,21 +52,6 @@ function cleanup () {
     cleanup_image_dir
 }
 
-function ensure_nbd () {
-    NBD=`which qemu-nbd` || true
-    if [ -z "$NBD" ]; then
-        echo "qemu-nbd is not found in your PATH"
-        echo "Please install it on your system"
-        exit 1
-    fi
-    # prep nbd for mounting
-    (lsmod | grep '^nbd ' >/dev/null) || sudo modprobe nbd max_part=16
-}
-
-function ensure_sudo () {
-    sudo echo "Ensuring sudo is available"
-}
-
 # Helper function to run a command inside the chroot
 function run_in_target () {
     cmd="$@"
