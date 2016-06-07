@@ -23,5 +23,5 @@ set -o pipefail
 
 cat << EOF | tee /etc/fstab > /dev/null
 proc /proc proc nodev,noexec,nosuid 0 0
-LABEL=${DIB_ROOT_LABEL} / ext4 errors=remount-ro 0 1
+LABEL=${DIB_ROOT_LABEL} / ${FS_TYPE} errors=remount-ro 0 1
 EOF
