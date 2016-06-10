@@ -15,8 +15,13 @@
 from __future__ import print_function
 import argparse
 import collections
+import logging
 import os
 import sys
+
+import diskimage_builder.logging_config
+
+logger = logging.getLogger(__name__)
 
 
 def get_elements_dir():
@@ -42,8 +47,7 @@ def _get_set(element, fname, elements_dir=None):
             else:
                 raise
 
-    sys.stderr.write("ERROR: Element '%s' not found in '%s'\n" %
-                     (element, elements_dir))
+    logger.error("Element '%s' not found in '%s'" % (element, elements_dir))
     sys.exit(-1)
 
 
@@ -100,20 +104,22 @@ def expand_dependencies(user_elements, elements_dir=None):
         final_elements.update(deps)
 
     if "operating-system" not in provided:
-        sys.stderr.write(
-            "ERROR: Please include an operating system element.\n")
+        logger.error(
+            "Please include an operating system element.")
         sys.exit(-1)
 
     conflicts = set(user_elements) & provided
     if conflicts:
-        sys.stderr.write("ERROR: Following elements were explicitly required "
-                         "but are provided by other included elements: %s\n" %
-                         ", ".join(conflicts))
+        logger.error("Following elements were explicitly required "
+                     "but are provided by other included elements: %s" %
+                     ", ".join(conflicts))
         sys.exit(-1)
     return final_elements - provided
 
 
 def main(argv):
+    diskimage_builder.logging_config.setup()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('elements', nargs='+',
                         help='display dependencies of the given elements')
@@ -125,8 +131,8 @@ def main(argv):
     args = parser.parse_args(argv[1:])
 
     if args.expand_dependencies:
-        print("WARNING: expand-dependencies flag is deprecated,  "
-              "and is now on by default.", file=sys.stderr)
+        logger.warning("expand-dependencies flag is deprecated,  "
+                       "and is now on by default.", file=sys.stderr)
 
     print(' '.join(expand_dependencies(args.elements)))
     return 0
