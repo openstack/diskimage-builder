@@ -3,7 +3,6 @@
 # process, which may cause wedges in the gate later.
 hacking<0.11,>=0.10.0
 
-discover # BSD
 oslotest>=1.10.0 # Apache-2.0
 testrepository>=0.0.18 # Apache-2.0/BSD
 
