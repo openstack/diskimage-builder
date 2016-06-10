@@ -30,6 +30,7 @@ service_map = {
     'ceilometer-agent-notification': 'openstack-ceilometer-notification',
     'ceilometer-collector': 'openstack-ceilometer-collector',
     'cinder-api': 'openstack-cinder-api',
+    'cinder-backup': 'openstack-cinder-backup',
     'cinder-scheduler': 'openstack-cinder-scheduler',
     'cinder-volume': 'openstack-cinder-volume',
     'glance-api': 'openstack-glance-api',

@@ -25,6 +25,7 @@ import sys
 service_map = {
     # openstack mapping
     'cinder-api': 'openstack-cinder-api',
+    'cinder-backup': 'openstack-cinder-backup',
     'cinder-scheduler': 'openstack-cinder-scheduler',
     'cinder-volume': 'openstack-cinder-volume',
     'glance-api': 'openstack-glance-api',
