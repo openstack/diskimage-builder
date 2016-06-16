@@ -42,10 +42,11 @@ sudo find . -xdev \
 
 select_boot_kernel_initrd $TARGET_ROOT
 sudo cp $BOOTDIR/$KERNEL ${IMAGE_PATH}.kernel
+sudo chown $USER: ${IMAGE_PATH}.kernel
 
 # TODO(lucasagomes): Create a hard link for the .vmlinuz file to keep
 # it backward compatible. Remove it after it has been consistent and
 # documented in both places for at least one full OpenStack release cycle
 echo "WARNING: The kernel extension .vmlinuz has been deprecated. Please rely on the file with the extension .kernel instead."
 sudo rm -f ${IMAGE_PATH}.vmlinuz
-sudo ln ${IMAGE_PATH}.kernel ${IMAGE_PATH}.vmlinuz
+ln ${IMAGE_PATH}.kernel ${IMAGE_PATH}.vmlinuz
