@@ -6,5 +6,50 @@ fi
 set -eu
 set -o pipefail
 
-python /tmp/get-pip.py
-pip install virtualenv
+if [[ $DISTRO_NAME =~ (centos|fedora) ]]; then
+    # GENERAL WARNING : mixing packaged python libraries with
+    # pip-installed versions always creates issues.  Upstream
+    # openstack-infra uses this a lot (especially devstack) but be
+    # warned: here be dragons :)
+
+    # Firstly we want to install the system packages.  Otherwise later
+    # on somebody does a "yum install python-virtualenv" and goes and
+    # overwrites the pip installed version with the packaged version,
+    # leading to all sorts of weird version issues.
+    ${YUM} install -y python-virtualenv python-pip python-setuptools
+
+    # install pip; this overwrites packaged pip
+    python /tmp/get-pip.py
+
+    # pip and setuptools are closely related; we want to ensure the
+    # latest for sanity.  Because distro packages don't include enough
+    # info in the egg for pip to be certain it has fully uninstalled
+    # the old package, for safety we clear it out by hand (this seems
+    # to have been a problem with very old to new updates,
+    # e.g. centos6 to current-era, but less so for smaller jumps).
+    # There is a bit of chicken-and-egg problem with pip in that it
+    # requires setuptools for some operations, such as wheel creation.
+    # But just installing setuptools shouldn't require setuptools
+    # itself, so we are safe for this small section.
+    rm -rf /usr/lib/python2.7/site-packages/setuptools*
+    pip install -U setuptools
+
+    # now install latest virtualenv.  it vendors stuff it needs so
+    # doesn't have issues with other system packages.
+    pip install -U virtualenv
+
+    # Add this to exclude so that we don't install a later package
+    # over it if it updates.  Note that fedora-minimal, bootstrapped
+    # via yum, can have an old yum.conf around, so look for dnf first.
+    if [[ -f /etc/dnf/dnf.conf ]]; then
+        conf=/etc/dnf/dnf.conf
+    elif [[ -f /etc/yum.conf ]]; then
+        conf=/etc/yum.conf
+    else
+        die "No conf to modify?"
+    fi
+    echo "exclude=python-virtualenv,python-pip,python-setuptools" >> ${conf}
+else
+    python /tmp/get-pip.py
+    pip install virtualenv
+fi
