@@ -1,3 +1,13 @@
+Installation
+============
+
+For general use, you can use distribution packages or install via
+``pip`` in a ``virtualenv``
+
+For development purposes, you can use ``pip -e`` to install into a
+local development/testing ``virtualenv``, or use ``tox -e venv --
+disk-image-create`` to run within a ``tox`` created environment.
+
 Invocation
 ==========
 

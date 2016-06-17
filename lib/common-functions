@@ -194,6 +194,7 @@ function arg_to_elements() {
     IMAGE_ELEMENT="$RAMDISK_ELEMENT $IMAGE_ELEMENT"
   fi
   echo "Building elements: $IMAGE_ELEMENT"
+  export IMAGE_ELEMENT
 
   # element-info will output bash code to create
   #  * IMAGE_ELEMENT
@@ -217,7 +218,7 @@ function arg_to_elements() {
   #        element=$i
   #        path=${image_elements[$i]
   #      done
-  eval "$($SCRIPT_HOME/element-info --env $IMAGE_ELEMENT)"
+  eval "$(element-info --env $IMAGE_ELEMENT)"
 
   echo "Expanded element dependencies to: $IMAGE_ELEMENT"
 }

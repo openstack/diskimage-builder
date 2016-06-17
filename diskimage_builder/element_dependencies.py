@@ -179,7 +179,7 @@ def find_all_elements(paths=None):
     return all_elements
 
 
-def main(argv):
+def main():
     diskimage_builder.logging_config.setup()
 
     parser = argparse.ArgumentParser()
@@ -194,7 +194,7 @@ def main(argv):
                         help=('Output eval-able bash strings for '
                               'IMAGE_ELEMENT variables'))
 
-    args = parser.parse_args(argv[1:])
+    args = parser.parse_args(sys.argv[1:])
 
     all_elements = find_all_elements()
 
@@ -232,3 +232,6 @@ def main(argv):
         print(' '.join(elements))
 
     return 0
+
+if __name__ == "__main__":
+    main()

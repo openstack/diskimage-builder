@@ -1,0 +1,9 @@
+---
+deprecations:
+
+  - The ``element-info`` script is now provided by a standard python
+    entry-point, rather than an explicit wrapper script.  This may
+    affect you if you were running this script directly out of ``bin``
+    in the source directory without installing.  See developer notes
+    for details on using developer-installs with virtual environments
+    for testing.
