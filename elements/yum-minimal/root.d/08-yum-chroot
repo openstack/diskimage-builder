@@ -128,35 +128,39 @@ function _install_pkg_manager {
         flock -w 1200 9 || die "Can not lock .rpmmacros"
         echo "%_dbpath /var/lib/rpm" >> $HOME/.rpmmacros
 
-        # Fedora 24 has a much better way to handle just installing some
-        # languages; see bug.  We should support that at the right time.
-        if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -gt 23 ]]; then
-            echo "Locale support for Fedora 24 is incomplete"
-            echo " see: https://bugs.launchpad.net/diskimage-builder/+bug/1571488"
-            die "Cannot cleanup locales on > Fedora 23"
-        fi
+        _lang_pack=""
 
-        # _install_langs is a rpm macro that limits the translation
-        # files, etc installed by packages.  For Fedora 23 [1], the
-        # glibc-common package will obey this to only install the
-        # listed locales, keeping things much smaller (we still have
-        # to clean up locales manually on centos7).  We install just
-        # en_US because people often ssh in with that locale, but
-        # leave out everything else.  Note that yum has an option to
-        # set this from the command-line [2], but the yum in trusty we
-        # are using is too old to have it.  So we set it directly in
-        # the macros file
-        #
-        # [1] http://pkgs.fedoraproject.org/cgit/rpms/glibc.git/commit/glibc.spec?h=f23&id=91764bd9ec690d4b8a886c0a3a104aac12d340d2
-        # [2] http://yum.baseurl.org/gitweb?p=yum.git;a=commit;h=26128173b362474456e8f0642073ecb0322ed031
-        echo "%_install_langs C:en_US:en_US.UTF-8" >> $HOME/.rpmmacros
+        if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -le 23 ]; then
+            # _install_langs is a rpm macro that limits the translation
+            # files, etc installed by packages.  For Fedora 23 [1], the
+            # glibc-common package will obey this to only install the
+            # listed locales, keeping things much smaller (we still have
+            # to clean up locales manually on centos7).  We install just
+            # en_US because people often ssh in with that locale, but
+            # leave out everything else.  Note that yum has an option to
+            # set this from the command-line [2], but the yum in trusty we
+            # are using is too old to have it.  So we set it directly in
+            # the macros file
+            #
+            # [1] http://pkgs.fedoraproject.org/cgit/rpms/glibc.git/commit/glibc.spec?h=f23&id=91764bd9ec690d4b8a886c0a3a104aac12d340d2
+            # [2] http://yum.baseurl.org/gitweb?p=yum.git;a=commit;h=26128173b362474456e8f0642073ecb0322ed031
+            echo "%_install_langs C:en_US:en_US.UTF-8" >> $HOME/.rpmmacros
+        elif [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -ge 24 ]; then
+            # glibc on F24 has split locales into "langpack" packages.
+            # Yum doesn't understand the weak-dependencies glibc now
+            # uses to get the minimal-langpack and chooses a
+            # random(ish) one that satisfies the locale dependency
+            # (rhbz#1349258).  Work-around this by explicitly requring
+            # the minimal pack.
+            _lang_pack="glibc-minimal-langpack"
+        fi
 
         sudo -E yum -y \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --releasever=$DIB_RELEASE \
             --installroot $TARGET_ROOT \
-            install $@ && rc=$? || rc=$?
+            install $@ ${_lang_pack} && rc=$? || rc=$?
 
         # We modified the base system - make sure we clean up always!
         rm $HOME/.rpmmacros.dib.lock
@@ -204,8 +208,8 @@ else
 
     _install_repos
 
+    # install dnf for >= f22
     if [ $DIB_RELEASE -ge 22 ]; then
-        # install dnf for >= f22
         _install_pkg_manager dnf dnf-plugins-core yum
     else
         _install_pkg_manager yum
