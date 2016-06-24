@@ -1,6 +1,12 @@
 tgt:
 curl:
+# dmidecode does not exist for ppc* arches so add includes for non ppc
 dmidecode:
+    arch: x86_64
+dmidecode:
+    arch: i386
+dmidecode:
+    arch: amd64
 ipmitool:
 qemu-utils:
 gcc:

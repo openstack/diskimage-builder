@@ -44,11 +44,22 @@ CPU_ARCH=$(lscpu | grep Architecture | awk '{ print $2 }')
 update ".cpu_arch = \"$CPU_ARCH\""
 
 RAM=0
-for i in $(dmidecode --type memory | grep Size | awk '{ print $2; }' | grep -E '[0-9]+');
-do
-    RAM=$(( RAM + $i ));
-done
-update ".memory_mb = $RAM"
+if hash dmidecode 2>/dev/null; then
+    for i in $(dmidecode --type memory | grep Size | awk '{ print $2; }' | grep -E '[0-9]+');
+    do
+        RAM=$(( RAM + $i ));
+    done
+elif hash lshw 2>/dev/null; then
+    # dmidecode does not exist for ppc, but lshw should (for both)
+    MEMORY=$(lshw -c memory -short -quiet | grep -i 'system memory' | awk '{ print $3; }')
+    if [[ "${MEMORY}" =~ GiB$ ]]; then
+        RAMGB=${MEMORY::-3}
+        RAM=$(( RAMGB * 1024 ));
+    elif [[ "${MEMORY}" =~ MiB$ ]]; then
+        RAM=${MEMORY::-3}
+    fi
+fi
+[ ${RAM} -gt 0 ] && update ".memory_mb = $RAM"
 
 CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
 update ".cpus = $CPUS"
