@@ -1,0 +1,7 @@
+---
+deprecations:
+
+  - Element override behavior is now defined, with elements found in
+    earlier entries of ``ELEMENTS_PATH`` overriding later ones
+    (e.g. the same semantics as ``$PATH``).  Previously the behavior
+    was undefined.

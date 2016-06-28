@@ -15,6 +15,7 @@
 from __future__ import print_function
 import argparse
 import collections
+import errno
 import logging
 import os
 import sys
@@ -24,69 +25,64 @@ import diskimage_builder.logging_config
 logger = logging.getLogger(__name__)
 
 
+class Element(object):
+    """An element"""
+    def __init__(self, name, path):
+        """A new element
+
+        :param name: The element name
+        :param path: Full path to element.  element-deps and
+                     element-provides files will be parsed
+        """
+        self.name = name
+        self.path = path
+        self.provides = set()
+        self.depends = set()
+
+        # read the provides & depends files for this element into a
+        # set; if the element has them.
+        provides = os.path.join(path, 'element-provides')
+        depends = os.path.join(path, 'element-deps')
+        try:
+            with open(provides) as p:
+                self.provides = set([line.strip() for line in p])
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                pass
+            else:
+                raise
+        try:
+            with open(depends) as d:
+                self.depends = set([line.strip() for line in d])
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                pass
+            else:
+                raise
+
+        logger.debug("New element : %s", str(self))
+
+    def __str__(self):
+        return '%s p:<%s> d:<%s>' % (self.name,
+                                     ','.join(self.provides),
+                                     ','.join(self.depends))
+
+
 def get_elements_dir():
     if not os.environ.get('ELEMENTS_PATH'):
         raise Exception("$ELEMENTS_PATH must be set.")
     return os.environ['ELEMENTS_PATH']
 
 
-def _get_set(element, fname, elements_dir=None):
-    if elements_dir is None:
-        elements_dir = get_elements_dir()
-
-    for path in elements_dir.split(':'):
-        element_deps_path = (os.path.join(path, element, fname))
-        try:
-            with open(element_deps_path) as element_deps:
-                return set([line.strip() for line in element_deps])
-        except IOError as e:
-            if os.path.exists(os.path.join(path, element)) and e.errno == 2:
-                return set()
-            if e.errno == 2:
-                continue
-            else:
-                raise
-
-    logger.error("Element '%s' not found in '%s'" % (element, elements_dir))
-    sys.exit(-1)
-
-
-def provides(element, elements_dir=None):
-    """Return the set of elements provided by the specified element.
-
-    :param element: name of a single element
-    :param elements_dir: the elements dir to read from. If not supplied,
-                         inferred by calling get_elements_dir().
-
-    :return: a set just containing all elements that the specified element
-             provides.
-    """
-    return _get_set(element, 'element-provides', elements_dir)
-
-
-def dependencies(element, elements_dir=None):
-    """Return the non-transitive set of dependencies for a single element.
-
-    :param element: name of a single element
-    :param elements_dir: the elements dir to read from. If not supplied,
-                         inferred by calling get_elements_dir().
-
-    :return: a set just containing all elements that the specified element
-             depends on.
-    """
-    return _get_set(element, 'element-deps', elements_dir)
-
-
-def expand_dependencies(user_elements, elements_dir=None):
+def expand_dependencies(user_elements, all_elements):
     """Expand user requested elements using element-deps files.
 
     Arguments:
     :param user_elements: iterable enumerating the elements a user requested
-    :param elements_dir: the elements dir to read from. Passed directly to
-                         dependencies()
+    :param all_elements: Element object dictionary from find_all_elements
 
-    :return: a set containing user_elements and all dependent elements
-             including any transitive dependencies.
+    :return: a set containing the names of user_elements and all
+             dependent elements including any transitive dependencies.
     """
     final_elements = set(user_elements)
     check_queue = collections.deque(user_elements)
@@ -99,8 +95,14 @@ def expand_dependencies(user_elements, elements_dir=None):
         element = check_queue.popleft()
         if element in provided:
             continue
-        element_deps = dependencies(element, elements_dir)
-        element_provides = provides(element, elements_dir)
+        elif element not in all_elements:
+            logger.error("Element '%s' not found", element)
+            sys.exit(1)
+
+        element_obj = all_elements[element]
+
+        element_deps = element_obj.depends
+        element_provides = element_obj.provides
         # save which elements provide another element for potential
         # error message
         for provide in element_provides:
@@ -122,7 +124,58 @@ def expand_dependencies(user_elements, elements_dir=None):
             logger.error("%s : already provided by %s" %
                          (element, provided_by[element]))
         sys.exit(-1)
+
     return final_elements - provided
+
+
+def find_all_elements(paths=None):
+    """Build a dictionary Element() objects
+
+    Walk ELEMENTS_PATH and find all elements.  Make an Element object
+    for each element we wish to consider.  Note we process overrides
+    such that elements specified earlier in the ELEMENTS_PATH override
+    those seen later.
+
+    :param paths: A list of paths to find elements in.  If None will
+                  use ELEMENTS_PATH
+
+    :return: a dictionary of all elements
+
+    """
+
+    all_elements = {}
+
+    # note we process the later entries *first*, so that earlier
+    # entries will override later ones.  i.e. with
+    #  ELEMENTS_PATH=path1:path2:path3
+    # we want the elements in "path1" to override "path3"
+    if not paths:
+        paths = reversed(get_elements_dir().split(':'))
+    for path in paths:
+        if not os.path.isdir(path):
+            logger.error("ELEMENT_PATH entry '%s' is not a directory", path)
+            sys.exit(1)
+
+        # In words : make a list of directories in "path".  Since an
+        # element is a directory, this is our list of elements.
+        elements = [os.path.realpath(os.path.join(path, f))
+                    for f in os.listdir(path)
+                    if os.path.isdir(os.path.join(path, f))]
+
+        for element in elements:
+            # the element name is the last part of the full path in
+            # element (these are all directories, we know that from
+            # above)
+            name = os.path.basename(element)
+
+            new_element = Element(name, element)
+            if name in all_elements:
+                logger.warning("Element <%s> overrides <%s>",
+                               new_element.path, all_elements[name].path)
+
+            all_elements[name] = new_element
+
+    return all_elements
 
 
 def main(argv):
@@ -138,9 +191,11 @@ def main(argv):
 
     args = parser.parse_args(argv[1:])
 
+    all_elements = find_all_elements()
+
     if args.expand_dependencies:
         logger.warning("expand-dependencies flag is deprecated,  "
                        "and is now on by default.", file=sys.stderr)
 
-    print(' '.join(expand_dependencies(args.elements)))
+    print(' '.join(expand_dependencies(args.elements, all_elements)))
     return 0

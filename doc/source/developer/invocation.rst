@@ -10,11 +10,13 @@ sudo, so if you want them to run non-interactively, you should either
 run them as root, with sudo -E, or allow your build user to run any
 sudo command without password.
 
-Using the variable ``ELEMENTS_PATH`` will allow to specify multiple
-elements locations.  It is a colon (:) separated path list, and it
-will work in a first path/element found, first served approach. The
-included elements tree is used when no path is supplied, and is added
-to the end of the path if a path is supplied.
+The variable ``ELEMENTS_PATH`` is a colon (:) separated path list to
+search for elements.  The included ``elements`` tree is used when no
+path is supplied and is always added to the end of the path if a path
+is supplied.  Earlier elements will override later elements, i.e. with
+``ELEMENTS_PATH=foo:bar`` the element ``my-element`` will be chosen
+from ``foo/my-element`` over ``bar/my-element``, or any in-built
+element of the same name.
 
 By default, the image building scripts will not overwrite existing
 disk images, allowing you to compare the newly built image with the

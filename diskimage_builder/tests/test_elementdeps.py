@@ -39,7 +39,14 @@ class TestElementDeps(testtools.TestCase):
 
     def setUp(self):
         super(TestElementDeps, self).setUp()
-        self.element_dir = self.useFixture(fixtures.TempDir()).path
+        self.element_root_dir = self.useFixture(fixtures.TempDir()).path
+
+        self.element_dir = os.path.join(self.element_root_dir, 'elements')
+        self.element_override_dir = os.path.join(self.element_root_dir,
+                                                 'element-override')
+        os.mkdir(self.element_dir)
+        os.mkdir(self.element_override_dir)
+
         self.log_fixture = self.useFixture(
             fixtures.FakeLogger(level=logging.DEBUG))
         _populate_element(self.element_dir, 'requires-foo', ['foo'])
@@ -74,45 +81,51 @@ class TestElementDeps(testtools.TestCase):
                           'requires_new_virtual',
                           ['new_virtual'])
 
+        # second element should override the first one here
+        _populate_element(self.element_dir, 'override_element', [])
+        _populate_element(self.element_override_dir, 'override_element', [])
+
+        self.all_elements = element_dependencies.find_all_elements(
+            [self.element_dir, self.element_override_dir])
+
     def test_non_transitive_deps(self):
         result = element_dependencies.expand_dependencies(
-            ['requires-foo'],
-            elements_dir=self.element_dir)
+            ['requires-foo'], self.all_elements)
         self.assertEqual(set(['requires-foo', 'foo']), result)
 
     def test_missing_deps(self):
         self.assertRaises(SystemExit,
                           element_dependencies.expand_dependencies, ['fake'],
-                          self.element_dir)
+                          self.all_elements)
         self.assertIn("Element 'fake' not found",
                       self.log_fixture.output)
 
     def test_transitive_deps(self):
         result = element_dependencies.expand_dependencies(
-            ['requires-requires-foo'], elements_dir=self.element_dir)
+            ['requires-requires-foo'], self.all_elements)
         self.assertEqual(set(['requires-requires-foo',
                               'requires-foo',
                               'foo']), result)
 
     def test_no_deps(self):
         result = element_dependencies.expand_dependencies(
-            ['foo'], elements_dir=self.element_dir)
+            ['foo'], self.all_elements)
         self.assertEqual(set(['foo']), result)
 
     def test_self(self):
         result = element_dependencies.expand_dependencies(
-            ['self', 'foo'], elements_dir=self.element_dir)
+            ['self', 'foo'], self.all_elements)
         self.assertEqual(set(['self', 'foo']), result)
 
     def test_circular(self):
         result = element_dependencies.expand_dependencies(
-            ['circular1'], elements_dir=self.element_dir)
+            ['circular1'], self.all_elements)
         self.assertEqual(set(['circular1', 'circular2']), result)
 
     def test_provide(self):
         result = element_dependencies.expand_dependencies(
             ['provides_virtual', 'requires_virtual'],
-            elements_dir=self.element_dir)
+            self.all_elements)
         self.assertEqual(set(['requires_virtual', 'provides_virtual']), result)
 
     def test_provide_conflict(self):
@@ -124,7 +137,7 @@ class TestElementDeps(testtools.TestCase):
     def test_provide_virtual_ordering(self):
         result = element_dependencies.expand_dependencies(
             ['requires_new_virtual', 'provides_new_virtual'],
-            elements_dir=self.element_dir)
+            self.all_elements)
         self.assertEqual(set(['requires_new_virtual', 'provides_new_virtual']),
                          result)
 
@@ -132,7 +145,7 @@ class TestElementDeps(testtools.TestCase):
         self.assertRaises(SystemExit,
                           element_dependencies.expand_dependencies,
                           ['provides_virtual'],
-                          elements_dir=self.element_dir)
+                          self.all_elements)
         self.assertIn("Please include an operating system element",
                       self.log_fixture.output)
 
@@ -140,11 +153,19 @@ class TestElementDeps(testtools.TestCase):
         self.assertRaises(SystemExit,
                           element_dependencies.expand_dependencies,
                           ['circular1', 'operating-system'],
-                          elements_dir=self.element_dir)
+                          self.all_elements)
         # ensure we get the error message about what's providing the
         # conflicting package
         self.assertIn("operating-system : already provided by ['circular1']",
                       self.log_fixture.output)
+
+    def test_element_override(self):
+        # make sure we picked up "override_element" from the override dir,
+        # not the base dir
+        self.assertTrue('override_element' in self.all_elements)
+        self.assertEqual(os.path.join(self.element_override_dir,
+                                      'override_element'),
+                         self.all_elements['override_element'].path)
 
 
 class TestElements(testtools.TestCase):
