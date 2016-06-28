@@ -1,0 +1,6 @@
+---
+features:
+
+  - Elements that need access to the other elements being used during
+    the build should use the new ``IMAGE_ELEMENT_YAML`` environment
+    variable and it's Bash equivalent ``get_image_element_array``.

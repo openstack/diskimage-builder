@@ -19,6 +19,7 @@ import errno
 import logging
 import os
 import sys
+import yaml
 
 import diskimage_builder.logging_config
 
@@ -188,6 +189,10 @@ def main(argv):
                         default=False,
                         help=('(DEPRECATED) print expanded dependencies '
                               'of all args'))
+    parser.add_argument('--env', '-e', action='store_true',
+                        default=False,
+                        help=('Output eval-able bash strings for '
+                              'IMAGE_ELEMENT variables'))
 
     args = parser.parse_args(argv[1:])
 
@@ -197,5 +202,33 @@ def main(argv):
         logger.warning("expand-dependencies flag is deprecated,  "
                        "and is now on by default.", file=sys.stderr)
 
-    print(' '.join(expand_dependencies(args.elements, all_elements)))
+    elements = expand_dependencies(args.elements, all_elements)
+
+    if args.env:
+        # first the "legacy" environment variable that just lists the
+        # elements
+        print("export IMAGE_ELEMENT='%s'" % ' '.join(elements))
+
+        # Then YAML
+        output = {}
+        for element in elements:
+            output[element] = all_elements[element].path
+        print("export IMAGE_ELEMENT_YAML='%s'" % yaml.safe_dump(output))
+
+        # Then bash array.  Unfortunately, bash can't export array
+        # variables.  So we take a compromise and produce an exported
+        # function that outputs the string to re-create the array.
+        # You can then simply do
+        #  eval declare -A element_array=$(get_image_element_array)
+        # and you have it.
+        output = ""
+        for element in elements:
+            output += '[%s]=%s ' % (element, all_elements[element].path)
+        print("function get_image_element_array {\n"
+              "  echo \"%s\"\n"
+              "};\n"
+              "export -f get_image_element_array;" % output)
+    else:
+        print(' '.join(elements))
+
     return 0

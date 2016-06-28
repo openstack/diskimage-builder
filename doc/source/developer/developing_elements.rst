@@ -178,10 +178,6 @@ To set environment variables for other hooks, add a file to your element
 This directory contains bash script snippets that are sourced before running
 scripts in each phase.
 
-DIB exposes an internal ``$IMAGE_ELEMENT`` variable which provides elements
-access to the full set of elements that are included in the image build. This
-can be used to process local in-element files across all the elements
-(``pkg-map`` for example).
 
 Dependencies
 ^^^^^^^^^^^^
@@ -318,6 +314,37 @@ default location/branch can then be overridden by the process running
 diskimage-builder, making it possible to use the same element to track more
 then one branch of a git repository or to get source for a local cache. See
 :doc:`../elements/source-repositories/README` for more information.
+
+Finding other elements
+----------------------
+
+DIB exposes an internal ``$IMAGE_ELEMENT_YAML`` variable which
+provides elements access to the full set of included elements and
+their paths.  This can be used to process local in-element files
+across all the elements (``pkg-map`` for example).
+
+.. code-block:: python
+
+   import os
+   import yaml
+
+   elements = yaml.load(os.getenv('IMAGE_ELEMENT_YAML'))
+   for element, path in elements:
+      ...
+
+For elements written in Bash, there is a function
+``get_image_element_array`` that can be used to instantiate an
+associative-array of elements and paths (note arrays can not be
+exported in bash).
+
+.. code-block:: bash
+
+   # note eval to expand the result of the get function
+   eval declare -A image_elements=($(get_image_element_array))
+   for i in ${!image_elements[$i]}; do
+     element=$i
+     path=${image_elements[$i]}
+   done
 
 Debugging elements
 ------------------

@@ -75,19 +75,27 @@ function copy_hooks_not_overwrite () {
 }
 
 function generate_hooks () {
-  mkdir -p $TMP_HOOKS_PATH
-  for _ELEMENT in $IMAGE_ELEMENT ; do
-    for dir in ${ELEMENTS_PATH//:/ } ; do
-      [ -d $dir/$_ELEMENT ] || continue
-      for _DIR in $(find $dir/$_ELEMENT -follow -mindepth 1 -maxdepth 1 -type d -not -name tests); do
-        copy_hooks_not_overwrite $_DIR
-      done
-      for _FILE in $(find $dir/$_ELEMENT -follow -maxdepth 1 -type f); do
-        cp -t $TMP_HOOKS_PATH -a $_FILE
-      done
-      break
+    local dir
+    local file
+
+    eval declare -A image_elements=($(get_image_element_array))
+
+    mkdir -p $TMP_HOOKS_PATH
+
+    for i in "${!image_elements[@]}"; do
+        local element=$i
+        local element_dir=${image_elements[$i]}
+
+        for dir in $(find $element_dir \
+                          -follow -mindepth 1 -maxdepth 1 \
+                          -type d -not -name tests); do
+            copy_hooks_not_overwrite $dir
+        done
+        for file in $(find $element_dir \
+                           -follow -maxdepth 1 -type f); do
+            cp -t $TMP_HOOKS_PATH -a $file
+        done
     done
-  done
 }
 
 # Call the supplied break-in routine if the named point is listed in the break
@@ -196,8 +204,29 @@ function arg_to_elements() {
   fi
   echo "Building elements: $IMAGE_ELEMENT"
 
-  IMAGE_ELEMENT=$($SCRIPT_HOME/element-info $IMAGE_ELEMENT)
-  export IMAGE_ELEMENT
+  # element-info will output bash code to create
+  #  * IMAGE_ELEMENT
+  #     legacy list of elements
+  #
+  #  * IMAGE_ELEMENT_YAML
+  #     YAML dictionary with key=element, value=path
+  #
+  #      import os
+  #      import yaml
+  #      yaml.load(os.getenv('IMAGE_ELEMENT_YAML')
+  #
+  #  * function get_image_element_array
+  #     Function to create Bash associative-array.  Since bash can not
+  #     export array variables, we provide a function to populate the
+  #     variables.
+  #
+  #      # we need the eval, it expands the string for the array create
+  #      eval declare -A image_elements=($(get_image_element_array))
+  #      for i in ${!image_elements[@]}; do
+  #        element=$i
+  #        path=${image_elements[$i]
+  #      done
+  eval "$($SCRIPT_HOME/element-info --env $IMAGE_ELEMENT)"
 
   echo "Expanded element dependencies to: $IMAGE_ELEMENT"
 }
