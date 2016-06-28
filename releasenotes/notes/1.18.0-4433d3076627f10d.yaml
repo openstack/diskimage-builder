@@ -1,0 +1,6 @@
+---
+features:
+  - The ``fedora-minimal`` element now supports Fedora 24
+  - The ``pkg-map`` element now correctly supports images without
+    python2 in the default install (such as the latest releases from
+    Ubuntu and Fedora).
