@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import os
 
 import fixtures
@@ -39,6 +40,8 @@ class TestElementDeps(testtools.TestCase):
     def setUp(self):
         super(TestElementDeps, self).setUp()
         self.element_dir = self.useFixture(fixtures.TempDir()).path
+        self.log_fixture = self.useFixture(
+            fixtures.FakeLogger(level=logging.DEBUG))
         _populate_element(self.element_dir, 'requires-foo', ['foo'])
         _populate_element(self.element_dir,
                           'foo',
@@ -81,6 +84,8 @@ class TestElementDeps(testtools.TestCase):
         self.assertRaises(SystemExit,
                           element_dependencies.expand_dependencies, ['fake'],
                           self.element_dir)
+        self.assertIn("Element 'fake' not found",
+                      self.log_fixture.output)
 
     def test_transitive_deps(self):
         result = element_dependencies.expand_dependencies(
@@ -128,12 +133,16 @@ class TestElementDeps(testtools.TestCase):
                           element_dependencies.expand_dependencies,
                           ['provides_virtual'],
                           elements_dir=self.element_dir)
+        self.assertIn("Please include an operating system element",
+                      self.log_fixture.output)
 
     def test_duplicated_os_passed_as_element(self):
         self.assertRaises(SystemExit,
                           element_dependencies.expand_dependencies,
                           ['circular1', 'operating-system'],
                           elements_dir=self.element_dir)
+        self.assertIn("provided by other included elements: operating-system",
+                      self.log_fixture.output)
 
 
 class TestElements(testtools.TestCase):
