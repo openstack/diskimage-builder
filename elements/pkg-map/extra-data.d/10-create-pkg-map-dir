@@ -8,10 +8,14 @@ set -o pipefail
 
 sudo mkdir -p $TMP_MOUNT_PATH/usr/share/pkg-map/
 
-for ELEMENT in $IMAGE_ELEMENT ; do
-    for DIR in ${ELEMENTS_PATH//:/ }; do
-        if [ -f "$DIR/$ELEMENT/pkg-map" ]; then
-            sudo cp "$DIR/$ELEMENT/pkg-map" "$TMP_MOUNT_PATH/usr/share/pkg-map/$ELEMENT"
-        fi
-    done
+eval declare -A image_elements=($(get_image_element_array))
+
+for i in "${!image_elements[@]}"; do
+    element=$i
+    element_dir=${image_elements[$i]}
+
+    pkg_map="${element_dir}/pkg-map"
+    if [ -f "${pkg_map}" ]; then
+        sudo cp "${pkg_map}" "$TMP_MOUNT_PATH/usr/share/pkg-map/$element"
+    fi
 done
