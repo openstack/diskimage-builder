@@ -445,7 +445,7 @@ for X in ${!IMAGE_TYPES[@]} ; do
   elif [ "${IMAGE_TYPES[$X]}" == "docker" ]; then
     sudo tar -C ${TMP_BUILD_DIR}/mnt -cf - --exclude ./sys \
              --exclude ./proc --xattrs --xattrs-include=\* . \
-        | docker import - $DOCKER_TARGET
+        | sudo docker import - $DOCKER_TARGET
     unset IMAGE_TYPES[$X]
   fi
 done
