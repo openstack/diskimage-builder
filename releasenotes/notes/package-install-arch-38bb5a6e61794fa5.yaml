@@ -1,0 +1,6 @@
+---
+features:
+  - The ``package-installs`` element now supports a list of
+    architectures to install the package for in the ``arch`` field and
+    negative matching with a ``not-arch`` field.  This allows greater
+    flexibility when installing packages for only some architectures.

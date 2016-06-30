@@ -1,12 +1,10 @@
 tgt:
 curl:
-# dmidecode does not exist for ppc* arches so add includes for non ppc
+# dmidecode does not exist for ppc* arches so we use lshw
 dmidecode:
-    arch: x86_64
-dmidecode:
-    arch: i386
-dmidecode:
-    arch: amd64
+    not-arch: ppc64,ppc64el
+lshw:
+    arch: ppc64, ppc64el
 ipmitool:
 qemu-utils:
 gcc:
@@ -17,6 +15,5 @@ util-linux:
 genisoimage:
 gdisk:
 kmod:
-lshw:
 psmisc:
 dosfstools:
