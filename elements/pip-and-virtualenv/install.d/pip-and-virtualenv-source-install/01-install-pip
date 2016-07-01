@@ -16,7 +16,7 @@ if [[ $DISTRO_NAME =~ (centos|fedora) ]]; then
     # on somebody does a "yum install python-virtualenv" and goes and
     # overwrites the pip installed version with the packaged version,
     # leading to all sorts of weird version issues.
-    ${YUM} install -y python-virtualenv python-pip python-setuptools
+    ${YUM:-yum} install -y python-virtualenv python-pip python-setuptools
 
     # install pip; this overwrites packaged pip
     python /tmp/get-pip.py
