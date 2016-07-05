@@ -1,0 +1,5 @@
+---
+fixes:
+  - Fix issue where ironic-agent did not work on ppc due to missing dmidecode.
+  - Fix issue where we were unable to create empty tempdirs in the target image.
+  - Revert change where we were installing virtualenv on centos with both system and python packages.
