@@ -450,8 +450,10 @@ for X in ${!IMAGE_TYPES[@]} ; do
   fi
 done
 
-# Prep filesystem by discarding all unused space
-fstrim_image
+if [[ ! $IMAGE_ELEMENT =~ ironic-agent ]]; then
+    # Prep filesystem by discarding all unused space
+    fstrim_image
+fi
 
 # Unmount and cleanup the /mnt and /build subdirectories, to save
 # space before converting the image to some other format.
@@ -459,7 +461,7 @@ unmount_image
 cleanup_build_dir
 
 has_raw_type=
-if [ "$IS_RAMDISK" == "0" ]; then
+if [[ ! $IMAGE_ELEMENT =~ ironic-agent && "$IS_RAMDISK" == "0" ]]; then
   for IMAGE_TYPE in ${IMAGE_TYPES[@]} ; do
     # We have to do raw last because it is destructive
     if [ "$IMAGE_TYPE" = "raw" ]; then
@@ -476,12 +478,6 @@ fi
 
 # Remove the leftovers, i.e. the temporary image directory.
 cleanup_image_dir
-
-case "$IMAGE_ELEMENT" in
-  *ironic-agent*)
-    rm $IMAGE_NAME.$IMAGE_TYPE
-    ;;
-esac
 
 # All done!
 trap EXIT
