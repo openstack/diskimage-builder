@@ -7,3 +7,4 @@ set -eu
 set -o pipefail
 
 sed -i '/secure_path/ s/$/:\/usr\/local\/bin/' /etc/sudoers
+visudo -c
