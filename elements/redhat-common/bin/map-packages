@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/dib-python
 # dib-lint: disable=indent
 # dib-lint indent requirements causes issue with pep8
 
