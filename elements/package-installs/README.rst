@@ -9,19 +9,27 @@ package-installs.yaml or package-installs.json file in the element directory.
 In order to work on Gentoo hosts you will need to manually install
 `dev-python/pyyaml`.
 
-example package-installs.yaml::
+example ``package-installs.yaml``
 
- libxml2:
- grub2:
-   phase: pre-install.d
- networkmanager:
-   uninstall: True
- os-collect-config:
-   installtype: source
- linux-image-amd64:
-   arch: amd64
+.. code-block:: YAML
 
-example package-installs.json::
+  libxml2:
+  grub2:
+    phase: pre-install.d
+  networkmanager:
+    uninstall: True
+  os-collect-config:
+    installtype: source
+  linux-image-amd64:
+    arch: amd64
+  dmidecode:
+    not-arch: ppc64, ppc64le
+  lshw:
+    arch: ppc64, ppc64le
+
+example package-installs.json
+
+.. code-block:: json
 
     {
     "libxml2": null,
@@ -43,9 +51,11 @@ Setting the installtype property causes the package only to be installed if
 the specified installtype would be used for the element. See the
 diskimage-builder docs for more information on installtypes.
 
-Setting the arch property causes the package only to be installed for the
-specified target architecture. See documentation about the ARCH variable
-for more information.
+The ``arch`` property is a comma-separated list of architectures to
+install for.  The ``not-arch`` is a comma-separated list of
+architectures the package should be excluded from.  Either ``arch`` or
+``not-arch`` can be given for one package - not both.  See
+documentation about the ARCH variable for more information.
 
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or
 post-install.d directories called package-installs-<element-name> will cause

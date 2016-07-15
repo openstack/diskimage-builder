@@ -19,7 +19,7 @@ import collections
 import functools
 import json
 import os
-
+import sys
 import yaml
 
 
@@ -28,6 +28,31 @@ def get_element_installtype(element_name):
     return os.environ.get(
         "DIB_INSTALLTYPE_%s" % element_name.replace('-', '_'),
         default)
+
+
+def _is_arch_in_list(strlist):
+    """Checks if os.environ['ARCH'] is in comma separated strlist"""
+    strlist = strlist.split(',')
+    map(str.strip, strlist)
+    return os.environ['ARCH'] in strlist
+
+
+def _valid_for_arch(pkg_name, arch, not_arch):
+    """Filter out incorrect ARCH versions"""
+    if arch is None and not_arch is None:
+        # nothing specified; always OK
+        return True
+    if arch and not_arch:
+        print("package-installs configuration error: arch and not_arch "
+              "given for package [%s]" % pkg_name)
+        sys.exit(1)
+    # if we have an arch list, our current arch must be in it
+    # to install.
+    if arch:
+        return _is_arch_in_list(arch)
+    # if we don't have an explicit arch list, we should
+    # install unless we are in the not-arch list.
+    return not _is_arch_in_list(not_arch)
 
 
 def collect_data(data, filename, element_name):
@@ -48,13 +73,12 @@ def collect_data(data, filename, element_name):
         elem_installtype = get_element_installtype(element_name)
         valid_installtype = (installtype is None or
                              installtype == elem_installtype)
-
-        # Filter out incorrect ARCH versions
-        arch = params.get('arch', None)
-        valid_arch = arch is None or arch == os.environ['ARCH']
+        valid_arch = _valid_for_arch(pkg_name, params.get('arch', None),
+                                     params.get('not-arch', None))
 
         if valid_installtype and valid_arch:
             data[phase][install].append((pkg_name, element_name))
+
     return data
 
 
