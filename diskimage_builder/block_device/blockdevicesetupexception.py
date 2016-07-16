@@ -12,6 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from diskimage_builder.block_device.level0.localloop import LocalLoop
 
-__all__ = [LocalLoop]
+class BlockDeviceSetupException(Exception):
+    pass

@@ -1,0 +1,11 @@
+---
+features:
+  - Create partitions with MBR layout optimized for performance and
+    highly configurable.
+
+deprecations:
+  - The new partitions are created based on configuration rather than
+    on a list of provided commands for a special partitioning tool.
+    Therefore elements using tools (like partitioning-sfdisk) are
+    deprecated and will be removed.
+

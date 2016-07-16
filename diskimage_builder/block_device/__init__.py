@@ -69,7 +69,7 @@ def main():
     method = getattr(bd, "cmd_" + args.phase, None)
     if callable(method):
         # If so: call it.
-        method()
+        return method()
     else:
         logger.error("phase [%s] does not exists" % args.phase)
         return 1

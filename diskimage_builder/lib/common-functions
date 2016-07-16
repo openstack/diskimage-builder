@@ -41,7 +41,7 @@ function mk_build_dir () {
   fi
   trap trap_cleanup EXIT
   echo Building in $TMP_BUILD_DIR
-  export TMP_IMAGE_PATH=$TMP_IMAGE_DIR/image.raw
+  export TMP_IMAGE_DIR
   export OUT_IMAGE_PATH=$TMP_IMAGE_PATH
   export TMP_HOOKS_PATH=$TMP_BUILD_DIR/hooks
 }

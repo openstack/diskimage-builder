@@ -12,6 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from diskimage_builder.block_device.level0.localloop import LocalLoop
+from diskimage_builder.block_device.level1.partitioning import Partitioning
 
-__all__ = [LocalLoop]
+__all__ = [Partitioning]

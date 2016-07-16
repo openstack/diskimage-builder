@@ -20,6 +20,7 @@ sudo apt-get install -y --force-yes \
         debootstrap \
         docker \
         kpartx \
+        util-linux \
         qemu-img || \
     sudo emerge \
         app-emulation/qemu \

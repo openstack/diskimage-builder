@@ -360,8 +360,27 @@ export TMP_IMAGE_DIR
 # Try the 'old fashioned' way calling the block device
 # phase. If this gives no result, use the configuration based approach:
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
+
+# Because there is currently no generic way of passing in variables
+# from elements to the main, get here the well known config of a well
+# known element.
+# (This is only temporary and will go away when the complete block
+# device handling including file system handling and mounting is
+# implemented using python.)
+if [[ $IMAGE_ELEMENT =~ vm ]]; then
+    for EPATH in $(echo ${ELEMENTS_PATH} | tr ":" " "); do
+        PART_CFG_PATH=${EPATH}/vm/environment.d/10-partitioning
+        [ -e ${PART_CFG_PATH} ] && source ${PART_CFG_PATH}
+    done
+fi
+
+# There is the need to get the path of the dib-block-device entry
+# point, because when running in a venv, the standard path of
+# sudo does not include this.
+DIB_BLOCK_DEVICE_SCRIPT=$(which dib-block-device)
+
 if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
-    IMAGE_BLOCK_DEVICE=$(dib-block-device \
+    IMAGE_BLOCK_DEVICE=$(${DIB_BLOCK_DEVICE_SCRIPT} \
                              --phase=create \
                              --config="${DIB_BLOCK_DEVICE_CONFIG:-}" \
                              --image-size="${DIB_IMAGE_SIZE}"KiB \
@@ -370,55 +389,36 @@ if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
 fi
 export IMAGE_BLOCK_DEVICE
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
-export EXTRA_DETACH="detach_loopback $LOOPDEV"
-export EXTRA_UNMOUNT="dib-block-device --phase=umount \
+
+IMAGE_BLOCK_DEVICE_WITHOUT_PART=$(echo ${IMAGE_BLOCK_DEVICE} \
+              | sed -e "s|^\(.*loop[0-9]*\)p[0-9]*$|\1|g")
+export IMAGE_BLOCK_DEVICE_WITHOUT_PART
+
+export EXTRA_DETACH="detach_loopback ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}"
+export EXTRA_UNMOUNT="dib-block-device --phase=cleanup \
                       --build-dir=\"${TMP_BUILD_DIR}\""
 
 # Create the partitions and make them visible to the system
 
-# Create 2 partitions for PPC, one for PReP boot and other for root
-if [[ "$ARCH" =~ "ppc" ]] ; then
-    sudo parted -a optimal -s $IMAGE_BLOCK_DEVICE \
-        mklabel msdos \
-        mkpart primary 0 8cyl \
-        set 1 boot on \
-        set 1 prep on \
-        mkpart primary 9cyl 100%
-else
-    sudo parted -a optimal -s $IMAGE_BLOCK_DEVICE \
-        mklabel msdos \
-        mkpart primary 1MiB 100% \
-        set 1 boot on
-fi
-
-sudo partprobe $IMAGE_BLOCK_DEVICE
+sudo partprobe $IMAGE_BLOCK_DEVICE_WITHOUT_PART
 
 # To ensure no race conditions exist from calling partprobe
 sudo udevadm settle
 
 # If the partition isn't under /dev/loop*p1, create it with kpartx
 DM=
-if [ ! -e "${IMAGE_BLOCK_DEVICE}p1" ]; then
+if [ ! -e "${IMAGE_BLOCK_DEVICE}" ]; then
     DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
     # If running inside Docker, make our nodes manually, because udev will not be working.
     if [ -f /.dockerenv ]; then
         # kpartx cannot run in sync mode in docker.
-        sudo kpartx -av $TMP_IMAGE_PATH
+        sudo kpartx -av ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}
         sudo dmsetup --noudevsync mknodes
     else
-        sudo kpartx -asv $TMP_IMAGE_PATH
+        sudo kpartx -asv ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}
     fi
 elif [[ "$ARCH" =~ "ppc" ]]; then
-    sudo kpartx -asv $TMP_IMAGE_PATH
-fi
-
-if [ -n "$DM" ]; then
-    export IMAGE_BLOCK_DEVICE=${DM}p1
-elif [[ "$ARCH" =~ "ppc" ]]; then
-    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
-    export IMAGE_BLOCK_DEVICE=${DM}p2
-else
-    export IMAGE_BLOCK_DEVICE=${IMAGE_BLOCK_DEVICE}p1
+    sudo kpartx -asv ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}
 fi
 
 # End: Creation of the partitions
@@ -471,9 +471,14 @@ fi
 # space before converting the image to some other format.
 export EXTRA_UNMOUNT=""
 unmount_image
-export TMP_IMAGE_PATH=$(dib-block-device \
+export TMP_IMAGE_PATH=$(${DIB_BLOCK_DEVICE_SCRIPT} \
                             --phase=umount \
                             --build-dir="${TMP_BUILD_DIR}" )
+
+${DIB_BLOCK_DEVICE_SCRIPT} \
+    --phase=cleanup \
+    --build-dir="${TMP_BUILD_DIR}"
+
 cleanup_build_dir
 
 if [[ (! $IMAGE_ELEMENT =~ no-final-image) && "$IS_RAMDISK" == "0" ]]; then

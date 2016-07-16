@@ -50,6 +50,10 @@ function trap_cleanup() {
 }
 
 function cleanup () {
+    DIB_BLOCK_DEVICE_SCRIPT=$(which dib-block-device)
+    sudo -E ${DIB_BLOCK_DEVICE_SCRIPT} \
+         --phase=umount \
+         --build-dir="${TMP_BUILD_DIR}"
     unmount_image
     cleanup_build_dir
     cleanup_image_dir

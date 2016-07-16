@@ -9,14 +9,8 @@ fi
 set -eu
 set -o pipefail
 
-# FIXME:
-[ -n "$IMAGE_BLOCK_DEVICE" ]
 PART_DEV=$IMAGE_BLOCK_DEVICE
-if [[ "$ARCH" =~ "ppc" ]]; then
-    BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's#p2##')'p1'
-else
-    BOOT_DEV=$(echo $IMAGE_BLOCK_DEVICE | sed -e 's#p1##' | sed -e 's#mapper/##')
-fi
+BOOT_DEV=$IMAGE_BLOCK_DEVICE_WITHOUT_PART
 
 function install_extlinux {
     install-packages -m bootloader extlinux

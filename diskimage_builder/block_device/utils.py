@@ -12,7 +12,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-SIZE_SPECS = [
+import re
+
+
+SIZE_UNIT_SPECS = [
     ["TiB", 1024**4],
     ["GiB", 1024**3],
     ["MiB", 1024**2],
@@ -29,45 +32,52 @@ SIZE_SPECS = [
     ["", 1],   # No unit -> size is given in bytes
 ]
 
+# Basic RE to check and split floats (without exponent)
+# and a given unit specification (which must be non-numerical).
+size_unit_spec_re = re.compile("^([\d\.]*) ?([a-zA-Z0-9_]*)$")
 
-def _split_size_spec(size_spec):
-    for spec_key, spec_value in SIZE_SPECS:
-        if len(spec_key) == 0:
-            return size_spec, spec_key
-        if size_spec.endswith(spec_key):
-            return size_spec[:-len(spec_key)], spec_key
-    raise RuntimeError("size_spec [%s] not known" % size_spec)
+
+def _split_size_unit_spec(size_unit_spec):
+    """Helper function to split unit specification into parts.
+
+    The first part is the numeric part - the second one is the unit.
+    """
+    match = size_unit_spec_re.match(size_unit_spec)
+    if match is None:
+        raise RuntimeError("Invalid size unit spec [%s]" % size_unit_spec)
+
+    return match.group(1), match.group(2)
 
 
 def _get_unit_factor(unit_str):
-    for spec_key, spec_value in SIZE_SPECS:
+    """Helper function to get the unit factor.
+
+    The given unit_str needs to be a string of the
+    SIZE_UNIT_SPECS table.
+    If the unit is not found, a runtime error is raised.
+    """
+    for spec_key, spec_value in SIZE_UNIT_SPECS:
         if unit_str == spec_key:
             return spec_value
     raise RuntimeError("unit_str [%s] not known" % unit_str)
 
 
 def parse_abs_size_spec(size_spec):
-    size_cnt_str, size_unit_str = _split_size_spec(size_spec)
+    size_cnt_str, size_unit_str = _split_size_unit_spec(size_spec)
     unit_factor = _get_unit_factor(size_unit_str)
     return int(unit_factor * (
         float(size_cnt_str) if len(size_cnt_str) > 0 else 1))
 
 
-def convert_to_utf8(jdata):
-    """Convert to UTF8.
+def parse_rel_size_spec(size_spec, abs_size):
+    """Parses size specifications - can be relative like 50%
 
-    The json parser returns unicode strings. Because in
-    some python implementations unicode strings are not
-    compatible with utf8 strings - especially when using
-    as keys in dictionaries - this function recursively
-    converts the json data.
+    In addition to the absolute parsing also a relative
+    parsing is done.  If the size specification ends in '%',
+    then the relative size of the given 'abs_size' is returned.
     """
-    if isinstance(jdata, unicode):
-        return jdata.encode('utf-8')
-    elif isinstance(jdata, dict):
-        return {convert_to_utf8(key): convert_to_utf8(value)
-                for key, value in jdata.iteritems()}
-    elif isinstance(jdata, list):
-        return [convert_to_utf8(je) for je in jdata]
-    else:
-        return jdata
+    if size_spec[-1] == '%':
+        percent = float(size_spec[:-1])
+        return True, int(abs_size * percent / 100.0)
+
+    return False, parse_abs_size_spec(size_spec)
