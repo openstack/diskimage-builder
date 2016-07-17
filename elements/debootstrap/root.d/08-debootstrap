@@ -59,9 +59,10 @@ else
 
     # Have to --include=python because of dib-run-parts
     # Have to --include=sudo for pre-install.d use of sudoers files
+    # Have to --include=busybox because initramfs needs it
     sudo sh -c "http_proxy=$http_proxy debootstrap --verbose \
         --variant=minbase \
-        --include=python,sudo,$KERNEL_PACKAGE \
+        --include=python,sudo,busybox,$KERNEL_PACKAGE \
         --components=${DIB_DEBIAN_COMPONENTS} \
         --arch=${ARCH} \
         $KEYRING_OPT \

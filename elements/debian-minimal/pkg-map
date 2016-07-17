@@ -1,0 +1,14 @@
+{
+  "release": {
+    "debian": {
+      "testing": {
+        "systemd": "systemd",
+        "systemd-sysv": "systemd-sysv"
+       }
+     }
+   },
+  "default": {
+    "systemd": "",
+    "systemd-sysv": ""
+  }
+}
