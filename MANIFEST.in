@@ -1,5 +1,1 @@
-include bin/disk-image-create
-include bin/ramdisk-image-create
-graft lib
-graft elements
 include README.rst

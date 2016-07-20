@@ -26,13 +26,14 @@ export DIB_ENV=$(export | grep ' DIB_.*=')
 
 SCRIPTNAME=$(basename $0)
 
-export _LIB=$(python -c '
-import diskimage_builder.paths
-diskimage_builder.paths.get_path("lib")')
+if [ -z "$_LIB" ]; then
+    echo "_LIB not set!"
+    exit 1
+fi
 
 _BASE_ELEMENT_DIR=$(python -c '
 import diskimage_builder.paths
-diskimage_builder.paths.get_path("elements")')
+diskimage_builder.paths.show_path("elements")')
 
 source $_LIB/die
 

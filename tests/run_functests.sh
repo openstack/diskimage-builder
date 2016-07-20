@@ -4,11 +4,10 @@ set -eu
 set -o pipefail
 
 BASE_DIR=$(cd $(dirname "$0")/.. && pwd)
-export DIB_CMD=$BASE_DIR/bin/disk-image-create
+export DIB_CMD=disk-image-create
 export DIB_ELEMENTS=$(python -c '
 import diskimage_builder.paths
-diskimage_builder.paths.get_path("elements")')
-
+diskimage_builder.paths.show_path("elements")')
 
 #
 # Default skip tests

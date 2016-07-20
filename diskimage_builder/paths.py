@@ -21,11 +21,15 @@ import sys
 
 def get_path(var):
     if var == "lib":
-        print(os.path.abspath(
-            pkg_resources.resource_filename(__name__, "lib")))
+        return os.path.abspath(
+            pkg_resources.resource_filename(__name__, "lib"))
     elif var == "elements":
-        print(os.path.abspath(
-            pkg_resources.resource_filename(__name__, "elements")))
+        return os.path.abspath(
+            pkg_resources.resource_filename(__name__, "elements"))
     else:
         print("Unknown path request!")
         sys.exit(1)
+
+
+def show_path(var):
+    print(get_path(var))
