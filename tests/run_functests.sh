@@ -18,6 +18,9 @@ DEFAULT_SKIP_TESTS=(
     fedora/build-succeeds
     # in non-voting
     gentoo/build-succeeds
+    # good to have the test case around - but because of changes
+    # in testing does not work always.
+    debian-minimal/testing-build-succeeds
 )
 
 # run_disk_element_test <test_element> <element>

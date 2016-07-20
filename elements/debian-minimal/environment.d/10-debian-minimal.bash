@@ -1,5 +1,5 @@
 export DISTRO_NAME=debian
-export DIB_RELEASE=${DIB_RELEASE:-unstable}
+export DIB_RELEASE=${DIB_RELEASE:-stable}
 export DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://httpredir.debian.org/debian}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main}
 export DIB_DEBIAN_COMPONENTS_WS=${DIB_DEBIAN_COMPONENTS//,/ }
@@ -11,7 +11,7 @@ updates:deb ${DIB_DISTRIBUTION_MIRROR} ${DIB_RELEASE}-updates ${DIB_DEBIAN_COMPO
 security:deb http://security.debian.org/ ${DIB_RELEASE}/updates ${DIB_DEBIAN_COMPONENTS_WS}
 "
 
-if [ "${DIB_RELEASE}" = "unstable" ]; then
+if [ "${DIB_RELEASE}" = "testing" -o "${DIB_RELEASE}" = "unstable" ]; then
     DIB_APT_SOURCES_CONF_DEFAULT="default:deb ${DIB_DISTRIBUTION_MIRROR} ${DIB_RELEASE} ${DIB_DEBIAN_COMPONENTS_WS}"
 fi
 
