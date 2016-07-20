@@ -23,21 +23,65 @@ DEFAULT_SKIP_TESTS=(
     debian-minimal/testing-build-succeeds
 )
 
+function log_with_prefix {
+    local pr=$1
+
+    while read a; do
+        echo $(date +"%Y%m%d-%H%M%S.%N") "[$pr] $a"
+    done
+}
+
+# Log job control messages
+function log_jc {
+    local msg="$1"
+    printf "[JOB-CONTROL] %s %s\n" "$(date)" "${msg}"
+}
+
+function job_cnt {
+    running_jobs=$(jobs -p)
+    echo ${running_jobs} | wc -w
+}
+
+# This is needed, because the better 'wait -n' is
+# available since bash 4.3 only.
+function wait_minus_n {
+    if [ "${BASH_VERSINFO[0]}" -gt 4 \
+                               -o "${BASH_VERSINFO[0]}" = 4 \
+                               -a "${BASH_VERSINFO[1]}" -ge 3 ]; then
+        # Good way: wait on any job
+        wait -n
+        return $?
+    else
+        # Not that good way: wait on one specific job
+        # (others may be finished in the mean time)
+        local wait_for_pid=$(jobs -p | head -1)
+        wait ${wait_for_pid}
+        return $?
+    fi
+}
+
 # run_disk_element_test <test_element> <element>
 #  Run a disk-image-build .tar build of ELEMENT including any elements
 #  specified by TEST_ELEMENT
 function run_disk_element_test() {
     local test_element=$1
     local element=$2
+    local dont_use_tmp=$3
+    local use_tmp_flag=""
     local dest_dir=$(mktemp -d)
 
-    trap "rm -rf $dest_dir /tmp/dib-test-should-fail" EXIT
+    trap "rm -rf $dest_dir" EXIT
+
+    if [ "${dont_use_tmp}" = "yes" ]; then
+        use_tmp_flag="--no-tmpfs"
+    fi
 
     if break="after-error" break_outside_target=1 \
-        break_cmd="cp \$TMP_MOUNT_PATH/tmp/dib-test-should-fail /tmp/ 2>&1 > /dev/null || true" \
+        break_cmd="cp -v \$TMP_MOUNT_PATH/tmp/dib-test-should-fail ${dest_dir} || true" \
         DIB_SHOW_IMAGE_USAGE=1 \
         ELEMENTS_PATH=$DIB_ELEMENTS:$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -x -t tar,qcow2 -o $dest_dir/image -n $element $test_element; then
+        $DIB_CMD -x -t tar,qcow2 ${use_tmp_flag} -o $dest_dir/image -n $element $test_element 2>&1 \
+           | log_with_prefix "${element}/${test_element}"; then
 
         if ! [ -f "$dest_dir/image.qcow2" ]; then
             echo "Error: qcow2 build failed for element: $element, test-element: $test_element."
@@ -58,7 +102,7 @@ function run_disk_element_test() {
             fi
         fi
     else
-        if [ -f "/tmp/dib-test-should-fail" ]; then
+        if [ -f "${dest_dir}/dib-test-should-fail" ]; then
             echo "PASS: Element $element, test-element: $test_element"
         else
             echo "Error: Build failed for element: $element, test-element: $test_element."
@@ -79,7 +123,8 @@ function run_ramdisk_element_test() {
     local dest_dir=$(mktemp -d)
 
     if ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -x -o $dest_dir/image $element $test_element; then
+        $DIB_CMD -x -o $dest_dir/image $element $test_element \
+            | log_with_prefix "${element}/${test_element}"; then
         # TODO(dtantsur): test also kernel presence once we sort out its naming
         # problem (vmlinuz vs kernel)
         if ! [ -f "$dest_dir/image.initramfs" ]; then
@@ -109,12 +154,15 @@ for e in $DIB_ELEMENTS/*/test-elements/*; do
     TESTS+=("$element/$test_element")
 done
 
-while getopts ":hl" opt; do
+JOB_MAX_CNT=1
+
+while getopts ":hlpj:" opt; do
     case $opt in
         h)
             echo "run_functests.sh [-h] [-l] <test> <test> ..."
             echo "  -h : show this help"
             echo "  -l : list available tests"
+            echo "  -p : run all tests in parallel"
             echo "  <test> : functional test to run"
             echo "           Special test 'all' will run all tests"
             exit 0
@@ -128,6 +176,10 @@ while getopts ":hl" opt; do
             echo
             exit 0
             ;;
+        j)
+            JOB_MAX_CNT=${OPTARG}
+            echo "Running parallel - using [${JOB_MAX_CNT}] jobs"
+            ;;
         \?)
             echo "Invalid option: -$OPTARG"
             exit 1
@@ -135,6 +187,15 @@ while getopts ":hl" opt; do
     esac
 done
 shift $((OPTIND-1))
+
+DONT_USE_TMP="no"
+if [ "${JOB_MAX_CNT}" -gt 1 ]; then
+    # switch off using tmp dir for image building
+    # (The mem check using the tmp dir is currently done
+    #  based on the available memory - and not on the free.
+    #  See #1618124 for more details)
+    DONT_USE_TMP="yes"
+fi
 
 # cull the list of tests to run into TESTS_TO_RUN
 TESTS_TO_RUN=()
@@ -171,7 +232,36 @@ for test in "${TESTS_TO_RUN[@]}"; do
 done
 echo "------"
 
+function wait_and_exit_on_failure {
+    local pid=$1
+
+    wait ${pid}
+    result=$?
+
+    if [ "${result}" -ne 0 ]; then
+        exit ${result}
+    fi
+    return 0
+}
+
+EXIT_CODE=0
 for test in "${TESTS_TO_RUN[@]}"; do
+    running_jobs_cnt=$(job_cnt)
+    log_jc "Number of running jobs [${running_jobs_cnt}] max jobs [${JOB_MAX_CNT}]"
+    if [ "${running_jobs_cnt}" -ge "${JOB_MAX_CNT}" ]; then
+        log_jc "Waiting for job to finish"
+        wait_minus_n
+        result=$?
+
+        if [ "${result}" -ne 0 ]; then
+            EXIT_CODE=1
+            # If a job fails, do not start any new ones.
+            break
+        fi
+    fi
+
+    log_jc "Starting new job"
+
     # from above; each array value is element/test_element.  split it
     # back up
     element=${test%/*}
@@ -186,7 +276,30 @@ for test in "${TESTS_TO_RUN[@]}"; do
     fi
 
     echo "Running $test ($element_type)"
-    run_${element_type}_element_test $test_element $element
+    run_${element_type}_element_test $test_element $element ${DONT_USE_TMP} &
 done
 
-echo "Tests passed!"
+# Wait for the rest of the jobs
+while true; do
+    running_jobs_cnt=$(job_cnt)
+    log_jc "Number of running jobs left [${running_jobs_cnt}]"
+
+    if [ "${running_jobs_cnt}" -eq 0 ]; then
+        break;
+    fi
+
+    wait_minus_n
+    result=$?
+
+    if [ "${result}" -ne 0 ]; then
+        EXIT_CODE=1
+    fi
+done
+
+if [ "${EXIT_CODE}" -eq 0 ]; then
+    echo "Tests passed!"
+    exit 0
+else
+    echo "At least one test failed"
+    exit 1
+fi
