@@ -18,7 +18,9 @@ and Fedora.
 
 The `DIB_OFFLINE` or more specific `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`
 variables can be set to prefer the use of a pre-cached root filesystem
-tarball.
+tarball. Setting `DIB_OFFLINE` may cause other element to use cached data,
+while `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE` only functions in the debootstrap
+element.
 
 The `DIB_DEBOOTSTRAP_EXTRA_ARGS` environment variable may be used to
 pass extra arguments to the debootstrap command used to create the
