@@ -151,8 +151,8 @@ function _install_pkg_manager {
             # uses to get the minimal-langpack and chooses a
             # random(ish) one that satisfies the locale dependency
             # (rhbz#1349258).  Work-around this by explicitly requring
-            # the minimal pack.
-            _lang_pack="glibc-minimal-langpack"
+            # the minimal and english (for en_US.UTF-8) pack.
+            _lang_pack="glibc-minimal-langpack glibc-langpack-en"
         fi
 
         sudo -E yum -y \
@@ -240,6 +240,13 @@ else
     # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1197204
     echo -e "# This file intentionally left blank\n" | \
         sudo tee $TARGET_ROOT/etc/resolv.conf
+
+    # set the most reliable UTF-8 locale
+    echo -e 'LANG="en_US.UTF-8"' | \
+        sudo tee $TARGET_ROOT/etc/locale.conf
+    # default to UTC
+    sudo -E chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
+        /etc/localtime
 
     # cleanup
     # TODO : move this into a exit trap; and reconsider how
