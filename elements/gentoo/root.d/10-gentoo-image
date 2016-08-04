@@ -33,8 +33,6 @@ if ! [ 'x86_64' = "${ARCH}" ] ; then
     exit 1
 fi
 
-# get the element location so we can refrence things relative to it
-ELEMENT_DIR=${ELEMENT_DIR:-"${ELEMENTS_PATH##*:}/gentoo"}
 # valid gentoo profiles are as follows
 # default/linux/amd64/13.0
 # default/linux/amd64/13.0/no-multilib
@@ -81,7 +79,7 @@ else
     # https://dev.gentoo.org/~dolsen/releases/keyrings/gentoo-keys-*.tar.xz
     # http://distfiles.gentoo.org/distfiles/gentoo-keys-*.tar.xz
     GPGDIR=$(mktemp -d -t)
-    gpg --no-default-keyring --keyring "${GPGDIR}"/gentookeys.gpg --import "${ELEMENT_DIR}"/gentoo-releng.gpg
+    gpg --no-default-keyring --keyring "${GPGDIR}"/gentookeys.gpg --import "${TMP_HOOKS_PATH}"/extra-data.d/gentoo-releng.gpg
     # check the sig file
     gpgv --keyring "${GPGDIR}"/gentookeys.gpg "${CACHED_SIGNATURE_FILE}"
     if [[ "${?}" != 0 ]]; then
