@@ -6,6 +6,11 @@ fi
 set -eu
 set -o pipefail
 
+if [ $DIB_DISABLE_KERNEL_CLEANUP -ne 0 ]; then
+    echo "Skipping kernel cleanup as configured"
+    exit 0
+fi
+
 YUM=${YUM:-yum}
 
 if [[ ${YUM} == "dnf" ]]; then

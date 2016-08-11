@@ -22,3 +22,10 @@ DIB_LOCAL_IMAGE
    by diskimage-builder. It should be a full disk image, not just a filesystem
    image.
   :Example: ``DIB_LOCAL_IMAGE=rhel-guest-image-7.1-20150224.0.x86_64.qcow2``
+
+DIB_DISABLE_KERNEL_CLEANUP
+  :Required: No
+  :Default: 0
+  :Description: Specify if kernel needs to be cleaned up or not. When set to
+   true, the bits that cleanup old kernels will not be executed.
+  :Example: DIB_DISABLE_KERNEL_CLEANUP=1
