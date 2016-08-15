@@ -38,6 +38,6 @@ case "$DIB_INIT_SYSTEM" in
 esac
 
 # Copying the self signed certificate for request library
-if [ -f /tmp/in_target.d/server.pem ]; then
-    cat /tmp/in_target.d/server.pem >> $($IPADIR/venv/bin/python -c "import requests; print requests.certs.where()")
+if [ -f /tmp/in_target.d/ipa-trusted-cert.pem ]; then
+    cat /tmp/in_target.d/ipa-trusted-cert.pem >> $($IPADIR/venv/bin/python -c "import requests; print requests.certs.where()")
 fi

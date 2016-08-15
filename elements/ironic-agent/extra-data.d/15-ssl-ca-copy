@@ -8,5 +8,5 @@ set -eu
 set -o pipefail
 
 if [ -n "${DIB_IPA_CERT:=}" ]; then
-    cp $DIB_IPA_CERT $TMP_HOOKS_PATH/server.pem
+    cp $DIB_IPA_CERT $TMP_HOOKS_PATH/ipa-trusted-cert.pem
 fi
