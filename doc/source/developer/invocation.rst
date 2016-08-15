@@ -19,7 +19,9 @@ to the end of the path if a path is supplied.
 By default, the image building scripts will not overwrite existing
 disk images, allowing you to compare the newly built image with the
 existing one. To change that behaviour, set the variable
-``OVERWRITE_OLD_IMAGE`` to any value that isn't ``0``.
+``OVERWRITE_OLD_IMAGE`` to any value that isn't ``0``. If this value is
+zero then any existing image will be moved before the new image is
+written to the destination.
 
 Setting the variable ``DIB_SHOW_IMAGE_USAGE`` will print out a
 summarised disk-usage report for the final image of files and
