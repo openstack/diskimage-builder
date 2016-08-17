@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# Copied from tripleo-image-element's sysctl element
+#
+# Validate and manage setting sysctl settings.
+#
+# The script is called with name/value pairs which are stored
+# in the system default sysctl.d directory. Before adding new
+# settings a validation is done to ensure that conflicting
+# sysctl settings have not been requested. Once finished sysctl
+# is used to activate the changes.
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+NAME=${1:-}
+VALUE=${2:-}
+# Optional comment used to describe the setting
+COMMENT=${3:-"This file was created by diskimage-builder."}
+
+if [ -z "$NAME" -o -z "$VALUE" ]; then
+    echo "NAME and VALUE are required."
+    exit 1
+fi
+
+FILENAME="/etc/sysctl.d/${NAME}.conf"
+
+if [ -f $FILENAME ]; then
+    # check to make sure the settings match... otherwise fail
+    if ! grep -q "^$NAME = $VALUE" $FILENAME; then
+        echo "Conflicting sysctl.conf setting for $NAME == $VALUE. Found:"
+        grep "^$NAME" $FILENAME
+        exit 1
+    fi
+else
+
+    if ! sysctl -a | grep -q "^$NAME"; then
+        echo "Invalid sysctl key: $NAME"
+        exit 1
+    fi
+
+    sysctl-write-value $NAME "$VALUE" "$COMMENT"
+
+    sysctl -p $FILENAME
+
+fi
