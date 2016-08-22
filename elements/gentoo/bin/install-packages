@@ -79,7 +79,9 @@ eval set -- "${TEMP}"
 while true; do
     case "${1}" in
         -u )
-            emerge-webrsync -q
+            if [[ ! -f /usr/portage/profiles ]]; then
+                emerge-webrsync -q
+            fi
             install_gentoo_packages -uDNv --with-bdeps=y --jobs=2 @world
             install_gentoo_packages --verbose=n --depclean
             install_gentoo_packages -v --usepkg=n @preserved-rebuild
@@ -122,10 +124,14 @@ if [[ -z "${PKGS}" ]]; then
     echo "Not running install-packages ${ACTION} with empty packages list"
 else
     if [[ "${ACTION}" == 'install' ]]; then
-        emerge-webrsync -q
+        if [[ ! -f /usr/portage/profiles ]]; then
+            emerge-webrsync -q
+        fi
         install_gentoo_packages -q --jobs=2 --changed-use "${PKGS}"
     elif [[ "${ACTION}" == 'remove' ]]; then
-        emerge-webrsync -q
+        if [[ ! -f /usr/portage/profiles ]]; then
+            emerge-webrsync -q
+        fi
         install_gentoo_packages -C "${PKGS}"
     else
         echo 'something when really wrong, install action is not install or remove'
