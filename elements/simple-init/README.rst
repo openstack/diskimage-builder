@@ -33,3 +33,28 @@ not there.
 
 Finally, glean will handle ssh-keypair-injection from config
 drive if cloud-init is not installed.
+
+Chosing glean installation source
+---------------------------------
+
+By default glean is installed using pip using the latest release on pypi.
+It is also possible to install glean from a specified git repository
+location. This is useful for debugging and testing new glean changes
+for example. To do this you need to set these variables::
+
+  DIB_INSTALLTYPE_simple_init=repo
+  DIB_REPOLOCATION_glean=/path/to/glean/repo
+  DIB_REPOREF_glean=name_of_git_ref
+
+For example to test glean change 364516 do::
+
+  git clone https://git.openstack.org/openstack-infra/glean /tmp/glean
+  cd /tmp/glean
+  git review -d 364516
+  git checkout -b my-test-ref
+
+Then set your DIB env vars like this before running DIB::
+
+  DIB_INSTALLTYPE_simple_init=repo
+  DIB_REPOLOCATION_glean=/tmp/glean
+  DIB_REPOREF_glean=my-test-ref
