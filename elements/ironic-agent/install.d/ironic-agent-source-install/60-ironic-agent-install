@@ -9,11 +9,14 @@ set -o pipefail
 SCRIPTDIR=$(dirname $0)
 IPADIR=/usr/share/ironic-python-agent
 
+# Generate upper-constraints
+$IPADIR/imagebuild/common/generate_upper_constraints.sh $IPADIR/upper-constraints.txt
+
 # create the virtual environment
 virtualenv $IPADIR/venv
 
 # install IPA inside the virtual environment
-$IPADIR/venv/bin/pip install $IPADIR
+$IPADIR/venv/bin/pip install -c $IPADIR/upper-constraints.txt $IPADIR
 
 # FIXME(lucasagomes): Figure out how we can use the "--install-option"
 # parameter for pip install so we don't have to manually create a symlink
