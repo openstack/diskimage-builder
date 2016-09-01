@@ -1,0 +1,29 @@
+#!/bin/bash
+# Copyright 2016, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+#
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# dib-lint: disable=set setu setpipefail indent
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -e
+
+# This will disable the disable Privacy extensions for IPv6 (RFC3041)
+cat > /etc/sysctl.d/99-cloudimg-ipv6.conf <<EOF
+# See https://bugs.launchpad.net/ubuntu/+source/procps/+bug/1068756
+net.ipv6.conf.all.use_tempaddr=0
+net.ipv6.conf.default.use_tempaddr=0
+EOF
