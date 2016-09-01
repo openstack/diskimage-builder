@@ -28,6 +28,10 @@ pass extra arguments to the debootstrap command used to create the
 base filesystem image. If --keyring is is used in `DIB_DEBOOTSTRAP_EXTRA_ARGS`,
 it will override `DIB_APT_KEYRING` if that is used as well.
 
+For further information about `DIB_DEBIAN_DEBOOTSTRAP_SCRIPT` ,
+`DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE` and `DIB_DEBOOTSTRAP_EXTRA_ARGS`
+please consult "README.rst" of the debootstrap element.
+
 -------------------
 Note on ARM systems
 -------------------
