@@ -30,6 +30,13 @@ The code is available at:
    <https://git.openstack.org/cgit/openstack/diskimage-builder/>`__
 
 
+Communication
+-------------
+
+Communication among the diskimage-builder developers happens on IRC in
+#openstack-dib on freenode and on the openstack-dev mailing list (openstack-dev@lists.openstack.org).
+
+
 Table of Contents
 -----------------
 
