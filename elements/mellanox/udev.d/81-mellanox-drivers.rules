@@ -1,6 +1,11 @@
 ACTION!="add", GOTO="drivers_end"
 
 SUBSYSTEM=="net", RUN+="/sbin/modprobe mlx4_en"
+SUBSYSTEM=="net", RUN+="/sbin/modprobe mlx4_ib"
+SUBSYSTEM=="net", RUN+="/sbin/modprobe ib_ipoib"
+SUBSYSTEM=="net", RUN+="/sbin/modprobe mlx5_ib"
+SUBSYSTEM=="net", RUN+="/sbin/modprobe ib_umad"
+SUBSYSTEM=="net", RUN+="/sbin/modprobe ib_uverbs"
 
 LABEL="drivers_end"
 

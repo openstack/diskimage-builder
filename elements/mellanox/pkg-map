@@ -1,0 +1,67 @@
+{
+    "family": {
+        "debian":{
+            "dkms": "dkms",
+            "libibverbs": "libibverbs*",
+            "ibacm": "ibacm",
+            "librdmacm": "librdmacm*",
+            "libmlx4": "libmlx4*",
+            "libmlx5": "libmlx5*",
+            "libibcm": "libibcm.*",
+            "libibmad": "libibmad.*",
+            "libibumad": "libibumad*",
+            "libmlx4-dev": "libmlx4-dev",
+            "librdmacm-dev": "librdmacm-dev",
+            "rdma": "rdmacm-utils",
+            "vlan": "vlan",
+            "ibverbs-utils": "ibverbs-utils"
+        },
+        "redhat": {
+            "libibverbs": "libibverbs.*",
+            "librdmacm": "librdmacm.*",
+            "libmlx4": "libmlx4.*",
+            "libmlx5": "libmlx5.*",
+            "libibcm": "libibcm.*",
+            "libibmad": "libibmad.*",
+            "libibumad": "libibumad.*",
+            "rdma": "rdma",
+            "qperf": "qperf",
+            "pciutils": "pciutils"
+        },
+        "suse":{
+            "libibverbs": "libibverbs",
+            "librdmacm": "librdmacm",
+            "libmlx4": "libmlx4",
+            "libmlx5": "libmlx5",
+            "libibcm": "libibcm",
+            "libibmad": "libibmad",
+            "libibumad": "libibumad",
+            "rdma": "rdma",
+            "qperf": "qperf",
+            "rpm-build": "rpm-build",
+            "libibverbs-runtime": "libibverbs-runtime",
+            "librdmacm-runtime": "librdmacm-runtime",
+            "libibcommon": "libibcommon"
+        }
+    },
+    "default": {
+        "infiniband-diags": "infiniband-diags",
+        "mstflint": "mstflint",
+        "opensm": "opensm",
+        "srptools": "srptools",
+        "libmlx4-dev": "",
+        "librdmacm-dev": "",
+        "ibutils": "ibutils",
+        "perftest": "perftest",
+        "vlan": "",
+        "pciutils": "",
+        "ibverbs-utils": "",
+        "rpm-build": "",
+        "libibverbs-runtime": "",
+        "librdmacm-runtime": "",
+        "ibacm": "",
+        "qperf": "",
+        "dkms": "",
+        "libibcommon": ""
+    }
+}
