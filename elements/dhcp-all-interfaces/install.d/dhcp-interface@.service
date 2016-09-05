@@ -1,6 +1,5 @@
 [Unit]
 Description=DHCP interface %I
-After=network.target
 Before=network-pre.target
 Wants=network-pre.target
 
