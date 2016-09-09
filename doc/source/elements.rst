@@ -8,4 +8,4 @@ of the element directory describing what it is for.
 .. toctree::
    :glob:
 
-   elements/*/*
+   diskimage_builder/elements/*/*

@@ -4,8 +4,11 @@ set -eu
 set -o pipefail
 
 BASE_DIR=$(cd $(dirname "$0")/.. && pwd)
-export DIB_ELEMENTS=$BASE_DIR/elements
 export DIB_CMD=$BASE_DIR/bin/disk-image-create
+export DIB_ELEMENTS=$(python -c '
+import diskimage_builder.paths
+diskimage_builder.paths.get_path("elements")')
+
 
 #
 # Default skip tests
@@ -81,9 +84,9 @@ function run_disk_element_test() {
     if break="after-error" break_outside_target=1 \
         break_cmd="cp -v \$TMP_MOUNT_PATH/tmp/dib-test-should-fail ${dest_dir} || true" \
         DIB_SHOW_IMAGE_USAGE=1 \
-        ELEMENTS_PATH=$DIB_ELEMENTS:$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -x -t tar,qcow2 ${use_tmp_flag} -o $dest_dir/image -n $element $test_element 2>&1 \
-           | log_with_prefix "${element}/${test_element}"; then
+        ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
+          $DIB_CMD -x -t tar,qcow2 ${use_tmp_flag} -o $dest_dir/image -n $element $test_element 2>&1 \
+          | log_with_prefix "${element}/${test_element}"; then
 
         if ! [ -f "$dest_dir/image.qcow2" ]; then
             echo "Error: qcow2 build failed for element: $element, test-element: $test_element."

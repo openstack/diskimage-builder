@@ -21,6 +21,8 @@
 set -eu
 set -o pipefail
 
+ELEMENTS_DIR=diskimage_builder/elements
+
 parse_exclusions() {
     # Per-file exclusions
     # Example: # dib-lint: disable=sete setpipefail
@@ -63,7 +65,7 @@ echo "Running dib-lint in $(pwd)"
 rc=0
 TMPDIR=$(mktemp -d /tmp/tmp.XXXXXXXXXX)
 trap "rm -rf $TMPDIR" EXIT
-for i in $(find elements -type f   \
+for i in $(find $ELEMENTS_DIR -type f   \
                 -not -name \*~     \
                 -not -name \#\*\#  \
                 -not -name \*.orig \
@@ -180,7 +182,7 @@ done
 
 echo "Checking indents..."
 
-for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
+for i in $(find $ELEMENTS_DIR -type f -and -name '*.rst' -or -type f -executable); do
     # Check for tab indentation
     if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then
@@ -196,14 +198,14 @@ for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
 done
 
 if ! excluded mddocs; then
-    md_docs=$(find elements -name '*.md')
+    md_docs=$(find $ELEMENTS_DIR -name '*.md')
     if [ -n "$md_docs" ]; then
         error ".md docs found: $md_docs"
     fi
 fi
 
 echo "Checking YAML parsing..."
-for i in $(find elements -type f -name '*.yaml'); do
+for i in $(find $ELEMENTS_DIR -type f -name '*.yaml'); do
     echo "Parsing  $i"
     py_check="
 import yaml
@@ -218,7 +220,7 @@ except yaml.parser.ParserError:
     fi
 done
 echo "Checking pkg-map files..."
-for i in $(find elements -type f \
+for i in $(find $ELEMENTS_DIR -type f \
                 -name 'pkg-map' -a \! -executable); do
     echo "Parsing  $i"
     py_check="
