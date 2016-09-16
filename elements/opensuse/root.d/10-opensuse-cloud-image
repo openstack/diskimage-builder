@@ -18,11 +18,24 @@ if ! [ 'x86_64' = "$ARCH" ] ; then
     exit 1
 fi
 
-DIB_RELEASE=${DIB_RELEASE:-13.1}
+# Set some image defaults
+case ${DIB_RELEASE} in
+    # Old openSUSE releases
+    13*)
+        OPENSUSE_IMAGE_BASEDIR=openSUSE
+        OPENSUSE_IMAGE_FILE=openSUSE-${DIB_RELEASE}-OS
+        ;;
+    # New Leap releases
+    42*)
+        OPENSUSE_IMAGE_BASEDIR=Leap
+        OPENSUSE_IMAGE_FILE=openSUSE-Leap-${DIB_RELEASE}-OpenStack
+        ;;
+    # We handle unknown cases in environment.d/10-opensuse-distro-name.bash
+esac
 # NOTE(toabctl): if something changes here on the buildservice side, please
 # first ask in #opensuse-cloud on freenode before you change the format here!
-DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://download.opensuse.org/repositories/Cloud:/Images:/openSUSE_${DIB_RELEASE}/images/}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-openSUSE-${DIB_RELEASE}-OS-rootfs.${ARCH}.tbz}
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://download.opensuse.org/repositories/Cloud:/Images:/${OPENSUSE_IMAGE_BASEDIR}_${DIB_RELEASE}/images/}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-${OPENSUSE_IMAGE_FILE}-rootfs.${ARCH}.tbz}
 SHA256SUMS_FILE=${SHA256SUMS_FILE:-${BASE_IMAGE_FILE}.sha256}
 
 CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
