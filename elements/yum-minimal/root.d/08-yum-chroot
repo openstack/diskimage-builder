@@ -156,6 +156,7 @@ function _install_pkg_manager {
         fi
 
         sudo -E yum -y \
+            --disableexcludes=all \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --releasever=$DIB_RELEASE \
