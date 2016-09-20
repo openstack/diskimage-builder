@@ -1,3 +1,7 @@
 # extra load for mellanox
 modprobe mlx4_en
-
+modprobe mlx4_ib
+modprobe ib_ipoib
+modprobe mlx5_ib
+modprobe ib_umad
+modprobe ib_uverbs

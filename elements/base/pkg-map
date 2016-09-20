@@ -3,14 +3,10 @@
     "redhat": {
       "iscsi_package": "iscsi-initiator-utils"
     },
-    "suse": {
-      "dkms_package": ""
-    },
     "gentoo": {
       "ccache_package": "dev-util/ccache",
       "curl": "net-misc/curl",
       "dhcp_client": "net-misc/dhcp",
-      "dkms_package": "",
       "extlinux": "sys-boot/syslinux",
       "git": "dev-vcs/git",
       "grub_bios": "sys-boot/grub",
@@ -31,7 +27,6 @@
   },
   "default": {
     "ccache_package": "ccache",
-    "dkms_package": "dkms",
     "iscsi_package": "open-iscsi"
   }
 }

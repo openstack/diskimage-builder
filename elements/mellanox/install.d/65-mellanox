@@ -10,4 +10,12 @@ set -o pipefail
 home=$(dirname $0)
 
 install -m 0644 -o root -g root $home/mellanox-rules.udev /etc/udev/rules.d/81-mellanox.rules
+
+# needed kernel modules; mlx4_en mlx4_ib ib_ipoib mlx5_ib ib_umad ib_uverbs
+# mlx5_core loaded by mlx5_ib
 echo "mlx4_en" >>/etc/modules
+echo "mlx4_ib" >>/etc/modules
+echo "ib_ipoib" >>/etc/modules
+echo "mlx5_ib" >>/etc/modules
+echo "ib_umad" >>/etc/modules
+echo "ib_uverbs" >>/etc/modules
