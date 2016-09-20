@@ -1,1 +1,1 @@
-SUBSYSTEM=="net", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="dhcp-interface@$name.service"
+SUBSYSTEM=="net", KERNEL!="lo", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="dhcp-interface@$name.service"
