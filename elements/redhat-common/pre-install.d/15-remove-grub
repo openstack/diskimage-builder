@@ -23,7 +23,7 @@ fi
 # XXX : it is not clear this is necessary for fedora/centos7 and it's
 # install hooks.  Investigation is required.
 if rpm -q grub2; then
-    install-packages -e grub2
+    install-packages -e grub-pc
 fi
 
 # now configure things to re-install grub at the end.  We don't want
@@ -43,5 +43,5 @@ fi
 # So we download the latest grub2 package and setup the install script
 # to just install the single-package, which will be called later by
 # vm/finalise.d/51-bootloader
-install-packages -d /tmp/grub grub2
+install-packages -d /tmp/grub grub-pc
 echo "rpm -i /tmp/grub/*.rpm" > /tmp/grub/install
