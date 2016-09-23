@@ -11,6 +11,8 @@ set -o pipefail
 
 [ -n "$TARGET_ROOT" ]
 
+USER=${USER:-$(whoami)}
+
 source $_LIB/img-functions
 
 IMAGE_PATH=$(readlink -f $IMAGE_NAME)
