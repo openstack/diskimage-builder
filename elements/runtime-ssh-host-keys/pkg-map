@@ -1,0 +1,7 @@
+{
+  "family": {
+    "redhat": {
+      "openssh-client": "openssh"
+    }
+  }
+}

@@ -10,9 +10,6 @@ set -o pipefail
 # in so that they are regenerated on first boot and
 # are unique.
 
-# TODO(greghaynes) This should be a thing we do for all images, not just
-# simple-init.
-
 if [ -d $TARGET_ROOT/etc/ssh ] ; then
     sudo find $TARGET_ROOT/etc/ssh -name 'ssh_host*' -type f -delete
 fi
