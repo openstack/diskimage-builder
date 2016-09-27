@@ -59,7 +59,7 @@ function extract_image() {
 
             qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $RAW_FILE
 
-            ROOT_PARTITON=p$(sudo kpartx -l $RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
+            ROOT_PARTITION=p$(sudo kpartx -l $RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
             sudo udevadm settle
 
             # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
@@ -69,7 +69,7 @@ function extract_image() {
             # XXX: Parsing stdout is dangerous, would like a better way to discover
             #      the device used for the image.
             ROOT_LOOPDEV=$(sudo kpartx -av $RAW_FILE | \
-                awk "/loop[0-9]+$ROOT_PARTITON/ {print \$3}")
+                awk "/loop[0-9]+$ROOT_PARTITION/ {print \$3}")
             # If running inside Docker, make our nodes manually, because udev will not be working.
             if [ -f /.dockerenv ]; then
                 sudo dmsetup --noudevsync mknodes
