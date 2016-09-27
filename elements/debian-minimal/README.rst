@@ -11,16 +11,16 @@ There are two ways to configure apt-sources:
    and security repositories is the default. In this case you can
    overwrite the two environment variables to adapt the behavior:
    `DIB_DISTRIBUTION_MIRROR`: the mirror to use
-      default: http://httpredir.debian.org/debian
+      default: http://ftp.us.debian.org/debian
    `DIB_DEBIAN_COMPONENTS`: (default) `main`
       a comma separated list of components. For Debian this can be
       e.g. `main,contrib,non-free`.
 
-   Note that the default Debian series is `unstable`, and the default
-   mirrors for Debian can be problematic for `unstable`. Because apt
-   does not handle changing Packages files well across multiple out of
-   sync mirrors, it is recommended that you choose a single mirror of
-   Debian, and pass it in via `DIB_DISTRIBUTION_MIRROR`.
+   Note it is not recommended to use http://httpredir.debian.org/ for
+   `DIB_DISTRIBUTION_MIRROR` due to how unreliable it is.  Be sure to
+   select a mirror from the official mirror list:
+
+       https://www.debian.org/mirror/list
 
    By default only `main` component is used. If
    `DIB_DEBIAN_COMPONENTS` (comma separated) from the `debootstrap`
