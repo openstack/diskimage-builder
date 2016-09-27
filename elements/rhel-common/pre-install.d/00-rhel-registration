@@ -97,6 +97,8 @@ case "${REG_METHOD:-}" in
             echo "Attaching with options: $attach_opts"
             subscription-manager attach $attach_opts
         fi
+        echo "Disabling all previous repos"
+        subscription-manager repos --disable=\*
         echo "Enabling repos: $repos"
         subscription-manager $repos
         ;;
@@ -108,6 +110,8 @@ case "${REG_METHOD:-}" in
         rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
         echo "Registering with options: $sanitized_opts"
         subscription-manager register $opts
+        echo "Disabling all previous repos"
+        subscription-manager repos --disable=\*
         echo "Enabling repos: $user_repos"
         subscription-manager $repos
         echo "Disabling satellite repo because it is no longer needed"
