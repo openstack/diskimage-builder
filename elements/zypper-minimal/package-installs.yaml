@@ -1,0 +1,10 @@
+# kernel
+linux-image-generic:
+# And a few useful tools. Some are pulled
+# as dependencies but that may change so lets
+# be explicit.
+bash:
+lsb-release:
+openssl:
+sed:
+sudo:
