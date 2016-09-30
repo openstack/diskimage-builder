@@ -51,9 +51,19 @@ function finish_image () {
       old_image="${1%.*}"-$(date +%Y.%m.%d-%H.%M.%S).${1##*.}
       echo "Old image found. Renaming it to $old_image"
       mv "$1" "$old_image"
+      if [ -f "$1.md5" ]; then
+        mv "$1.md5" "$old_image.md5"
+      fi
+      if [ -f "$1.sha256" ]; then
+        mv "$1.sha256" "$old_image.sha256"
+      fi
     fi
 
     mv $OUT_IMAGE_PATH $1
+    if [ "$DIB_CHECKSUM" == "1" ]; then
+      md5sum $1 > $1.md5
+      sha256sum $1 > $1.sha256
+    fi
     echo "Image file $1 created..."
 }
 

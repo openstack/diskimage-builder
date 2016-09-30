@@ -109,6 +109,7 @@ function show_options () {
     echo "    -x -- turn on tracing (use -x -x for very detailed tracing)"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
+    echo "    --checksum -- generate MD5 and SHA256 checksum files for the created image"
     echo "    --image-size size -- image size in GB for the created image"
     echo "    --image-cache directory -- location for cached images(default ~/.cache/image-create)"
     echo "    --max-online-resize size -- max number of filesystem blocks to support when resizing."
@@ -172,7 +173,7 @@ DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
 MKFS_OPTS=""
 ACI_MANIFEST=${ACI_MANIFEST:-}
 DOCKER_TARGET=""
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:t:xucnp: -l checksum,no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -190,6 +191,7 @@ while true ; do
         -c) shift ; export CLEAR_ENV=1;;
         -n) shift; export SKIP_BASE="1";;
         -p) IFS="," read -a INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES ; shift 2 ;;
+        --checksum) shift; export DIB_CHECKSUM=1;;
         --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
