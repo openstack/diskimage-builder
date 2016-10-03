@@ -1,0 +1,6 @@
+---
+features:
+  - New zypper-minimal and opensuse-minimal elements to create basic
+    openSUSE images. These two new elements are also making use of the
+    existing zypper element which has been extended to include the
+    functionality previously present in the opensuse element.
