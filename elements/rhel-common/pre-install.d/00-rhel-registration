@@ -110,8 +110,6 @@ case "${REG_METHOD:-}" in
         subscription-manager register $opts
         echo "Enabling repos: $user_repos"
         subscription-manager $repos
-        echo "Disabling satellite repo because it is no longer needed"
-        subscription-manager repos --disable ${satellite_repo}
         ;;
     disable)
         echo "Disabling RHEL registration"
