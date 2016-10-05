@@ -1,6 +1,6 @@
 export DISTRO_NAME=debian
 export DIB_RELEASE=${DIB_RELEASE:-stable}
-export DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://httpredir.debian.org/debian}
+export DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://ftp.us.debian.org/debian}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main}
 export DIB_DEBIAN_COMPONENTS_WS=${DIB_DEBIAN_COMPONENTS//,/ }
 
