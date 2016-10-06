@@ -1,0 +1,24 @@
+---
+features:
+  - Add new block device handling.
+    Unify and generalize the creation and usage of
+    block device.  This release includes setting up the general
+    infrastructure and setting up loop device
+
+issues:
+  - Because the implementation of the new block device layer is not
+    complete, some features which are already implemented cannot be
+    used because of limitations of the current environment.
+
+deprecations:
+  - The current way of handling block devices is deprecated. The
+    existing block device phase will be called for a limited time.  If
+    this phase delivers a result, this is used; if there is no result,
+    the new way of block device handling is used.
+    Please note that the old way of block device handling has some
+    major limitations such as that it is only possible to use one
+    block device.
+
+  - The element 'partitioning-sfdisk' is deprecated.  The new
+    implementation will create the partition tables based on a tool
+    independent description.
