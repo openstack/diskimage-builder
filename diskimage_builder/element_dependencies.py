@@ -185,10 +185,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('elements', nargs='+',
                         help='display dependencies of the given elements')
-    parser.add_argument('--expand-dependencies', '-d', action='store_true',
-                        default=False,
-                        help=('(DEPRECATED) print expanded dependencies '
-                              'of all args'))
     parser.add_argument('--env', '-e', action='store_true',
                         default=False,
                         help=('Output eval-able bash strings for '
@@ -197,10 +193,6 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     all_elements = find_all_elements()
-
-    if args.expand_dependencies:
-        logger.warning("expand-dependencies flag is deprecated,  "
-                       "and is now on by default.", file=sys.stderr)
 
     elements = expand_dependencies(args.elements, all_elements)
 
