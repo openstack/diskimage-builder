@@ -30,6 +30,15 @@ The code is available at:
    <https://git.openstack.org/cgit/openstack/diskimage-builder/>`__
 
 
+Issues
+------
+
+Issues are tracked on launchpad at:
+
+ * `https://bugs.launchpad.net/diskimage-builder/+bugs`
+   <https://bugs.launchpad.net/diskimage-builder/+bugs>
+
+
 Communication
 -------------
 
