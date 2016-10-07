@@ -2,6 +2,9 @@
   "family": {
     "redhat": {
       "openssh-client": "openssh"
+    },
+    "gentoo": {
+      "openssh-client": ""
     }
   }
 }
