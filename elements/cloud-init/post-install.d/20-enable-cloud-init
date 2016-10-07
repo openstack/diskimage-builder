@@ -10,6 +10,6 @@ set -o pipefail
 if [[ "${DISTRO_NAME}" == "gentoo" ]]; then
     rc-update add cloud-config default
     rc-update add cloud-final default
-    rc-update add cloud-init-local default
+    rc-update add cloud-init-local boot
     rc-update add cloud-init default
 fi
