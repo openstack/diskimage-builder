@@ -1,6 +1,17 @@
 Developer Documentation
 =======================
 
+.. toctree::
+   :maxdepth: 1
+
+   design
+   components
+   invocation
+   caches
+   developing_elements
+   dib_lint
+   stable_interfaces
+
 This documentation explains how to get started with creating your own
 disk-image-builder elements as well as some high level concepts for element
 creation.
@@ -31,15 +42,3 @@ We maintain a list of low-hanging-fruit tags on launchpad:
 
  * `https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit`
    <https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit>
-
-
-.. toctree::
-   :maxdepth: 2
-
-   design
-   components
-   invocation
-   caches
-   developing_elements
-   dib_lint
-   stable_interfaces
