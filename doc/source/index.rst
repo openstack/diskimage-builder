@@ -55,4 +55,3 @@ Table of Contents
    user_guide/index
    developer/index
    elements
-   copyright
