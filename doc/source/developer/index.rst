@@ -24,6 +24,15 @@ and testing your changes.  When you are done editing, use ``git
 review`` to submit changes to the upstream gerrit.
 
 
+Finding Work
+------------
+
+We maintain a list of low-hanging-fruit tags on launchpad:
+
+ * `https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit`
+   <https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit>
+
+
 .. toctree::
    :maxdepth: 2
 
