@@ -156,10 +156,14 @@ for i in $(find elements -type f   \
         fi
     fi
 
-    # check that environment files don't "set -x"
+    # check that environment files don't "set -x" and they have no executable
+    # bits set
     if [[ "$i" =~ (environment.d) ]]; then
         if grep -q "set -x" $i; then
             error "Environment file $i should not set tracing"
+        fi
+        if [[ -x $i ]]; then
+            error "Environment file $i should not be marked as executable"
         fi
     fi
 
