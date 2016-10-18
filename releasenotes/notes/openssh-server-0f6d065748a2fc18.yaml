@@ -1,0 +1,4 @@
+---
+features:
+  - New openssh-server element to ensure that the openssh
+    server is installed and enabled during boot.
