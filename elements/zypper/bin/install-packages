@@ -20,7 +20,7 @@ fi
 set -eu
 set -o pipefail
 
-EXTRA_ARGS=""
+EXTRA_ARGS="--no-recommends"
 MAP_ELEMENT=""
 ACTION=install
 
@@ -47,7 +47,7 @@ eval set -- "$TEMP"
 
 while true ; do
     case "$1" in
-        -u) run_zypper dist-upgrade; exit 0;;
+        -u) run_zypper dist-upgrade --no-recommends; exit 0;;
         -e) ACTION="remove"; shift;;
         -d) EXTRA_ARGS="--download-only"; shift;;
         -m) MAP_ELEMENT=$2; shift 2;;
