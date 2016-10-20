@@ -151,6 +151,12 @@ for i in $(find elements -type f   \
         fi
     fi
 
+    # check that environment files don't "set -x"
+    if [[ "$i" =~ (environment.d) ]]; then
+        if grep -q "set -x" $i; then
+            error "Environment file $i should not set tracing"
+        fi
+    fi
 
     # check that sudo calls in phases run outside the chroot look
     # "safe"; meaning that they seem to operate within the chroot
