@@ -3,6 +3,12 @@
     "gentoo": {
       "python-pip": "dev-python/pip",
       "python-virtualenv": "dev-python/virtualenv"
+    },
+    "suse" : {
+      "python-xml": "python-xml"
     }
+  },
+  "default": {
+    "python-xml": ""
   }
 }
