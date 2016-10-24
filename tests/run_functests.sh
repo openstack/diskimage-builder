@@ -27,16 +27,26 @@ DEFAULT_SKIP_TESTS=(
 
 function log_with_prefix {
     local pr=$1
+    local log
 
     while read a; do
-        echo $(date +"%Y%m%d-%H%M%S.%N") "[$pr] $a"
+        log="[$pr] $a"
+        if [[ ${LOG_DATESTAMP} -ne 0 ]]; then
+            log="$(date +"%Y%m%d-%H%M%S.%N") ${log}"
+        fi
+        echo "${log}"
     done
 }
 
 # Log job control messages
 function log_jc {
     local msg="$1"
-    printf "[JOB-CONTROL] %s %s\n" "$(date)" "${msg}"
+    local log="[JOB-CONTROL] ${msg}"
+
+    if [[ ${LOG_DATESTAMP} -ne 0 ]]; then
+        log="$(date +"%Y%m%d-%H%M%S.%N") ${log}"
+    fi
+    echo "${log}"
 }
 
 function job_cnt {
@@ -156,15 +166,23 @@ for e in $DIB_ELEMENTS/*/test-elements/*; do
     TESTS+=("$element/$test_element")
 done
 
+#
+# Default values
+#
 JOB_MAX_CNT=1
+LOG_DATESTAMP=0
 
-while getopts ":hlpj:" opt; do
+#
+# Parse args
+#
+while getopts ":hlj:t" opt; do
     case $opt in
         h)
             echo "run_functests.sh [-h] [-l] <test> <test> ..."
             echo "  -h : show this help"
             echo "  -l : list available tests"
-            echo "  -p : run all tests in parallel"
+            echo "  -j : parallel job count (default to 1)"
+            echo "  -t : prefix log messages with timestamp"
             echo "  <test> : functional test to run"
             echo "           Special test 'all' will run all tests"
             exit 0
@@ -181,6 +199,9 @@ while getopts ":hlpj:" opt; do
         j)
             JOB_MAX_CNT=${OPTARG}
             echo "Running parallel - using [${JOB_MAX_CNT}] jobs"
+            ;;
+        t)
+            LOG_DATESTAMP=1
             ;;
         \?)
             echo "Invalid option: -$OPTARG"
