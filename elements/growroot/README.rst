@@ -9,3 +9,4 @@ This is only supported on:
 * ubuntu trusty or later
 * gentoo
 * fedora & centos
+* suse & opensuse
