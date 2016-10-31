@@ -7,4 +7,4 @@ fi
 set -eu
 set -o pipefail
 
-zypper ar -f http://download.opensuse.org/repositories/X11:/Bumblebee/openSUSE_13.1/X11:Bumblebee.repo
+zypper ar -f http://download.opensuse.org/repositories/X11:/Bumblebee/${OPENSUSE_REPO_DIR}/X11:Bumblebee.repo

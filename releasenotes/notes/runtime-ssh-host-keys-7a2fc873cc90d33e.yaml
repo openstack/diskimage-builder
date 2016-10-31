@@ -1,0 +1,6 @@
+---
+features:
+  - New element (runtime-ssh-host-keys) to manage SSH host keys at boot. Since
+    SSH host key generation is not standard across operating systems, add
+    support for both Debian and Ubuntu to handle it. While this is a new
+    element, simple-init has been updated to depend on it.

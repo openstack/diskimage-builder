@@ -13,6 +13,19 @@ For example, the images of openSUSE 13.2 can be found here:
 These images should be considered experimental. There are curently only x86_64
 images.
 
+Environment Variables
+---------------------
+
+DIB_RELEASE
+  :Required: No
+  :Default: 13.1
+  :Description: Set the desired openSUSE release.
+
+DIB_CLOUD_IMAGES
+  :Required: No
+  :Default: http://download.opensuse.org/repositories/Cloud:/Images:/(openSUSE|Leap)_${DIB_RELEASE}
+  :Description: Set the desired URL to fetch the images from.
+
 Notes:
 
 * There are very frequently new automated builds that include changes that
@@ -21,8 +34,3 @@ Notes:
   point to the latest image, but will frequently change its content. The versioned
   one will never change content, but will frequently be deleted and replaced
   by a newer build with a higher version-release number.
-
-* Building with DIB\_EXTLINUX=1 doesn't work.  It fails with:
-  /tmp/in\_target.d/finalise.d/51-bootloader: line 14: 16286 Segmentation fault
-  extlinux --install /boot/syslinux
-  (https://bugzilla.novell.com/show_bug.cgi?id=852856)

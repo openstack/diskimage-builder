@@ -109,6 +109,7 @@ function show_options () {
     echo "    -x -- turn on tracing (use -x -x for very detailed tracing)"
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
+    echo "    --checksum -- generate MD5 and SHA256 checksum files for the created image"
     echo "    --image-size size -- image size in GB for the created image"
     echo "    --image-cache directory -- location for cached images(default ~/.cache/image-create)"
     echo "    --max-online-resize size -- max number of filesystem blocks to support when resizing."
@@ -172,7 +173,7 @@ DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
 MKFS_OPTS=""
 ACI_MANIFEST=${ACI_MANIFEST:-}
 DOCKER_TARGET=""
-TEMP=`getopt -o a:ho:t:xucnp: -l no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
+TEMP=`getopt -o a:ho:t:xucnp: -l checksum,no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -190,7 +191,8 @@ while true ; do
         -c) shift ; export CLEAR_ENV=1;;
         -n) shift; export SKIP_BASE="1";;
         -p) IFS="," read -a INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES ; shift 2 ;;
-        --image-size) DIB_IMAGE_SIZE=$2; shift 2;;
+        --checksum) shift; export DIB_CHECKSUM=1;;
+        --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
         --mkfs-options) MKFS_OPTS=$2; shift 2;;
@@ -338,26 +340,28 @@ mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 # logs with du output below.
 xtrace=$(set +o | grep xtrace)
 
+# temp file for holding du output
+du_output=${TMP_BUILD_DIR}/du_output.tmp
+
 if [ -n "$DIB_IMAGE_SIZE" ]; then
     du_size=$(echo "$DIB_IMAGE_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
 else
     set +o xtrace
     echo "Calculating image size (this may take a minute)..."
-    du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
+    sudo du -a -c -x ${TMP_BUILD_DIR}/built > ${du_output}
     # the last line is the total size from "-c".
     # scale this by 0.6 to create a slightly bigger image
-    du_size=$(echo "$du_output" | tail -n1 | cut -f1 | \
-                     awk '{print int($1 / 0.6)}')
+    du_size=$(tail -n1 ${du_output} | cut -f1 | awk '{print int($1 / 0.6)}')
     $xtrace
 fi
 
 if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
     set +o xtrace
-    if [ -z "$du_output" ]; then
-        du_output=$(sudo du -a -c -x ${TMP_BUILD_DIR}/built)
+    if [ ! -f "$du_output" ]; then
+        sudo du -a -c -x ${TMP_BUILD_DIR}/built > ${du_output}
     fi
 
-    du_output_show="sort -nr |
+    du_output_show="sort -nr ${du_output} |
                      numfmt --to=iec-i --padding=7
                        --suffix=B --field=1 --from-unit=1024"
 
@@ -376,7 +380,7 @@ if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
         echo "================="
     fi
 
-    eval ${du_output_show} <<< "$du_output"
+    eval ${du_output_show}
 
     echo
     echo "===== end image size report ====="
@@ -384,6 +388,8 @@ if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
 
     $xtrace
 fi
+
+rm -f ${du_output}
 
 if [ "$FS_TYPE" = "ext4" ] ; then
   # Very conservative to handle images being resized a lot

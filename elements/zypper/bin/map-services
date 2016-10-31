@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# dib-lint: disable=indent
+# Copyright 2012 Hewlett-Packard Development Company, L.P.
+# Copyright 2014 SUSE, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+from __future__ import print_function
+import os
+import sys
+
+# Manually maintained for brevity; consider making this compiled from
+# distromatch or other rich data sources.
+# Debian name on the left, openSUSE on the right.
+service_map = {
+    # openstack mapping
+    'cinder-api': 'openstack-cinder-api',
+    'cinder-backup': 'openstack-cinder-backup',
+    'cinder-scheduler': 'openstack-cinder-scheduler',
+    'cinder-volume': 'openstack-cinder-volume',
+    'glance-api': 'openstack-glance-api',
+    'glance-reg': 'openstack-glance-registry',
+    'heat-api-cfn': 'openstack-heat-api-cfn',
+    'heat-api-cloudwatch': 'openstack-heat-api-cloudwatch',
+    'heat-api': 'openstack-heat-api',
+    'heat-engine': 'openstack-heat-engine',
+    'keystone': 'openstack-keystone',
+    'libvirt-bin': 'libvirtd',
+    'neutron-dhcp-agent': 'openstack-neutron-dhcp-agent',
+    'neutron-openvswitch-agent': 'openstack-neutron-openvswitch-agent',
+    'neutron-l3-agent': 'openstack-neutron-l3-agent',
+    'neutron-metadata-agent': 'openstack-neutron-metadata-agent',
+    'neutron-ovs-cleanup': 'openstack-neutron-ovs-cleanup',
+    'neutron-server': 'openstack-neutron',
+    'nova-api': 'openstack-nova-api',
+    'nova-cert': 'openstack-nova-cert',
+    'nova-compute': 'openstack-nova-compute',
+    'nova-conductor': 'openstack-nova-conductor',
+    'nova-consoleauth': 'openstack-nova-console',
+    'nova-baremetal-deploy-helper': 'openstack-nova-baremetal-deploy-helper',
+    'nova-novncproxy': 'openstack-nova-novncproxy',
+    'nova-scheduler': 'openstack-nova-scheduler',
+}
+
+print("WARNING: map-services has been deprecated.  "
+      "Please use the svc-map element.", file=sys.stderr)
+
+for arg in sys.argv[1:]:
+    # We need to support the service name being different when installing from
+    # source vs. packages. So, if the requested service file already exists,
+    # just use that.
+    if os.path.exists('/usr/lib/systemd/system/%s.service' % arg):
+        print(arg)
+    else:
+        print(service_map.get(arg, arg))
+sys.exit(0)

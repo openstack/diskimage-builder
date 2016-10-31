@@ -55,3 +55,13 @@ Installing via pip is as simple as:
 
     pip install diskimage-builder
 
+
+Package Installation
+--------------------
+
+On Gentoo you can emerge diskimage-builder directly.
+
+::
+
+    emerge app-emulation/diskimage-builder
+

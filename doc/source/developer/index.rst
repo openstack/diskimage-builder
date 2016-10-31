@@ -1,5 +1,16 @@
-Developer Documentation
-=======================
+Developer Guide
+===============
+
+.. toctree::
+   :maxdepth: 1
+
+   design
+   components
+   invocation
+   caches
+   developing_elements
+   dib_lint
+   stable_interfaces
 
 This documentation explains how to get started with creating your own
 disk-image-builder elements as well as some high level concepts for element
@@ -13,7 +24,7 @@ To get started developing with ``diskimage-builder``, install to a
 
  $ mkdir dib
  $ cd dib
- $ virtualenv create env
+ $ virtualenv env
  $ source env/bin/activate
  $ git clone https://git.openstack.org/openstack/diskimage-builder
  $ cd diskimage-builder
@@ -24,13 +35,10 @@ and testing your changes.  When you are done editing, use ``git
 review`` to submit changes to the upstream gerrit.
 
 
-.. toctree::
-   :maxdepth: 2
+Finding Work
+------------
 
-   design
-   components
-   invocation
-   caches
-   developing_elements
-   dib_lint
-   stable_interfaces
+We maintain a list of low-hanging-fruit tags on launchpad:
+
+ * `https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit`
+   <https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit>

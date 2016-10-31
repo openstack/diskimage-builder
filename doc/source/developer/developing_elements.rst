@@ -412,6 +412,11 @@ line to run it.  If it should not be run as part of the default CI
 run, you can submit a change with it added to ``DEFAULT_SKIP_TESTS``
 in that file.
 
+Running the functional tests is time consuming.  Multiple parallel
+jobs can be started by specifying ``-j <job count>``.  Each of the
+jobs uses a lot resources (CPU, disk space, RAM) - therefore the job
+count must carefully be chosen.
+
 python
 """"""
 
