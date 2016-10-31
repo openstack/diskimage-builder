@@ -1,0 +1,31 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          init-ibft-interfaces
+# Required-Start:    $local_fs networking
+# Required-Stop:     $local_fs
+# Default-Start:     S
+# Default-Stop:      0 6
+# X-Start-Before:
+# Short-Description: Initialize iBFT interfaces
+# Description:       Initialize iBFT network interfaces
+### END INIT INFO
+
+NAME=init-ibft-interfaces
+INIT_NAME=/etc/init.d/${NAME}
+SCRIPT_NAME=/usr/local/sbin/${NAME}.sh
+
+[ -x $SCRIPT_NAME ] || exit 0
+
+case "$1" in
+    start)
+        $SCRIPT_NAME
+        ;;
+    stop)
+        ;;
+    *)
+        echo "Usage: $INIT_NAME {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0
