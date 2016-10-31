@@ -41,9 +41,6 @@ for repo in ${ZYPPER_REPOS}; do
     sudo zypper ${ZYPPER_TARGET_OPTS} addrepo --name ${reponame} --keep-packages ${repouri} ${reponame}
 done
 
-# Refresh it
-sudo zypper ${ZYPPER_TARGET_OPTS} refresh
-
 # It appears that zypper will clean up the repo's cache when it (re-)adds the
 # repo so we need to add the cache now, once the repos are added. This is
 # similar to what the zypper/50-zypper-cache script does
@@ -52,6 +49,10 @@ mkdir -p $ZYPPER_CACHE_DIR
 
 sudo mkdir -p $TMP_MOUNT_PATH/var/cache/zypp
 sudo mount --bind $ZYPPER_CACHE_DIR $TMP_MOUNT_PATH/var/cache/zypp
+
+# Refresh it so we get updated data in cased we switched DIB_RELEASE
+# since last run.
+sudo zypper ${ZYPPER_TARGET_OPTS} refresh
 
 # Install filesystem, base and useful tools
 sudo zypper ${ZYPPER_TARGET_OPTS} install ${ZYPPER_INSTALL_OPTS} filesystem
