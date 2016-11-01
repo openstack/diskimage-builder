@@ -1,5 +1,3 @@
-#!/bin/bash
-#
 # Copyright 2014 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,12 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
-
-if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
-    set -x
-fi
-set -eu
-set -o pipefail
 
 export DIB_MANIFEST_IMAGE_DIR=${DIB_MANIFEST_IMAGE_DIR:-/etc/dib-manifests}
 export DIB_MANIFEST_SAVE_DIR=${DIB_MANIFEST_SAVE_DIR:-${IMAGE_NAME}.d/}
