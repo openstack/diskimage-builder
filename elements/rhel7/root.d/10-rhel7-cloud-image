@@ -9,10 +9,10 @@ set -o pipefail
 [ -n "$ARCH" ]
 [ -n "$TARGET_ROOT" ]
 
-if [ 'amd64' = "$ARCH" ] ; then
+if [[ "amd64 x86_64" =~ "$ARCH" ]]; then
     ARCH="x86_64"
 else
-    echo 'rhel7 root element only support the amd64 $ARCH value.'
+    echo 'rhel7 root element only support the x86_64 $ARCH value.'
     exit 1
 fi
 
