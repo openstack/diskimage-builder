@@ -1,0 +1,5 @@
+---
+fixes:
+  - The `debian-minimal` and and `ubuntu-minimal` elements now install
+    directly from the updates repo, avoiding the need to
+    double-install packages during build.
