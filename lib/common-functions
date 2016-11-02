@@ -228,8 +228,12 @@ function arg_to_elements() {
   #        element=$i
   #        path=${image_elements[$i]
   #      done
-  eval "$(element-info --env $IMAGE_ELEMENT)"
-
+  elinfo_out="$(element-info --env $IMAGE_ELEMENT)"
+  if [ $? -ne 0 ]; then
+      echo "ERROR: element-info failed to expand elements."
+      exit 1
+  fi
+  eval "$elinfo_out"
   echo "Expanded element dependencies to: $IMAGE_ELEMENT"
 }
 
