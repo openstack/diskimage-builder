@@ -1,2 +1,2 @@
 export DISTRO_NAME=ubuntu
-export DIB_RELEASE=${DIB_RELEASE:-trusty}
+export DIB_RELEASE=${DIB_RELEASE:-xenial}
