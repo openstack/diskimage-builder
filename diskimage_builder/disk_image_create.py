@@ -12,16 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-# Python Logging Configuration for DIB
-# Usage:
-# In the main (application) file, do an
-#   import logging_config
-#   ...
-#   logging_config.setup()
-# It is then possible to use the normal python logging interface, like
-#   logger = logging.getLogger(__name__)
-#   logger.info("Info Message")
-
 import os
 import os.path
 import sys
