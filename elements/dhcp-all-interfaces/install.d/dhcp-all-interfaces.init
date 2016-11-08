@@ -6,6 +6,7 @@
 # Default-Start:     S
 # Default-Stop:      0 6
 # X-Start-Before:    networking
+# chkconfig:         3 9 50
 # Short-Description: Autodetect network interfaces
 # Description:       Autodetect network interfaces during boot and configure them for DHCP
 ### END INIT INFO
