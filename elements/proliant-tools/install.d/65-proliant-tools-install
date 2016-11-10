@@ -21,18 +21,22 @@ fi
 set -eu
 set -o pipefail
 
-# Set the below variable to allow hpssacli to be installed from custom URLs.
-DIB_HPSSACLI_URL=${DIB_HPSSACLI_URL:-https://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p1857046646/v109216/hpssacli-2.30-6.0.x86_64.rpm}
-curl -k -o /tmp/hpssacli.rpm $DIB_HPSSACLI_URL
-
-if [[ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]]; then
-    # There is no deb package for hpssacli.  Install with alien.
-    alien -i /tmp/hpssacli.rpm
-else
-    rpm -iv /tmp/hpssacli.rpm
+# Set the below variable to allow ssacli to be installed from custom URLs.
+if [[ -n "${DIB_HPSSACLI_URL:=}" ]]; then
+    echo "The environment variable DIB_HPSSACLI_URL is deprecated; use DIB_SSACLI_URL instead."
 fi
 
-rm -f /tmp/hpssacli.rpm
+DIB_SSACLI_URL=${DIB_SSACLI_URL:-${DIB_HPSSACLI_URL:-https://downloads.hpe.com/pub/softlib2/software1/pubsw-linux/p1857046646/v123474/ssacli-2.60-19.0.x86_64.rpm}}
+curl -k -o /tmp/ssacli.rpm $DIB_SSACLI_URL
+
+if [[ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]]; then
+    # There is no deb package for ssacli.  Install with alien.
+    alien -i /tmp/ssacli.rpm
+else
+    rpm -iv /tmp/ssacli.rpm
+fi
+
+rm -f /tmp/ssacli.rpm
 
 # Install proliantutils python module in the
 # virtual environment of ironic-python-agent.
