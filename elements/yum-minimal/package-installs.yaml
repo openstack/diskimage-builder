@@ -4,7 +4,7 @@ grubby:
 kernel:
 initscripts:
 man-pages:
-redhat-lsb-core:
+lsb_release:
 selinux-policy:
 selinux-policy-targeted:
 libselinux-python:
