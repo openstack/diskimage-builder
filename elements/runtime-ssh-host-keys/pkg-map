@@ -5,6 +5,9 @@
     },
     "gentoo": {
       "openssh-client": ""
+    },
+    "suse": {
+      "openssh-client": "openssh"
     }
   }
 }
