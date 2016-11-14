@@ -10,3 +10,4 @@ net-tools:
 cloud-init:
 cloud-utils:
 cloud-initramfs-growroot:
+dialog:
