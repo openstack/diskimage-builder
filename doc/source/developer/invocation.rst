@@ -1,12 +1,25 @@
-Installation
-============
+Developer Installation
+======================
 
-For general use, you can use distribution packages or install via
-``pip`` in a ``virtualenv``
+Note that for non-development use you can use distribution packages or
+install the latest release via ``pip`` in a ``virtualenv``.
 
-For development purposes, you can use ``pip -e`` to install into a
-local development/testing ``virtualenv``, or use ``tox -e venv --
-disk-image-create`` to run within a ``tox`` created environment.
+For development purposes, you can use ``pip -e`` to install the latest
+git tree checkout into a local development/testing ``virtualenv``, or
+use ``tox -e venv -- disk-image-create`` to run within a ``tox``
+created environment.
+
+For example, to create a ``virtualenv`` and install
+
+::
+
+   $ mkdir dib
+   $ cd dib
+   $ virtualenv env
+   $ source env/bin/activate
+   $ git clone https://git.openstack.org/openstack/diskimage-builder
+   $ cd diskimage-builder
+   $ pip install -e .
 
 Invocation
 ==========

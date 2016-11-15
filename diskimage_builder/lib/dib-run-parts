@@ -1,0 +1,144 @@
+#!/bin/bash
+# Inspired by Debian and RedHat run-parts but portable and specific to di-b.
+#
+# Copyright 2012 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+allowed_regex=${RUN_PARTS_REGEX:-"^[0-9A-Za-z_-]+$"}
+show_list=
+
+set -ue
+set -o pipefail
+
+name=$(basename $0)
+
+usage() {
+    echo "Usage: $name [OPTION] scripts_directory"
+    echo "Option:"
+    echo "      --list  print names of all valid files"
+    echo
+    echo "Examples:"
+    echo "      dib-run-parts --list /opt/stack/os-config-refresh/configure.d/"
+    echo "      dib-run-parts /opt/stack/os-config-refresh/configure.d/"
+    exit 1
+} >&2
+
+
+output_prefix() {
+    printf "%s %s " "${name}" "$(date)" >&2
+}
+
+output () {
+    output_prefix
+    echo $* >&2
+}
+
+output_printf () {
+    local FORMAT="$1"
+    shift
+    output_prefix
+    printf "${FORMAT}" $@ >&2
+}
+
+# source the environment files from environment.d
+#  arg : target_dir
+source_environment() {
+
+    local dir=$target_dir/../environment.d
+    local env_files
+    local xtrace
+
+    if [ -d ${dir} ] ; then
+        env_files=$(find ${dir} -maxdepth 1 -xtype f | \
+                           grep -E "/[0-9A-Za-z_\.-]+$" | \
+                           LANG=C sort -n)
+        for env_file in $env_files ; do
+            output "Sourcing environment file ${env_file}"
+            # Set tracing as we import these environment files; it's
+            # nice to see the definitions in the logs
+            xtrace=$(set +o | grep xtrace)
+            set -o xtrace
+            source $env_file
+            $xtrace
+        done
+    fi
+}
+
+if [ $# -lt 1 ] ; then
+    usage
+fi
+
+if [ "$1" == "--list" ] ; then
+    show_list="1"
+    shift
+fi
+
+target_dir="${1:-}"
+
+if ! [ -d "$target_dir" ] ; then
+    output "Scripts directory [$target_dir] must exist and be a directory"
+    usage
+fi
+
+# We specifically only want to sort *by the numbers*.
+# Lexical sorting is not guaranteed, and identical numbers may be
+# parallelized later
+# Note: -maxdepth 1 ensures only files in the target directory (but not
+# subdirectories) are run, which is the way run-parts behaves.
+targets=$(find $target_dir -maxdepth 1 -xtype f -executable -printf '%f\n' | grep -E "$allowed_regex" | LANG=C sort -n || echo "")
+
+if [ "$show_list" == "1" ] ; then
+    for target in $targets ; do
+        echo "${target_dir}/${target}"
+    done
+    exit 0
+fi
+
+PROFILE_DIR=$(mktemp -d --tmpdir profiledir.XXXXXX)
+
+# note, run this in a sub-shell so we don't pollute our
+# own environment with source_environment
+(
+    source_environment
+
+    for target in $targets ; do
+        output "Running $target_dir/$target"
+        target_tag=${target//\//_}
+        date +%s.%N > $PROFILE_DIR/start_$target_tag
+        $target_dir/$target
+        target_tag=${target//\//_}
+        date +%s.%N > $PROFILE_DIR/stop_$target_tag
+        output "$target completed"
+    done
+)
+
+output "----------------------- PROFILING -----------------------"
+output ""
+output "Target: $(basename $target_dir)"
+output ""
+output_printf "%-40s %9s\n" Script Seconds
+output_printf "%-40s %9s\n" --------------------------------------- ----------
+output ""
+pushd $PROFILE_DIR > /dev/null
+for target in $(find . -name 'start_*' -printf '%f\n' | env LC_ALL=C sort -n) ; do
+    stop_file=stop_${target##start_}
+    start_seconds=$(cat $target)
+    stop_seconds=$(cat $stop_file)
+    duration=$(echo - | awk "{ print $stop_seconds - $start_seconds }")
+    LC_NUMERIC=C LC_ALL=C output_printf "%-40s %10.3f\n" ${target##start_} $duration
+done
+popd > /dev/null
+rm -rf $PROFILE_DIR
+output ""
+output "--------------------- END PROFILING ---------------------"

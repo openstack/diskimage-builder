@@ -8,7 +8,11 @@ set -o pipefail
 
 # Abort early if dib-run-parts is not found to prevent a meaningless
 # error message from the subsequent install command
-DIB_RUN_PARTS=$(which dib-run-parts)
+DIB_RUN_PARTS=${_LIB}/dib-run-parts
+
+if [ ! -f ${DIB_RUN_PARTS} ]; then
+    echo "Can't find dib-run-parts script!"
+fi
 
 exec sudo install -m 0755 -o root -g root -D \
     $DIB_RUN_PARTS \

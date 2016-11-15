@@ -1,0 +1,6 @@
+---
+deprecations:
+  - The `dib-utils` requirement has been removed as the
+    `dib-run-parts` script is now shipped from within
+    diskimage-builder.  The `dib-utils` project is now considered
+    retired.
