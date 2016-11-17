@@ -53,7 +53,7 @@ case "$ARCH" in
         qemu_binary_file="/usr/bin/qemu-arm-static"
         copy_binary $qemu_binary_file $ARCH
     ;;
-    "arm64")
+    "arm64" | "aarch64")
         qemu_binary_file="/usr/bin/qemu-aarch64-static"
         copy_binary $qemu_binary_file $ARCH
     ;;
