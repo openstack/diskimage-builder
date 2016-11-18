@@ -14,7 +14,12 @@ PATH=/sbin:$PATH
 if [ -d "/etc/network" ]; then
     CONF_TYPE="eni"
 elif [ -d "/etc/sysconfig/network-scripts/" ]; then
-    CONF_TYPE="netscripts"
+    CONF_TYPE="rhel-netscripts"
+    SCRIPTS_PATH="/etc/sysconfig/network-scripts/"
+elif [ -d "/etc/sysconfig/network/" ]; then
+    # SUSE network scripts location
+    CONF_TYPE="suse-netscripts"
+    SCRIPTS_PATH="/etc/sysconfig/network/"
 else
     echo "Unsupported network configuration type!"
     exit 1
@@ -42,8 +47,10 @@ function enable_interface() {
     serialize_me
     if [ "$CONF_TYPE" == "eni" ]; then
         printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
-    elif [ "$CONF_TYPE" == "netscripts" ]; then
-        printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"/etc/sysconfig/network-scripts/ifcfg-$interface"
+    elif [ "$CONF_TYPE" == "rhel-netscripts" ]; then
+        printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"${SCRIPTS_PATH}ifcfg-$interface"
+    elif [ "$CONF_TYPE" == "suse-netscripts" ]; then
+        printf "BOOTPROTO=\"dhcp\"\nSTARTMODE=\"auto\"" >"${SCRIPTS_PATH}ifcfg-$interface"
     fi
     echo "Configured $1"
 
@@ -51,8 +58,8 @@ function enable_interface() {
 
 function config_exists() {
     local interface=$1
-    if [ "$CONF_TYPE" == "netscripts" ]; then
-        if [ -f "/etc/sysconfig/network-scripts/ifcfg-$interface" ]; then
+    if [[ "$CONF_TYPE" =~ "netscripts" ]]; then
+        if [ -f "${SCRIPTS_PATH}ifcfg-$interface" ]; then
             return 0
         fi
     else

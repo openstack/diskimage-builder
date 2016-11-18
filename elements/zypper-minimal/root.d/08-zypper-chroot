@@ -27,6 +27,10 @@ set -o pipefail
 [ -n "${ZYPPER_REPOS}" ]
 
 function cleanup() {
+    sudo umount $TARGET_ROOT/proc
+    sudo umount $TARGET_ROOT/dev/pts
+    sudo umount $TARGET_ROOT/dev
+    sudo umount $TARGET_ROOT/sys
     sudo umount $TMP_MOUNT_PATH/var/cache/zypp
 }
 
@@ -41,9 +45,6 @@ for repo in ${ZYPPER_REPOS}; do
     sudo zypper ${ZYPPER_TARGET_OPTS} addrepo --name ${reponame} --keep-packages ${repouri} ${reponame}
 done
 
-# Refresh it
-sudo zypper ${ZYPPER_TARGET_OPTS} refresh
-
 # It appears that zypper will clean up the repo's cache when it (re-)adds the
 # repo so we need to add the cache now, once the repos are added. This is
 # similar to what the zypper/50-zypper-cache script does
@@ -52,6 +53,20 @@ mkdir -p $ZYPPER_CACHE_DIR
 
 sudo mkdir -p $TMP_MOUNT_PATH/var/cache/zypp
 sudo mount --bind $ZYPPER_CACHE_DIR $TMP_MOUNT_PATH/var/cache/zypp
+
+# Refresh it so we get updated data in cased we switched DIB_RELEASE
+# since last run.
+sudo zypper ${ZYPPER_TARGET_OPTS} refresh
+
+# Note this is not usually done for root.d elements (see
+# lib/common-functions:mount_proc_dev_sys) but it's important that
+# we have things like /dev/urandom around inside the chroot for
+# the rpm [pre|post]inst scripts within the packages.
+sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
+sudo mount -t proc none $TARGET_ROOT/proc
+sudo mount --bind /dev $TARGET_ROOT/dev
+sudo mount --bind /dev/pts $TARGET_ROOT/dev/pts
+sudo mount -t sysfs none $TARGET_ROOT/sys
 
 # Install filesystem, base and useful tools
 sudo zypper ${ZYPPER_TARGET_OPTS} install ${ZYPPER_INSTALL_OPTS} filesystem
@@ -83,5 +98,5 @@ for newfile in $(sudo find $TARGET_ROOT -type f -name '*rpmnew') ; do
     sudo mv $newfile $(echo $newfile | sed 's/.rpmnew$//')
 done
 
-# Unmounting of the /var/cache/zypp is handled by the cleanup EXIT
+# Unmounting of all the mount points is handled by the cleanup EXIT
 # handler so there is nothing else to do here

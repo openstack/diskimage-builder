@@ -142,21 +142,48 @@ function eval_run_d () {
     trap - ERR
 }
 
+function kill_chroot_processes () {
+    if [ -z "${1}" ]; then
+        echo "ERROR: no chroot directory specified"
+        exit 1
+    fi
+    for piddir in /proc/[0-9]*; do
+        pid=${piddir##/proc/}
+        pidname=$(cat $piddir/comm 2>/dev/null || echo "unknown")
+        # If there are open files from the chroot, just kill the process using
+        # these files.
+        if sudo readlink -f $piddir/root | grep -q $TMP_BUILD_DIR; then
+            echo "Killing chroot process: '${pidname}($pid)'"
+            sudo kill $pid
+        fi
+    done
+}
+
 function cleanup_build_dir () {
     if ! timeout 5  sh -c " while ! sudo rm -rf $TMP_BUILD_DIR/built; do sleep 1; done"; then
         echo "ERROR: unable to cleanly remove $TMP_BUILD_DIR/built"
         exit 1
     fi
     sudo rm -rf $TMP_BUILD_DIR/mnt
+    kill_chroot_processes $TMP_BUILD_DIR
     if tmpfs_check 0; then
-        sudo umount -f $TMP_BUILD_DIR || true
+        # If kill_chroot_processes did not succeed then we have to wait for
+        # init to reap the orphaned chroot processes
+        if ! timeout 120 sh -c "while ! sudo umount -f $TMP_BUILD_DIR; do sleep 1; done"; then
+            echo "ERROR: failed to umount the $TMP_BUILD_DIR tmpfs mount point"
+            exit 1
+        fi
     fi
     rm -rf --one-file-system $TMP_BUILD_DIR
 }
 
 function cleanup_image_dir () {
+    kill_chroot_processes $TMP_IMAGE_DIR
     if tmpfs_check 0; then
-        sudo umount -f $TMP_IMAGE_DIR || true
+        if ! timeout 120 sh -c "while ! sudo umount -f $TMP_IMAGE_DIR; do sleep 1; done"; then
+            echo "ERROR: failed to umount the $TMP_IMAGE_DIR tmpfs mount point"
+            exit 1
+        fi
     fi
     rm -rf --one-file-system $TMP_IMAGE_DIR
 }

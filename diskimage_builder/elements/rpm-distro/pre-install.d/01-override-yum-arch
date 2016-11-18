@@ -9,7 +9,7 @@ set -o pipefail
 if [ "i386" = "$ARCH" ]; then
     basearch=i386
     arch=i686
-elif [ "amd64" = "$ARCH" ]; then
+elif [[ "amd64 x86_64" =~ "$ARCH" ]]; then
     basearch=x86_64
     arch=x86_64
 elif [[ "$ARCH" = "ppc64" ]]; then
@@ -28,7 +28,7 @@ fi
 if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 22 ]]; then
     mkdir -p /etc/dnf/vars
     echo $basearch > /etc/dnf/vars/basearch
-    echo $arch > /etc/dnf/vars/basearch
+    echo $arch > /etc/dnf/vars/arch
 else
     echo $basearch > /etc/yum/vars/basearch
     echo $arch > /etc/yum/vars/arch

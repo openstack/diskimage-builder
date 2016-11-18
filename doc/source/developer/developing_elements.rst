@@ -172,11 +172,12 @@ the image as executable files.
 Environment Variables
 ^^^^^^^^^^^^^^^^^^^^^
 
-To set environment variables for other hooks, add a file to your element
-``environment.d``.
-
-This directory contains bash script snippets that are sourced before running
-scripts in each phase.
+To set environment variables for other hooks, add a file to your
+element ``environment.d``.  This directory contains bash script
+snippets that are sourced before running scripts in each phase.  Note
+that because environment includes are sourced together, they should
+not set global flags like ``set -x`` because they will affect all
+preceeding imports.
 
 
 Dependencies

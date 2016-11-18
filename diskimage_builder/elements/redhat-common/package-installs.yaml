@@ -6,14 +6,3 @@ traceroute:
 which:
 gettext:
     phase: pre-install.d
-
-# these are being installed to satisfy the dependencies of grub2.  See
-# 15-remove-grub for more details
-grub2-tools:
-    phase: pre-install.d
-os-prober:
-    phase: pre-install.d
-redhat-lsb-core:
-    phase: pre-install.d
-system-logos:
-    phase: pre-install.d

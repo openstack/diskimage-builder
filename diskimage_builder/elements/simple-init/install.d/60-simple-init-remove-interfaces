@@ -12,6 +12,9 @@ set -o pipefail
 # Fedora
 rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
 
+# SUSE
+rm -f /etc/sysconfig/network/ifcfg-eth*
+
 # Ubuntu
 rm -f /etc/network/interfaces.d/eth*
 
