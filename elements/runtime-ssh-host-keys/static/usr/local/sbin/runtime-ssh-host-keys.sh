@@ -12,10 +12,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-# dib-lint: disable=dibdebugtrace
+# dib-lint: disable=dibdebugtrace setpipefail
 
 set -exu
-set -o pipefail
 
 # We are running into race conditions with glean, which ssh-keygen -A is
 # not handling properly.  So, create a new script to first check if the
@@ -23,7 +22,7 @@ set -o pipefail
 
 for key in dsa ecdsa ed25519 rsa; do
     FILE=/etc/ssh/ssh_host_${key}_key
-    if ! [ -e $FILE ]; then
+    if ! [ -f $FILE ]; then
         /usr/bin/yes n | /usr/bin/ssh-keygen -f $FILE -N '' -t $key
     fi
 done
