@@ -13,7 +13,6 @@ if [ "$DISTRO_NAME" != "gentoo" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.sh /usr/local/sbin/dhcp-all-interfaces.sh
 fi
 
-DIB_INIT_SYSTEM=$(dib-init-system)
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
     if [ -e "/etc/redhat-release" ] ; then
         # the init system is upstart but networking is using sysv compatabiliy (i.e. Centos/RHEL 6)
