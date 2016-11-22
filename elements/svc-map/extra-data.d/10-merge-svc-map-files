@@ -15,7 +15,6 @@
 import os
 import sys
 
-import six
 import yaml
 
 
@@ -39,7 +38,7 @@ def merge_data(source, destination, distro):
     result = dict()
     result.update(destination)
     family = os_family(distro)
-    for servicename, mapping in six.iteritems(source):
+    for servicename, mapping in source.items():
         if servicename in result:
             raise Exception("%s already found in services list" % servicename)
         if distro in mapping:
