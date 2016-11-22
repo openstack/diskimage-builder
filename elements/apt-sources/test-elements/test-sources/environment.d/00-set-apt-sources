@@ -1,1 +1,2 @@
-export DIB_APT_SOURCES=$(mktemp)
+DIB_APT_SOURCES=$(mktemp)
+export DIB_APT_SOURCES
