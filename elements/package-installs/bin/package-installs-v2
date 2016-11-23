@@ -101,3 +101,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Tell emacs to use python-mode
+# Local variables:
+# mode: python
+# End:
