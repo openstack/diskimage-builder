@@ -242,7 +242,17 @@ else
     sudo -E chroot $TARGET_ROOT ${YUM} -y update
     sudo -E chroot $TARGET_ROOT ${YUM} -y \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
-        install passwd findutils sudo util-linux-ng
+        install systemd passwd findutils sudo util-linux-ng
+
+    # This package is split out from systemd on >F24, dracut is
+    # missing the dependency and will fail to make an initrd without
+    # it; see
+    #  https://bugzilla.redhat.com/show_bug.cgi?id=1398505
+    if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -ge 24 ]; then
+        sudo -E chroot $TARGET_ROOT ${YUM} -y \
+            --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
+            install systemd-udev
+    fi
 
     # Put in a dummy /etc/resolv.conf over the temporary one we used
     # to bootstrap.  systemd has a bug/feature [1] that it will assume
