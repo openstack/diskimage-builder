@@ -143,6 +143,10 @@ function eval_run_d () {
 }
 
 function kill_chroot_processes () {
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
     if [ -z "${1}" ]; then
         echo "ERROR: no chroot directory specified"
         exit 1
@@ -157,6 +161,8 @@ function kill_chroot_processes () {
             sudo kill $pid
         fi
     done
+
+    $xtrace
 }
 
 function cleanup_build_dir () {

@@ -85,10 +85,15 @@ for i in $(find $ELEMENTS_DIR -type f   \
             error "$i is not executable"
         fi
 
-        # Ensure 4 spaces indent are used
-        if [[ "$(file -b -k --mime-type $i)" =~ "text/x-python" ]]; then
+        # run flake8 over python files.  note our "dib-python"
+        # interpreter can confuse the magic matching being done in
+        # "file" and make it think the file is not python;
+        # special-case it.
+        if [[ "$(file -b -k --mime-type $i)" =~ "text/x-python" ]] || \
+               [[ $firstline =~ "dib-python" ]]; then
             flake8 $i || error "$i failed flake8"
         else
+            # Ensure 4 spaces indent are used
             if ! excluded indent ; then
                 indent_regex='^\( \{4\}\)* \{1,3\}[^ ]'
                 if grep -q "$indent_regex" ${i}; then

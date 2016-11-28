@@ -1,0 +1,10 @@
+{
+  "family": {
+    "suse": {
+      "openssh-server": "openssh"
+    },
+    "gentoo": {
+      "openssh-server": "openssh"
+    }
+  }
+}
