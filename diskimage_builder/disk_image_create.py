@@ -19,7 +19,39 @@ import sys
 import diskimage_builder.paths
 
 
+# borrowed from pip:locations.py
+def running_under_virtualenv():
+    """Return True if we're running inside a virtualenv, False otherwise."""
+    if hasattr(sys, 'real_prefix'):
+        return True
+    elif sys.prefix != getattr(sys, "base_prefix", sys.prefix):
+        return True
+    return False
+
+
+def activate_venv():
+    if running_under_virtualenv():
+        activate_this = os.path.join(sys.prefix, "bin", "activate_this.py")
+        execfile(activate_this, dict(__file__=activate_this))
+
+
 def main():
+    # If we are called directly from a venv install
+    # (/path/venv/bin/disk-image-create) then nothing has added the
+    # virtualenv bin/ dir to $PATH.  the exec'd script below will be
+    # unable to find call other dib tools like dib-run-parts.
+    #
+    # One solution is to say that you should only ever run
+    # disk-image-create in a shell that has already sourced
+    # bin/activate.sh (all this really does is add /path/venv/bin to
+    # $PATH).  That's not a great interface as resulting errors will
+    # be very non-obvious.
+    #
+    # We can detect if we are running in a virtualenv and use
+    # virtualenv's "activate_this.py" script to activate it ourselves
+    # before we call the script.  This ensures we have the path setting
+    activate_venv()
+
     environ = os.environ
 
     # pre-seed some paths for the shell script
