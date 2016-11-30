@@ -61,8 +61,9 @@ function finish_image () {
 
     mv $OUT_IMAGE_PATH $1
     if [ "$DIB_CHECKSUM" == "1" ]; then
-      md5sum $1 > $1.md5
-      sha256sum $1 > $1.sha256
+      # NOTE(pabelanger): Read image into memory once and generate both checksum
+      # files.
+      md5sum $1 > $1.md5 & sha256sum $1 > $1.sha256 & wait
     fi
     echo "Image file $1 created..."
 }
