@@ -104,11 +104,7 @@ function show_options () {
 }
 
 function show_version() {
-    if [ -n "$_DIB_PYTHON_INSTALL" ]; then
-        python -c "from diskimage_builder import version; print(version.version_info.version_string())"
-    else
-        echo "diskimage-builder is not installed."
-    fi
+    python -c "from diskimage_builder import version; print(version.version_info.version_string())"
 }
 
 INSTALL_PACKAGES=""
@@ -183,6 +179,8 @@ if [ "$IS_RAMDISK" == "1" ]; then
   source $_LIB/ramdisk-defaults
   source $_LIB/ramdisk-functions
 fi
+
+echo "diskimage-builder version $(show_version)"
 
 # If no elements are specified theres no way we can succeed
 if [ -z "$*" ]; then
