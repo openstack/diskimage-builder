@@ -4,6 +4,7 @@ linux-image-generic:
 # as dependencies but that may change so lets
 # be explicit.
 bash:
+ca-certificates-mozilla:
 lsb-release:
 openssl:
 sed:
