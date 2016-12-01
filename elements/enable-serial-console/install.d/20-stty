@@ -8,7 +8,6 @@ set -o pipefail
 
 SCRIPTDIR=$(dirname $0)
 
-DIB_INIT_SYSTEM=$(dib-init-system)
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
     install -m 0644 -o root -g root ${SCRIPTDIR}/ttySx.conf /etc/init/ttySx.conf
 elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
