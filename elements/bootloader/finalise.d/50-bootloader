@@ -133,6 +133,7 @@ function install_grub2 {
         GRUB_CFG=/boot/grub/grub.cfg
     fi
 
+    echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
     echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
     echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
     echo 'GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS0,115200 no_timer_check"' >>/etc/default/grub
