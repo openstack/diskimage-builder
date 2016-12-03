@@ -26,7 +26,18 @@ fi
 
 FILENAME="/etc/sysctl.d/${NAME}.conf"
 
+if [ -f $FILENAME ]; then
+    # check to make sure the settings match... otherwise fail
+    if ! grep -q "^$NAME = $VALUE" $FILENAME; then
+        echo "Conflicting sysctl.conf setting for $NAME == $VALUE. Found:"
+        grep "^$NAME" $FILENAME
+        exit 1
+    fi
+else
+
 cat > $FILENAME <<EOF_CAT
 # $COMMENT
 $NAME = $VALUE
 EOF_CAT
+
+fi
