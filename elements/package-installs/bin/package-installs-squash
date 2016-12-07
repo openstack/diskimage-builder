@@ -75,8 +75,12 @@ def collect_data(data, filename, element_name):
                              installtype == elem_installtype)
         valid_arch = _valid_for_arch(pkg_name, params.get('arch', None),
                                      params.get('not-arch', None))
+        dib_py_version = str(params.get('dib_python_version', ''))
+        dib_py_version_env = os.environ.get('DIB_PYTHON_VERSION', '')
+        valid_dib_python_version = (dib_py_version == '' or
+                                    dib_py_version == dib_py_version_env)
 
-        if valid_installtype and valid_arch:
+        if valid_installtype and valid_arch and valid_dib_python_version:
             data[phase][install].append((pkg_name, element_name))
 
     return data
