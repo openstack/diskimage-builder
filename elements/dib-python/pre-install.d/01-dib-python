@@ -6,9 +6,9 @@ fi
 set -eu
 set -o pipefail
 
-python_path=$(command -v python2 || command -v python3)
+python_path=$(command -v python${DIB_PYTHON_VERSION})
 if [ -z "$python_path" ]; then
-    echo "Could not find python2 or python3 executable."
+    echo "Could not find python${DIB_PYTHON_VERSION} executable."
     exit 1
 fi
 
