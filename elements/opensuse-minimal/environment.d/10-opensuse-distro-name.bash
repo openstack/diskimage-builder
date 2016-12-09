@@ -1,5 +1,5 @@
 export DISTRO_NAME=opensuse
-DIB_RELEASE=${DIB_RELEASE:-42.1}
+DIB_RELEASE=${DIB_RELEASE:-42.2}
 export DIB_RELEASE=${DIB_RELEASE,,}
 export DIB_OPENSUSE_MIRROR=${DIB_OPENSUSE_MIRROR:-http://download.opensuse.org}
 case ${DIB_RELEASE} in

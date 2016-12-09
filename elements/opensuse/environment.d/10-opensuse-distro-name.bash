@@ -1,5 +1,5 @@
 export DISTRO_NAME=opensuse
-export DIB_RELEASE=${DIB_RELEASE:-13.1}
+export DIB_RELEASE=${DIB_RELEASE:-42.2}
 case ${DIB_RELEASE} in
     # Old openSUSE releases
     13*) export OPENSUSE_REPO_DIR=openSUSE_${DIB_RELEASE} ;;
