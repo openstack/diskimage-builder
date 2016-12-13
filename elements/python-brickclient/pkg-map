@@ -1,0 +1,14 @@
+{
+  "family": {
+    "redhat": {
+      "python-dev": "python2-devel",
+      "libssl-dev": "openssl-devel",
+      "libffi-dev": "libffi-devel"
+    }
+  },
+  "default": {
+    "python-dev": "python-dev",
+    "libssl-dev": "libssl-dev",
+    "libffi-dev": "libffi-dev"
+  }
+}
