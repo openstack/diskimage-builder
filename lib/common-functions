@@ -135,24 +135,44 @@ function eval_run_d () {
     trap - ERR
 }
 
+# Get any process that appears to be running in $TMP_BUILD_DIR
+function _get_chroot_processes () {
+    # Deselect kernel threads, and use a python script to avoid
+    # forking lots and lots of readlink / grep processes on a busy
+    # system.
+    ps --ppid 2 -p 2 --deselect -o pid= | xargs python -c '
+import os
+import sys
+
+for pid in sys.argv[2:]:
+    try:
+        root = os.readlink("/proc/%s/root" % pid)
+    except:
+        continue
+    if sys.argv[1] in root:
+        print("%s" % pid)
+' $TMP_BUILD_DIR
+}
+
+
 function kill_chroot_processes () {
     local xtrace
     xtrace=$(set +o | grep xtrace)
     set +o xtrace
 
+    local pidname
+
     if [ -z "${1}" ]; then
         echo "ERROR: no chroot directory specified"
         exit 1
     fi
-    for piddir in /proc/[0-9]*; do
-        pid=${piddir##/proc/}
-        pidname=$(cat $piddir/comm 2>/dev/null || echo "unknown")
+
+    for pid in $(_get_chroot_processes); do
         # If there are open files from the chroot, just kill the process using
-        # these files.
-        if sudo readlink -f $piddir/root | grep -q $TMP_BUILD_DIR; then
-            echo "Killing chroot process: '${pidname}($pid)'"
-            sudo kill $pid
-        fi
+        # these files.  This is racy, but good enough
+        pidname=$(cat $piddir/comm 2>/dev/null || echo "unknown")
+        echo "Killing chroot process: '${pidname}($pid)'"
+        sudo kill $pid
     done
 
     $xtrace
