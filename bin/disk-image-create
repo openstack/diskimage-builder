@@ -417,7 +417,7 @@ LOOPDEV=$(sudo losetup --show -f $TMP_IMAGE_PATH)
 export EXTRA_UNMOUNT="detach_loopback $LOOPDEV"
 export IMAGE_BLOCK_DEVICE=$LOOPDEV
 eval_run_d block-device "IMAGE_BLOCK_DEVICE="
-sudo mkfs $MKFS_OPTS -t $FS_TYPE -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
+sudo mkfs -t $FS_TYPE $MKFS_OPTS -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
 if echo "$FS_TYPE" | grep -q "^ext"; then
     sudo tune2fs -U ${DIB_IMAGE_ROOT_FS_UUID} ${IMAGE_BLOCK_DEVICE}
