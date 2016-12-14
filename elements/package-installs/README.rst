@@ -26,6 +26,10 @@ example ``package-installs.yaml``
     not-arch: ppc64, ppc64le
   lshw:
     arch: ppc64, ppc64le
+  python-dev:
+    dib_python_version: 2
+  python3-dev:
+    dib_python_version: 3
 
 example package-installs.json
 
@@ -46,6 +50,7 @@ the following default values::
     uninstall: False
     installtype: * (Install package for all installtypes)
     arch: * (Install package for all architectures)
+    dib_python_version: (2 or 3 depending on DIB_PYTHON_VERSION, see dib-python)
 
 Setting the installtype property causes the package only to be installed if
 the specified installtype would be used for the element. See the
