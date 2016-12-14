@@ -1,1 +1,2 @@
-export DIB_INIT_SYSTEM=$(PATH="$PATH:$(dirname $BASH_SOURCE)/.." dib-init-system)
+DIB_INIT_SYSTEM=$(PATH="$PATH:$(dirname $BASH_SOURCE)/.." dib-init-system)
+export DIB_INIT_SYSTEM

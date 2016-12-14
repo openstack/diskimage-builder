@@ -167,6 +167,15 @@ for i in $(find elements -type f   \
         fi
     fi
 
+    # check for
+    #  export FOO=$(bar)
+    # calls.  These are dangerous, because the export hides the return
+    # code of the $(bar) call.  Split this into 2 lines and -e will
+    # fail on the assignment
+    if grep -q 'export .*\$(' $i; then
+        error "Split export and assignments in $i"
+    fi
+
     # check that sudo calls in phases run outside the chroot look
     # "safe"; meaning that they seem to operate within the chroot
     # somehow.  This is not fool-proof, but catches egregious errors,
