@@ -2,10 +2,17 @@
   "family": {
     "gentoo": {
       "python-pip": "dev-python/pip",
-      "python-virtualenv": "dev-python/virtualenv"
+      "python-virtualenv": "dev-python/virtualenv",
+      "python3-dev": "dev-lang/python"
     },
-    "suse" : {
-      "python-xml": "python-xml"
+    "suse": {
+      "python-xml": "python-xml",
+      "python2-dev": "python2-devel",
+      "python3-dev": "python3-devel"
+    },
+    "redhat": {
+      "python2-dev": "python2-devel",
+      "python3-dev": "python3-devel"
     }
   },
   "default": {
