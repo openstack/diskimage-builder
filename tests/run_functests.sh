@@ -19,6 +19,7 @@ DEFAULT_SKIP_TESTS=(
     # in non-voting
     gentoo/build-succeeds
     opensuse/build-succeeds
+    ubuntu-minimal/precise-build-succeeds
     # good to have the test case around - but because of changes
     # in testing does not work always.
     debian-minimal/testing-build-succeeds
@@ -194,7 +195,12 @@ while getopts ":hlj:t" opt; do
             echo "The available functional tests are:"
             echo
             for t in ${TESTS[@]}; do
-                echo "  $t"
+                echo -n "  $t"
+                if [[ " ${DEFAULT_SKIP_TESTS[@]} " =~ " ${t} " ]]; then
+                    echo " [skip]"
+                else
+                    echo " [run]"
+                fi
             done
             echo
             exit 0
