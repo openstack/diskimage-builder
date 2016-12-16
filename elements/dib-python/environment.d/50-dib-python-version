@@ -1,7 +1,9 @@
 # Pick which distros we need to force python2
 if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
     if [ "$DISTRO_NAME" == "ubuntu" ]; then
-        if [ "$DIB_RELEASE" == "trusty" ]; then
+        if [ "$DIB_RELEASE" == "precise" ]; then
+            DIB_PYTHON_VERSION=2
+        elif [ "$DIB_RELEASE" == "trusty" ]; then
             DIB_PYTHON_VERSION=2
         fi
     elif [ "$DISTRO_NAME" == "debian" ]; then
