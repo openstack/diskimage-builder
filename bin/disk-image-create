@@ -102,7 +102,7 @@ function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
-    echo "    -t qcow2,tar,vhd,docker,aci,raw -- set the image types of the output image files (default qcow2)"
+    echo "    -t qcow2,tar,tgz,vhd,docker,aci,raw -- set the image types of the output image files (default qcow2)"
     echo "       File types should be comma separated. VHD outputting requires the vhd-util"
     echo "       executable be in your PATH. ACI outputting requires the ACI_MANIFEST "
     echo "       environment variable be a path to a manifest file."
@@ -257,6 +257,10 @@ for X in ${!IMAGE_TYPES[@]}; do
                 echo "qcow2 output format specified but qemu-img executable not found."
                 exit 1
             fi
+            ;;
+        tgz)
+            # Force tar to be created.
+            IMAGE_TYPES+=('tar')
             ;;
         vhd)
             if [ -z "$(which vhd-util)" ]; then

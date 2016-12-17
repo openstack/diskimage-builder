@@ -122,6 +122,9 @@ function compress_and_save_image () {
     fi
     if [ "$IMAGE_TYPE" = "raw" ]; then
         mv $TMP_IMAGE_PATH $1-new
+    elif [ "$IMAGE_TYPE" == "tgz" ]; then
+        gzip -9 < $IMAGE_NAME.tar > $1-new
+        rm $IMAGE_NAME.tar
     elif [ "$IMAGE_TYPE" == "vhd" ]; then
         cp $TMP_IMAGE_PATH $1-intermediate
         vhd-util convert -s 0 -t 1 -i $1-intermediate -o $1-intermediate

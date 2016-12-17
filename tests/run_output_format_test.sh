@@ -59,7 +59,7 @@ function build_test_image() {
     fi
 }
 
-test_formats="tar raw qcow2 docker aci"
+test_formats="tar tgz raw qcow2 docker aci"
 for binary in qemu-img docker ; do
     if [ -z "$(which $binary)" ]; then
         echo "Warning: No $binary binary found, cowardly refusing to run tests."
