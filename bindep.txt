@@ -1,2 +1,3 @@
 # This is a cross-platform list tracking distribution packages needed by tests;
 # see http://docs.openstack.org/infra/bindep/ for additional information.
+squashfs-tools
