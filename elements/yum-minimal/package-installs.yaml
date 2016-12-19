@@ -1,5 +1,6 @@
 audit:
 dracut:
+dracut-config-generic:
 grubby:
 kernel:
 initscripts:
