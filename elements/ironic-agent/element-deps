@@ -3,5 +3,6 @@ no-final-image
 package-installs
 pip-and-virtualenv
 pkg-map
+runtime-ssh-host-keys
 source-repositories
 svc-map
