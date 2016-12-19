@@ -18,6 +18,7 @@ DEFAULT_SKIP_TESTS=(
     fedora/build-succeeds
     # in non-voting
     gentoo/build-succeeds
+    opensuse/build-succeeds
     # good to have the test case around - but because of changes
     # in testing does not work always.
     debian-minimal/testing-build-succeeds
