@@ -10,7 +10,7 @@ Currently only supports Gentoo.
 Environment Variables
 ---------------------
 
-DIB_CLOUD_INIT_ALLOW_PASS_AUTH
+DIB_CLOUD_INIT_ALLOW_SSH_PWAUTH
   :Required: No
   :Default: password authentication disabled when cloud-init installed
   :Description: customize cloud-init to allow ssh password
