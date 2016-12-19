@@ -59,7 +59,7 @@ function install_grub2 {
     if [ -f "/tmp/grub/install" ] ; then
         source /tmp/grub/install
     elif [[ "$ARCH" =~ "ppc" ]]; then
-        install-packages -m bootloader grub-ieee1275
+        install-packages grub-ieee1275
     else
         install-packages -m bootloader grub-pc
     fi
