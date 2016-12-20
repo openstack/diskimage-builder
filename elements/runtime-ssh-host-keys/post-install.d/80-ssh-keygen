@@ -24,8 +24,12 @@ case "$DIB_INIT_SYSTEM" in
         # let dib-init-system's postinstall handle enabling init scripts
         exit 0
         ;;
+    sysv)
+        # nothing to do
+        exit 0
+        ;;
     *)
-        echo "Unsupported init system"
+        echo "Unsupported init system $DIB_INIT_SYSTEM"
         exit 1
         ;;
 esac
