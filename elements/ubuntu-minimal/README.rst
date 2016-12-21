@@ -6,7 +6,7 @@ Note: The ubuntu element is likely what you want unless you really know
 you want this one for some reason. The ubuntu element gets a lot more testing
 coverage and use.
 
-Create a minimal image based on Ubuntu. We default to trusty but DIB_RELEASE
+Create a minimal image based on Ubuntu. We default to xenial but DIB_RELEASE
 is mapped to any series of Ubuntu.
 
 If necessary, a custom apt keyring and debootstrap script can be
