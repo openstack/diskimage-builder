@@ -5,8 +5,6 @@ if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
             DIB_PYTHON_VERSION=2
         elif [ "$DIB_RELEASE" == "trusty" ]; then
             DIB_PYTHON_VERSION=2
-        elif [ "$DIB_RELEASE" == "xenial" ]; then
-	    DIB_PYTHON_VERSION=2
         fi
     elif [ "$DISTRO_NAME" == "debian" ]; then
         DIB_PYTHON_VERSION=2
