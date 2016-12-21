@@ -7,6 +7,10 @@ BASE_DIR=$(cd $(dirname "$0")/.. && pwd)
 export DIB_ELEMENTS=$BASE_DIR/elements
 export DIB_CMD=$BASE_DIR/bin/disk-image-create
 
+# Setup sane locale defaults, because this information is leaked into DIB.
+export LANG=en_US.utf8
+export LC_ALL=
+
 #
 # Default skip tests
 #
@@ -23,8 +27,6 @@ DEFAULT_SKIP_TESTS=(
     # good to have the test case around - but because of changes
     # in testing does not work always.
     debian-minimal/testing-build-succeeds
-    # Currently failing due to bug in locale generation
-    centos-minimal/build-succeeds
     # No longer reasonable to test upstream (lacks a mirror in infra)
     centos/build-succeeds
 )
