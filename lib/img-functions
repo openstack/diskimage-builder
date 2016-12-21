@@ -63,7 +63,7 @@ function run_in_target () {
     # Bug: #1330290
     # Force the inclusion of a typical set of dirs in PATH, this is needed for guest
     # distros that have path elements not in the host PATH.
-    sudo -E chroot $TMP_MOUNT_PATH env -u TMPDIR PATH="\$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" sh -c "$cmd"
+    sudo -E chroot $TMP_MOUNT_PATH env -u TMPDIR -u VIRTUAL_ENV PATH="\$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" sh -c "$cmd"
     export HOME=$ORIG_HOME
 }
 
