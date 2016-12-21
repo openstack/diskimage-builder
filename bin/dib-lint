@@ -34,11 +34,15 @@ parse_exclusions() {
     #   ignore = sete setu
     section="dib-lint"
     option="ignore"
-    global_exclusions=$(python -c \
-        "import ConfigParser; \
-        conf=ConfigParser.ConfigParser(); \
-        conf.read('tox.ini'); \
-        print conf.get('$section', '$option') if conf.has_option('$section', '$option') else ''"
+    global_exclusions=$(python - <<EOF
+try:
+  import configparser
+except ImportError:
+  import ConfigParser as configparser
+conf=configparser.ConfigParser()
+conf.read('tox.ini')
+print(conf.get('$section', '$option')) if conf.has_option('$section', '$option') else ''
+EOF
     )
     echo $exclusions $global_exclusions
 }
