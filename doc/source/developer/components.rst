@@ -22,7 +22,7 @@ Components
 
     To generate kernel+ramdisk pair for use with ironic, use::
 
-        ramdisk-image-create -o deploy.ramdisk deploy-ironic
+        ramdisk-image-create -o deploy.ramdisk ironic-agent
 
 
 `element-info`
