@@ -18,6 +18,8 @@ source $_LIB/img-functions
 IMAGE_PATH=$(readlink -f $IMAGE_NAME)
 cd $TARGET_ROOT
 
+DIB_IPA_COMPRESS_CMD="${DIB_IPA_COMPRESS_CMD:-gzip}"
+
 echo "#disabled" > ./tmp/fstab.new
 sudo mv ./tmp/fstab.new ./etc/fstab
 sudo ln -s ./sbin/init ./
@@ -42,7 +44,7 @@ sudo find . -xdev \
     -path './var/cache/*' -prune -o \
     -name '*.pyc' -prune -o \
     -name '*.pyo' -prune -o \
-    -print | sudo cpio -o -H newc | gzip > ${IMAGE_PATH}.initramfs
+    -print | sudo cpio -o -H newc | ${DIB_IPA_COMPRESS_CMD} > ${IMAGE_PATH}.initramfs
 
 select_boot_kernel_initrd $TARGET_ROOT
 sudo cp $BOOTDIR/$KERNEL ${IMAGE_PATH}.kernel
