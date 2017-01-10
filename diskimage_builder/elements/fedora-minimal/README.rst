@@ -1,6 +1,13 @@
 ==============
 fedora-minimal
 ==============
+
+*Note* as at February 2022, this element is no longer tested or used
+by OpenDev.  Changes to the RPM format used by recent Fedora releases
+have meant that this element can not build on Ubuntu hosts, which lack
+a packaged RPM sufficient to extract the base chroot environment.  The
+``fedora-containerfile`` element can be used instead of this element.
+
 Create a minimal image based on Fedora.
 
 Use of this element will require 'yum' and 'yum-utils' to be installed on

@@ -5,6 +5,16 @@ fedora
 Use Fedora cloud images as the baseline for built disk images. For further
 details see the redhat-common README.
 
+Releases
+--------
+
+This element targets the current and previous version of Fedora; these
+values clearly changes over time.  To fix the version set the
+`DIB_RELEASE` variable to the Fedora version (e.g. ``35``).  The
+default value is the current best supported version (i.e. it may
+change upward at any given release to support the next Fedora).
+
+
 Environment Variables
 ---------------------
 
