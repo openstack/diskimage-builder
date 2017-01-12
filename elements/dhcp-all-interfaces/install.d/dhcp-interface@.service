@@ -1,7 +1,11 @@
 [Unit]
 Description=DHCP interface %I
-Before=network-pre.target
-Wants=network-pre.target
+# We want to run after network.target so it doesn't try to bring
+# up the interfaces a second time, but network-online should not
+# be reached until after we've brought up the interfaces.
+After=network.target
+Before=network-online.target
+Wants=network-online.target
 
 ConditionPathExists=!/etc/sysconfig/network-scripts/ifcfg-%I
 
