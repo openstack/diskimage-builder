@@ -204,7 +204,7 @@ done
 
 echo "Checking indents..."
 
-for i in $(find elements -type f -and -name '*.rst' -or -type f -executable); do
+for i in $(find bin elements -type f -and -name '*.rst' -or -type f -executable); do
     # Check for tab indentation
     if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then
