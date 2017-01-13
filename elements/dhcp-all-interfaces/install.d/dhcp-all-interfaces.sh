@@ -38,7 +38,7 @@ function serialize_me() {
 }
 
 function get_if_link() {
-    cat /sys/class/net/${1}/carrier
+    cat /sys/class/net/${1}/carrier || echo 0
 }
 
 function enable_interface() {
@@ -87,11 +87,11 @@ function inspect_interface() {
     elif [ "$mac_addr_type" != "0" ]; then
         echo "Device has generated MAC, skipping."
     else
-        ip link set dev $interface up &>/dev/null
-
         local has_link
         local tries
         for ((tries = 0; tries < 20; tries++)); do
+            # Need to set the link up on each iteration
+            ip link set dev $interface up &>/dev/null
             has_link=$(get_if_link $interface)
             [ "$has_link" == "1" ] && break
             sleep 1
