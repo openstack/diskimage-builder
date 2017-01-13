@@ -15,7 +15,7 @@ User=root
 ExecStartPre=/usr/local/sbin/dhcp-all-interfaces.sh %I
 ExecStart=/sbin/ifup %I
 RemainAfterExit=true
-TimeoutStartSec=30s
+TimeoutStartSec=DIB_DHCP_TIMEOUT
 
 [Install]
 WantedBy=multi-user.target
