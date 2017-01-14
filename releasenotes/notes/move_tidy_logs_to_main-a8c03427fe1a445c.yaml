@@ -1,0 +1,8 @@
+---
+features:
+  - Cleaning logs was split, some was done in the
+    img-functions.finalise_base, some was done in the base element.
+    The version unifies tidy up logs in the lib/img-functions.
+    Especially when building docker container images the base element
+    cannot be used. This patch removes about some hundreds KB of
+    useless logs in cases when the base element is not used.
