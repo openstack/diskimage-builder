@@ -233,7 +233,7 @@ for i in $(find elements -type f -name '*.yaml'); do
 import yaml
 import sys
 try:
-    objs = yaml.load(open('$i'))
+    objs = yaml.safe_load(open('$i'))
 except yaml.parser.ParserError:
     sys.exit(1)
 "
