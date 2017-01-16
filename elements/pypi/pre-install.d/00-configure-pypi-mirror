@@ -45,7 +45,7 @@ def main():
     if use_pypi_python_org:
         indices.append('https://pypi.python.org/simple')
     retries = os.environ.get('DIB_PIP_RETRIES')
-    with file(home + '/.pip/pip.conf', 'wt') as output:
+    with open(home + '/.pip/pip.conf', 'wt') as output:
         output.write('[global]\n')
         output.write('log = %s/pip.log\n' % (home,))
         output.write('index-url = %s\n' % (indices[0],))
@@ -53,7 +53,7 @@ def main():
             output.write('retries = %s\n' % retries)
         for index in indices[1:]:
             output.write('extra-index-url = %s\n' % (index,))
-    with file(home + '/.pydistutils.cfg', 'wt') as output:
+    with open(home + '/.pydistutils.cfg', 'wt') as output:
         output.write('[easy_install]\n')
         output.write('index_url = %s\n' % (easy_index,))
 
