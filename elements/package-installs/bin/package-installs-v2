@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
+
 import argparse
 import json
 import subprocess
@@ -23,18 +25,19 @@ import sys
 # run a command, return output
 #  if follow is set, output will be echoed to stdout
 def process_output(cmdline, follow=False):
-    proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
+                            universal_newlines=True)
     if follow:
         print("Running command: %s" % cmdline)
         out = ""
         with proc.stdout:
-            for line in iter(proc.stdout.readline, b''):
-                out += line.decode('utf-8')
-                print("> %s" % line.strip())
+            for line in iter(proc.stdout.readline, ''):
+                out += line
+                print("> %s" % line, end="")
         proc.wait()
-        print("> -- done")
+        print("returncode: %d" % proc.returncode)
     else:
-        out = proc.communicate()[0].decode('utf-8')
+        out = proc.communicate()[0]
 
     if proc.returncode:
         e = subprocess.CalledProcessError(proc.returncode, cmdline)
