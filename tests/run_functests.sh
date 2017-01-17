@@ -97,7 +97,7 @@ function run_disk_element_test() {
     if break="after-error" break_outside_target=1 \
         break_cmd="cp -v \$TMP_MOUNT_PATH/tmp/dib-test-should-fail ${dest_dir} || true" \
         DIB_SHOW_IMAGE_USAGE=1 \
-        ELEMENTS_PATH=$DIB_ELEMENTS:$DIB_ELEMENTS/$element/test-elements \
+        ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
         $DIB_CMD -x -t tar,qcow2 ${use_tmp_flag} -o $dest_dir/image -n $element $test_element 2>&1 \
            | log_with_prefix "${element}/${test_element}"; then
 
