@@ -2,33 +2,13 @@
 ubuntu-minimal
 ==============
 
-Note: The ubuntu element is likely what you want unless you really know
-you want this one for some reason. The ubuntu element gets a lot more testing
-coverage and use.
+The ``ubuntu-minimal`` element uses debootstrap for generating a
+minimal image. In contrast the ``ubuntu`` element uses the cloud-image
+as the initial base.
 
-Create a minimal image based on Ubuntu. We default to xenial but DIB_RELEASE
-is mapped to any series of Ubuntu.
-
-If necessary, a custom apt keyring and debootstrap script can be
-supplied to the `debootstrap` command via `DIB_APT_KEYRING` and
-`DIB_DEBIAN_DEBOOTSTRAP_SCRIPT` respectively. Both options require the
-use of absolute rather than relative paths.
-
-Use of this element will also require the tool 'debootstrap' to be
-available on your system. It should be available on Ubuntu, Debian,
-and Fedora.
-
-The `DIB_OFFLINE` or more specific `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`
-variables can be set to prefer the use of a pre-cached root filesystem
-tarball.
-
-The `DIB_DEBOOTSTRAP_EXTRA_ARGS` environment variable may be used to
-pass extra arguments to the debootstrap command used to create the
-base filesystem image. If --keyring is is used in `DIB_DEBOOTSTRAP_EXTRA_ARGS`,
-it will override `DIB_APT_KEYRING` if that is used as well.
-
-For further information about `DIB_DEBIAN_DEBOOTSTRAP_SCRIPT`,
-`DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE` and `DIB_DEBOOTSTRAP_EXTRA_ARGS`
-please consult "README.rst" of the debootstrap element.
+By default this element creates the latest LTS release.  The exact
+setting can be found in the element's ``environment.d`` directory in
+the variable ``DIB_RELEASE``.  If a different release of Ubuntu should
+be created, the variable ``DIB_RELEASE`` can be set appropriately.
 
 .. element_deps::

@@ -2,44 +2,10 @@
 debian
 ======
 
-Create an image based on Debian. We default to unstable but
-``DIB_RELEASE`` is mapped to any series of Debian.
-
-Note that the default Debian series is `unstable`, and the default
-mirrors for Debian can be problematic for `unstable`. Because apt does
-not handle changing Packages files well across multiple out of sync
-mirrors, it is recommended that you choose a single mirror of debian,
-and pass it in via `DIB_DISTRIBUTION_MIRROR`.
-
-If necessary, a custom apt keyring and debootstrap script can be
-supplied to the `debootstrap` command via `DIB_APT_KEYRING` and
-`DIB_DEBIAN_DEBOOTSTRAP_SCRIPT` respectively. Both options require the
-use of absolute rather than relative paths.
-
-Use of this element will also require the tool 'debootstrap' to be
-available on your system. It should be available on Ubuntu, Debian,
-and Fedora.
-
-The `DIB_OFFLINE` or more specific `DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`
-variables can be set to prefer the use of a pre-cached root filesystem
-tarball.
-
-The `DIB_DEBOOTSTRAP_EXTRA_ARGS` environment variable may be used to
-pass extra arguments to the debootstrap command used to create the
-base filesystem image. If --keyring is is used in `DIB_DEBOOTSTRAP_EXTRA_ARGS`,
-it will override `DIB_APT_KEYRING` if that is used as well.
-
-For further information about `DIB_DEBIAN_DEBOOTSTRAP_SCRIPT` ,
-`DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE` and `DIB_DEBOOTSTRAP_EXTRA_ARGS`
-please consult "README.rst" of the debootstrap element.
-
--------------------
-Note on ARM systems
--------------------
-
-Because there is not a one-to-one mapping of `ARCH` to a kernel package, if
-you are building an image for ARM on debian, you need to specify which kernel
-you want in the environment variable `DIB_ARM_KERNEL`. For instance, if you want
-the `linux-image-mx5` package installed, set `DIB_ARM_KERNEL` to `mx5`.
+By default this element creates the latest stable release.  The exact
+setting can be found in the ``debian-minimal/environment.d`` directory
+in the variable ``DIB_RELEASE``.  If a different release of Debian
+should be created, the variable ``DIB_RELEASE`` can be set
+appropriately.
 
 .. element_deps::
