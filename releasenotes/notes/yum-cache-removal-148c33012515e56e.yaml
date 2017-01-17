@@ -1,0 +1,9 @@
+---
+deprecations:
+  - The ``DIB_YUMCHROOT_USE_CACHE`` variable has been removed and the
+    Fedora and CentOS ``-minimal`` initial chroot will always be
+    created by the package manager.  The default creation of a chroot
+    tarball is stopped for these elements.  This unused option was
+    unsafe; there is no guarantee that the base system will not change
+    even between runs.  Getting the package manager to reuse the cache
+    for the initial chroot install is future work.

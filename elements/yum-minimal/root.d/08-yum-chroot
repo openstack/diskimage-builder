@@ -31,8 +31,6 @@ if [ $ARCH = amd64 ]; then
     ARCH=x86_64
 fi
 # Calling elements will need to set DISTRO_NAME and DIB_RELEASE
-DIB_YUMCHROOT_EXTRA_ARGS=${DIB_YUMCHROOT_EXTRA_ARGS:-}
-YUMCHROOT_TARBALL=$DIB_IMAGE_CACHE/yumchroot-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
 # TODO Maybe deal with DIB_DISTRIBUTION_MIRROR
 http_proxy=${http_proxy:-}
 YUM=${YUM:-yum}
@@ -189,107 +187,97 @@ function _install_pkg_manager {
         $TARGET_ROOT/etc/yum.repos.d/*repo
 }
 
-if [ -n "$DIB_OFFLINE" -o -n "${DIB_YUMCHROOT_USE_CACHE:-}" ] && [ -f $YUMCHROOT_TARBALL ] ; then
-    echo $YUMCHROOT_TARBALL found in cache. Using.
-    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $YUMCHROOT_TARBALL
+# Note this is not usually done for root.d elements (see
+# lib/common-functions:mount_proc_dev_sys) but it's important that
+# we have things like /dev/urandom around inside the chroot for
+# the rpm [pre|post]inst scripts within the packages.
+sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
+sudo mount -t proc none $TARGET_ROOT/proc
+sudo mount --bind /dev $TARGET_ROOT/dev
+sudo mount --bind /dev/pts $TARGET_ROOT/dev/pts
+sudo mount -t sysfs none $TARGET_ROOT/sys
+
+# initalize rpmdb
+sudo mkdir -p $TARGET_ROOT/var/lib/rpm
+sudo $_RPM --root $TARGET_ROOT --initdb
+
+# this makes sure that running yum/dnf in the chroot it can get
+# out to download stuff
+sudo mkdir $TARGET_ROOT/etc
+sudo cp /etc/resolv.conf $TARGET_ROOT/etc/resolv.conf
+
+# Bind mount the external yum cache inside the chroot.  Same logic
+# as in the yum element to provide for yum caching copied here
+# because the sequencing is wrong otherwise
+sudo mkdir -p $TMP_MOUNT_PATH/tmp/yum
+sudo mount --bind $YUM_CACHE $TMP_MOUNT_PATH/tmp/yum
+
+_install_repos
+
+# install dnf for >= f22
+if [ $DIB_RELEASE -ge 22 ]; then
+    _install_pkg_manager dnf dnf-plugins-core yum
 else
-    # Note this is not usually done for root.d elements (see
-    # lib/common-functions:mount_proc_dev_sys) but it's important that
-    # we have things like /dev/urandom around inside the chroot for
-    # the rpm [pre|post]inst scripts within the packages.
-    sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
-    sudo mount -t proc none $TARGET_ROOT/proc
-    sudo mount --bind /dev $TARGET_ROOT/dev
-    sudo mount --bind /dev/pts $TARGET_ROOT/dev/pts
-    sudo mount -t sysfs none $TARGET_ROOT/sys
+    _install_pkg_manager yum
+fi
 
-    # initalize rpmdb
-    sudo mkdir -p $TARGET_ROOT/var/lib/rpm
-    sudo $_RPM --root $TARGET_ROOT --initdb
+# we just installed yum/dnf with "outside" tools (yum/rpm) which
+# might have created /var/lib/[yum|rpm] (etc) that are slighlty
+# incompatible.  Refresh everything with the in-chroot tools
+sudo -E chroot $TARGET_ROOT rpm --rebuilddb
+sudo -E chroot $TARGET_ROOT ${YUM} clean all
 
-    # this makes sure that running yum/dnf in the chroot it can get
-    # out to download stuff
-    sudo mkdir $TARGET_ROOT/etc
-    sudo cp /etc/resolv.conf $TARGET_ROOT/etc/resolv.conf
+# populate the lang reduction macro in the chroot
+echo "%_install_langs C:en_US:en_US.UTF-8" | \
+    sudo tee -a $TARGET_ROOT/etc/rpm/macros.langs > /dev/null
 
-    # Bind mount the external yum cache inside the chroot.  Same logic
-    # as in the yum element to provide for yum caching copied here
-    # because the sequencing is wrong otherwise
-    sudo mkdir -p $TMP_MOUNT_PATH/tmp/yum
-    sudo mount --bind $YUM_CACHE $TMP_MOUNT_PATH/tmp/yum
+# bootstrap the environment within the chroot; bring in new
+# metadata with an update and install some base packages we need.
+sudo -E chroot $TARGET_ROOT ${YUM} -y update
+sudo -E chroot $TARGET_ROOT ${YUM} -y \
+    --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
+    install systemd passwd findutils sudo util-linux-ng
 
-    _install_repos
-
-    # install dnf for >= f22
-    if [ $DIB_RELEASE -ge 22 ]; then
-        _install_pkg_manager dnf dnf-plugins-core yum
-    else
-        _install_pkg_manager yum
-    fi
-
-    # we just installed yum/dnf with "outside" tools (yum/rpm) which
-    # might have created /var/lib/[yum|rpm] (etc) that are slighlty
-    # incompatible.  Refresh everything with the in-chroot tools
-    sudo -E chroot $TARGET_ROOT rpm --rebuilddb
-    sudo -E chroot $TARGET_ROOT ${YUM} clean all
-
-    # populate the lang reduction macro in the chroot
-    echo "%_install_langs C:en_US:en_US.UTF-8" | \
-        sudo tee -a $TARGET_ROOT/etc/rpm/macros.langs > /dev/null
-
-    # bootstrap the environment within the chroot; bring in new
-    # metadata with an update and install some base packages we need.
-    sudo -E chroot $TARGET_ROOT ${YUM} -y update
+# This package is split out from systemd on >F24, dracut is
+# missing the dependency and will fail to make an initrd without
+# it; see
+#  https://bugzilla.redhat.com/show_bug.cgi?id=1398505
+if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -ge 24 ]; then
     sudo -E chroot $TARGET_ROOT ${YUM} -y \
         --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
-        install systemd passwd findutils sudo util-linux-ng
-
-    # This package is split out from systemd on >F24, dracut is
-    # missing the dependency and will fail to make an initrd without
-    # it; see
-    #  https://bugzilla.redhat.com/show_bug.cgi?id=1398505
-    if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -ge 24 ]; then
-        sudo -E chroot $TARGET_ROOT ${YUM} -y \
-            --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
-            install systemd-udev
-    fi
-
-    # Put in a dummy /etc/resolv.conf over the temporary one we used
-    # to bootstrap.  systemd has a bug/feature [1] that it will assume
-    # you want systemd-networkd as the network manager and create a
-    # broken symlink to /run/... if the base image doesn't have one.
-    # This broken link confuses things like dhclient.
-    # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1197204
-    echo -e "# This file intentionally left blank\n" | \
-        sudo tee $TARGET_ROOT/etc/resolv.conf
-
-    # set the most reliable UTF-8 locale
-    echo -e 'LANG="en_US.UTF-8"' | \
-        sudo tee $TARGET_ROOT/etc/locale.conf
-    # default to UTC
-    sudo -E chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
-        /etc/localtime
-
-    # cleanup
-    # TODO : move this into a exit trap; and reconsider how
-    # this integrates with the global exit cleanup path.
-    sudo umount $TMP_MOUNT_PATH/tmp/yum
-    sudo umount $TARGET_ROOT/proc
-    sudo umount $TARGET_ROOT/dev/pts
-    sudo umount $TARGET_ROOT/dev
-    sudo umount $TARGET_ROOT/sys
-
-    # RPM doesn't know whether files have been changed since install
-    # At this point though, we know for certain that we have changed no
-    # config files, so anything marked .rpmnew is just a bug.
-    for newfile in $(sudo find $TARGET_ROOT -type f -name '*rpmnew') ; do
-        sudo mv $newfile $(echo $newfile | sed 's/.rpmnew$//')
-    done
-
-    echo Caching result in $YUMCHROOT_TARBALL
-    sudo tar --numeric-owner \
-        -C $TARGET_ROOT \
-        -zcf $YUMCHROOT_TARBALL --exclude='./tmp/*' .
+        install systemd-udev
 fi
+
+# Put in a dummy /etc/resolv.conf over the temporary one we used
+# to bootstrap.  systemd has a bug/feature [1] that it will assume
+# you want systemd-networkd as the network manager and create a
+# broken symlink to /run/... if the base image doesn't have one.
+# This broken link confuses things like dhclient.
+# [1] https://bugzilla.redhat.com/show_bug.cgi?id=1197204
+echo -e "# This file intentionally left blank\n" | \
+    sudo tee $TARGET_ROOT/etc/resolv.conf
+
+# set the most reliable UTF-8 locale
+echo -e 'LANG="en_US.UTF-8"' | \
+    sudo tee $TARGET_ROOT/etc/locale.conf
+    # default to UTC
+sudo -E chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
+    /etc/localtime
+
+# cleanup
+# TODO : move this into a exit trap; and reconsider how
+# this integrates with the global exit cleanup path.
+sudo umount $TMP_MOUNT_PATH/tmp/yum
+sudo umount $TARGET_ROOT/proc
+sudo umount $TARGET_ROOT/dev/pts
+sudo umount $TARGET_ROOT/dev
+sudo umount $TARGET_ROOT/sys
+
+# RPM doesn't know whether files have been changed since install
+# At this point though, we know for certain that we have changed no
+# config files, so anything marked .rpmnew is just a bug.
+for newfile in $(sudo find $TARGET_ROOT -type f -name '*rpmnew') ; do
+    sudo mv $newfile $(echo $newfile | sed 's/.rpmnew$//')
+done
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings
