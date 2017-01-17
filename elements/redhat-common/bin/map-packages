@@ -22,6 +22,13 @@ import sys
 # Manually maintained for brevity; consider making this compiled from
 # distromatch or other rich data sources.
 # Debian name on the left, Fedora/RHEL on the right.
+
+#
+#           !!! DO NOT ADD ANY ENTRIES TO THIS FILE !!!
+#
+# This global list has been deprecated by the pkg-map element.  New
+# package mappings should go in pkg-map files inside each element.
+#
 package_map = {
     'apache2': 'httpd',
     'arping': 'iputils',
@@ -81,13 +88,30 @@ package_map = {
     'openstack-neutron-dhcp-agent': 'openstack-neutron',
 }
 
-print("WARNING: map-packages is deprecated.  Please use the pkg-map element.",
-      file=sys.stderr)
-
+deprecated = []
 for arg in sys.argv[1:]:
     if arg not in package_map and arg.endswith('-dev'):
         # convert -dev into devel
-        print('%s%s' % (arg, 'el'))
+        converted = '%s%s' % (arg, 'el')
+        deprecated.append((arg, converted))
+        print(converted)
     else:
-        print(package_map.get(arg, arg))
+        converted = package_map.get(arg, arg)
+        if converted != arg:
+            deprecated.append((arg, converted))
+        print(converted)
+
+if deprecated:
+    print("WARNING: The following packages were re-mapped by "
+          "redhat-common map-packages\n"
+          "They should be converted to pkg-map:", file=sys.stderr)
+    for arg, converted in deprecated:
+        print(" %s -> %s" % (arg, converted), file=sys.stderr)
+
 sys.exit(0)
+
+
+# Tell emacs to use python-mode
+# Local variables:
+# mode: python
+# End:
