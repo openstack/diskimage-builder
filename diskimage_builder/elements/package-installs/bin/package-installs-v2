@@ -18,14 +18,18 @@ from __future__ import print_function
 
 import argparse
 import json
+import os
 import subprocess
 import sys
+
+from collections import defaultdict
 
 
 # run a command, return output
 #  if follow is set, output will be echoed to stdout
 def process_output(cmdline, follow=False):
     proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
                             universal_newlines=True)
     if follow:
         print("Running command: %s" % cmdline)
@@ -48,6 +52,8 @@ def process_output(cmdline, follow=False):
 
 
 def main():
+    dbg_level = int(os.getenv('DIB_DEBUG_TRACE', '0'))
+
     parser = argparse.ArgumentParser(
         description="Install or uninstall packages for a specific phase based"
                     " on package-installs files.")
@@ -75,13 +81,31 @@ def main():
         print("Nothing to %s" % install)
         sys.exit(0)
 
+    # sort the list by element, this way we only do one pkg-map call
+    # per element
+    by_element = defaultdict(list)
     for (pkg, element) in install_packages:
-        print("%sing %s from %s" % (install, pkg, element))
-        pkg_map_args = ['pkg-map', '--missing-ok', '--element', element, pkg]
+        by_element[element].append(pkg)
+
+    for element, packages in by_element.items():
+        print("Map %s for %s: %s" % (install, element, ', '.join(packages)))
+
+        # Only trace pkg-map for higher levels of debugging.  Note
+        # that pkg-map debug output comes out on stderr, which is
+        # captured into the output by process_output.  We filter by
+        # "prefix" so we don't think the debug lines are packages!
+        pkg_map_args = ['pkg-map', '--prefix', '-',
+                        '--missing-ok', '--element', element]
+        if dbg_level > 1:
+            pkg_map_args.append('--debug')
+        pkg_map_args.extend(packages)
 
         try:
-            map_output = process_output(pkg_map_args)
-            pkgs.extend(map_output.strip().split('\n'))
+            follow = True if dbg_level > 1 else False
+            map_output = process_output(pkg_map_args, follow=follow)
+            map_output = map_output.strip().split('\n')
+            map_output = [m[1:] for m in map_output if m.startswith('-')]
+            pkgs.extend(map_output)
         except subprocess.CalledProcessError as e:
             if e.returncode == 1:
                 if args.noop:
@@ -105,7 +129,7 @@ def main():
         try:
             process_output(install_args, follow=True)
         except subprocess.CalledProcessError as e:
-            print("install failed with error %s" % e.output)
+            print("install-packages failed with returncode %d" % e.returncode)
             sys.exit(1)
 
 
