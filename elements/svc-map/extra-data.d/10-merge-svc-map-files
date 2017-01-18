@@ -70,7 +70,7 @@ def main():
             data_path = os.path.join(element_path, element, "svc-map")
             if os.path.exists(data_path):
                 with open(data_path, 'r') as dataFile:
-                    data = yaml.load(dataFile.read())
+                    data = yaml.safe_load(dataFile.read())
                     try:
                         service_names = merge_data(
                             data,
