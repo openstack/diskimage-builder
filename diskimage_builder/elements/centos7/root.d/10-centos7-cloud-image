@@ -11,8 +11,12 @@ set -o pipefail
 
 if [[ "amd64 x86_64" =~ "$ARCH" ]]; then
     ARCH="x86_64"
+    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/7/images}
+elif [[ "arm64 aarch64" =~ "$ARCH" ]]; then
+    ARCH="aarch64"
+    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/altarch/7/images/aarch64}
 else
-    echo 'centos7 root element only support the x86_64 $ARCH value.'
+    echo 'centos7 root element only support the x86_64 and aarch64 $ARCH value.'
     exit 1
 fi
 
@@ -27,8 +31,8 @@ if [ -n "$DIB_LOCAL_IMAGE" ]; then
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
 else
     DIB_RELEASE=${DIB_RELEASE:-GenericCloud}
-    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/7/images}
-    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-CentOS-7-x86_64-$DIB_RELEASE.qcow2.xz}
+    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES}
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-CentOS-7-${ARCH}-$DIB_RELEASE.qcow2.xz}
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
     CACHED_IMAGE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE

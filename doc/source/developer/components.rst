@@ -1,15 +1,17 @@
 Components
 ==========
 
-`disk-image-create [-a i386|amd64|armhf] -o filename {element} [{element} ...]`
+`disk-image-create [-a i386|amd64|armhf|arm64] -o filename {element} [{element} ...]`
 
     Create an image of element {element}, optionally mixing in other elements.
     Element dependencies are automatically included. Support for other
     architectures depends on your environment being able to run binaries of
-    that platform. For instance, to enable armhf on Ubuntu install the
-    qemu-user-static package. The default output format from disk-image-create
-    is qcow2. To instead output a tarball pass in "-t tar". This tarball could
-    then be used as an image for a linux container(see docs/docker.md).
+    that platform and/or packages being available for the architecture. For
+    instance, to enable armhf on Ubuntu install the qemu-user-static package,
+    or to enable arm64 on CentOS setup the RDO aarch64 package repositories.
+    The default output format from disk-image-create is qcow2. To instead
+    output a tarball pass in "-t tar". This tarball could then be used as an
+    image for a linux container(see docs/docker.md).
 
 `ramdisk-image-create -o filename {element} [{element} ...]`
 
