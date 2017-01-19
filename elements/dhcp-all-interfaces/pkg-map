@@ -8,9 +8,13 @@
     },
     "suse": {
       "dhcp-client": "dhcp-client"
+    },
+    "debian": {
+      "ifupdown": "ifupdown"
     }
   },
   "default": {
-    "dhcp-client": "isc-dhcp-client"
+    "dhcp-client": "isc-dhcp-client",
+    "ifupdown": ""
   }
 }
