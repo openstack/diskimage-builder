@@ -72,3 +72,5 @@ Because there is not a one-to-one mapping of `ARCH` to a kernel package, if
 you are building an image for ARM on debian, you need to specify which kernel
 you want in the environment variable `DIB_ARM_KERNEL`. For instance, if you want
 the `linux-image-mx5` package installed, set `DIB_ARM_KERNEL` to `mx5`.
+
+.. element_deps::

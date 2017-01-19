@@ -1,0 +1,4 @@
+---
+features:
+  - Create sphinx directive 'element_deps' that automatically
+    generates dependencies in the element documentation.

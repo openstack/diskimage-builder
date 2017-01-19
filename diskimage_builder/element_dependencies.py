@@ -68,6 +68,24 @@ class Element(object):
             else:
                 raise
 
+    def _make_rdeps(self, all_elements):
+        """Make a list of reverse dependencies (who depends on us).
+
+           Only valid after _find_all_elements()
+
+           Arguments:
+           :param all_elements: dict as returned by _find_all_elements()
+
+           :return: nothing, but elements will have r_depends var
+        """
+
+        # note; deliberatly left out of __init__ so that accidental
+        # access without init raises error
+        self.r_depends = []
+        for name, element in all_elements.items():
+            if self.name in element.depends:
+                self.r_depends.append(element.name)
+
     def __init__(self, name, path):
         """A new element
 
@@ -207,6 +225,11 @@ def _find_all_elements(paths=None):
                                new_element.path, all_elements[name].path)
 
             all_elements[name] = new_element
+
+    # Now we have all the elements, make a call on each element to
+    # store it's reverse dependencies
+    for name, element in all_elements.items():
+        element._make_rdeps(all_elements)
 
     return all_elements
 
