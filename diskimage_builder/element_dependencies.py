@@ -26,6 +26,22 @@ import diskimage_builder.logging_config
 logger = logging.getLogger(__name__)
 
 
+class MissingElementException(Exception):
+    pass
+
+
+class AlreadyProvidedException(Exception):
+    pass
+
+
+class MissingOSException(Exception):
+    pass
+
+
+class InvalidElementDir(Exception):
+    pass
+
+
 class Element(object):
     """An element"""
     def __init__(self, name, path):
@@ -63,19 +79,25 @@ class Element(object):
 
         logger.debug("New element : %s", str(self))
 
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __repr__(self):
+        return self.name
+
     def __str__(self):
         return '%s p:<%s> d:<%s>' % (self.name,
                                      ','.join(self.provides),
                                      ','.join(self.depends))
 
 
-def get_elements_dir():
+def _get_elements_dir():
     if not os.environ.get('ELEMENTS_PATH'):
         raise Exception("$ELEMENTS_PATH must be set.")
     return os.environ['ELEMENTS_PATH']
 
 
-def expand_dependencies(user_elements, all_elements):
+def _expand_element_dependencies(user_elements, all_elements):
     """Expand user requested elements using element-deps files.
 
     Arguments:
@@ -97,8 +119,7 @@ def expand_dependencies(user_elements, all_elements):
         if element in provided:
             continue
         elif element not in all_elements:
-            logger.error("Element '%s' not found", element)
-            sys.exit(1)
+            raise MissingElementException("Element '%s' not found" % element)
 
         element_obj = all_elements[element]
 
@@ -112,11 +133,6 @@ def expand_dependencies(user_elements, all_elements):
         check_queue.extend(element_deps - (final_elements | provided))
         final_elements.update(element_deps)
 
-    if "operating-system" not in provided:
-        logger.error(
-            "Please include an operating system element.")
-        sys.exit(-1)
-
     conflicts = set(user_elements) & provided
     if conflicts:
         logger.error(
@@ -124,12 +140,16 @@ def expand_dependencies(user_elements, all_elements):
         for element in conflicts:
             logger.error("%s : already provided by %s" %
                          (element, provided_by[element]))
-        sys.exit(-1)
+        raise AlreadyProvidedException()
 
-    return final_elements - provided
+    if "operating-system" not in provided:
+        raise MissingOSException("Please include an operating system element")
+
+    out = final_elements - provided
+    return([all_elements[element] for element in out])
 
 
-def find_all_elements(paths=None):
+def _find_all_elements(paths=None):
     """Build a dictionary Element() objects
 
     Walk ELEMENTS_PATH and find all elements.  Make an Element object
@@ -138,10 +158,9 @@ def find_all_elements(paths=None):
     those seen later.
 
     :param paths: A list of paths to find elements in.  If None will
-                  use ELEMENTS_PATH
+                  use ELEMENTS_PATH from environment
 
     :return: a dictionary of all elements
-
     """
 
     all_elements = {}
@@ -151,11 +170,16 @@ def find_all_elements(paths=None):
     #  ELEMENTS_PATH=path1:path2:path3
     # we want the elements in "path1" to override "path3"
     if not paths:
-        paths = reversed(get_elements_dir().split(':'))
+        paths = reversed(_get_elements_dir().split(':'))
+    else:
+        paths = reversed(paths.split(':'))
+
+    logger.debug("ELEMENTS_PATH is: %s" % paths)
+
     for path in paths:
         if not os.path.isdir(path):
-            logger.error("ELEMENT_PATH entry '%s' is not a directory", path)
-            sys.exit(1)
+            raise InvalidElementDir("ELEMENTS_PATH entry '%s' "
+                                    "is not a directory " % path)
 
         # In words : make a list of directories in "path".  Since an
         # element is a directory, this is our list of elements.
@@ -179,6 +203,93 @@ def find_all_elements(paths=None):
     return all_elements
 
 
+def _get_elements(elements, paths=None):
+    """Return the canonical list of Element objects
+
+    This function returns Element objects.  For exernal calls, use
+    get_elements which returns a simple tuple & list.
+
+    :param elements: user specified list of elements
+    :param paths: element paths, default to environment
+
+    """
+    all_elements = _find_all_elements(paths)
+    return _expand_element_dependencies(elements, all_elements)
+
+
+def get_elements(elements, paths=None):
+    """Return the canonical list of elements with their dependencies
+
+    .. note::
+
+       You probably do not want to use this!  Elements that require
+       access to the list of all other elements should generally use
+       the environment variables exported by disk-image-create below.
+
+    :param elements: user specified elements
+    :param paths: Alternative ELEMENTS_PATH; default is to use from env
+
+    :return: A de-duplicated list of tuples [(element, path),
+             (element, path) ...] with all elements and their
+             dependents, including any transitive dependencies.
+    """
+
+    elements = _get_elements(elements, paths)
+    return [(element.name, element.path) for element in elements]
+
+
+def expand_dependencies(user_elements, element_dirs):
+    """Deprecated method for expanding element dependencies.
+
+    .. warning::
+
+       DO NOT USE THIS FUNCTION.  For compatability reasons, this
+       function does not provide paths to the returned elements.  This
+       means the caller must process override rules if two elements
+       with the same name appear in element_dirs
+
+    :param user_elements: iterable enumerating the elements a user requested
+    :param elements_dir: The ELEMENTS_PATH to process
+
+    :return: a set contatining user_elements and all dependent
+             elements including any transitive dependencies.
+    """
+    logger.warning("expand_dependencies() deprecated, use get_elements")
+    elements = _get_elements(user_elements, element_dirs)
+    return set([element.name for element in elements])
+
+
+def _output_env_vars(elements):
+    """Output eval-able bash strings for IMAGE_ELEMENT vars
+
+    :param elements: list of Element objects to represent
+    """
+    # first the "legacy" environment variable that just lists the
+    # elements
+    print("export IMAGE_ELEMENT='%s'" %
+          ' '.join([element.name for element in elements]))
+
+    # Then YAML
+    output = {}
+    for element in elements:
+        output[element.name] = element.path
+    print("export IMAGE_ELEMENT_YAML='%s'" % yaml.safe_dump(output))
+
+    # Then bash array.  Unfortunately, bash can't export array
+    # variables.  So we take a compromise and produce an exported
+    # function that outputs the string to re-create the array.
+    # You can then simply do
+    #  eval declare -A element_array=$(get_image_element_array)
+    # and you have it.
+    output = ""
+    for element in elements:
+        output += '[%s]=%s ' % (element.name, element.path)
+    print("function get_image_element_array {\n"
+          "  echo \"%s\"\n"
+          "};\n"
+          "export -f get_image_element_array;" % output)
+
+
 def main():
     diskimage_builder.logging_config.setup()
 
@@ -192,36 +303,13 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
 
-    all_elements = find_all_elements()
-
-    elements = expand_dependencies(args.elements, all_elements)
+    elements = _get_elements(args.elements)
 
     if args.env:
-        # first the "legacy" environment variable that just lists the
-        # elements
-        print("export IMAGE_ELEMENT='%s'" % ' '.join(elements))
-
-        # Then YAML
-        output = {}
-        for element in elements:
-            output[element] = all_elements[element].path
-        print("export IMAGE_ELEMENT_YAML='%s'" % yaml.safe_dump(output))
-
-        # Then bash array.  Unfortunately, bash can't export array
-        # variables.  So we take a compromise and produce an exported
-        # function that outputs the string to re-create the array.
-        # You can then simply do
-        #  eval declare -A element_array=$(get_image_element_array)
-        # and you have it.
-        output = ""
-        for element in elements:
-            output += '[%s]=%s ' % (element, all_elements[element].path)
-        print("function get_image_element_array {\n"
-              "  echo \"%s\"\n"
-              "};\n"
-              "export -f get_image_element_array;" % output)
+        _output_env_vars(elements)
     else:
-        print(' '.join(elements))
+        # deprecated compatability output; doesn't include paths.
+        print(' '.join([element.name for element in elements]))
 
     return 0
 
