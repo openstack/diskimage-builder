@@ -7,8 +7,16 @@ set -eu
 set -o pipefail
 
 # make sure system is in a consistant state
+echo 'PYTHON_TARGETS="python3_4"' >> /etc/portage/make.conf
+eselect python set python3.4
+emerge -C -q dev-lang/python:2.7 dev-vcs/git
+USE="-build" emerge -q --jobs=2 --update --newuse --deep --with-bdeps=y @world
+# rebuild packages that might need it
+USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
+# remove unneeded packages
 USE="-build" emerge --verbose=n --depclean
-USE="-build" emerge -v --usepkg=n @preserved-rebuild
+# rebuild packages that might have somehow depended on the unneeded packages
+USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
 
 # update config files
 etc-update --automode -5
