@@ -1,3 +1,8 @@
 libssl-dev:
 libffi-dev:
 python-dev:
+  installtype: source
+  dib_python_version: 2
+python3-dev:
+  installtype: source
+  dib_python_version: 3
