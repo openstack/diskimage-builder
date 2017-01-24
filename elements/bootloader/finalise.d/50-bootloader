@@ -133,6 +133,10 @@ function install_grub2 {
         GRUB_CFG=/boot/grub/grub.cfg
     fi
 
+    # Override the root device to the default label, and disable uuid
+    # lookup.
+    echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
+    echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
     echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
     echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
     echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
@@ -181,17 +185,7 @@ function install_grub2 {
         sed -i "s%search --no.*%%" $GRUB_CFG
         sed -i "s%set root=.*%set root=(hd0,1)%" $GRUB_CFG
     fi
-    # force use of a LABEL:
-    # NOTE: Updating the grub config by hand once deployed should work, its just
-    # prepping it in a different environment that needs fiddling.
-    sed -i "s%$PART_DEV%LABEL=${DIB_ROOT_LABEL}%" $GRUB_CFG
-    sed -i "s%search --no-floppy --fs-uuid --set=root .*$%search --no-floppy --set=root --label ${DIB_ROOT_LABEL}%" $GRUB_CFG
-    sed -i "s%root=UUID=[A-Za-z0-9\-]*%root=LABEL=${DIB_ROOT_LABEL}%" $GRUB_CFG
-    if [ "$DISTRO_NAME" = 'fedora' ] ; then
-        if [ "$DIB_RELEASE" = '19' ]; then
-            sed -i "s%UUID=[A-Za-z0-9\-]*%LABEL=${DIB_ROOT_LABEL}%" /etc/fstab
-        fi
-    fi
+
     # Fix efi specific instructions in grub config file
     if [ -d /sys/firmware/efi ]; then
         sed -i 's%\(initrd\|linux\)efi /boot%\1 /boot%g' $GRUB_CFG
