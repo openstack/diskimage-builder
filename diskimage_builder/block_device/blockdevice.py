@@ -30,6 +30,47 @@ logger = logging.getLogger(__name__)
 
 
 class BlockDevice(object):
+    """Handles block devices.
+
+    This class handles the complete setup and deletion of all aspects
+    of the block device level.
+
+    A typical call sequence:
+
+    cmd_create: creates all the different aspects of the block
+       device. When this call is successful, the complete block level
+       device is set up, filesystems are created and are mounted at
+       the correct position.
+       After this call it is possible to copy / install all the needed
+       files into the appropriate directories.
+
+    cmd_umount: unmount and detaches all directories and used many
+       resources. After this call the used (e.g.) images are still
+       available for further handling, e.g. converting from raw in
+       some other format.
+
+    cmd_cleanup: removes everything that was created with the
+       'cmd_create' call, i.e. all images files themselves and
+       internal temporary configuration.
+
+    cmd_delete: unmounts and removes everything that was created
+       during the 'cmd_create' all.  This call should be used in error
+       conditions when there is the need to remove all allocated
+       resources immediately and as good as possible.
+       From the functional point of view this is mostly the same as a
+       call to 'cmd_umount' and 'cmd_cleanup' - but is typically more
+       error tolerance.
+
+    In a script this should be called in the following way:
+
+    dib-block-device --phase=create ...
+    trap "dib-block-device --phase=delete ..." EXIT
+    # copy / install files
+    dib-block-device --phase=umount ...
+    # convert image(s)
+    dib-block-device --phase=cleanup ...
+    trap - EXIT
+    """
 
     # Default configuration:
     # one image, one partition, mounted under '/'

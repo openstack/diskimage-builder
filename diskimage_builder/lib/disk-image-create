@@ -415,31 +415,6 @@ export EXTRA_DETACH="detach_loopback ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}"
 export EXTRA_UNMOUNT="dib-block-device --phase=cleanup \
                       --build-dir=\"${TMP_BUILD_DIR}\""
 
-# Create the partitions and make them visible to the system
-
-sudo partprobe $IMAGE_BLOCK_DEVICE_WITHOUT_PART
-
-# To ensure no race conditions exist from calling partprobe
-sudo udevadm settle
-
-# If the partition isn't under /dev/loop*p1, create it with kpartx
-DM=
-if [ ! -e "${IMAGE_BLOCK_DEVICE}" ]; then
-    DM=${IMAGE_BLOCK_DEVICE/#\/dev/\/dev\/mapper}
-    # If running inside Docker, make our nodes manually, because udev will not be working.
-    if [ -f /.dockerenv ]; then
-        # kpartx cannot run in sync mode in docker.
-        sudo kpartx -av ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}
-        sudo dmsetup --noudevsync mknodes
-    else
-        sudo kpartx -asv ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}
-    fi
-elif [[ "$ARCH" =~ "ppc" ]]; then
-    sudo kpartx -asv ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}
-fi
-
-# End: Creation of the partitions
-
 sudo mkfs -t $FS_TYPE $MKFS_OPTS -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
 if echo "$FS_TYPE" | grep -q "^ext"; then

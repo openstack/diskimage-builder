@@ -19,6 +19,8 @@ from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
 from diskimage_builder.graph.digraph import Digraph
 import logging
+import os
+import subprocess
 
 
 logger = logging.getLogger(__name__)
@@ -148,6 +150,51 @@ class Partitioning(object):
         for _, part in self.partitions.items():
             dg.add_node(part)
 
+    def _exec_sudo(self, cmd):
+        sudo_cmd = ["sudo"]
+        sudo_cmd.extend(cmd)
+        logger.info("Calling [%s]" % " ".join(sudo_cmd))
+        subp = subprocess.Popen(sudo_cmd)
+        rval = subp.wait()
+        if rval != 0:
+            logger.error("Calling [%s] failed with [%s]" %
+                         (" ".join(sudo_cmd), rval))
+            logger.error("Trying to continue")
+
+    def _all_part_devices_exist(self, expected_part_devices):
+        for part_device in expected_part_devices:
+            logger.debug("Checking if partition device [%s] exists" %
+                         part_device)
+            if not os.path.exists(part_device):
+                logger.info("Partition device [%s] does not exists"
+                            % part_device)
+                return False
+            logger.debug("Partition already exists [%s]" % part_device)
+        return True
+
+    def _notify_os_of_partition_changes(self, device_path, partition_devices):
+        """Notify of of partition table changes
+
+        There is the need to call some programs to inform the operating
+        system of partition tables changes.
+        These calls are highly distribution and version specific. Here
+        a couple of different methods are used to get the best result.
+        """
+        self._exec_sudo(["partprobe", device_path])
+        self._exec_sudo(["udevadm", "settle"])
+
+        if self._all_part_devices_exist(partition_devices):
+            return
+        # If running inside Docker, make our nodes manually, because udev
+        # will not be working.
+        if os.path.exists("/.dockerenv"):
+            # kpartx cannot run in sync mode in docker.
+            self._exec_sudo(["kpartx", "-av", device_path])
+            self._exec_sudo(["dmsetup", "--noudevsync", "mknodes"])
+            return
+
+        self._exec_sudo(["kpartx", "-avs", device_path])
+
     def create(self, result, rollback):
         image_path = result[self.base]['image']
         device_path = result[self.base]['device']
@@ -160,6 +207,7 @@ class Partitioning(object):
 
         assert self.label == 'mbr'
 
+        partition_devices = set()
         disk_size = self._size_of_block_dev(image_path)
         with MBR(image_path, disk_size, self.align) as part_impl:
             for part_name, part_cfg in self.partitions.items():
@@ -178,7 +226,10 @@ class Partitioning(object):
                                               part_size, part_type)
                 logger.debug("Create partition [%s] [%d]" %
                              (part_name, part_no))
-                result[part_name] = {'device': device_path + "p%d" % part_no}
+                partition_device_name = device_path + "p%d" % part_no
+                result[part_name] = {'device': partition_device_name}
+                partition_devices.add(partition_device_name)
 
         self.already_created = True
+        self._notify_os_of_partition_changes(device_path, partition_devices)
         return
