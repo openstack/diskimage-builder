@@ -353,7 +353,9 @@ function unmount_dir {
     # /proc/mounts is the real path
     real_dir=$(readlink -e $dir)
 
-    mnts=$(awk '{print $2}' < /proc/mounts | grep "^$real_dir" | sort -r)
+    # note the "/" on real_dir ... we are just looking for things
+    # mounted *underneath* this directory.
+    mnts=$(awk '{print $2}' < /proc/mounts | grep "^$real_dir/" | sort -r)
     for m in $mnts; do
         echo "Unmount $m"
         sudo umount -fl $m || true

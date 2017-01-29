@@ -12,10 +12,12 @@ set -o pipefail
 # that will actually be used for the final image. This is likely something
 # different than what the chroot is currently on (which might currently be a
 # tmpfs even).
-echo "rootfstype=$FS_TYPE" > /etc/sysconfig/initrd
+echo "rootfstype=${DIB_ROOT_FSTYPE}" > /etc/sysconfig/initrd
 
+# ToDo: This it not really clear to me.
+#       Let's see which error occurs.
 # openSuse mkinitrd requires a valid root device be in fstab.
-sed -i 's/vda1/sda1/' /etc/fstab
+##sed -i 's/vda1/sda1/' /etc/fstab
 mkinitrd -A -B
 
 # And cleanup again

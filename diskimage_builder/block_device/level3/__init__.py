@@ -1,6 +1,4 @@
-#!/bin/bash
-#
-# Copyright 2015 Hewlett-Packard Development Company, L.P.
+# Copyright 2017 Andreas Florath (andreas@florath.net)
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -13,13 +11,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-#
 
-if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
-    set -x
-fi
-set -eu
-set -o pipefail
+from diskimage_builder.block_device.level3.mount import Mount
 
-install -d -m 0755 -o root -g root /etc/sudoers.d
-echo 'blacklist pcspkr' > /etc/modprobe.d/blacklist.conf
+__all__ = [Mount]

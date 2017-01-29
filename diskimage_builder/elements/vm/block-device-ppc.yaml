@@ -28,3 +28,9 @@
       - name: root
         flags: [ primary ]
         size: 100%
+        mkfs:
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1

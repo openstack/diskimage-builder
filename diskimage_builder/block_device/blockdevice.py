@@ -22,6 +22,7 @@ import yaml
 
 from stevedore import extension
 
+from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.graph.digraph import Digraph
 
 
@@ -54,6 +55,8 @@ class BlockDevice(object):
        the correct position.
        After this call it is possible to copy / install all the needed
        files into the appropriate directories.
+
+    cmd_writefstab: creates the (complete) fstab for the system.
 
     cmd_umount: unmount and detaches all directories and used many
        resources. After this call the used (e.g.) images are still
@@ -248,6 +251,28 @@ class BlockDevice(object):
         logger.info("Wrote final block device config to [%s]"
                     % self.config_json_file_name)
 
+    def _config_get_mount(self, path):
+        for entry in self.config:
+            for k, v in entry.items():
+                if k == 'mount' and v['mount_point'] == path:
+                    return v
+        assert False
+
+    def _config_get_all_mount_points(self):
+        rvec = []
+        for entry in self.config:
+            for k, v in entry.items():
+                if k == 'mount':
+                    rvec.append(v['mount_point'])
+        return rvec
+
+    def _config_get_mkfs(self, name):
+        for entry in self.config:
+            for k, v in entry.items():
+                if k == 'mkfs' and v['name'] == name:
+                    return v
+        assert False
+
     def cmd_getval(self, symbol):
         """Retrieve value from block device level
 
@@ -256,9 +281,25 @@ class BlockDevice(object):
         (non python) access to internal configuration.
 
         Arguments:
-        :symbol: The symbol to find
+        :param symbol: the symbol to get
         """
         logger.info("Getting value for [%s]" % symbol)
+        if symbol == "root-label":
+            root_mount = self._config_get_mount("/")
+            root_fs = self._config_get_mkfs(root_mount['base'])
+            logger.debug("root-label [%s]" % root_fs['label'])
+            print("%s" % root_fs['label'])
+            return 0
+        if symbol == "root-fstype":
+            root_mount = self._config_get_mount("/")
+            root_fs = self._config_get_mkfs(root_mount['base'])
+            logger.debug("root-fstype [%s]" % root_fs['type'])
+            print("%s" % root_fs['type'])
+            return 0
+        if symbol == 'mount-points':
+            mount_points = self._config_get_all_mount_points()
+            print("%s" % " ".join(mount_points))
+            return 0
         if symbol == 'image-block-partition':
             # If there is no partition needed, pass back directly the
             # image.
@@ -270,8 +311,46 @@ class BlockDevice(object):
         if symbol == 'image-path':
             print("%s" % self.state['blockdev']['image0']['image'])
             return 0
+
         logger.error("Invalid symbol [%s] for getval" % symbol)
         return 1
+
+    def cmd_writefstab(self):
+        """Creates the fstab"""
+        logger.info("Creating fstab")
+
+        tmp_fstab = os.path.join(self.state_dir, "fstab")
+        with open(tmp_fstab, "wt") as fstab_fd:
+            # This gives the order in which this must be mounted
+            for mp in self.state['mount_order']:
+                logger.debug("Writing fstab entry for [%s]" % mp)
+                fs_base = self.state['mount'][mp]['base']
+                fs_name = self.state['mount'][mp]['name']
+                fs_val = self.state['filesys'][fs_base]
+                if 'label' in fs_val:
+                    diskid = "LABEL=%s" % fs_val['label']
+                else:
+                    diskid = "UUID=%s" % fs_val['uuid']
+
+                # If there is no fstab entry - do not write anything
+                if 'fstab' not in self.state:
+                    continue
+                if fs_name not in self.state['fstab']:
+                    continue
+
+                options = self.state['fstab'][fs_name]['options']
+                dump_freq = self.state['fstab'][fs_name]['dump-freq']
+                fsck_passno = self.state['fstab'][fs_name]['fsck-passno']
+
+                fstab_fd.write("%s %s %s %s %s %s\n"
+                               % (diskid, mp, fs_val['fstype'],
+                                  options, dump_freq, fsck_passno))
+
+        target_etc_dir = os.path.join(self.params['build-dir'], 'built', 'etc')
+        exec_sudo(['mkdir', '-p', target_etc_dir])
+        exec_sudo(['cp', tmp_fstab, os.path.join(target_etc_dir, "fstab")])
+
+        return 0
 
     def cmd_create(self):
         """Creates the block device"""

@@ -4,9 +4,15 @@
     name: image0
 
 - partitioning:
-   base: image0
-   label: mbr
-   partitions:
-     - name: root
-       flags: [ boot, primary ]
-       size: 100%
+    base: image0
+    label: mbr
+    partitions:
+      - name: root
+        flags: [ boot, primary ]
+        size: 100%
+        mkfs:
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1

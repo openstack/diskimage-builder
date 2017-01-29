@@ -83,7 +83,7 @@ The default when using the `vm` element is:
 
     DIB_BLOCK_DEVICE_CONFIG='
       - local_loop:
-        name: image0
+          name: image0
 
       - partitioning:
           base: image0
@@ -92,6 +92,12 @@ The default when using the `vm` element is:
             - name: root
               flags: [ boot, primary ]
               size: 100%
+              mkfs:
+                mount:
+                  mount_point: /
+                  fstab:
+                    options: "defaults"
+                    fsck-passno: 1'
 
 The default when not using the `vm` element is:
 
@@ -100,6 +106,13 @@ The default when not using the `vm` element is:
     DIB_BLOCK_DEVICE_CONFIG='
       - local_loop:
           name: image0
+          mkfs:
+            name: mkfs_root
+            mount:
+              mount_point: /
+              fstab:
+                options: "defaults"
+                fsck-passno: 1'
 
 There are a lot of different options for the different levels.  The
 following sections describe each level in detail.
@@ -162,23 +175,21 @@ Tree and digraph notations can be mixed as needed in a configuration.
 
 Limitations
 +++++++++++
-The appropriate functionality to use multiple partitions and even LVMs
-is currently under development; therefore the possible configuration
-is currently limited, but will get more flexible as soon as all the
-functionality is implemented.
 
-In future this will be a list of some elements, each describing one
-part of block device setup - but because currently only `local_loop`
-and `partitioning` are implemented, it contains only the configuration
-of these steps.
+There are a couple of new modules planned, but not yet implemented,
+like LVM, MD, encryption, ...
 
-Currently it is possible to create multiple local loop devices, but
-all but the `image0` will be not useable (are deleted during the
-build process).
+To provide an interface towards the existing elements, there are
+currently three fixed keys used - which are not configurable:
 
-Currently only one partitions is used for the image.  The name of this
-partition must be `root`.  Other partitions are created but not
-used.
+* `root-label`: this is the label of the block device that is mounted at
+  `/`.
+* `image-block-partition`: if there is a block device with the name
+  `root` this is used else the block device with the name `image0` is
+  used.
+* `image-path`: the path of the image that contains the root file
+  system is taken from the `image0`.
+
 
 Level 0
 +++++++
@@ -213,7 +224,6 @@ Example:
 
 .. code-block:: yaml
 
-::
         local_loop:
           name: image0
 
@@ -227,8 +237,6 @@ block devices.  One image file called `image0` is created with
 default size in the default temp directory.  The second image has the
 size of 7.5GiB and is created in the `/var/tmp` folder.
 
-Please note that due to current implementation restrictions it is only
-allowed to specify one local loop image.
 
 Level 1
 +++++++
@@ -278,7 +286,7 @@ align
    Set the alignment of the partition.  This must be a multiple of the
    block size (i.e. 512 bytes).  The default of 1MiB (~ 2048 * 512
    bytes blocks) is the default for modern systems and known to
-   perform well on a wide range of targets [6].  For each partition
+   perform well on a wide range of targets.  For each partition
    there might be some space that is not used - which is `align` - 512
    bytes.  For the default of 1MiB exactly 1048064 bytes (= 1 MiB -
    512 byte) are not used in the partition itself.  Please note that
@@ -344,6 +352,130 @@ On the `image0` two partitions are created.  The size of the first is
 1GiB, the second uses the remaining free space.  On the `data_image`
 three partitions are created: all are about 1/3 of the disk size.
 
+
+Level 2
++++++++
+
+Module: Mkfs
+............
+
+This module creates file systems on the block device given as `base`.
+The following key / value pairs can be given:
+
+base
+   (mandatory) The name of the block device where the filesystem will
+   be created on.
+
+name
+   (mandatory) The name of the partition.  This can be used to
+   reference (e.g. mounting) the filesystem.
+
+type
+   (mandatory) The type of the filesystem, like `ext4` or `xfs`.
+
+label
+   (optional - defaults to the name)
+   The label of the filesystem.  This can be used e.g. by grub or in
+   the fstab.
+
+opts
+   (optional - defaults to empty list)
+   Options that will passed to the mkfs command.
+
+uuid
+   (optional - no default / not used if not givem)
+   The UUID of the filesystem.  Not all file systems might
+   support this.  Currently there is support for `ext2`, `ext3`,
+   `ext4` and `xfs`.
+
+Example:
+
+.. code-block:: yaml
+
+   - mkfs:
+       name: mkfs_root
+       base: root
+       type: ext4
+       label: cloudimage-root
+       uuid: b733f302-0336-49c0-85f2-38ca109e8bdb
+       opts: "-i 16384"
+
+
+Level 3
++++++++
+
+Module: Mount
+.............
+
+This module mounts a filesystem.  The options are:
+
+base
+   (mandatory) The name of the filesystem that will be mounted.
+
+name
+   (mandatory) The name of the mount point.  This can be used for
+   reference the mount (e.g. creating the fstab).
+
+mount_point
+   (mandatory) The mount point of the filesystem.
+
+There is no need to list the mount points in the correct order: an
+algorithm will automatically detect the mount order.
+
+Example:
+
+.. code-block:: yaml
+
+   - mount:
+       name: root_mnt
+       base: mkfs_root
+       mount_point: /
+
+
+Level 4
++++++++
+
+Module: fstab
+.............
+
+This module creates fstab entries.  The following options exists.  For
+details please consult the fstab man page.
+
+base
+   (mandatory) The name of the mount point that will be written to
+   fstab.
+
+name
+   (mandatory) The name of the fstab entry.  This can be used later on
+   as reference - and is currently unused.
+
+options
+   (optional, defaults to `default`)
+   Special mount options can be given.  This is used as the fourth
+   field in the fstab entry.
+
+dump-freq
+   (optional, defaults to 0 - don't dump)
+   This is passed to dump to determine which filesystem should be
+   dumped. This is used as the fifth field in the fstab entry.
+
+fsck-passno
+   (optional, defaults to 2)
+   Determines the order to run fsck.  Please note that this should be
+   set to 1 for the root file system. This is used as the sixth field
+   in the fstab entry.
+
+Example:
+
+.. code-block:: yaml
+
+   - fstab:
+       name: var_log_fstab
+       base: var_log_mnt
+       options: nodev,nosuid
+       dump-freq: 2
+
+
 Filesystem Caveat
 -----------------
 
@@ -381,3 +513,4 @@ creates ramdisk.
 If tmpfs is not used, you will need enough room in /tmp to store two
 uncompressed cloud images. If tmpfs is used, you would still need /tmp space
 for one uncompressed cloud image and about 20% of that image for working files.
+

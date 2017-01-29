@@ -85,6 +85,9 @@ class Partition(Digraph.Node):
     def get_type(self):
         return self.ptype
 
+    def get_name(self):
+        return self.name
+
     def insert_edges(self, dg):
         bnode = dg.find(self.base)
         assert bnode is not None
