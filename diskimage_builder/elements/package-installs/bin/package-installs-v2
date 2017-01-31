@@ -20,20 +20,28 @@ import subprocess
 import sys
 
 
-def process_output(cmdline):
-    # Try to execute subprocess.check_output(), which is available
-    # in Python 2.7+, gracefully falling back to subprocess.Popen
-    # in older Python versions.
-    try:
-        return subprocess.check_output(cmdline).decode(encoding='utf-8')
-    except AttributeError:
-        proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
-        out = proc.communicate()[0]
-        if proc.returncode:
-            e = subprocess.CalledProcessError(proc.returncode, cmdline)
-            e.output = out
-            raise e
-        return out
+# run a command, return output
+#  if follow is set, output will be echoed to stdout
+def process_output(cmdline, follow=False):
+    proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+    if follow:
+        print("Running command: %s" % cmdline)
+        out = ""
+        with proc.stdout:
+            for line in iter(proc.stdout.readline, b''):
+                out += line.decode('utf-8')
+                print("> %s" % line.strip())
+        proc.wait()
+        print("> -- done")
+    else:
+        out = proc.communicate()[0].decode('utf-8')
+
+    if proc.returncode:
+        e = subprocess.CalledProcessError(proc.returncode, cmdline)
+        e.output = out
+        raise e
+
+    return out
 
 
 def main():
@@ -69,8 +77,7 @@ def main():
         pkg_map_args = ['pkg-map', '--missing-ok', '--element', element, pkg]
 
         try:
-            map_output = process_output(
-                pkg_map_args)
+            map_output = process_output(pkg_map_args)
             pkgs.extend(map_output.strip().split('\n'))
         except subprocess.CalledProcessError as e:
             if e.returncode == 1:
@@ -93,7 +100,7 @@ def main():
         print(" ".join(install_args))
     else:
         try:
-            process_output(install_args)
+            process_output(install_args, follow=True)
         except subprocess.CalledProcessError as e:
             print("install failed with error %s" % e.output)
             sys.exit(1)

@@ -28,23 +28,9 @@ fi
 [ -n "$DIB_RELEASE" ]
 [ -n "$DIB_DISTRIBUTION_MIRROR" ]
 
-if [ $DISTRO_NAME = 'ubuntu' ] ; then
-    KERNEL='generic'
-else
-    case $ARCH in
-        amd64) KERNEL='amd64' ;;
-        i386) KERNEL='686' ;;
-        arm7)
-            [ -n "$DIB_ARM_KERNEL" ]
-            KERNEL="$DIB_ARM_KERNEL"
-            ;;
-    esac
-fi
-KERNEL_PACKAGE="linux-image-$KERNEL"
-
 DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main}
 DIB_DEBOOTSTRAP_EXTRA_ARGS=${DIB_DEBOOTSTRAP_EXTRA_ARGS:-}
-DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}-${KERNEL}.tar.gz
+DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
 http_proxy=${http_proxy:-}
 no_proxy=${no_proxy:-}
 
@@ -63,7 +49,6 @@ else
     # Have to --include=busybox because initramfs needs it
     sudo sh -c "http_proxy=$http_proxy no_proxy=$no_proxy debootstrap --verbose \
         --variant=minbase \
-        --include=python,sudo,busybox,$KERNEL_PACKAGE \
         --components=${DIB_DEBIAN_COMPONENTS} \
         --arch=${ARCH} \
         $KEYRING_OPT \
@@ -78,6 +63,7 @@ else
     # and the old has to go.
     sudo rm -fr ${TARGET_ROOT}/etc/apt/sources.list \
         ${TARGET_ROOT}/etc/apt/sources.list.d
+
 
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
     if [ "${DIB_DEBOOTSTRAP_CACHE:-0}" != "0" ]; then

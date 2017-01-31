@@ -15,10 +15,6 @@
 #
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# The filename needs to be 02-...: because the install-package script
-# is installed in the dpkg/pre-install/01-dpkg and that has to be executed
-# first.
 
 if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
     set -x
@@ -34,20 +30,28 @@ set -o pipefail
 function apt_sources_write {
     local APT_SOURCES_CONF="$1"
 
-    mkdir -p /etc/apt/sources.list.d
+    sudo mkdir -p $TARGET_ROOT/etc/apt/sources.list.d
 
     echo "${APT_SOURCES_CONF}" \
         | while read line; do
             local name=$(echo ${line} | cut -d ":" -f 1)
             local value=$(echo ${line} | cut -d ":" -f 2-)
-            echo "$value" >>/etc/apt/sources.list.d/${name}.list
+            echo "$value" | sudo tee $TARGET_ROOT/etc/apt/sources.list.d/${name}.list
         done
 }
+
+sudo mount -t proc none $TARGET_ROOT/proc
+sudo mount -t sysfs none $TARGET_ROOT/sys
+trap "sudo umount $TARGET_ROOT/proc; sudo umount $TARGET_ROOT/sys" EXIT
+
+apt_get="sudo chroot $TARGET_ROOT /usr/bin/apt-get"
 
 apt_sources_write "${DIB_APT_SOURCES_CONF}"
 
 # Need to update to retrieve the signed Release file
-apt-get update
+$apt_get update
 
-apt-get clean
-install-packages -u
+$apt_get clean
+$apt_get dist-upgrade -y
+
+$apt_get install -y busybox python sudo

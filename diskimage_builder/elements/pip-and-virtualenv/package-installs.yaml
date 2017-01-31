@@ -1,3 +1,7 @@
+# This package is only valid for SUSE and we need to pull it in
+# early enough because pip depends on it.
+python-xml:
+  phase: pre-install.d
 python-pip:
   installtype: package
 python-virtualenv:
