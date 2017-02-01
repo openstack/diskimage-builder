@@ -54,4 +54,13 @@ $apt_get update
 $apt_get clean
 $apt_get dist-upgrade -y
 
-$apt_get install -y busybox python sudo
+$apt_get install -y busybox sudo
+
+if [ "$DIB_PYTHON_VERSION" == "2" ]; then
+    $apt_get install -y python
+elif [ "$DIB_PYTHON_VERSION" == "3" ]; then
+    $apt_get install -y python3
+else
+    echo "ERROR: DIB_PYTHON_VERSION is '$DIB_PYTHON_VERSION' but needs to be 2 or 3"
+    exit 1
+fi

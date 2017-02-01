@@ -32,6 +32,8 @@ DEFAULT_SKIP_TESTS=(
     debian-minimal/testing-build-succeeds
     # Currently failing due to bug in locale generation
     centos-minimal/build-succeeds
+    # No longer reasonable to test upstream (lacks a mirror in infra)
+    centos/build-succeeds
 )
 
 function log_with_prefix {

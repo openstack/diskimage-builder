@@ -158,11 +158,24 @@ for i in $(find $ELEMENTS_DIR -type f   \
         fi
     fi
 
-    # check that environment files don't "set -x"
+    # check that environment files don't "set -x" and they have no executable
+    # bits set
     if [[ "$i" =~ (environment.d) ]]; then
         if grep -q "set -x" $i; then
             error "Environment file $i should not set tracing"
         fi
+        if [[ -x $i ]]; then
+            error "Environment file $i should not be marked as executable"
+        fi
+    fi
+
+    # check for
+    #  export FOO=$(bar)
+    # calls.  These are dangerous, because the export hides the return
+    # code of the $(bar) call.  Split this into 2 lines and -e will
+    # fail on the assignment
+    if grep -q 'export .*\$(' $i; then
+        error "Split export and assignments in $i"
     fi
 
     # check that sudo calls in phases run outside the chroot look

@@ -1,0 +1,28 @@
+# Pick which distros we need to force python2
+if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
+    if [ "$DISTRO_NAME" == "ubuntu" ]; then
+        if [ "$DIB_RELEASE" == "precise" ]; then
+            DIB_PYTHON_VERSION=2
+        elif [ "$DIB_RELEASE" == "trusty" ]; then
+            DIB_PYTHON_VERSION=2
+        fi
+    elif [ "$DISTRO_NAME" == "debian" ]; then
+        DIB_PYTHON_VERSION=2
+    elif [ "$DISTRO_NAME" == "fedora" ]; then
+        if [ "$DIB_RELEASE" -le 22 ]; then
+            DIB_PYTHON_VERSION=2
+        fi
+    elif [ "$DISTRO_NAME" == "centos" ]; then
+        DIB_PYTHON_VERSION=2
+    elif [ "$DISTRO_NAME" == "centos7" ]; then
+        DIB_PYTHON_VERSION=2
+    elif [ "$DISTRO_NAME" == "opensuse" ]; then
+        DIB_PYTHON_VERSION=2
+    fi
+fi
+
+if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
+    DIB_PYTHON_VERSION=3
+fi
+
+export DIB_PYTHON_VERSION
