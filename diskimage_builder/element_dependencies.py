@@ -44,6 +44,30 @@ class InvalidElementDir(Exception):
 
 class Element(object):
     """An element"""
+
+    def _get_element_set(self, path):
+        """Get element set from element-[deps|provides] file
+
+        Arguments:
+        :param path: path to element description
+
+        :return: the set of elements in the file, or a blank set if
+                 the file is not found.
+        """
+        try:
+            with open(path) as f:
+                lines = (line.strip() for line in f)
+                # Strip blanks, but do we want to strip comment lines
+                # too?  No use case at the moment, and comments might
+                # break other things that poke at the element-* files.
+                lines = (line for line in lines if line)
+                return set(lines)
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                return set([])
+            else:
+                raise
+
     def __init__(self, name, path):
         """A new element
 
@@ -53,29 +77,13 @@ class Element(object):
         """
         self.name = name
         self.path = path
-        self.provides = set()
-        self.depends = set()
 
         # read the provides & depends files for this element into a
         # set; if the element has them.
-        provides = os.path.join(path, 'element-provides')
-        depends = os.path.join(path, 'element-deps')
-        try:
-            with open(provides) as p:
-                self.provides = set([line.strip() for line in p])
-        except IOError as e:
-            if e.errno == errno.ENOENT:
-                pass
-            else:
-                raise
-        try:
-            with open(depends) as d:
-                self.depends = set([line.strip() for line in d])
-        except IOError as e:
-            if e.errno == errno.ENOENT:
-                pass
-            else:
-                raise
+        self.provides = self._get_element_set(
+            os.path.join(path, 'element-provides'))
+        self.depends = self._get_element_set(
+            os.path.join(path, 'element-deps'))
 
         logger.debug("New element : %s", str(self))
 
@@ -170,11 +178,11 @@ def _find_all_elements(paths=None):
     #  ELEMENTS_PATH=path1:path2:path3
     # we want the elements in "path1" to override "path3"
     if not paths:
-        paths = reversed(_get_elements_dir().split(':'))
+        paths = list(reversed(_get_elements_dir().split(':')))
     else:
-        paths = reversed(paths.split(':'))
+        paths = list(reversed(paths.split(':')))
 
-    logger.debug("ELEMENTS_PATH is: %s" % paths)
+    logger.debug("ELEMENTS_PATH is: %s" % ":".join(paths))
 
     for path in paths:
         if not os.path.isdir(path):
