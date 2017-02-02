@@ -48,7 +48,7 @@ function show_options () {
     echo "Options:"
     echo "    -a i386|amd64|armhf -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
-    echo "    -t qcow2,tar,vhd,docker,aci,raw -- set the image types of the output image files (default qcow2)"
+    echo "    -t qcow2,tar,tgz,squashfs,vhd,docker,aci,raw -- set the image types of the output image files (default qcow2)"
     echo "       File types should be comma separated. VHD outputting requires the vhd-util"
     echo "       executable be in your PATH. ACI outputting requires the ACI_MANIFEST "
     echo "       environment variable be a path to a manifest file."
@@ -202,9 +202,19 @@ for X in ${!IMAGE_TYPES[@]}; do
                 exit 1
             fi
             ;;
+        tgz)
+            # Force tar to be created.
+            IMAGE_TYPES+=('tar')
+            ;;
         vhd)
             if [ -z "$(which vhd-util)" ]; then
                 echo "vhd output format specified but no vhd-util executable found."
+                exit 1
+            fi
+            ;;
+        squashfs)
+            if [ -z "$(which mksquashfs)" ]; then
+                echo "squashfs output format specified but no mksquashfs executable found."
                 exit 1
             fi
             ;;
@@ -454,6 +464,10 @@ for X in ${!IMAGE_TYPES[@]} ; do
     fi
     sudo chown $USER: $IMAGE_NAME.${IMAGE_TYPES[$X]}
     unset IMAGE_TYPES[$X]
+  elif [ "${IMAGE_TYPES[$x]}" == "squashfs" ]; then
+    sudo mksquashfs ${TMP_BUILD_DIR}/mnt $IMAGE_NAME.squash -comp xz \
+                    -noappend -root-becomes ${TMP_BUILD_DIR}/mnt \
+                    -wildcards -e "proc/*" -e "sys/*" -no-recovery
   elif [ "${IMAGE_TYPES[$X]}" == "docker" ]; then
     sudo tar -C ${TMP_BUILD_DIR}/mnt -cf - --exclude ./sys \
              --exclude ./proc --xattrs --xattrs-include=\* . \
@@ -487,7 +501,7 @@ if [[ (! $IMAGE_ELEMENT =~ no-final-image) && "$IS_RAMDISK" == "0" ]]; then
     # We have to do raw last because it is destructive
     if [ "$IMAGE_TYPE" = "raw" ]; then
       has_raw_type=1
-    else
+    elif [ "$IMAGE_TYPE" != "squashfs" ]; then
       compress_and_save_image $IMAGE_NAME.$IMAGE_TYPE
     fi
   done

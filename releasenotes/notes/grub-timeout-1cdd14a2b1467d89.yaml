@@ -1,0 +1,6 @@
+---
+features:
+  - The ``bootloader`` element will explicitly set the timeout to
+    ``5`` seconds when using ``grub`` (previously this was undefined,
+    but platform defaults were usually 5 seconds).  Set this to ``0``
+    for faster boots.

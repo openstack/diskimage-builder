@@ -51,6 +51,8 @@ formats are:
 
  * qcow2
  * tar
+ * tgz
+ * squashfs
  * vhd
  * docker
  * raw

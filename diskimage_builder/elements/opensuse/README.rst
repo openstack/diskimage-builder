@@ -18,7 +18,7 @@ Environment Variables
 
 DIB_RELEASE
   :Required: No
-  :Default: 13.1
+  :Default: 42.2
   :Description: Set the desired openSUSE release.
 
 DIB_CLOUD_IMAGES

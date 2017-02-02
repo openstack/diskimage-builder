@@ -16,6 +16,10 @@ export DIB_ELEMENTS=$(python -c '
 import diskimage_builder.paths
 diskimage_builder.paths.show_path("elements")')
 
+# Setup sane locale defaults, because this information is leaked into DIB.
+export LANG=en_US.utf8
+export LC_ALL=
+
 #
 # Default skip tests
 #
@@ -27,11 +31,11 @@ DEFAULT_SKIP_TESTS=(
     fedora/build-succeeds
     # in non-voting
     gentoo/build-succeeds
+    opensuse/build-succeeds
+    ubuntu-minimal/precise-build-succeeds
     # good to have the test case around - but because of changes
     # in testing does not work always.
     debian-minimal/testing-build-succeeds
-    # Currently failing due to bug in locale generation
-    centos-minimal/build-succeeds
     # No longer reasonable to test upstream (lacks a mirror in infra)
     centos/build-succeeds
 )
@@ -202,7 +206,12 @@ while getopts ":hlj:t" opt; do
             echo "The available functional tests are:"
             echo
             for t in ${TESTS[@]}; do
-                echo "  $t"
+                echo -n "  $t"
+                if [[ " ${DEFAULT_SKIP_TESTS[@]} " =~ " ${t} " ]]; then
+                    echo " [skip]"
+                else
+                    echo " [run]"
+                fi
             done
             echo
             exit 0
