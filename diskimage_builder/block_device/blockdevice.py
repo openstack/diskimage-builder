@@ -34,13 +34,13 @@ class BlockDevice(object):
     # Default configuration:
     # one image, one partition, mounted under '/'
     DefaultConfig = """
-local_loop:
-  name: image0
+- local_loop:
+    name: image0
 """
 
 # This is an example of the next level config
 # mkfs:
-#  base: root_p1
+#  base: root
 #  type: ext4
 #  mount_point: /
 
@@ -85,7 +85,16 @@ local_loop:
         # add the appropriate nodes and edges.
         dg = Digraph()
 
-        for cfg_obj_name, cfg_obj_val in config.items():
+        for config_entry in config:
+            if len(config_entry) != 1:
+                logger.error("Invalid config entry: more than one key "
+                             "on top level [%s]" % config_entry)
+                raise BlockDeviceSetupException(
+                    "Top level config must contain exactly one key per entry")
+            logger.debug("Config entry [%s]" % config_entry)
+            cfg_obj_name = config_entry.keys()[0]
+            cfg_obj_val = config_entry[cfg_obj_name]
+
             # As the first step the configured objects are created
             # (if it exists)
             if cfg_obj_name not in BlockDevice.cfg_type_map:
@@ -132,8 +141,8 @@ local_loop:
         # result to stdout.
         # If there is no partition needed, pass back directly the
         # image.
-        if 'root_p1' in result:
-            print("%s" % result['root_p1']['device'])
+        if 'root' in result:
+            print("%s" % result['root']['device'])
         else:
             print("%s" % result['image0']['device'])
 

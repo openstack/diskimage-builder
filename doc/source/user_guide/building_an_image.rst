@@ -60,7 +60,7 @@ formats are:
 Disk Image Layout
 -----------------
 
-When generating a block image (e.g. qcow2 or raw), by default one
+When generating a vm block image (e.g. qcow2 or raw), by default one
 image with one partition holding all files is created.
 
 The configuration is done by means of the environment variable
@@ -72,16 +72,16 @@ The default is:
 ::
 
     DIB_BLOCK_DEVICE_CONFIG='
-      local_loop:
-        name: image0
+      - local_loop:
+          name: image0
 
-      partitioning:
-        base: image0
-        label: mbr
-        partitions:
-          - name: root_p1
-            flags: [ boot, primary ]
-            size: 100%'
+      - partitioning:
+          base: image0
+          label: mbr
+          partitions:
+            - name: root
+              flags: [ boot, primary ]
+              size: 100%'
 
 In general each module that depends on another module has a `base`
 element that points to the depending base.
@@ -103,7 +103,7 @@ all but the `image0` will be not useable (are deleted during the
 build process).
 
 Currently only one partitions is used for the image.  The name of this
-partition must be `root_p1`.  Other partitions are created but not
+partition must be `root`.  Other partitions are created but not
 used.
 
 Level 0
@@ -239,26 +239,26 @@ size
 Example:
 
 ::
-        partitioning:
-          base: image0
-          label: mbr
-          partitions:
-            - name: part-01
-              flags: [ boot ]
-              size: 1GiB
-            - name: part-02
-              size: 100%
+        - partitioning:
+            base: image0
+            label: mbr
+            partitions:
+              - name: part-01
+                flags: [ boot ]
+                size: 1GiB
+              - name: part-02
+                size: 100%
 
-        partitioning:
-          base: data_image
-          label: mbr
-          partitions:
-            - name: data0
-              size: 33%
-            - name: data1
-              size: 50%
-            - name: data2
-              size: 100%
+        - partitioning:
+            base: data_image
+            label: mbr
+            partitions:
+              - name: data0
+                size: 33%
+              - name: data1
+                size: 50%
+              - name: data2
+                size: 100%
 
 On the `image0` two partitions are created.  The size of the first is
 1GiB, the second uses the remaining free space.  On the `data_image`

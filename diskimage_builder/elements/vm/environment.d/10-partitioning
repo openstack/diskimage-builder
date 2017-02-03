@@ -1,14 +1,14 @@
 export DIB_BLOCK_DEVICE_DEFAULT_CONFIG="
-local_loop:
-  name: image0
+- local_loop:
+    name: image0
 
-partitioning:
-  base: image0
-  label: mbr
-  partitions:
-    - name: root_p1
-      flags: [ boot, primary ]
-      size: 100%
+- partitioning:
+   base: image0
+   label: mbr
+   partitions:
+     - name: root
+       flags: [ boot, primary ]
+       size: 100%
 "
 
 DIB_BLOCK_DEVICE_CONFIG=${DIB_BLOCK_DEVICE_CONFIG:-${DIB_BLOCK_DEVICE_DEFAULT_CONFIG}}
