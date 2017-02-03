@@ -17,3 +17,13 @@ configured properly before networking services are started.
 On Gentoo based distributions we will install the dhcpcd package and
 ensure the service starts at boot.  This service automatically sets
 up all interfaces found via dhcp and/or dhcpv6 (or SLAAC).
+
+Environment Variables
+---------------------
+
+DIB_DHCP_TIMEOUT
+  :Required: No
+  :Default: 30
+  :Description: Amount of time in seconds that the systemd service will
+   wait to get an address.
+  :Example: DIB_DHCP_TIMEOUT=300

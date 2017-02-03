@@ -24,7 +24,7 @@ def load_service_mapping(filepath="/usr/share/svc-map/services"):
     if not os.path.isfile(filepath):
         return {}
     with open(filepath, 'r') as data_file:
-        return yaml.load(data_file.read())
+        return yaml.safe_load(data_file.read())
 
 
 def main():

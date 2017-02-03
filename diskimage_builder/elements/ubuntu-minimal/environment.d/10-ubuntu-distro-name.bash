@@ -1,4 +1,8 @@
 export DISTRO_NAME=ubuntu
 export DIB_RELEASE=${DIB_RELEASE:-xenial}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main,restricted,universe}
+
+if [ -n "${DIB_UBUNTU_DISTRIBUTION_MIRROR:-}" ]; then
+    DIB_DISTRIBUTION_MIRROR=$DIB_UBUNTU_DISTRIBUTION_MIRROR
+fi
 export DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://archive.ubuntu.com/ubuntu}

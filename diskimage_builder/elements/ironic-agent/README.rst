@@ -18,6 +18,10 @@ Beyond installing the ironic-python-agent, this element does the following:
 * Install the certificate if any, which is set to the environment variable
   ``DIB_IPA_CERT`` for validating the authenticity by ironic-python-agent. The
   certificate can be self-signed certificate or CA certificate.
+* Compresses initramfs with command specified in environment variable
+  ``DIB_IPA_COMPRESS_CMD``, which is 'gzip' by default. This command should listen
+  for raw data from stdin and write compressed data to stdout. Command can be
+  with arguments.
 
 This element outputs three files:
 

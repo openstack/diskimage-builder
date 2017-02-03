@@ -11,10 +11,6 @@ Due to a bug in the released version of urlgrabber, on many systems an
 installation of urlgrabber from git is required. The git repository
 can be found here: http://yum.baseurl.org/gitweb?p=urlgrabber.git;a=summary
 
-The `DIB_OFFLINE` or more specific `DIB_YUMCHROOT_USE_CACHE`
-variables can be set to prefer the use of a pre-cached root filesystem
-tarball.
-
-This element sets the `DIB_RELEASE` var to 'fedora'. The release of fedora
-to be installed can be controlled through the `DIB_RELEASE` variable, which
-defaults to '21'.
+This element sets the ``DIB_RELEASE`` var to 'fedora'. The release of
+fedora to be installed can be controlled through the ``DIB_RELEASE``
+variable, which defaults the latest supported release.

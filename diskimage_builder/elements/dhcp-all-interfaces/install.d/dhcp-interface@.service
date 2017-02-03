@@ -1,17 +1,21 @@
 [Unit]
-Description=DHCP interface %I
-Before=network-pre.target
-Wants=network-pre.target
+Description=DHCP interface %i
+# We want to run after network.target so it doesn't try to bring
+# up the interfaces a second time, but network-online should not
+# be reached until after we've brought up the interfaces.
+After=network.target
+Before=network-online.target
+Wants=network-online.target
 
-ConditionPathExists=!/etc/sysconfig/network-scripts/ifcfg-%I
+ConditionPathExists=!/etc/sysconfig/network-scripts/ifcfg-%i
 
 [Service]
 Type=oneshot
 User=root
-ExecStartPre=/usr/local/sbin/dhcp-all-interfaces.sh %I
-ExecStart=/sbin/ifup %I
+ExecStartPre=/usr/local/sbin/dhcp-all-interfaces.sh %i
+ExecStart=/sbin/ifup %i
 RemainAfterExit=true
-TimeoutStartSec=30s
+TimeoutStartSec=DIB_DHCP_TIMEOUT
 
 [Install]
 WantedBy=multi-user.target

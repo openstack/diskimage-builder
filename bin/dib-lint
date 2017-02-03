@@ -36,11 +36,15 @@ parse_exclusions() {
     #   ignore = sete setu
     section="dib-lint"
     option="ignore"
-    global_exclusions=$(python -c \
-        "import ConfigParser; \
-        conf=ConfigParser.ConfigParser(); \
-        conf.read('tox.ini'); \
-        print conf.get('$section', '$option') if conf.has_option('$section', '$option') else ''"
+    global_exclusions=$(python - <<EOF
+try:
+  import configparser
+except ImportError:
+  import ConfigParser as configparser
+conf=configparser.ConfigParser()
+conf.read('tox.ini')
+print(conf.get('$section', '$option')) if conf.has_option('$section', '$option') else ''
+EOF
     )
     echo $exclusions $global_exclusions
 }
@@ -206,7 +210,7 @@ done
 
 echo "Checking indents..."
 
-for i in $(find $ELEMENTS_DIR -type f -and -name '*.rst' -or -type f -executable); do
+for i in $(find bin $ELEMENTS_DIR -type f -and -name '*.rst' -or -type f -executable); do
     # Check for tab indentation
     if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then
@@ -235,7 +239,7 @@ for i in $(find $ELEMENTS_DIR -type f -name '*.yaml'); do
 import yaml
 import sys
 try:
-    objs = yaml.load(open('$i'))
+    objs = yaml.safe_load(open('$i'))
 except yaml.parser.ParserError:
     sys.exit(1)
 "

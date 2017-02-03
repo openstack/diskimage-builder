@@ -6,10 +6,12 @@ fi
 set -eu
 set -o pipefail
 
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://mirror.centos.org/centos}
+
 cat << EOF > /etc/yum.repos.d/centos6-latest.repo
 [rhel6]
 name=centos6
-baseurl=http://mirror.centos.org/centos/6/os/x86_64/
+baseurl=$DIB_DISTRIBUTION_MIRROR/6/os/x86_64/
 enabled=1
 metadata_expire=7d
 gpgcheck=0

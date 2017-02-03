@@ -33,15 +33,25 @@ function show_options {
 }
 
 function fix_shm {
+    # make /dev/shm dir if it doesn't exist
+    # mount tmpfs and chown it
+    # existing programs could be using /dev/shm
+    #  This means it cannot be moved or backed
+    #  up as a copy easily.  The only remaining
+    #  option is to move the link if it exists
+    #  as a link.  Existing programs will still
+    #  hold the file handle of the original
+    #  location open and new programs can use
+    #  the fixed /dev/shm.
     if [[ "${RUN_ONCE_SHM}" == '1' ]]; then
-        if [[ -L /dev/shm.orig ]]; then
-            rm /dev/shm.orig
+        if [[ ! -d /dev/shm ]]; then
+            if [[ ! -e /dev/shm ]]; then
+                if [[ -L /dev/shm ]]; then
+                    mv /dev/shm /dev/shm.orig
+                fi
+                mkdir /dev/shm
+            fi
         fi
-        if [[ -d /dev/shm.orig ]]; then
-            rm -Rf /dev/shm.orig
-        fi
-        mv /dev/shm /dev/shm.orig
-        mkdir /dev/shm
         mount -t tmpfs none /dev/shm
         chmod 1777 /dev/shm
         RUN_ONCE_SHM='0'
@@ -49,10 +59,16 @@ function fix_shm {
 }
 
 function unfix_shm {
+    # unmount tmpfs
+    # care about anything still using it
     if [[ "${RUN_ONCE_SHM}" == '0' ]]; then
         umount /dev/shm
-        rmdir /dev/shm
-        mv /dev/shm.orig /dev/shm
+        if fuser /dev/shm; then
+            rmdir /dev/shm
+        fi
+        if [[ -e /dev/shm.orig ]]; then
+            mv /dev/shm.orig /dev/shm
+        fi
     fi
 }
 

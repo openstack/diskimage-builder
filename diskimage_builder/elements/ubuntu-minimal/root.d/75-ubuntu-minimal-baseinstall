@@ -21,14 +21,12 @@ fi
 set -eu
 set -o pipefail
 
-DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://archive.ubuntu.com/ubuntu}
-
 # We should manage this in a betterer way
 sudo bash -c "cat << EOF >$TARGET_ROOT/etc/apt/sources.list
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE main restricted universe
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-updates main restricted universe
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-backports main restricted universe
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-security main restricted universe
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE ${DIB_DEBIAN_COMPONENTS//,/ }
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-updates ${DIB_DEBIAN_COMPONENTS//,/ }
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-backports ${DIB_DEBIAN_COMPONENTS//,/ }
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-security ${DIB_DEBIAN_COMPONENTS//,/ }
 EOF"
 
 sudo mount -t proc none $TARGET_ROOT/proc

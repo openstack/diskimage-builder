@@ -59,7 +59,7 @@ def collect_data(data, filename, element_name):
     try:
         objs = json.load(open(filename))
     except ValueError:
-        objs = yaml.load(open(filename))
+        objs = yaml.safe_load(open(filename))
     for pkg_name, params in objs.items():
         if not params:
             params = {}

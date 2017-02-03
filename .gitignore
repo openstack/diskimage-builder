@@ -1,3 +1,6 @@
+.coverage
+coverage.xml
+cover/*
 *~
 .testrepository
 *.sw?
