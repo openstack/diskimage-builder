@@ -110,6 +110,10 @@ function finalise_base () {
         unmount_dir $TMP_MOUNT_PATH/tmp
     fi
     find $TMP_MOUNT_PATH/tmp -maxdepth 1 -mindepth 1 | xargs sudo rm -rf --one-file-system
+    # Truncate /var/log files in preparation for first boot
+    sudo find ${TMP_MOUNT_PATH}/var/log -type f -exec cp /dev/null '{}' \;
+    # also /root logs
+    sudo find ${TMP_MOUNT_PATH}/root -name \*.log -type f -delete
 }
 
 function compress_and_save_image () {
