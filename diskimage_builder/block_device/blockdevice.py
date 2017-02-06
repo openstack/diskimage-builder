@@ -188,6 +188,8 @@ class BlockDevice(object):
         """Cleanup all remaining relicts - in good case"""
 
         dg, reverse_order, state = self._load_state()
+        if dg is None:
+            return 0
         for node in reverse_order:
             node.cleanup(state)
 
@@ -200,6 +202,8 @@ class BlockDevice(object):
         """Cleanup all remaining relicts - in case of an error"""
 
         dg, reverse_order, state = self._load_state()
+        if dg is None:
+            return 0
         for node in reverse_order:
             node.delete(state)
 
