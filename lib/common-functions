@@ -77,6 +77,7 @@ function copy_hooks_not_overwrite () {
     test -d $TMP_HOOKS_PATH/$_DIR || mkdir $TMP_HOOKS_PATH/$_DIR
     for _HOOK in $(ls $1); do
       if [ ! -f $TMP_HOOKS_PATH/$_DIR/$_HOOK ]; then
+        echo "Copying hooks $1/$_HOOK"
         cp -t $TMP_HOOKS_PATH/$_DIR -a $1/$_HOOK
       else
         echo "There is a duplicated hook in your elements: $_ELEMENT/$_DIR/$_HOOK"
@@ -86,7 +87,12 @@ function copy_hooks_not_overwrite () {
 }
 
 function generate_hooks () {
+  local xtrace
+  xtrace=$(set +o | grep xtrace)
+  if [ ${DIB_DEBUG_TRACE} -lt 2 ]; then set +o xtrace; fi
+
   mkdir -p $TMP_HOOKS_PATH
+  echo "Deploying hooks to $TMP_HOOKS_PATH"
   for _ELEMENT in $IMAGE_ELEMENT ; do
     for dir in ${ELEMENTS_PATH//:/ } ; do
       [ -d $dir/$_ELEMENT ] || continue
@@ -94,11 +100,14 @@ function generate_hooks () {
         copy_hooks_not_overwrite $_DIR
       done
       for _FILE in $(find $dir/$_ELEMENT -follow -maxdepth 1 -type f); do
+        echo "Copy hook $_FILE"
         cp -t $TMP_HOOKS_PATH -a $_FILE
       done
       break
     done
   done
+
+  $xtrace
 }
 
 # Call the supplied break-in routine if the named point is listed in the break
@@ -212,6 +221,7 @@ function run_d() {
     check_element
     check_break before-$1 ${break_cmd:-bash}
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
+        echo "Running hooks from ${TMP_HOOKS_PATH}/$1.d"
         if [ -n "$2" ]; then
             dib-run-parts ${TMP_HOOKS_PATH}/$1.d | tee $2
             if [[ ${PIPESTATUS[0]} != 0 ]]; then

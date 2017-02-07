@@ -106,7 +106,7 @@ function show_options () {
     echo "       File types should be comma separated. VHD outputting requires the vhd-util"
     echo "       executable be in your PATH. ACI outputting requires the ACI_MANIFEST "
     echo "       environment variable be a path to a manifest file."
-    echo "    -x -- turn on tracing (use -x -x for very detailed tracing)"
+    echo "    -x -- turn on tracing (use -x -x for very detailed tracing)."
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
     echo "    --checksum -- generate MD5 and SHA256 checksum files for the created image"
@@ -165,6 +165,7 @@ function show_version() {
     fi
 }
 
+DIB_DEBUG_TRACE=${DIB_DEBUG_TRACE:-0}
 INSTALL_PACKAGES=""
 IMAGE_TYPES=("qcow2")
 COMPRESS_IMAGE="true"
@@ -186,7 +187,7 @@ while true ; do
         -t) IFS="," read -a IMAGE_TYPES <<< "$2"; export IMAGE_TYPES ; shift 2 ;;
         -h|--help) show_options; exit 0;;
         --version) show_version; exit 0;;
-        -x) shift; export DIB_DEBUG_TRACE=$(( $DIB_DEBUG_TRACE + 1 )); set -x;;
+        -x) shift; DIB_DEBUG_TRACE=$(( $DIB_DEBUG_TRACE + 1 ));;
         -u) shift; export COMPRESS_IMAGE="";;
         -c) shift ; export CLEAR_ENV=1;;
         -n) shift; export SKIP_BASE="1";;
@@ -209,6 +210,8 @@ while true ; do
     esac
 done
 
+export DIB_DEBUG_TRACE
+
 export DIB_IMAGE_CACHE=${DIB_IMAGE_CACHE:-~/.cache/image-create}
 mkdir -p $DIB_IMAGE_CACHE
 
@@ -228,7 +231,6 @@ function _ps4 {
 export -f _ps4
 export PS4='+ $(_ps4):   '
 
-
 source $_LIB/img-defaults
 source $_LIB/common-functions
 source $_LIB/img-functions
@@ -244,6 +246,11 @@ if [ -z "$*" ]; then
     exit 1
 fi
 arg_to_elements "$@"
+
+# start tracing after most boilerplate
+if [ ${DIB_DEBUG_TRACE} -gt 0 ]; then
+    set -x
+fi
 
 if [ "${#IMAGE_TYPES[@]}" = "1" ]; then
   export IMAGE_NAME=${IMAGE_NAME%%\.${IMAGE_TYPES[0]}}
@@ -346,8 +353,8 @@ fi
 unmount_image
 mv $TMP_BUILD_DIR/mnt $TMP_BUILD_DIR/built
 
-# save xtrace state, as we want to turn it off to avoid spamming the
-# logs with du output below.
+# save xtrace state, as we always want to turn it off to avoid
+# spamming the logs with du output below.
 xtrace=$(set +o | grep xtrace)
 
 # temp file for holding du output

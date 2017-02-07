@@ -1,17 +1,21 @@
 #!/bin/bash
 
-if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+if [ ${DIB_DEBUG_TRACE:-1} -gt 1 ]; then
     set -x
 fi
 set -eu
 set -o pipefail
+
+echo "Copying pkg-map files to $TMP_MOUNT_PATH/usr/share/pkg-map"
 
 sudo mkdir -p $TMP_MOUNT_PATH/usr/share/pkg-map/
 
 for ELEMENT in $IMAGE_ELEMENT ; do
     for DIR in ${ELEMENTS_PATH//:/ }; do
         if [ -f "$DIR/$ELEMENT/pkg-map" ]; then
-            sudo cp "$DIR/$ELEMENT/pkg-map" "$TMP_MOUNT_PATH/usr/share/pkg-map/$ELEMENT"
+            echo "Deploying pkg-map $DIR/$ELEMENT/pkg-map"
+            sudo cp "$DIR/$ELEMENT/pkg-map" \
+                "$TMP_MOUNT_PATH/usr/share/pkg-map/$ELEMENT"
         fi
     done
 done
