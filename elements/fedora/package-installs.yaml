@@ -17,7 +17,7 @@ openssl:
 # dependency of the python-paste package needed for the heat element,
 # this seems to be conflicting and causing the image building process to
 # fail. The problem is hapenning on a Fedora 18 system.
-python-pyopenssl:
+pyOpenSSL:
 
 # Workaround for:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1066983
