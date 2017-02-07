@@ -21,7 +21,17 @@ if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
 fi
 set -e
 
-# This will disable the disable Privacy extensions for IPv6 (RFC3041)
+# This will disable the privacy extensions for IPv6 (RFC4941)
+# (RFC4941 obsoletes RFC3041)
+#
+# Note that depending on the implementation of how the sysctl
+# settings are applied there is a race condition: there might be
+# a small time-frame where the original Ubuntu settings from
+# /etc/sysctl.d/10-ipv6-privacy.conf are already applied but the
+# new settings from /etc/sysctl.d/99-cloudimg-ipv6.conf
+# not yet.
+# If during this time all started network interfaces will
+# use the privacy extension.
 cat > /etc/sysctl.d/99-cloudimg-ipv6.conf <<EOF
 # See https://bugs.launchpad.net/ubuntu/+source/procps/+bug/1068756
 net.ipv6.conf.all.use_tempaddr=0
