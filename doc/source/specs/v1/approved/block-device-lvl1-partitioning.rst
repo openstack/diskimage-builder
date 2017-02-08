@@ -20,7 +20,9 @@ The implementation for this proposed changed already exists, was
 discussed and is currently waiting for reviews [1].  To have a
 complete overview over the block device setup, this document is
 provided.
+
 The dependencies are not implemented as they should be, because
+
 * the spec process is currently in the phase of discussion and not
   finalized [2],
 * the implementation was finished and reviewed before the spec process
@@ -137,14 +139,15 @@ size
 
 Example:
 
-::
-        ["partitioning",
-          {"rootdisk": {
-              "label": "mbr",
-              "partitions":
-              [{"name": "part-01",
-                "flags": ["boot"],
-                "size": "100%"}]}}]
+.. code-block:: yaml
+
+    ["partitioning",
+       {"rootdisk": {
+         "label": "mbr",
+         "partitions":
+            [{"name": "part-01",
+              "flags": ["boot"],
+              "size": "100%"}]}}]
 
 Security impact
 ---------------

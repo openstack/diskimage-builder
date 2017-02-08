@@ -123,6 +123,7 @@ level or module needs it's own spec.
 
 A first step is to reimplement the existing functionality, this
 contains:
+
 #. Level 0: Local Loop module
    Use loop device on local image file
    (This is already implemented: [1])
@@ -133,6 +134,7 @@ contains:
 #. Level 3: Mounting
 
 As a second step the following functionality can be added:
+
 * Level 1: LVM module
 * Level 2: Create File System
   (swap)
