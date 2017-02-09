@@ -27,6 +27,9 @@ MAP_ELEMENT=
 # allow override for dnf, as shipped by default with >=F22
 YUM=${YUM:-yum}
 
+# save global xtrace state
+_xtrace=$(set +o | grep xtrace)
+
 SCRIPTNAME=$(basename $0)
 function show_options () {
     echo "Usage: $SCRIPTNAME [package ...]"
@@ -103,7 +106,7 @@ if [ -n "$WHITELIST" ]; then
         exit 0
     fi
 
-    echo "Running install-packages ${ACTION}. Package list: $PKGS"
+    echo "Running install-packages ${ACTION}."
 
     if [ "$ACTION" == "download" ]; then
         mkdir -p $DOWNLOAD_PATH
@@ -130,6 +133,7 @@ if [ -n "$WHITELIST" ]; then
     # point.
     #
     # [1] https://bugzilla.redhat.com/show_bug.cgi?id=965567
+    set -o xtrace
     ${YUM} -v -y $ACTION $EXTRA_ARGS $PKGS
 
     if [ "$ACTION" == "install" ]; then
@@ -138,6 +142,7 @@ if [ -n "$WHITELIST" ]; then
             dnf mark install $PKGS
         fi
     fi
+    $_xtrace
 
     # probably not the right place for this; but python-pip package on
     # fedora/rh calls pip "pip-python" while the rest of the work

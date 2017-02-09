@@ -1,10 +1,9 @@
-=======
-README
-=======
-
+================================
 diskimage-builder Specifications
 ================================
 
+Overview
+========
 
 This directory is used to hold approved design specifications for changes to
 the diskimage-builder project. Reviews of the specs are done in gerrit, using a
@@ -46,7 +45,7 @@ given release should only refer to the ``implemented`` directory.
 Example specifications
 ----------------------
 
-You can find an example spec in ``specs/template.rst``.
+You can find an example spec in :doc:`v1/approved/v1-template`
 
 Backlog specifications
 ----------------------
@@ -80,3 +79,11 @@ change any of our public APIs are sometimes not required to provide a
 specification. The decision of whether something is trivial or not is a
 judgement made by the author or by consensus of the project cores, generally
 trying to err on the side of spec creation.
+
+Approved Specifications
+=======================
+
+.. toctree::
+   :glob:
+
+   v1/approved/*

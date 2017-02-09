@@ -77,6 +77,7 @@ function copy_hooks_not_overwrite () {
     test -d $TMP_HOOKS_PATH/$_DIR || mkdir $TMP_HOOKS_PATH/$_DIR
     for _HOOK in $(ls $1); do
       if [ ! -f $TMP_HOOKS_PATH/$_DIR/$_HOOK ]; then
+        echo "Copying hooks $1/$_HOOK"
         cp -t $TMP_HOOKS_PATH/$_DIR -a $1/$_HOOK
       else
         echo "There is a duplicated hook in your elements: $_ELEMENT/$_DIR/$_HOOK"
@@ -220,6 +221,7 @@ function run_d() {
     check_element
     check_break before-$1 ${break_cmd:-bash}
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
+        echo "Running hooks from ${TMP_HOOKS_PATH}/$1.d"
         if [ -n "$2" ]; then
             dib-run-parts ${TMP_HOOKS_PATH}/$1.d | tee $2
             if [[ ${PIPESTATUS[0]} != 0 ]]; then

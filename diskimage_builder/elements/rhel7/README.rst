@@ -13,7 +13,10 @@ https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.1/x86_64/product-
 
 Then before running the image build, define DIB_LOCAL_IMAGE (replace the file
 name with the one downloaded, if it differs from the example)::
-  export DIB_LOCAL_IMAGE=rhel-guest-image-7.1-20150224.0.x86_64.qcow2
+
+.. code-block:: bash
+
+   export DIB_LOCAL_IMAGE=rhel-guest-image-7.1-20150224.0.x86_64.qcow2
 
 The downloaded file will then be used as the basis for any subsequent image
 builds.

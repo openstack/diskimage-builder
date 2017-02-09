@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Copyright 2014 Hewlett-Packard Development Company, L.P.
+# Copyright 2017 Andreas Florath (andreas@florath.net)
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -21,15 +22,15 @@ fi
 set -eu
 set -o pipefail
 
-if [ -d $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR} ]; then
-    # Move the dib_environment and dib_arguments files into the manifests dir
-    if [ -e $TMP_MOUNT_PATH/etc/dib_arguments ]; then
-        sudo mv $TMP_MOUNT_PATH/etc/dib_arguments $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR}
-    fi
-    if [ -e $TMP_MOUNT_PATH/etc/dib_environment ]; then
-        sudo mv $TMP_MOUNT_PATH/etc/dib_environment $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR}
-    fi
-    mkdir -p ${DIB_MANIFEST_SAVE_DIR}
-    cp --no-preserve=ownership -rv $TMP_MOUNT_PATH/${DIB_MANIFEST_IMAGE_DIR} \
-        ${DIB_MANIFEST_SAVE_DIR}
-fi
+MANIFEST_IMAGE_PATH=${TMP_MOUNT_PATH}/${DIB_MANIFEST_IMAGE_DIR}
+
+# Double check: directory must be created in extra-data.d/20-manifest-dir
+[ -d ${MANIFEST_IMAGE_PATH} ] || {
+    echo "Error: MANIFEST_IMAGE_PATH [${MANIFEST_IMAGE_PATH}] does not exist";
+    exit 1; }
+
+echo "$DIB_ENV" | sudo dd of=${MANIFEST_IMAGE_PATH}/dib_environment # dib-lint: safe_sudo
+echo "$DIB_ARGS" | sudo dd of=${MANIFEST_IMAGE_PATH}/dib_arguments  # dib-lint: safe_sudo
+
+mkdir -p ${DIB_MANIFEST_SAVE_DIR}
+cp --no-preserve=ownership -rv ${MANIFEST_IMAGE_PATH} ${DIB_MANIFEST_SAVE_DIR}

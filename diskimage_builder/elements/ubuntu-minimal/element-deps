@@ -1,2 +1,3 @@
 debootstrap
 package-installs
+ubuntu-common

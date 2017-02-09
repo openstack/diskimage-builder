@@ -8,7 +8,7 @@ It includes support for building images based on many major
 distributions and can produce cloud-images in all common formats
 (``qcow2``, ``vhd``, ``raw``, etc), bare metal file-system images and
 ram-disk images.  These images are composed from the many included
-`elements`; ``diskimage-builder`` acts as a framework to easily add
+``elements``; ``diskimage-builder`` acts as a framework to easily add
 your own elements for even further customization.
 
 ``diskimage-builder`` is used extensively by the `TripleO project
@@ -35,15 +35,15 @@ Issues
 
 Issues are tracked on launchpad at:
 
- * `https://bugs.launchpad.net/diskimage-builder/+bugs`
-   <https://bugs.launchpad.net/diskimage-builder/+bugs>
+ * `<https://bugs.launchpad.net/diskimage-builder/+bugs>`__
 
 
 Communication
 -------------
 
 Communication among the diskimage-builder developers happens on IRC in
-#openstack-dib on freenode and on the openstack-dev mailing list (openstack-dev@lists.openstack.org).
+``#openstack-dib`` on freenode and on the ``openstack-dev`` mailing list
+(``openstack-dev@lists.openstack.org``).
 
 
 Table of Contents
@@ -55,3 +55,4 @@ Table of Contents
    user_guide/index
    developer/index
    elements
+   specs/README
