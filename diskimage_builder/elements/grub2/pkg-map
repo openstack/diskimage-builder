@@ -1,11 +1,4 @@
 {
-  "distro":{
-    "ubuntu":{
-      "signed_grub_efi": "",
-      "signed_shim_efi": "shim-signed",
-      "grub_bios": "grub-pc-bin"
-    }
-  },
   "family":{
     "debian":{
       "signed_grub_efi": "grub-efi-amd64-signed",
