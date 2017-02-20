@@ -14,7 +14,11 @@ useradd -m ${DIB_DEV_USER_USERNAME} $user_shell_args
 set +x
 if [ -n "${DIB_DEV_USER_PASSWORD}" ]; then
     echo "Setting password."
-    echo "${DIB_DEV_USER_USERNAME}:${DIB_DEV_USER_PASSWORD}" | chpasswd
+    chpasswd_args=
+    if [ -n "${DIB_DEV_USER_PASSWORD_ENCRYPTED}" ]; then
+        chpasswd_args="--encrypted"
+    fi
+    echo "${DIB_DEV_USER_USERNAME}:${DIB_DEV_USER_PASSWORD}" | chpasswd $chpasswd_args
 fi
 set -x
 

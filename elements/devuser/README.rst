@@ -38,3 +38,10 @@ DIB_DEV_USER_PASSWORD
   :Default: Password is disabled
   :Description: Set the default password for this user. This is a fairly
     insecure method of setting the password and is not advised.
+
+DIB_DEV_USER_PASSWORD_ENCRYPTED
+  :Required: No
+  :Default: No
+  :Description: Enable encrypted password. This has the same effect of activating the switch --encrypted on chpasswd.
+  ATENTION! If this variable is set to True, then DIB_DEV_USER_PASSWORD must contain the encrypted value of desirable password.
+
