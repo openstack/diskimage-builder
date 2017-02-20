@@ -48,6 +48,7 @@ echo "building ramdisk in $TMP_MOUNT_PATH"
 create_ramdisk_base
 populate_lib
 populate_busybox
+populate_files
 populate_init
 populate_udev
 SCRIPT_HOME=/tmp/in_target.d/bin TMP_HOOKS_PATH=/tmp/in_target.d run_d ramdisk-install
