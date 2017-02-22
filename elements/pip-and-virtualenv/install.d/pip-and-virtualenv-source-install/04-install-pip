@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [[ $DISTRO_NAME =~ (fedora|centos|centos7|rhel|rhel7) ]]; then
+if [[ $DISTRO_NAME =~ (opensuse}fedora|centos|centos7|rhel|rhel7) ]]; then
     # GENERAL WARNING : mixing packaged python libraries with
     # pip-installed versions always creates issues.  Upstream
     # openstack-infra uses this a lot (especially devstack) but be
@@ -16,7 +16,11 @@ if [[ $DISTRO_NAME =~ (fedora|centos|centos7|rhel|rhel7) ]]; then
     # on somebody does a "yum install python-virtualenv" and goes and
     # overwrites the pip installed version with the packaged version,
     # leading to all sorts of weird version issues.
-    ${YUM:-yum} install -y python-virtualenv python-pip python-setuptools
+    if [[ $DISTRO_NAME = opensuse ]]; then
+        zypper -n install python-virtualenv python-pip python-setuptools
+    else
+        ${YUM:-yum} install -y python-virtualenv python-pip python-setuptools
+    fi
 
     # install pip; this overwrites packaged pip
     /usr/local/bin/dib-python /tmp/get-pip.py
@@ -38,17 +42,28 @@ if [[ $DISTRO_NAME =~ (fedora|centos|centos7|rhel|rhel7) ]]; then
     # doesn't have issues with other system packages.
     pip install -U virtualenv
 
-    # Add this to exclude so that we don't install a later package
-    # over it if it updates.  Note that fedora-minimal, bootstrapped
-    # via yum, can have an old yum.conf around, so look for dnf first.
-    if [[ -f /etc/dnf/dnf.conf ]]; then
-        conf=/etc/dnf/dnf.conf
-    elif [[ -f /etc/yum.conf ]]; then
-        conf=/etc/yum.conf
+    if [[ $DISTRO_NAME = opensuse ]]; then
+        for pkg in virtualenv pip setuptools; do
+            cat - >> /etc/zypp/locks <<EOF
+type: package
+match_type: glob
+case_sensitive: on
+solvable_name: python-$pkg
+EOF
+        done
     else
-        die "No conf to modify?"
+        # Add this to exclude so that we don't install a later package
+        # over it if it updates.  Note that fedora-minimal, bootstrapped
+        # via yum, can have an old yum.conf around, so look for dnf first.
+        if [[ -f /etc/dnf/dnf.conf ]]; then
+            conf=/etc/dnf/dnf.conf
+        elif [[ -f /etc/yum.conf ]]; then
+            conf=/etc/yum.conf
+        else
+            die "No conf to modify?"
+        fi
+        echo "exclude=python-virtualenv,python-pip,python-setuptools" >> ${conf}
     fi
-    echo "exclude=python-virtualenv,python-pip,python-setuptools" >> ${conf}
 else
     /usr/local/bin/dib-python /tmp/get-pip.py
     pip install virtualenv
