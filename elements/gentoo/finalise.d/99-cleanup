@@ -26,11 +26,6 @@ emerge --verbose=n --depclean
 emaint all -f
 eselect news read all
 
-# clean up files that may have been changed during build
-shopt -s extglob
-rm -Rf /tmp/!(ccache|in_target*|profiledir*)
-shopt -u extglob
-
 rm -Rf /root/.ccache/* /usr/src/* /var/cache/edb/dep/* /var/cache/genkernel/* /var/empty/* /var/run/* /var/state/* /var/tmp/*
 rm -Rf /etc/*- /etc/*.old /etc/ssh/ssh_host_* /root/.*history /root/.lesshst /root/.ssh/known_hosts /root/.viminfo /usr/share/genkernel /usr/lib64/python*/site-packages/gentoolkit/test/eclean/testdistfiles.tar.gz
 if [[ "${GENTOO_PORTAGE_CLEANUP}" != "False" ]]; then
