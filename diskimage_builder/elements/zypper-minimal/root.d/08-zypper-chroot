@@ -37,7 +37,7 @@ function cleanup() {
 trap cleanup EXIT
 
 ZYPPER_TARGET_OPTS="--non-interactive --gpg-auto-import-keys --root $TARGET_ROOT"
-ZYPPER_INSTALL_OPTS="--no-confirm --no-recommends"
+ZYPPER_INSTALL_OPTS="--no-recommends"
 
 for repo in ${ZYPPER_REPOS}; do
     reponame=repo-${repo%%=>*}
