@@ -36,6 +36,10 @@ else
     rpm -q epel-release || yum install -y $URL/$PKG_NAME
 fi
 
+if [ ${DIB_EPEL_DISABLED:-0} -ne 0 ]; then
+    yum-config-manager --disable epel
+fi
+
 DIB_EPEL_MIRROR=${DIB_EPEL_MIRROR:-}
 [ -n "$DIB_EPEL_MIRROR" ] || exit 0
 
