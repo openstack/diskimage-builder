@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import collections
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
@@ -109,7 +110,7 @@ class Partitioning(object):
         if 'partitions' not in config:
             self._config_error("Partitioning config needs 'partitions'")
 
-        self.partitions = {}
+        self.partitions = collections.OrderedDict()
         for part_cfg in config['partitions']:
             if 'name' not in part_cfg:
                 self.config_error("Missing 'name' in partition config")
