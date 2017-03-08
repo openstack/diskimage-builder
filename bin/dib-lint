@@ -22,6 +22,7 @@ set -eu
 set -o pipefail
 
 ELEMENTS_DIR=diskimage_builder/elements
+LIB_DIR=diskimage_builder/lib
 
 parse_exclusions() {
     # Per-file exclusions
@@ -69,13 +70,15 @@ echo "Running dib-lint in $(pwd)"
 rc=0
 TMPDIR=$(mktemp -d /tmp/tmp.XXXXXXXXXX)
 trap "rm -rf $TMPDIR" EXIT
-for i in $(find $ELEMENTS_DIR -type f   \
-                -not -name \*~     \
-                -not -name \#\*\#  \
-                -not -name \*.orig \
-                -not -name \*.rst  \
-                -not -name \*.yaml \
-                -not -name \*.py   \
+
+# note .py files are run through flake8 directly in tox.ini
+for i in $(find $ELEMENTS_DIR -type f \
+                -not -name \*~        \
+                -not -name \#\*\#     \
+                -not -name \*.orig    \
+                -not -name \*.rst     \
+                -not -name \*.yaml    \
+                -not -name \*.py      \
                 -not -name \*.pyc); do
 
     echo "Checking $i"
@@ -89,10 +92,10 @@ for i in $(find $ELEMENTS_DIR -type f   \
             error "$i is not executable"
         fi
 
-        # run flake8 over python files.  note our "dib-python"
-        # interpreter can confuse the magic matching being done in
-        # "file" and make it think the file is not python;
-        # special-case it.
+        # run flake8 over python files that don't have .py.  Note our
+        # "dib-python" interpreter can confuse the magic matching
+        # being done in "file" and make it think the file is not
+        # python; special-case it.
         if [[ "$(file -b -k --mime-type $i)" =~ "text/x-python" ]] || \
                [[ $firstline =~ "dib-python" ]]; then
             flake8 $i || error "$i failed flake8"
@@ -210,7 +213,8 @@ done
 
 echo "Checking indents..."
 
-for i in $(find bin $ELEMENTS_DIR -type f -and -name '*.rst' -or -type f -executable); do
+for i in $(find $ELEMENTS_DIR -type f -and -name '*.rst' -or -type f -executable) \
+             $(find $LIB_DIR -type f); do
     # Check for tab indentation
     if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then
