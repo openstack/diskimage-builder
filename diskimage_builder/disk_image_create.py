@@ -60,6 +60,10 @@ def main():
     # pre-seed some paths for the shell script
     environ['_LIB'] = diskimage_builder.paths.get_path('lib')
 
+    # export the path to the current python
+    if not os.environ.get('DIB_PYTHON_EXEC'):
+        os.environ['DIB_PYTHON_EXEC'] = sys.executable
+
     # we have to handle being called as "disk-image-create" or
     # "ramdisk-image-create".  ramdisk-iamge-create is just a symlink
     # to disk-image-create
