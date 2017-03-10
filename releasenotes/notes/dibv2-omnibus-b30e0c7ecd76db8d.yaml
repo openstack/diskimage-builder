@@ -1,0 +1,95 @@
+---
+prelude: >-
+    Version 2.0.0 of diskimage-builder incorporates recent work from the
+    feature/v2 branch.  This includes incorporating some largely
+    internal changes to the way it finds and calls elements,
+    enhancements to partitioning and removal of some long-deprecated
+    elements.
+
+    If you use dib exclusively via the command-line disk-image-create
+    installed from a package or via pypi you are unlikely to notice
+    any difference (if you run it directly from a git-tree checkout,
+    you may be affected).
+
+features:
+  - |
+    2.0.0 includes a new framework for partitioning contributed by
+    Andreas Florath.  This should allow for creating multiple
+    partitions, images with encryption, LVM support and flexibility
+    for multiple-devices, all of which are currently not supported.
+    Please check the v2 documentation, specs and reach out if these
+    features interest you (some parts still in review).
+
+  - |
+    Element override is now supported.  If you have an element of the
+    same name earlier in the ``ELEMENTS_PATH``, it will override later
+    instances (previously, the behaviour was undefined).
+
+upgrade:
+  - |
+    For purposes of both users and development we want dib to be as
+    "pythonic" as possible and behave like all other projects.  Two
+    major visible changes are:
+
+    - command-line scripts are entry points (i.e. need to be installed)
+    - elements have moved under diskimage_create module
+
+    The result of the first is that ``./bin/disk-image-create`` from
+    the source tree is no longer there.  Like all other projects, you
+    should install dib into a virtualenv (if you're developing, use
+    pip -e) and ``disk-image-create`` will "just work".
+
+    The second change, moving the inbuilt elements under the
+    ``diskimage_create`` module, is a simplification so we always have
+    a canonical path to our elements.  Since we now always know where
+    elements are relative to the imported diskimage_builder module we
+    can drop all the path guessing complexity.  This has other good
+    flow-on effects such as ``testr`` being able to find unit-tests
+    for elements in the normal fashion and having imports work as
+    usual.
+
+    We are aware there are a number of tools that like to take dib
+    elements and do things with them. Reading some of the dib source
+    you may find there is a canonical way to find out the included dib
+    elements path -- ask dib itself, something like
+
+    .. code-block:: shell
+
+       DIB_ELEMENTS=$(python -c '
+       import diskimage_builder.paths;
+       diskimage_builder.paths.show_path("elements")')
+
+    Note you probably do not want this.  As mentioned, another feature
+    of v2 is override elements -- an element that appears first in the
+    element path-list will override any built-in one (just like
+    $PATH).  There is a function,
+    ``diskimage_builder.get_elements()``, which will correctly process
+    the element path, calculate overrides and return a canonical list
+    of elements, their dependencies and correct paths.
+
+    *That* said, you probably do not want this either!  There are a
+    number of elements that do things on behalf of other elements --
+    they look for a file in the included elements, say, and use that
+    as a manifest for something.  Previously, these would just have to
+    make up their own element processing via inspection of the
+    command-line arguments.  dib now exports pre-computed variables
+    that an element can walk for all the current build elements -- a
+    YAML list for easy python decoding and a function that builds an
+    array for Bash elements.
+
+deprecations:
+  - |
+    A number of long-deprecated elements have been removed in v2, which
+    are to the best of our knowledge unused.
+
+    - ``partitioning-sfdisk``
+    - ``deploy-ironic-element``
+    - ``ironc-discovered-ramdisk``
+    - ``serial-console-element``
+    - ``map-services``
+
+  - |
+    We have removed and deprecated the ``dib-utils`` package.  This
+    was intended to be a more generic repository of tools that might
+    be useful outside dib, but that did not eventuate and it has been
+    folded back into dib for simplicity.
