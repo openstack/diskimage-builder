@@ -133,7 +133,7 @@ class BlockDevice(object):
                 raise BlockDeviceSetupException(
                     "Top level config must contain exactly one key per entry")
             logger.debug("Config entry [%s]" % config_entry)
-            cfg_obj_name = config_entry.keys()[0]
+            cfg_obj_name = list(config_entry.keys())[0]
             cfg_obj_val = config_entry[cfg_obj_name]
 
             # As the first step the configured objects are created
