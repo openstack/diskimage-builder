@@ -6,7 +6,10 @@ fi
 set -eu
 set -o pipefail
 
-if [[ -f /usr/bin/systemctl ]]; then
+# Debian Jessie and Debian Stretch use /bin/systemctl.
+# (/sbin/init is only available if systemd-sysv is installed.)
+
+if [ -f /usr/bin/systemctl -o -f /bin/systemctl ]; then
     echo "systemd"
 elif [[ -f /sbin/initctl ]]; then
     echo "upstart"

@@ -1,0 +1,6 @@
+---
+fixes:
+  - dib-init-system did not correctly find the
+    init system for Debian Jessie and Debian Stretch.
+    This version also looks for /bin/systemctl as
+    as hint for systemd and fixes the problem.
