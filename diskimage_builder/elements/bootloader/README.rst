@@ -12,3 +12,7 @@ Arguments
 
 * ``DIB_GRUB_TIMEOUT`` sets the ``grub`` menu timeout.  It defaults to
   5 seconds.  Set this to 0 (no timeout) for fast boot times.
+
+* ``DIB_BOOTLOADER_DEFAULT_CMD_LINE`` sets the CMDLINE parameters that
+  are appended to the grub.cfg configuration. It defaults to
+  'nofb nomodeset vga=normal'

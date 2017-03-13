@@ -144,14 +144,14 @@ function install_grub2 {
     DISTRO_NAME=${DISTRO_NAME:-}
     case $DISTRO_NAME in
         'ubuntu'|'debian')
-            sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
+            sed -i -e "s/\(^GRUB_CMDLINE_LINUX.*\)\"$/\1 ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"/" /etc/default/grub
             GRUB_MKCONFIG=update-grub
         ;;
         'fedora'|'centos7'|'centos')
-            echo 'GRUB_CMDLINE_LINUX="nofb nomodeset vga=normal"' >>/etc/default/grub
+            echo "GRUB_CMDLINE_LINUX=\"${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
         ;;
         'opensuse')
-            sed -i -e 's/\(^GRUB_CMDLINE_LINUX.*\)"$/\1 nofb nomodeset vga=normal"/' /etc/default/grub
+            sed -i -e "s/\(^GRUB_CMDLINE_LINUX.*\)\"$/\1 ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"/" /etc/default/grub
         ;;
     esac
 
