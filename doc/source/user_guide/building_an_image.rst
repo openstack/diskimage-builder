@@ -238,27 +238,28 @@ size
 
 Example:
 
-::
-        - partitioning:
-            base: image0
-            label: mbr
-            partitions:
-              - name: part-01
-                flags: [ boot ]
-                size: 1GiB
-              - name: part-02
-                size: 100%
+.. code-block:: yaml
 
-        - partitioning:
-            base: data_image
-            label: mbr
-            partitions:
-              - name: data0
-                size: 33%
-              - name: data1
-                size: 50%
-              - name: data2
-                size: 100%
+   - partitioning:
+      base: image0
+      label: mbr
+      partitions:
+        - name: part-01
+          flags: [ boot ]
+          size: 1GiB
+        - name: part-02
+          size: 100%
+
+  - partitioning:
+      base: data_image
+      label: mbr
+      partitions:
+        - name: data0
+          size: 33%
+        - name: data1
+          size: 50%
+        - name: data2
+          size: 100%
 
 On the `image0` two partitions are created.  The size of the first is
 1GiB, the second uses the remaining free space.  On the `data_image`

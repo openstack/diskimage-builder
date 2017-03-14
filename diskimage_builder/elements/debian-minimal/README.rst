@@ -13,7 +13,6 @@ There are two ways to configure apt-sources:
 
    * ``DIB_DISTRIBUTION_MIRROR``: the mirror to use (default:
      `<http://ftp.us.debian.org/debian>`__)
-
    * ``DIB_DEBIAN_COMPONENTS``: (default: ``main``) a comma
      separated list of components. For Debian this can be
      e.g. ``main,contrib,non-free``.
