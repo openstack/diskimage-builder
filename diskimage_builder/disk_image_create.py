@@ -14,6 +14,7 @@
 
 import os
 import os.path
+import runpy
 import sys
 
 import diskimage_builder.paths
@@ -32,7 +33,9 @@ def running_under_virtualenv():
 def activate_venv():
     if running_under_virtualenv():
         activate_this = os.path.join(sys.prefix, "bin", "activate_this.py")
-        execfile(activate_this, dict(__file__=activate_this))
+        globs = runpy.run_path(activate_this, globals())
+        globals().update(globs)
+        del globs
 
 
 def main():
