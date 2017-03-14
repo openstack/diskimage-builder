@@ -21,8 +21,8 @@
 set -eu
 set -o pipefail
 
-ELEMENTS_DIR=diskimage_builder/elements
-LIB_DIR=diskimage_builder/lib
+ELEMENTS_DIR=${ELEMENTS_DIR:-diskimage_builder/elements}
+LIB_DIR=${LIB_DIR:-diskimage_builder/lib}
 
 parse_exclusions() {
     # Per-file exclusions
