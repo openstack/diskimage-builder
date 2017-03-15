@@ -29,13 +29,14 @@ import os
 all_elements = _find_all_elements(get_path("elements"))
 
 
-def append_dependency_list(lines, title, element, deps):
-    if not deps:
-        return
+def make_dep_list(title, deps):
+    lines = []
     lines.append(title)
     lines.append("+" * len(title))
     for dep in deps:
-        lines.append("* :doc:`../%s/README`\n" % dep)
+        lines.append("* :doc:`../%s/README`" % dep)
+    lines.append('')  # careful to end with a blank line
+    return lines
 
 
 class ElementDepsDirective(Directive):
@@ -56,11 +57,13 @@ class ElementDepsDirective(Directive):
         # This should not fail -- sphinx would be finding an element
         # that dib doesn't know about?
         element = all_elements[element_name]
-
-        append_dependency_list(lines, "Uses", element, element.depends)
-        append_dependency_list(lines, "Used by", element, element.r_depends)
+        if element.depends:
+            lines.extend(make_dep_list("Uses", element.depends))
+        if element.r_depends:
+            lines.extend(make_dep_list("Used by", element.r_depends))
 
         self.state_machine.insert_input(lines, source)
+
         return []
 
 

@@ -1,8 +1,9 @@
 ======
 debian
 ======
-Create an image based on Debian. We default to unstable but DIB_RELEASE
-is mapped to any series of Debian.
+
+Create an image based on Debian. We default to unstable but
+``DIB_RELEASE`` is mapped to any series of Debian.
 
 Note that the default Debian series is `unstable`, and the default
 mirrors for Debian can be problematic for `unstable`. Because apt does
