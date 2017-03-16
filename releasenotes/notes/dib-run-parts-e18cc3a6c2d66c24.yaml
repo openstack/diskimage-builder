@@ -1,0 +1,9 @@
+---
+deprecations:
+  - |
+    dib no longer exports ``dib-run-parts``.  Adding this was an
+    oversight made during v2 development, since ``dib-utils`` already
+    provides this.  The ``dib-run-parts`` used internally
+    (``diskimage_builder/lib/dib-run-parts``) is not intended to be
+    used by external tools.  If you require ``dib-run-parts``, you
+    should install the ``dib-utils`` package.
