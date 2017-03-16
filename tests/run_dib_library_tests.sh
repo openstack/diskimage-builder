@@ -6,7 +6,7 @@
 # need a human in the loop.  Thus it's mostly useful for developers
 # during testing, but not so great for CI
 
-source ../lib/common-functions
+source ../diskimage_builder/lib/common-functions
 
 #
 # Directory mounting and unmounting
@@ -42,6 +42,14 @@ if grep -q "$TMP_DIR" /proc/mounts; then
     return 1
 else
     echo "*** PASS all directories unmounted"
+fi
+
+# unmount missing dir
+if unmount_dir /this/path/does/not/exist/but/this/should/not/fail; then
+    echo "*** PASS unmount_dir ignored a missing path"
+else
+    echo "*** FAILED unmount_dir should ignore missing paths"
+    return 1
 fi
 
 # cleanup
