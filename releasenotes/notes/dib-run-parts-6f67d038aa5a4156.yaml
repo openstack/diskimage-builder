@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    The ``dib-run-parts`` element is no longer required as
+    ``disk-image-create`` will directly source the internal version
+    for running scripts within the chroot.  This element was
+    unintentionally leaving ``/usr/local/bin/dib-run-parts`` in the
+    built image.  From code search we do not believe anyone was
+    relying on the presence of this script.  If you do require it, you
+    should source the ``dib-utils`` package to install.

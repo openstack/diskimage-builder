@@ -82,13 +82,19 @@ function run_d_in_target () {
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
       sudo mkdir $TMP_MOUNT_PATH/tmp/in_target.d
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
+      # Copy in dib-run-parts to run inside chroot.  Note, in the
+      # future, we might like to use a diffrent dib-run-parts for
+      # running inside the chroot that doesn't rely on bash.  For now
+      # they're the same.  Note also this gets cleaned up with the dir
+      # delete below.
+      sudo cp ${DIB_RUN_PARTS} ${TMP_MOUNT_PATH}/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       check_break before-$1 run_in_target bash
       [ -z "$break_outside_target" ] && in_target_arg="run_in_target" || in_target_arg=
       trap "check_break after-error $in_target_arg ${break_cmd:-bash}" ERR
       # NOTE: this is the dib-run-parts copied into the chroot by the
       # dib-run-parts element.
-      run_in_target dib-run-parts /tmp/in_target.d/$1.d
+      run_in_target /tmp/in_target.d/dib-run-parts /tmp/in_target.d/$1.d
       trap - ERR
       check_break after-$1 run_in_target bash
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
