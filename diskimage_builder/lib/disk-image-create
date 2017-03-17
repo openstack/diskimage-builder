@@ -290,6 +290,10 @@ export DIB_ROOT_LABEL
 DIB_ROOT_FSTYPE=$(dib-block-device getval root-fstype)
 export DIB_ROOT_FSTYPE
 
+# retrieve mount points so we can reuse in elements
+DIB_MOUNTPOINTS=$(dib-block-device getval mount-points)
+export DIB_MOUNTPOINTS
+
 create_base
 # This variable needs to be propagated into the chroot
 mkdir -p $TMP_HOOKS_PATH/environment.d
