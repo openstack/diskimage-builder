@@ -15,13 +15,12 @@
 import codecs
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
-from diskimage_builder.block_device.level0 import LocalLoop
-from diskimage_builder.block_device.level1 import Partitioning
 from diskimage_builder.graph.digraph import Digraph
 import json
 import logging
 import os
 import shutil
+from stevedore import extension
 import sys
 import yaml
 
@@ -85,13 +84,6 @@ class BlockDevice(object):
 #  type: ext4
 #  mount_point: /
 
-    # A dictionary to map sensible names to internal implementation.
-    cfg_type_map = {
-        'local_loop': LocalLoop,
-        'partitioning': Partitioning,
-        'mkfs': 'not yet implemented',
-    }
-
     def __init__(self, block_device_config, build_dir,
                  default_image_size, default_image_dir):
         logger.debug("Creating BlockDevice object")
@@ -109,6 +101,9 @@ class BlockDevice(object):
                                       "states/block-device")
         self.state_json_file_name \
             = os.path.join(self.state_dir, "state.json")
+        self.plugin_manager = extension.ExtensionManager(
+            namespace='diskimage_builder.block_device.plugin',
+            invoke_on_load=False)
 
     def write_state(self, result):
         logger.debug("Write state [%s]" % self.state_json_file_name)
@@ -138,11 +133,11 @@ class BlockDevice(object):
 
             # As the first step the configured objects are created
             # (if it exists)
-            if cfg_obj_name not in BlockDevice.cfg_type_map:
+            if cfg_obj_name not in self.plugin_manager:
                 logger.error("Configured top level element [%s] "
                              "does not exists." % cfg_obj_name)
                 return 1
-            cfg_obj = BlockDevice.cfg_type_map[cfg_obj_name](
+            cfg_obj = self.plugin_manager[cfg_obj_name].plugin(
                 cfg_obj_val, default_config)
             # At this point it is only possible to add the nodes:
             # adding the edges needs all nodes first.

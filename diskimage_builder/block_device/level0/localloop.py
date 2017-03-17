@@ -14,6 +14,7 @@
 
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
+from diskimage_builder.block_device.plugin_base import NodePluginBase
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.graph.digraph import Digraph
 import logging
@@ -24,14 +25,12 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
-class LocalLoop(Digraph.Node):
+class LocalLoop(NodePluginBase):
     """Level0: Local loop image device handling.
 
     This class handles local loop devices that can be used
     for VM image installation.
     """
-
-    type_string = "local_loop"
 
     def __init__(self, config, default_config):
         logger.debug("Creating LocalLoop object; config [%s] "
@@ -49,9 +48,6 @@ class LocalLoop(Digraph.Node):
         self.name = config['name']
         Digraph.Node.__init__(self, self.name)
         self.filename = os.path.join(self.image_dir, self.name + ".raw")
-
-    def insert_nodes(self, dg):
-        dg.add_node(self)
 
     def insert_edges(self, dg):
         """Because this is created without base, there are no edges."""
