@@ -1,0 +1,11 @@
+export DIB_DRACUT_ENABLED_MODULES_DEFAULT_CONFIG="
+- name: crypt
+  packages:
+    - cryptsetup
+- name: lvm
+  packages:
+    - lvm2
+"
+
+DIB_DRACUT_ENABLED_MODULES=${DIB_DRACUT_ENABLED_MODULES:-${DIB_DRACUT_ENABLED_MODULES_DEFAULT_CONFIG}}
+export DIB_DRACUT_ENABLED_MODULES
