@@ -1,0 +1,12 @@
+# Default single partition loopback
+
+- local_loop:
+    name: image0
+
+- partitioning:
+   base: image0
+   label: mbr
+   partitions:
+     - name: root
+       flags: [ boot, primary ]
+       size: 100%
