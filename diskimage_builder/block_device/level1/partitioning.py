@@ -155,11 +155,13 @@ class Partitioning(object):
         sudo_cmd = ["sudo"]
         sudo_cmd.extend(cmd)
         logger.info("Calling [%s]" % " ".join(sudo_cmd))
-        subp = subprocess.Popen(sudo_cmd)
-        rval = subp.wait()
-        if rval != 0:
+        # note we supress output, as it is captured
+        try:
+            subprocess.check_output(sudo_cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
             logger.error("Calling [%s] failed with [%s]" %
-                         (" ".join(sudo_cmd), rval))
+                         (e.cmd, e.returncode))
+            logger.error(e.output)
             logger.error("Trying to continue")
 
     def _all_part_devices_exist(self, expected_part_devices):
