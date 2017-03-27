@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+case "$DIB_INIT_SYSTEM" in
+    upstart)
+        # nothing to do
+        exit 0
+        ;;
+    systemd)
+        if [[ ${DISTRO_NAME} =~ (centos|rhel7|fedora) ]]; then
+            # NOTE(pabelanger): Glean requires network.service for
+            # these platforms.
+            systemctl enable network.service
+        elif [[ ${DISTRO_NAME} =~ (opensuse) ]]; then
+            # on suse, this is named wicked.service, but it's the same
+            # as network.service.
+            systemctl enable wicked.service
+        fi
+        ;;
+    openrc)
+        # let dib-init-system's postinstall handle enabling init scripts
+        exit 0
+        ;;
+    sysv)
+        # nothing to do
+        exit 0
+        ;;
+    *)
+        echo "Unsupported init system $DIB_INIT_SYSTEM"
+        exit 1
+        ;;
+esac
