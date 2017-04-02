@@ -1,0 +1,30 @@
+#
+# This runs last in the environment to ensure DIB_INIT_SYSTEM is set.
+# We expect the base environments to set this variable particular to
+# their platform.  Note we used to try and guess this automatically
+# inside the chroot, but there's a chicken-and-egg issue when you're
+# building from scratch and you're guessing before you've even
+# installed the init system.
+#
+
+if [ -z "${DIB_INIT_SYSTEM:-}" ]; then
+    echo "DIB_INIT_SYSTEM is not set! Can not continue"
+    exit 1
+fi
+
+# whitelist known systems
+case $DIB_INIT_SYSTEM in
+    upstart)  ;;
+    openrc)   ;;
+    systemd)  ;;
+    sysv)     ;;
+    *)
+        echo "Unrecognised init system: ${DIB_INIT_SYSTEM}!"
+        echo "Can not continue"
+        exit 1
+esac
+
+# Tell emacs to use shell-mode
+# Local variables:
+# mode: sh
+# End:

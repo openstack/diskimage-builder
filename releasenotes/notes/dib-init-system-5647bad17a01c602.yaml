@@ -1,0 +1,14 @@
+---
+deprecations:
+  - |
+    The ``dib-init-system`` element installs a utility
+    ``/usr/local/bin/dib-init-system`` which would try to guess the
+    init system (systemd, etc.).  This was called from
+    ``environment.d`` files, which means that in phases outside the
+    chroot it was attempting to query the init system of the build
+    host.  This completely fails in a situation such as running inside
+    a container without a full init system.  To avoid this issue, each
+    OS element will set DIB_INIT_SYSTEM directly.  The
+    ``dib-init-system`` script was not really intended to be called
+    directly, but will now just report the value of
+    ``DIB_INIT_SYSTEM``.

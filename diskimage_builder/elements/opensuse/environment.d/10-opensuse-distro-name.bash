@@ -1,6 +1,7 @@
 export DISTRO_NAME=opensuse
 export DIB_RELEASE=${DIB_RELEASE:-15.1}
 export DIB_OPENSUSE_PATTERNS=patterns-openSUSE-base
+export DIB_INIT_SYSTEM=systemd
 case ${DIB_RELEASE} in
     # Old Leap releases
     42*) export OPENSUSE_REPO_DIR=openSUSE_Leap_${DIB_RELEASE} ;;
