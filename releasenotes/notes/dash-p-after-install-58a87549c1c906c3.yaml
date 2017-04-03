@@ -1,0 +1,5 @@
+other:
+  - The packages specified with the `-p` command-line operation are
+    now installed after the `install.d` phase, not before.  This is to
+    give elements priority when installing packages.  The flag
+    documentation has been updated to describe this.

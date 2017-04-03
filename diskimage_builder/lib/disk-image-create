@@ -79,7 +79,7 @@ function show_options () {
     echo "    --docker-target -- specify the repo and tag to use if the output type is docker. Defaults to the value of output imagename"
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
-        echo "    -p package[,package,package] -- list of packages to install in the image. If specified multiple times the packages are appended to the list."
+        echo "    -p package[,p2...] [-p p3] -- extra packages to install in the image.  Runs once, after 'install.d' phase.  Can be specified mulitple times"
     fi
     echo "    -h|--help -- display this help and exit"
     echo "    --version -- display version and exit"
@@ -283,9 +283,9 @@ echo "export DIB_DEFAULT_INSTALLTYPE=\${DIB_DEFAULT_INSTALLTYPE:-\"${DIB_DEFAULT
 run_d extra-data
 # Run pre-install scripts. These do things that prepare the chroot for package installs
 run_d_in_target pre-install
-do_extra_package_install
 # Call install scripts to pull in the software users want.
 run_d_in_target install
+do_extra_package_install
 run_d_in_target post-install
 # ensure we do not have a lost+found directory in the root folder
 # that could cause copy to fail (it will be created again later
