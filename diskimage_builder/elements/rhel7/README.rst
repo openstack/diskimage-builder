@@ -12,7 +12,7 @@ The cloud image can be found at (login required):
 https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.1/x86_64/product-downloads
 
 Then before running the image build, define DIB_LOCAL_IMAGE (replace the file
-name with the one downloaded, if it differs from the example)::
+name with the one downloaded, if it differs from the example):
 
 .. code-block:: bash
 
