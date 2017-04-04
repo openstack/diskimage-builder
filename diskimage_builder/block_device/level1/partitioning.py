@@ -16,6 +16,7 @@ import collections
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
+from diskimage_builder.block_device.plugin_base import PluginBase
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
 from diskimage_builder.graph.digraph import Digraph
@@ -67,9 +68,7 @@ class Partition(Digraph.Node):
         pass
 
 
-class Partitioning(object):
-
-    type_string = "partitioning"
+class Partitioning(PluginBase):
 
     flag_boot = 1
     flag_primary = 2
