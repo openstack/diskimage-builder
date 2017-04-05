@@ -1,6 +1,5 @@
 cache-url
 cloud-init-datasources
-dib-run-parts
 dkms
 dpkg
 ubuntu-common
