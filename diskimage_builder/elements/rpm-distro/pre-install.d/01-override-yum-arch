@@ -18,7 +18,7 @@ elif [[ "$ARCH" = "ppc64" ]]; then
 elif [[ "$ARCH" = "ppc64el" ]]; then
     basearch=ppc64el
     arch=ppc64el
-elif [[ "$ARCH" = "aarch64" ]]; then
+elif [[ "arm64 aarch64" =~ "$ARCH" ]]; then
     basearch=aarch64
     arch=aarch64
 else

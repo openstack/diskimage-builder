@@ -85,7 +85,7 @@ The phases are:
   * runs: **outside chroot**
   * inputs:
 
-    * ``$ARCH=i386|amd64|armhf``
+    * ``$ARCH=i386|amd64|armhf|arm64``
     * ``$TARGET_ROOT=/path/to/target/workarea``
 
 ``extra-data.d``
@@ -154,7 +154,7 @@ The phases are:
   * runs: outside chroot
   * inputs:
 
-    * ``$ARCH=i386|amd64|armhf``
+    * ``$ARCH=i386|amd64|armhf|arm64``
     * ``$TARGET_ROOT=/path/to/target/workarea``
 
 

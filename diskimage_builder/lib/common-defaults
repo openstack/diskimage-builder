@@ -27,6 +27,7 @@ else
       _ARCH="armhf"
       ;;
     "aarch64")
+      _ARCH="arm64"
       ;;
     *)
       echo "WARNING: Unknown architecture: $_ARCH"
