@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [[ $DISTRO_NAME =~ (opensuse}fedora|centos|centos7|rhel|rhel7) ]]; then
+if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
     # GENERAL WARNING : mixing packaged python libraries with
     # pip-installed versions always creates issues.  Upstream
     # openstack-infra uses this a lot (especially devstack) but be
