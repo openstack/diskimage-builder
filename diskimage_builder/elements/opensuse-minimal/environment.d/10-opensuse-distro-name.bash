@@ -2,6 +2,7 @@ export DISTRO_NAME=opensuse
 DIB_RELEASE=${DIB_RELEASE:-42.2}
 export DIB_RELEASE=${DIB_RELEASE,,}
 export DIB_OPENSUSE_MIRROR=${DIB_OPENSUSE_MIRROR:-http://download.opensuse.org}
+export DIB_OPENSUSE_PATTERNS=patterns-openSUSE-base
 case ${DIB_RELEASE} in
     # We are using "=>" as the assignment symbol since "@" "=" etc could be used in the URI itself.
     # Remember, we can't export an array in bash so we use a string instead.

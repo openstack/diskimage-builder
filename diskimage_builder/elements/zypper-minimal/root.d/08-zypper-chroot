@@ -71,9 +71,7 @@ sudo mount -t sysfs none $TARGET_ROOT/sys
 # Install filesystem, base and useful tools
 sudo zypper ${ZYPPER_TARGET_OPTS} install ${ZYPPER_INSTALL_OPTS} filesystem
 # Install basic components in order
-sudo zypper ${ZYPPER_TARGET_OPTS} install ${ZYPPER_INSTALL_OPTS} -t pattern base
-# Install a few useful tools
-sudo zypper ${ZYPPER_TARGET_OPTS} install ${ZYPPER_INSTALL_OPTS} python zypper
+sudo zypper ${ZYPPER_TARGET_OPTS} install ${ZYPPER_INSTALL_OPTS} ${DIB_OPENSUSE_PATTERNS} python zypper sudo
 
 # Put in a dummy /etc/resolv.conf over the temporary one we used
 # to bootstrap.  systemd has a bug/feature [1] that it will assume
