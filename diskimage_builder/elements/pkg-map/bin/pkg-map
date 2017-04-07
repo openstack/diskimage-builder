@@ -18,13 +18,10 @@ import argparse
 import json
 import logging
 import os
-import pprint
 import sys
 
 
-def eprint(msg):
-    sys.stderr.write(msg)
-    sys.stderr.write("\n")
+log = logging.getLogger()
 
 
 def os_family(distro):
@@ -60,47 +57,61 @@ def main():
                         help='Do not consider missing mappings an error.'
                              ' Causes packages where no mapping is set to be'
                              ' printed.')
+    # This tool has traditionally output status and debug messages on
+    # stderr.  The problem is if a caller has stderr > stdout then
+    # actual output gets messed in with the logs.  This allows callers
+    # to disambiguate actual output by specifying a unique prefix.
+    parser.add_argument('--prefix', default='',
+                        help='Output mapped packages with this prefix')
     parser.add_argument('--debug', dest='debug', action="store_true",
                         help="Enable debugging output")
 
     args, extra = parser.parse_known_args()
 
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
+    # Logs have traditionally gone to stderr with this tool.  Maintain
+    # compatability
+    level = logging.DEBUG if args.debug else logging.INFO
+    logging.basicConfig(stream=sys.stderr, level=level)
 
     if not args.element and not args.pkg_map:
-        eprint('Please specify an --element argument.')
+        log.error('Please specify an --element argument.')
         sys.exit(1)
 
     if args.element and args.pkg_map:
-        eprint('Specify either --element or --pkg-map')
+        log.error('Specify either --element or --pkg-map')
         sys.exit(1)
 
     if not args.distro:
-        eprint('Please specify a --distro argument or set DISTRO_NAME.')
+        log.error('Please specify a --distro argument or set DISTRO_NAME.')
         sys.exit(1)
 
     if args.pkg_map:
+        # specifying the pkg-map by hand is just for manual testing
+        element = "<%s>" % args.pkg_map
         map_file = args.pkg_map
     else:
-        map_file = '/usr/share/pkg-map/%s' % args.element
+        element = args.element
+        map_file = '/usr/share/pkg-map/%s' % element
 
-    logging.debug("Map file is %s" % map_file)
+    log.info("Mapping for %s : %s" % (element, ' '.join(extra)))
+
     if not os.path.exists(map_file):
-        if os.environ.get('DIB_DEBUG_TRACE', '0') != '0':
-            eprint('Map file for %s element does not exist.' % args.element)
         if args.missing_ok:
+            log.info("No package map for %s, done" % element)
             for name in extra:
-                print(name)
+                print('%s%s' % (args.prefix, name))
             sys.exit(0)
-        sys.exit(2)
+        else:
+            log.error('Required pkg-map for %s element does not exist.'
+                      % args.element)
+            sys.exit(2)
 
     with open(map_file) as fd:
         try:
             package_names = json.loads(fd.read())
-            logging.debug(pprint.pformat(package_names))
+            # log.debug(pprint.pformat(package_names))
         except ValueError:
-            eprint('Unable to parse %s' % map_file)
+            log.error('Unable to parse %s' % map_file)
             raise
 
     # Parse mapping data in this form using release/distro/family/default
@@ -158,21 +169,31 @@ def main():
         except KeyError:
             pass
 
+    # log.debug(pprint.pformat(name_map))
+
     for name in extra:
         pkg_name = name_map.get(name)
         if pkg_name:
-            print(pkg_name)
+            log.debug("map %s -> %s" % (name, pkg_name))
+            print('%s%s' % (args.prefix, pkg_name))
         elif name in name_map:
+            log.debug("map %s -> <skip>" % (name))
             continue
         else:
-            err_msg = 'Missing package name for distro/element: %s/%s'
-            eprint(err_msg % (args.distro, args.element))
             if args.missing_ok:
-                print(name)
+                log.debug("pass -> %s" % (name))
+                print('%s%s' % (args.prefix, name))
             else:
+                log.error("%s has no valid mapping for package %s" %
+                          (element, name))
                 sys.exit(1)
 
     sys.exit(0)
 
 if __name__ == '__main__':
     main()
+
+# Tell emacs to use python-mode
+# Local variables:
+# mode: python
+# End:
