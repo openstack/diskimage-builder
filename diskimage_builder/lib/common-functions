@@ -346,7 +346,7 @@ function unmount_dir {
 
     if [ ! -d $dir ]; then
         echo "*** $dir is not a directory"
-        return 1
+        return 0
     fi
 
     # get rid of any symlink elements in the incoming path, because
