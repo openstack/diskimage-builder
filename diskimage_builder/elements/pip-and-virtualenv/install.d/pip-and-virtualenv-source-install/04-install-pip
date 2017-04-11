@@ -7,6 +7,14 @@ set -eu
 set -o pipefail
 
 if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
+
+    _do_py3=0
+    packages="python-virtualenv python-pip python-setuptools"
+    if [[ $DISTRO_NAME =~ (fedora) ]]; then
+        _do_py3=1
+        packages+=" python3-virtualenv python3-pip python3-setuptools"
+    fi
+
     # GENERAL WARNING : mixing packaged python libraries with
     # pip-installed versions always creates issues.  Upstream
     # openstack-infra uses this a lot (especially devstack) but be
@@ -19,11 +27,11 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
     if [[ $DISTRO_NAME = opensuse ]]; then
         zypper -n install python-virtualenv python-pip python-setuptools
     else
-        ${YUM:-yum} install -y python-virtualenv python-pip python-setuptools
+        ${YUM:-yum} install -y $packages
     fi
 
-    # install the latest pip; this overwrites packaged pip
-    ${DIB_PYTHON} /tmp/get-pip.py
+    # install the latest python2 pip; this overwrites packaged pip
+    python /tmp/get-pip.py
 
     # pip and setuptools are closely related; we want to ensure the
     # latest for sanity.  Because distro packages don't include enough
@@ -38,9 +46,37 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
     rm -rf /usr/lib/python2.7/site-packages/setuptools*
     pip install -U setuptools
 
+    if [[ $_do_py3 -eq 1 ]]; then
+        # Repeat above for python3
+        # You would think that installing python3 bits first, then
+        # python2 would work -- alas get-pip.py doesn't seem to leave
+        # python3 alone:
+        #  https://github.com/pypa/pip/issues/4435
+        python3 /tmp/get-pip.py
+        rm -rf /usr/lib/python3.?/site-packages/setuptools*
+        pip3 install -U setuptools
+        # reclaim /usr/bin/pip back to pip2
+        ln -sf /usr/bin/pip2 /usr/bin/pip
+    fi
+
     # now install latest virtualenv.  it vendors stuff it needs so
     # doesn't have issues with other system packages.
+
+    # python[2|3]-virtualenv package has installed versioned scripts
+    # (/usr/bin/virtualenv-[2|3]) but upstream does not!  (see [2]).
+    # For consistency, clear them out and then reinstall so we're just
+    # left with python2's version
+    # [2] http://pkgs.fedoraproject.org/cgit/rpms/python-virtualenv.git/tree/python-virtualenv.spec#n116)
+    rm /usr/bin/virtualenv*
+    if [[ $_do_py3 -eq 1 ]]; then
+        pip3 install -U virtualenv
+    fi
     pip install -U virtualenv
+
+    # at this point, we should have the latest
+    # pip/setuptools/virtualenv packages for python2 & 3, and
+    # "/usr/bin/pip" and "/usr/bin/virtualenv" should be python2
+    # versions.
 
     if [[ $DISTRO_NAME = opensuse ]]; then
         for pkg in virtualenv pip setuptools; do
@@ -62,9 +98,18 @@ EOF
         else
             die "No conf to modify?"
         fi
-        echo "exclude=python-virtualenv,python-pip,python-setuptools" >> ${conf}
+        echo "exclude=$packages" >> ${conf}
     fi
 else
-    ${DIB_PYTHON} /tmp/get-pip.py
+    # pre-install packages, we will overwrite with latest below
+    apt-get -y install python-pip python3-pip \
+            python-virtualenv python3-virtualenv
+
+    # These install into /usr/local/bin so override any packages, even
+    # if installed later.
+    python3 /tmp/get-pip.py
+    python2 /tmp/get-pip.py
+
+    pip3 install virtualenv
     pip install virtualenv
 fi
