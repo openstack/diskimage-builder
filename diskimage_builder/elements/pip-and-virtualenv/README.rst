@@ -47,6 +47,9 @@ The system will be left in the following state:
 
 (note python3 ``virtualenv`` script is *not* installed, see below)
 
+Source install is supported on limited platforms.  See the code, but
+this includes Ubuntu and RedHat platforms.
+
 Using the tools
 ===============
 
