@@ -22,8 +22,8 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
         ${YUM:-yum} install -y python-virtualenv python-pip python-setuptools
     fi
 
-    # install pip; this overwrites packaged pip
-    /usr/local/bin/dib-python /tmp/get-pip.py
+    # install the latest pip; this overwrites packaged pip
+    ${DIB_PYTHON} /tmp/get-pip.py
 
     # pip and setuptools are closely related; we want to ensure the
     # latest for sanity.  Because distro packages don't include enough
@@ -65,6 +65,6 @@ EOF
         echo "exclude=python-virtualenv,python-pip,python-setuptools" >> ${conf}
     fi
 else
-    /usr/local/bin/dib-python /tmp/get-pip.py
+    ${DIB_PYTHON} /tmp/get-pip.py
     pip install virtualenv
 fi

@@ -28,3 +28,8 @@ if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
 fi
 
 export DIB_PYTHON_VERSION
+export DIB_PYTHON=python${DIB_PYTHON_VERSION}
+
+# Local variables:
+# mode: sh
+# End:
