@@ -12,12 +12,14 @@
     },
     "redhat": {
       "extlinux": "syslinux-extlinux",
-      "grub-pc": "grub2-tools grub2"
+      "grub-pc": "grub2-tools grub2",
+      "grub-ppc64": "grub2-tools grub2"
     }
   },
   "default": {
     "dkms_package": "dkms",
     "extlinux": "extlinux",
-    "grub-pc": "grub-pc"
+    "grub-pc": "grub-pc",
+    "grub-ppc64": "grub-ieee1275"
   }
 }
