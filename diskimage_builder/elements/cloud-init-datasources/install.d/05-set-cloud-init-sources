@@ -26,4 +26,17 @@ EOF
 datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES, None ]
 EOF
     fi
+    # Newer cloud-init versions complain by default when they should
+    # use the Ec2 datasource on a non-AWS cloud.  If the Ec2
+    # datasource is desired, we need to tell cloud-init that we really
+    # want this.  Otherwise there will be ugly warnings or worse.
+    #
+    if [[ $DIB_CLOUD_INIT_DATASOURCES =~ Ec2 ]]; then
+        cat > /etc/cloud/cloud.cfg.d/92-ec2-datasource.cfg <<EOF
+#cloud-config
+datasource:
+    Ec2:
+        strict_id: false
+EOF
+    fi
 fi
