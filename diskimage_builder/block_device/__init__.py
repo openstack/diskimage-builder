@@ -1,4 +1,4 @@
-# Copyright 2016 Andreas Florath (andreas@florath.net)
+# Copyright 2016-2017 Andreas Florath (andreas@florath.net)
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -45,25 +45,18 @@ def main():
         epilog="Available phases:\n" + phase_doc)
     parser.add_argument('--phase', required=True,
                         help="phase to execute")
-    parser.add_argument('--config', required=False,
-                        help="configuration for block device "
-                             "layer as JSON object")
-    parser.add_argument('--build-dir', required=True,
-                        help="path to temporary build dir")
-    parser.add_argument('--image-size', required=False,
-                        help="default image size")
-    parser.add_argument('--image-dir', required=False,
-                        help="default image directory")
+    parser.add_argument('--params', required=True,
+                        help="parameters for block device handling")
+    parser.add_argument('--symbol', required=False,
+                        help="symbol to query for getval")
     args = parser.parse_args()
 
     logger.info("phase [%s]" % args.phase)
-    logger.info("config [%s]" % args.config)
-    logger.info("build_dir [%s]" % args.build_dir)
+    logger.info("params [%s]" % args.params)
+    if args.symbol:
+        logger.info("symbol [%s]" % args.symbol)
 
-    bd = BlockDevice(val_else_none(args.config),
-                     val_else_none(args.build_dir),
-                     val_else_none(args.image_size),
-                     val_else_none(args.image_dir))
+    bd = BlockDevice(args)
 
     # Check if the method is available
     method = getattr(bd, "cmd_" + args.phase, None)
@@ -75,7 +68,6 @@ def main():
         return 1
 
     return 0
-
 
 if __name__ == "__main__":
     main()

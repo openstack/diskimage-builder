@@ -359,3 +359,51 @@ function unmount_dir {
         sudo umount -fl $m || true
     done
 }
+
+# Create YAML config file for the block device layer
+# The order here is: use the one the user provides - if there is
+# none provided, fall back to the possible one element which
+# defines a fallback configuration.
+# Parameters:
+#   - name of the to be created config file
+function block_device_create_config_file {
+    local CONFIG_YAML="$1"
+
+    # User setting overwrites this
+    if [[ ${DIB_BLOCK_DEVICE_CONFIG:-} == file://* ]]; then
+        cp $(echo ${DIB_BLOCK_DEVICE_CONFIG} | cut -c 8-) ${CONFIG_YAML}
+        return
+    fi
+    if [ -n "${DIB_BLOCK_DEVICE_CONFIG:-}" ]; then
+        printf "%s" "${DIB_BLOCK_DEVICE_CONFIG}" >${CONFIG_YAML}
+        return
+    fi
+
+    eval declare -A image_elements=($(get_image_element_array))
+    for i in ${!image_elements[@]}; do
+        local BLOCK_DEVICE_CFG_PATH=${image_elements[$i]}/block-device-${ARCH}.yaml
+        if [ -e ${BLOCK_DEVICE_CFG_PATH} ]; then
+            cp ${BLOCK_DEVICE_CFG_PATH} ${CONFIG_YAML}
+        else
+            BLOCK_DEVICE_CFG_PATH=${image_elements[$i]}/block-device-default.yaml
+            if [ -e ${BLOCK_DEVICE_CFG_PATH} ]; then
+                cp ${BLOCK_DEVICE_CFG_PATH} ${CONFIG_YAML}
+            fi
+        fi
+    done
+
+    # If no config is there (until now) use the default config
+    if [ ! -e ${CONFIG_YAML} ]; then
+        cat >${CONFIG_YAML} <<EOF
+- local_loop:
+    name: image0
+    mkfs:
+      name: mkfs_root
+      mount:
+        mount_point: /
+        fstab:
+          options: "defaults"
+          fsck-passno: 1
+EOF
+    fi
+}

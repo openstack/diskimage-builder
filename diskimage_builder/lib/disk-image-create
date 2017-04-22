@@ -276,6 +276,28 @@ if [[ -n "${GENTOO_PROFILE}" ]]; then
 fi
 
 mk_build_dir
+
+# Create the YAML file with the final and raw configuration for
+# the block device layer.
+mkdir -p ${TMP_BUILD_DIR}/block-device
+BLOCK_DEVICE_CONFIG_YAML=${TMP_BUILD_DIR}/block-device/config.yaml
+block_device_create_config_file "${BLOCK_DEVICE_CONFIG_YAML}"
+
+# Write out the parameter file
+DIB_BLOCK_DEVICE_PARAMS_YAML=${TMP_BUILD_DIR}/block-device/params.yaml
+export DIB_BLOCK_DEVICE_PARAMS_YAML
+cat >${DIB_BLOCK_DEVICE_PARAMS_YAML} <<EOF
+config: ${BLOCK_DEVICE_CONFIG_YAML}
+image-dir: ${TMP_IMAGE_DIR}
+root-fs-type: ${FS_TYPE}
+root-label: ${DIB_ROOT_LABEL}
+mount-base: ${TMP_BUILD_DIR}/mnt
+build-dir: ${TMP_BUILD_DIR}
+EOF
+
+dib-block-device --phase=init \
+                 --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+
 create_base
 # This variable needs to be propagated into the chroot
 mkdir -p $TMP_HOOKS_PATH/environment.d
@@ -397,12 +419,19 @@ fi
 DIB_BLOCK_DEVICE_SCRIPT=$(which dib-block-device)
 
 if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
-    IMAGE_BLOCK_DEVICE=$(${DIB_BLOCK_DEVICE_SCRIPT} \
-                             --phase=create \
-                             --config="${DIB_BLOCK_DEVICE_CONFIG:-}" \
-                             --image-size="${DIB_IMAGE_SIZE}"KiB \
-                             --image-dir="${TMP_IMAGE_DIR}" \
-                             --build-dir="${TMP_BUILD_DIR}" )
+    # For compatibily reasons in addition to the YAML configuration
+    # there is the need to handle the old environment variables.
+    echo "image-size: ${DIB_IMAGE_SIZE}KiB" >> ${DIB_BLOCK_DEVICE_PARAMS_YAML}
+
+    # After changeing the parameters, there is the need to
+    # re-run dib-block-device init because some value might
+    # change based on the new set parameters.
+    dib-block-device --phase=init \
+                     --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+
+    # values to dib-block-device: using the YAML config and
+    IMAGE_BLOCK_DEVICE=$(dib-block-device --phase=create \
+                                          --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
 fi
 export IMAGE_BLOCK_DEVICE
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
@@ -413,7 +442,7 @@ export IMAGE_BLOCK_DEVICE_WITHOUT_PART
 
 export EXTRA_DETACH="detach_loopback ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}"
 export EXTRA_UNMOUNT="dib-block-device --phase=cleanup \
-                      --build-dir=\"${TMP_BUILD_DIR}\""
+                      --params=\"${DIB_BLOCK_DEVICE_PARAMS_YAML}\""
 
 sudo mkfs -t $FS_TYPE $MKFS_OPTS -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
@@ -467,13 +496,12 @@ fi
 # space before converting the image to some other format.
 export EXTRA_UNMOUNT=""
 unmount_image
-export TMP_IMAGE_PATH=$(${DIB_BLOCK_DEVICE_SCRIPT} \
-                            --phase=umount \
-                            --build-dir="${TMP_BUILD_DIR}" )
+TMP_IMAGE_PATH=$(dib-block-device --phase=umount \
+                                  --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
+export TMP_IMAGE_PATH
 
-${DIB_BLOCK_DEVICE_SCRIPT} \
-    --phase=cleanup \
-    --build-dir="${TMP_BUILD_DIR}"
+dib-block-device --phase=cleanup \
+                 --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
 
 cleanup_build_dir
 

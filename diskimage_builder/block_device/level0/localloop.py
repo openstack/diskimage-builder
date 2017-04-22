@@ -39,12 +39,12 @@ class LocalLoop(NodePluginBase):
             self.size = parse_abs_size_spec(config['size'])
             logger.debug("Image size [%s]" % self.size)
         else:
-            self.size = parse_abs_size_spec(default_config['image_size'])
+            self.size = parse_abs_size_spec(default_config['image-size'])
             logger.debug("Using default image size [%s]" % self.size)
         if 'directory' in config:
             self.image_dir = config['directory']
         else:
-            self.image_dir = default_config['image_dir']
+            self.image_dir = default_config['image-dir']
         self.name = config['name']
         Digraph.Node.__init__(self, self.name)
         self.filename = os.path.join(self.image_dir, self.name + ".raw")

@@ -1,4 +1,4 @@
-# Copyright 2016 Andreas Florath (andreas@florath.net)
+# Copyright 2016-2017 Andreas Florath (andreas@florath.net)
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -36,6 +36,10 @@ class BlockDevice(object):
 
     A typical call sequence:
 
+    cmd_init: initialized the block device level config.  After this
+       call it is possible to e.g. query information from the (partially
+       automatic generated) internal state like root-label.
+
     cmd_create: creates all the different aspects of the block
        device. When this call is successful, the complete block level
        device is set up, filesystems are created and are mounted at
@@ -62,6 +66,13 @@ class BlockDevice(object):
 
     In a script this should be called in the following way:
 
+    dib-block-device --phase=init ...
+    # From that point the database can be queried, like
+    ROOT_LABEL=$(dib-block-device --phase=getval --symbol=root-label ...)
+
+    Please note that currently the dib-block-device executable can
+    only be used outside the chroot.
+
     dib-block-device --phase=create ...
     trap "dib-block-device --phase=delete ..." EXIT
     # copy / install files
@@ -71,50 +82,74 @@ class BlockDevice(object):
     trap - EXIT
     """
 
-    # Default configuration:
-    # one image, one partition, mounted under '/'
-    DefaultConfig = """
-- local_loop:
-    name: image0
-"""
+    def _merge_into_config(self):
+        """Merge old (default) config into new
 
-# This is an example of the next level config
-# mkfs:
-#  base: root
-#  type: ext4
-#  mount_point: /
+        There is the need to be compatible using some old environment
+        variables.  This is done in the way, that if there is no
+        explicit value given, these values are inserted into the current
+        configuration.
+        """
+        for entry in self.config:
+            for k, v in entry.items():
+                if k == 'mkfs':
+                    if 'name' not in v:
+                        continue
+                    if v['name'] != 'mkfs_root':
+                        continue
+                    if 'type' not in v \
+                       and 'root-fs-type' in self.params:
+                        v['type'] = self.params['root-fs-type']
+                    if 'opts' not in v \
+                       and 'root-fs-opts' in self.params:
+                        v['opts'] = self.params['root-fs-opts']
+                    if 'label' not in v \
+                       and 'root-label' in self.params:
+                        if self.params['root-label'] is not None:
+                            v['label'] = self.params['root-label']
+                        else:
+                            v['label'] = "cloudimg-rootfs"
 
-    def __init__(self, block_device_config, build_dir,
-                 default_image_size, default_image_dir):
+    @staticmethod
+    def _load_json(file_name):
+        if os.path.exists(file_name):
+            with codecs.open(file_name, encoding="utf-8", mode="r") as fd:
+                return json.load(fd)
+        return None
+
+    def __init__(self, args):
         logger.debug("Creating BlockDevice object")
-        logger.debug("Config given [%s]" % block_device_config)
-        logger.debug("Build dir [%s]" % build_dir)
-        if block_device_config is None:
-            block_device_config = BlockDevice.DefaultConfig
-        self.config = yaml.safe_load(block_device_config)
-        logger.debug("Using config [%s]" % self.config)
+        logger.debug("Param file [%s]" % args.params)
+        self.args = args
 
-        self.default_config = {
-            'image_size': default_image_size,
-            'image_dir': default_image_dir}
-        self.state_dir = os.path.join(build_dir,
-                                      "states/block-device")
+        with open(self.args.params) as param_fd:
+            self.params = yaml.safe_load(param_fd)
+        logger.debug("Params [%s]" % self.params)
+
+        self.state_dir = os.path.join(
+            self.params['build-dir'], "states/block-device")
         self.state_json_file_name \
             = os.path.join(self.state_dir, "state.json")
         self.plugin_manager = extension.ExtensionManager(
             namespace='diskimage_builder.block_device.plugin',
             invoke_on_load=False)
+        self.config_json_file_name \
+            = os.path.join(self.state_dir, "config.json")
 
-    def write_state(self, result):
+        self.config = self._load_json(self.config_json_file_name)
+        self.state = self._load_json(self.state_json_file_name)
+        logger.debug("Using state [%s]", self.state)
+
+        # This needs to exists for the state and config files
+        try:
+            os.makedirs(self.state_dir)
+        except OSError:
+            pass
+
+    def write_state(self, state):
         logger.debug("Write state [%s]" % self.state_json_file_name)
-        os.makedirs(self.state_dir)
         with open(self.state_json_file_name, "w") as fd:
-            json.dump([self.config, self.default_config, result], fd)
-
-    def load_state(self):
-        with codecs.open(self.state_json_file_name,
-                         encoding="utf-8", mode="r") as fd:
-            return json.load(fd)
+            json.dump(state, fd)
 
     def create_graph(self, config, default_config):
         # This is the directed graph of nodes: each parse method must
@@ -152,9 +187,27 @@ class BlockDevice(object):
         return dg, call_order
 
     def create(self, result, rollback):
-        dg, call_order = self.create_graph(self.config, self.default_config)
+        dg, call_order = self.create_graph(self.config, self.params)
         for node in call_order:
             node.create(result, rollback)
+
+    def cmd_init(self):
+        """Initialize block device setup
+
+        This initializes the block device setup layer. One major task
+        is to parse and check the configuration, write it down for
+        later examiniation and execution.
+        """
+        with open(self.params['config'], "rt") as config_fd:
+            self.config = yaml.safe_load(config_fd)
+        logger.debug("Config before merge [%s]" % self.config)
+        self._merge_into_config()
+        logger.debug("Final config [%s]" % self.config)
+        # Write the final config
+        with open(self.config_json_file_name, "wt") as fd:
+            json.dump(self.config, fd)
+        logger.info("Wrote final block device config to [%s]"
+                    % self.config_json_file_name)
 
     def cmd_create(self):
         """Creates the block device"""
@@ -187,47 +240,33 @@ class BlockDevice(object):
         logger.info("create() finished")
         return 0
 
-    def _load_state(self):
-        logger.info("_load_state() called")
-        try:
-            os.stat(self.state_json_file_name)
-        except OSError:
-            logger.info("State already cleaned - no way to do anything here")
-            return None, None, None
-
-        config, default_config, state = self.load_state()
-        logger.debug("Using config [%s]" % config)
-        logger.debug("Using default config [%s]" % default_config)
-        logger.debug("Using state [%s]" % state)
-
-        # Deleting must be done in reverse order
-        dg, call_order = self.create_graph(config, default_config)
-        reverse_order = reversed(call_order)
-        return dg, reverse_order, state
-
     def cmd_umount(self):
         """Unmounts the blockdevice and cleanup resources"""
 
-        dg, reverse_order, state = self._load_state()
+        dg, call_order = self.create_graph(self.config, self.params)
+        reverse_order = reversed(call_order)
         if dg is None:
             return 0
         for node in reverse_order:
-            node.umount(state)
+            node.umount(self.state)
 
         # To be compatible with the current implementation, echo the
         # result to stdout.
-        print("%s" % state['image0']['image'])
+        print("%s" % self.state['image0']['image'])
 
         return 0
 
     def cmd_cleanup(self):
         """Cleanup all remaining relicts - in good case"""
 
-        dg, reverse_order, state = self._load_state()
+        # Deleting must be done in reverse order
+        dg, call_order = self.create_graph(self.config, self.params)
+        reverse_order = reversed(call_order)
+
         if dg is None:
             return 0
         for node in reverse_order:
-            node.cleanup(state)
+            node.cleanup(self.state)
 
         logger.info("Removing temporary dir [%s]" % self.state_dir)
         shutil.rmtree(self.state_dir)
@@ -237,11 +276,14 @@ class BlockDevice(object):
     def cmd_delete(self):
         """Cleanup all remaining relicts - in case of an error"""
 
-        dg, reverse_order, state = self._load_state()
+        # Deleting must be done in reverse order
+        dg, call_order = self.create_graph(self.config, self.params)
+        reverse_order = reversed(call_order)
+
         if dg is None:
             return 0
         for node in reverse_order:
-            node.delete(state)
+            node.delete(self.state)
 
         logger.info("Removing temporary dir [%s]" % self.state_dir)
         shutil.rmtree(self.state_dir)
