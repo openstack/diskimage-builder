@@ -98,7 +98,7 @@ while true; do
             if [[ ! -f /usr/portage/profiles ]]; then
                 emerge-webrsync -q
             fi
-            install_gentoo_packages -uDNv --with-bdeps=y --jobs=2 @world
+            install_gentoo_packages -uDNv --with-bdeps=y --backtrack=99 --jobs=2 @world
             install_gentoo_packages --verbose=n --depclean
             install_gentoo_packages -v --usepkg=n @preserved-rebuild
             etc-update --automode -5
