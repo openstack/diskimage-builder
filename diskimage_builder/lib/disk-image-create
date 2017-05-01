@@ -419,19 +419,24 @@ fi
 DIB_BLOCK_DEVICE_SCRIPT=$(which dib-block-device)
 
 if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
-    # For compatibily reasons in addition to the YAML configuration
+    # For compatibility reasons in addition to the YAML configuration
     # there is the need to handle the old environment variables.
     echo "image-size: ${DIB_IMAGE_SIZE}KiB" >> ${DIB_BLOCK_DEVICE_PARAMS_YAML}
 
-    # After changeing the parameters, there is the need to
+    # After changing the parameters, there is the need to
     # re-run dib-block-device init because some value might
     # change based on the new set parameters.
     dib-block-device --phase=init \
                      --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
 
     # values to dib-block-device: using the YAML config and
-    IMAGE_BLOCK_DEVICE=$(dib-block-device --phase=create \
-                                          --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
+    dib-block-device --phase=create \
+                     --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+
+    # It's called 'DEVICE' but it's the partition.
+    IMAGE_BLOCK_DEVICE=$(dib-block-device \
+                             --phase=getval --symbol=image-block-partition \
+                             --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
 fi
 export IMAGE_BLOCK_DEVICE
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
@@ -496,9 +501,12 @@ fi
 # space before converting the image to some other format.
 export EXTRA_UNMOUNT=""
 unmount_image
-TMP_IMAGE_PATH=$(dib-block-device --phase=umount \
+TMP_IMAGE_PATH=$(dib-block-device --phase=getval --symbol=image-path \
                                   --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
 export TMP_IMAGE_PATH
+
+dib-block-device --phase=umount \
+                 --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
 
 dib-block-device --phase=cleanup \
                  --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"

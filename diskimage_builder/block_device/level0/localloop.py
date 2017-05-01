@@ -111,17 +111,20 @@ class LocalLoop(NodePluginBase):
         block_device = self._loopdev_attach(self.filename)
         rollback.append(lambda: self._loopdev_detach(block_device))
 
-        result[self.name] = {"device": block_device,
-                             "image": self.filename}
+        if 'blockdev' not in result:
+            result['blockdev'] = {}
+
+        result['blockdev'][self.name] = {"device": block_device,
+                                         "image": self.filename}
         logger.debug("Created loop  name [%s] device [%s] image [%s]"
                      % (self.name, block_device, self.filename))
         return
 
     def umount(self, state):
-        self._loopdev_detach(state[self.name]['device'])
+        self._loopdev_detach(state['blockdev'][self.name]['device'])
 
     def cleanup(self, state):
         pass
 
     def delete(self, state):
-        self._image_delete(state[self.name]['image'])
+        self._image_delete(state['blockdev'][self.name]['image'])

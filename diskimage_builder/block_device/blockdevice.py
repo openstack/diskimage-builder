@@ -40,6 +40,10 @@ class BlockDevice(object):
        call it is possible to e.g. query information from the (partially
        automatic generated) internal state like root-label.
 
+    cmd_getval: retrieve information about the (internal) block device
+       state like the block image device (for bootloader) or the
+       root-label (for writing fstab).
+
     cmd_create: creates all the different aspects of the block
        device. When this call is successful, the complete block level
        device is set up, filesystems are created and are mounted at
@@ -209,6 +213,28 @@ class BlockDevice(object):
         logger.info("Wrote final block device config to [%s]"
                     % self.config_json_file_name)
 
+    def cmd_getval(self):
+        """Retrieve value from block device level
+
+        This is needed for backward compatibility (non python) access
+        to (internal) configuration.
+        """
+        symbol = self.args.symbol
+        logger.info("Getting value for [%s]" % symbol)
+        if symbol == 'image-block-partition':
+            # If there is no partition needed, pass back directly the
+            # image.
+            if 'root' in self.state['blockdev']:
+                print("%s" % self.state['blockdev']['root']['device'])
+            else:
+                print("%s" % self.state['blockdev']['image0']['device'])
+            return 0
+        if symbol == 'image-path':
+            print("%s" % self.state['blockdev']['image0']['image'])
+            return 0
+        logger.error("Invalid symbol [%s] for getval" % symbol)
+        return 1
+
     def cmd_create(self):
         """Creates the block device"""
 
@@ -226,15 +252,6 @@ class BlockDevice(object):
                 rollback_cb()
             sys.exit(1)
 
-        # To be compatible with the current implementation, echo the
-        # result to stdout.
-        # If there is no partition needed, pass back directly the
-        # image.
-        if 'root' in result:
-            print("%s" % result['root']['device'])
-        else:
-            print("%s" % result['image0']['device'])
-
         self.write_state(result)
 
         logger.info("create() finished")
@@ -249,10 +266,6 @@ class BlockDevice(object):
             return 0
         for node in reverse_order:
             node.umount(self.state)
-
-        # To be compatible with the current implementation, echo the
-        # result to stdout.
-        print("%s" % self.state['image0']['image'])
 
         return 0
 

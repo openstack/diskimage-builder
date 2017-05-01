@@ -198,8 +198,8 @@ class Partitioning(PluginBase):
         self._exec_sudo(["kpartx", "-avs", device_path])
 
     def create(self, result, rollback):
-        image_path = result[self.base]['image']
-        device_path = result[self.base]['device']
+        image_path = result['blockdev'][self.base]['image']
+        device_path = result['blockdev'][self.base]['device']
         logger.info("Creating partition on [%s] [%s]" %
                     (self.base, image_path))
 
@@ -229,7 +229,8 @@ class Partitioning(PluginBase):
                 logger.debug("Create partition [%s] [%d]" %
                              (part_name, part_no))
                 partition_device_name = device_path + "p%d" % part_no
-                result[part_name] = {'device': partition_device_name}
+                result['blockdev'][part_name] \
+                    = {'device': partition_device_name}
                 partition_devices.add(partition_device_name)
 
         self.already_created = True
