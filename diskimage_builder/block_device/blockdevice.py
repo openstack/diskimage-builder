@@ -115,6 +115,30 @@ class BlockDevice(object):
                             v['label'] = "cloudimg-rootfs"
 
     @staticmethod
+    def _config_tree_to_digraph(tconfig, plugin_manager):
+        """Converts a possible tree-like config into a complete digraph"""
+        dconfig = []
+        for config_entry in tconfig:
+            if len(config_entry) != 1:
+                logger.error("Invalid config entry: more than one key "
+                             "on top level [%s]" % config_entry)
+                raise BlockDeviceSetupException(
+                    "Top level config must contain exactly one key per entry")
+            logger.debug("Config entry [%s]" % config_entry)
+            config_key = config_entry.keys()[0]
+            config_value = config_entry[config_key]
+            name = config_value['name'] \
+                   if 'name' in config_value else None
+            if config_key not in plugin_manager:
+                dconfig.append(config_entry)
+            else:
+                plugin_manager[config_key].plugin \
+                    .tree_config.config_tree_to_digraph(
+                        config_key, config_value, dconfig, name,
+                        plugin_manager)
+        return dconfig
+
+    @staticmethod
     def _load_json(file_name):
         if os.path.exists(file_name):
             with codecs.open(file_name, encoding="utf-8", mode="r") as fd:
@@ -156,6 +180,7 @@ class BlockDevice(object):
             json.dump(state, fd)
 
     def create_graph(self, config, default_config):
+        logger.debug("Create graph [%s]" % config)
         # This is the directed graph of nodes: each parse method must
         # add the appropriate nodes and edges.
         dg = Digraph()
@@ -205,6 +230,9 @@ class BlockDevice(object):
         with open(self.params['config'], "rt") as config_fd:
             self.config = yaml.safe_load(config_fd)
         logger.debug("Config before merge [%s]" % self.config)
+        self.config = self._config_tree_to_digraph(self.config,
+                                                   self.plugin_manager)
+        logger.debug("Config before merge [%s]" % self.config)
         self._merge_into_config()
         logger.debug("Final config [%s]" % self.config)
         # Write the final config
@@ -241,27 +269,32 @@ class BlockDevice(object):
         logger.info("create() called")
         logger.debug("Using config [%s]" % self.config)
 
-        result = {}
+        self.state = {}
         rollback = []
 
         try:
-            self.create(result, rollback)
+            self.create(self.state, rollback)
         except BlockDeviceSetupException as bdse:
             logger.error("exception [%s]" % bdse)
             for rollback_cb in reversed(rollback):
                 rollback_cb()
             sys.exit(1)
 
-        self.write_state(result)
+        self.write_state(self.state)
 
         logger.info("create() finished")
         return 0
 
     def cmd_umount(self):
         """Unmounts the blockdevice and cleanup resources"""
+        if self.state is None:
+            logger.info("State already cleaned - no way to do anything here")
+            return 0
 
+        # Deleting must be done in reverse order
         dg, call_order = self.create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
+
         if dg is None:
             return 0
         for node in reverse_order:
@@ -276,8 +309,6 @@ class BlockDevice(object):
         dg, call_order = self.create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
-        if dg is None:
-            return 0
         for node in reverse_order:
             node.cleanup(self.state)
 
@@ -293,8 +324,6 @@ class BlockDevice(object):
         dg, call_order = self.create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
-        if dg is None:
-            return 0
         for node in reverse_order:
             node.delete(self.state)
 
