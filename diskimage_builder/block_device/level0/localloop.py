@@ -15,6 +15,7 @@
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.plugin_base import NodePluginBase
+from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.graph.digraph import Digraph
 import logging
@@ -31,6 +32,7 @@ class LocalLoop(NodePluginBase):
     This class handles local loop devices that can be used
     for VM image installation.
     """
+    tree_config = TreeConfig("local_loop")
 
     def __init__(self, config, default_config):
         logger.debug("Creating LocalLoop object; config [%s] "

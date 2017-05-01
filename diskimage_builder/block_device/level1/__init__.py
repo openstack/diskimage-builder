@@ -1,4 +1,5 @@
-# Copyright 2016 Andreas Florath (andreas@florath.net)
+# Copyright
+# 2016-2017 Andreas Florath (andreas@florath.net)
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -13,5 +14,7 @@
 # under the License.
 
 from diskimage_builder.block_device.level1.partitioning import Partitioning
+from diskimage_builder.block_device.level1.partitioning \
+    import PartitioningTreeConfig
 
-__all__ = [Partitioning]
+__all__ = [Partitioning, PartitioningTreeConfig]
