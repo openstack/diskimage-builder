@@ -86,6 +86,55 @@ The default is:
 In general each module that depends on another module has a `base`
 element that points to the depending base.
 
+Tree-Like vs. Complete Digraph Configuration
+++++++++++++++++++++++++++++++++++++++++++++
+
+The configuration is specified as a digraph_.  Each module is a
+node; a edge is the relation of the current element to its `base`.
+
+Because the general digraph_ approach is somewhat complex when it comes
+to write it down, the configuration can also be given as a tree_.
+
+.. _digraph: https://en.wikipedia.org/wiki/Directed_graph
+.. _tree: https://en.wikipedia.org/wiki/Tree_(graph_theory)
+
+Example: The tree like notation
+
+.. code-block:: yaml
+
+   mkfs:
+     name: root_fs
+     base: root_part
+     mount:
+       mount_point: /
+
+is exactly the same as writing
+
+.. code-block:: yaml
+
+   mkfs:
+     name: root_fs
+     base: root_part
+
+   mount:
+     name: mount_root_fs
+     base: root_fs
+       mount_point: /
+
+Non existing `name` and `base` entries in the tree notation are
+automatically generated: the `name` is the name of the base module
+prepended by the type-name of the module itself; the `base` element is
+automatically set to the parent node in the tree.
+
+In mostly all cases the much simpler tree notation can be used.
+Nevertheless there are some use cases when the more general digraph
+notation is needed.  Example: when there is the need to combine two or
+more modules into one new, like combining a couple of physical volumes
+into one volume group.
+
+Tree and digraph notations can be mixed as needed in a configuration.
+
+
 Limitations
 +++++++++++
 The appropriate functionality to use multiple partitions and even LVMs
