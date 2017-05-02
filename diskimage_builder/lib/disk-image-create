@@ -299,8 +299,7 @@ mount-base: ${TMP_BUILD_DIR}/mnt
 build-dir: ${TMP_BUILD_DIR}
 EOF
 
-dib-block-device --phase=init \
-                 --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+dib-block-device --phase=init
 
 create_base
 # This variable needs to be propagated into the chroot
@@ -425,17 +424,14 @@ if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
     # After changeing the parameters, there is the need to
     # re-run dib-block-device init because some value might
     # change based on the new set parameters.
-    dib-block-device --phase=init \
-                     --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+    dib-block-device --phase=init
 
     # values to dib-block-device: using the YAML config and
-    dib-block-device --phase=create \
-                     --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+    dib-block-device --phase=create
 
     # It's called 'DEVICE' but it's the partition.
     IMAGE_BLOCK_DEVICE=$(dib-block-device \
-                             --phase=getval --symbol=image-block-partition \
-                             --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
+                             --phase=getval --symbol=image-block-partition)
 fi
 export IMAGE_BLOCK_DEVICE
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
@@ -445,8 +441,7 @@ IMAGE_BLOCK_DEVICE_WITHOUT_PART=$(echo ${IMAGE_BLOCK_DEVICE} \
 export IMAGE_BLOCK_DEVICE_WITHOUT_PART
 
 export EXTRA_DETACH="detach_loopback ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}"
-export EXTRA_UNMOUNT="dib-block-device --phase=cleanup \
-                      --params=\"${DIB_BLOCK_DEVICE_PARAMS_YAML}\""
+export EXTRA_UNMOUNT="dib-block-device --phase=cleanup"
 
 sudo mkfs -t $FS_TYPE $MKFS_OPTS -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
@@ -509,15 +504,13 @@ fi
 # space before converting the image to some other format.
 export EXTRA_UNMOUNT=""
 unmount_image
-TMP_IMAGE_PATH=$(dib-block-device --phase=getval --symbol=image-path \
-                                  --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}")
+
+TMP_IMAGE_PATH=$(dib-block-device --phase=getval --symbol=image-path)
 export TMP_IMAGE_PATH
 
-dib-block-device --phase=umount \
-                 --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+dib-block-device --phase=umount
 
-dib-block-device --phase=cleanup \
-                 --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+dib-block-device --phase=cleanup
 
 cleanup_build_dir
 

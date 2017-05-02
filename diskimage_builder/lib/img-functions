@@ -50,8 +50,7 @@ function trap_cleanup() {
 }
 
 function cleanup () {
-    dib-block-device --phase=umount \
-                     --params="${DIB_BLOCK_DEVICE_PARAMS_YAML}"
+    dib-block-device --phase=umount
     unmount_image
     cleanup_build_dir
     cleanup_image_dir
