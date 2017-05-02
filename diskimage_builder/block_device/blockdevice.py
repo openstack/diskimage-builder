@@ -149,13 +149,18 @@ class BlockDevice(object):
                 return json.load(fd)
         return None
 
-    def __init__(self, args):
+    def __init__(self, params, args):
+        """Create BlockDevice object
+
+        Arguments:
+        :param params: YAML file from --params
+        :param args: arguments from cmd argparse
+        """
+
         logger.debug("Creating BlockDevice object")
-        logger.debug("Param file [%s]" % args.params)
         self.args = args
 
-        with open(self.args.params) as param_fd:
-            self.params = yaml.safe_load(param_fd)
+        self.params = params
         logger.debug("Params [%s]" % self.params)
 
         self.state_dir = os.path.join(

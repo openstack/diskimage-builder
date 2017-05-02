@@ -14,6 +14,9 @@
 
 import argparse
 import logging
+import os
+import sys
+import yaml
 
 from diskimage_builder.block_device.blockdevice import BlockDevice
 from diskimage_builder import logging_config
@@ -42,18 +45,35 @@ def main():
         epilog="Available phases:\n" + phase_doc)
     parser.add_argument('--phase', required=True,
                         help="phase to execute")
-    parser.add_argument('--params', required=True,
-                        help="parameters for block device handling")
+    parser.add_argument('--params', required=False,
+                        help="YAML file containing parameters for block-device"
+                        "handling.  Default is DIB_BLOCK_DEVICE_PARAMS_YAML")
     parser.add_argument('--symbol', required=False,
                         help="symbol to query for getval")
     args = parser.parse_args()
 
+    # Find, open and parse the parameters file
+    if not args.params:
+        if 'DIB_BLOCK_DEVICE_PARAMS_YAML' in os.environ:
+            param_file = os.environ['DIB_BLOCK_DEVICE_PARAMS_YAML']
+        else:
+            parser.error("DIB_BLOCK_DEVICE_PARAMS_YAML or --params not set")
+    else:
+        param_file = args.params
+    logger.info("params [%s]" % param_file)
+    try:
+        with open(param_file) as f:
+            params = yaml.safe_load(f)
+    except Exception:
+        logger.exception("Failed to open parameter YAML")
+        sys.exit(1)
+
     logger.info("phase [%s]" % args.phase)
-    logger.info("params [%s]" % args.params)
+
     if args.symbol:
         logger.info("symbol [%s]" % args.symbol)
 
-    bd = BlockDevice(args)
+    bd = BlockDevice(params, args)
 
     # Check if the method is available
     method = getattr(bd, "cmd_" + args.phase, None)
