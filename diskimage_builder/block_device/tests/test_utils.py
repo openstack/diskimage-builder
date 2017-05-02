@@ -12,8 +12,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from diskimage_builder.block_device.utils import parse_abs_size_spec
 import testtools
+
+from diskimage_builder.block_device.utils import parse_abs_size_spec
 
 
 class TestLoggingConfig(testtools.TestCase):

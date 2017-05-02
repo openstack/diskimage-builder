@@ -12,6 +12,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
+import os
+
+from subprocess import CalledProcessError
+
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
@@ -21,9 +26,7 @@ from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
 from diskimage_builder.graph.digraph import Digraph
-import logging
-import os
-from subprocess import CalledProcessError
+
 
 logger = logging.getLogger(__name__)
 
