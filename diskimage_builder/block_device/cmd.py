@@ -30,7 +30,7 @@ class BlockDeviceCmd(object):
         self.bd.cmd_init()
 
     def cmd_getval(self):
-        self.bd.cmd_getval()
+        self.bd.cmd_getval(self.args.symbol)
 
     def cmd_create(self):
         self.bd.cmd_create()
@@ -110,7 +110,7 @@ class BlockDeviceCmd(object):
             sys.exit(1)
 
         # Setup main BlockDevice object from args
-        self.bd = BlockDevice(self.params, self.args)
+        self.bd = BlockDevice(self.params)
 
         self.args.func()
 

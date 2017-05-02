@@ -149,16 +149,14 @@ class BlockDevice(object):
                 return json.load(fd)
         return None
 
-    def __init__(self, params, args):
+    def __init__(self, params):
         """Create BlockDevice object
 
         Arguments:
         :param params: YAML file from --params
-        :param args: arguments from cmd argparse
         """
 
         logger.debug("Creating BlockDevice object")
-        self.args = args
 
         self.params = params
         logger.debug("Params [%s]" % self.params)
@@ -250,13 +248,16 @@ class BlockDevice(object):
         logger.info("Wrote final block device config to [%s]"
                     % self.config_json_file_name)
 
-    def cmd_getval(self):
+    def cmd_getval(self, symbol):
         """Retrieve value from block device level
 
-        This is needed for backward compatibility (non python) access
-        to (internal) configuration.
+        The value of SYMBOL is printed to stdout.  This is intended to
+        be captured into bash-variables for backward compatibility
+        (non python) access to internal configuration.
+
+        Arguments:
+        :symbol: The symbol to find
         """
-        symbol = self.args.symbol
         logger.info("Getting value for [%s]" % symbol)
         if symbol == 'image-block-partition':
             # If there is no partition needed, pass back directly the
