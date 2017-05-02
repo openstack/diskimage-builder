@@ -15,7 +15,7 @@ import logging
 import subprocess
 import testtools
 
-from diskimage_builder import block_device
+from diskimage_builder.block_device.blockdevice import BlockDevice
 from diskimage_builder.block_device.level0 import localloop
 from diskimage_builder.logging_config import setup
 
@@ -24,7 +24,7 @@ from diskimage_builder.logging_config import setup
 setup()
 
 
-class StateSavingBlockDevice(block_device.BlockDevice):
+class StateSavingBlockDevice(BlockDevice):
     def cmd_create(self):
         logging.info("StateSavingBlockDevice cmd_create()")
         super(StateSavingBlockDevice, self).cmd_create()
