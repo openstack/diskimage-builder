@@ -26,67 +26,93 @@ logger = logging.getLogger(__name__)
 
 class BlockDeviceCmd(object):
 
-    def generate_phase_doc(self):
-        phase_doc = ""
-        bdattrs = dir(BlockDevice)
-        for attr in bdattrs:
-            if attr.startswith("cmd_"):
-                phase_doc += "  '" + attr[4:] + "'\n"
-                method = getattr(BlockDevice, attr, None)
-                # The first line is the line that is used
-                phase_doc += "    " + method.__doc__.split("\n")[0] + "\n"
-        return phase_doc
+    def cmd_init(self):
+        self.bd.cmd_init()
+
+    def cmd_getval(self):
+        self.bd.cmd_getval()
+
+    def cmd_create(self):
+        self.bd.cmd_create()
+
+    def cmd_umount(self):
+        self.bd.cmd_umount()
+
+    def cmd_cleanup(self):
+        self.bd.cmd_cleanup()
+
+    def cmd_delete(self):
+        self.bd.cmd_delete()
+
+    def cmd_writefstab(self):
+        self.bd.cmd_writefstab()
 
     def main(self):
         logging_config.setup()
-        phase_doc = self.generate_phase_doc()
 
-        parser = argparse.ArgumentParser(
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description="Create block device layer",
-            epilog="Available phases:\n" + phase_doc)
-        parser.add_argument('--phase', required=True,
-                            help="phase to execute")
+        parser = argparse.ArgumentParser(description="DIB Block Device helper")
         parser.add_argument('--params', required=False,
-                            help="YAML file containing parameters for "
+                            help="YAML file containing parameters for"
                             "block-device handling.  Default is "
                             "DIB_BLOCK_DEVICE_PARAMS_YAML")
-        parser.add_argument('--symbol', required=False,
-                            help="symbol to query for getval")
-        args = parser.parse_args()
+
+        subparsers = parser.add_subparsers(title='commands',
+                                           description='valid commands',
+                                           dest='command',
+                                           help='additional help')
+
+        cmd_init = subparsers.add_parser('init',
+                                         help='Initialize configuration')
+        cmd_init.set_defaults(func=self.cmd_init)
+
+        cmd_getval = subparsers.add_parser('getval',
+                                           help='Retrieve information about'
+                                           'internal state')
+        cmd_getval.set_defaults(func=self.cmd_getval)
+        cmd_getval.add_argument('symbol', help='symbol to print')
+
+        cmd_create = subparsers.add_parser('create',
+                                           help='Create the block device')
+        cmd_create.set_defaults(func=self.cmd_create)
+
+        cmd_umount = subparsers.add_parser('umount',
+                                           help='Unmount blockdevice and'
+                                           'cleanup resources')
+        cmd_umount.set_defaults(func=self.cmd_umount)
+
+        cmd_cleanup = subparsers.add_parser('cleanup', help='Final cleanup')
+        cmd_cleanup.set_defaults(func=self.cmd_cleanup)
+
+        cmd_delete = subparsers.add_parser('delete', help='Error cleanup')
+        cmd_delete.set_defaults(func=self.cmd_delete)
+
+        cmd_writefstab = subparsers.add_parser('writefstab',
+                                               help='Create fstab for system')
+        cmd_writefstab.set_defaults(func=self.cmd_writefstab)
+
+        self.args = parser.parse_args()
 
         # Find, open and parse the parameters file
-        if not args.params:
+        if not self.args.params:
             if 'DIB_BLOCK_DEVICE_PARAMS_YAML' in os.environ:
                 param_file = os.environ['DIB_BLOCK_DEVICE_PARAMS_YAML']
             else:
                 parser.error(
                     "DIB_BLOCK_DEVICE_PARAMS_YAML or --params not set")
         else:
-            param_file = args.params
+            param_file = self.args.params
             logger.info("params [%s]" % param_file)
         try:
             with open(param_file) as f:
-                params = yaml.safe_load(f)
+                self.params = yaml.safe_load(f)
         except Exception:
             logger.exception("Failed to open parameter YAML")
             sys.exit(1)
 
-        logger.info("phase [%s]" % args.phase)
+        # Setup main BlockDevice object from args
+        self.bd = BlockDevice(self.params, self.args)
 
-        if args.symbol:
-            logger.info("symbol [%s]" % args.symbol)
-
-        bd = BlockDevice(params, args)
-
-        # Check if the method is available
-        method = getattr(bd, "cmd_" + args.phase, None)
-        if callable(method):
-            # If so: call it.
-            return method()
-        else:
-            logger.error("phase [%s] does not exists" % args.phase)
-            return 1
+        self.args.func()
 
 
 def main():

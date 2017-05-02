@@ -40,7 +40,7 @@ class BlockDevice(object):
 
     A typical call sequence:
 
-    cmd_init: initialized the block device level config.  After this
+    cmd_init: initialize the block device level config.  After this
        call it is possible to e.g. query information from the (partially
        automatic generated) internal state like root-label.
 
@@ -74,19 +74,19 @@ class BlockDevice(object):
 
     In a script this should be called in the following way:
 
-    dib-block-device --phase=init ...
+    dib-block-device init ...
     # From that point the database can be queried, like
-    ROOT_LABEL=$(dib-block-device --phase=getval --symbol=root-label ...)
+    ROOT_LABEL=$(dib-block-device getval root-label)
 
     Please note that currently the dib-block-device executable can
     only be used outside the chroot.
 
-    dib-block-device --phase=create ...
-    trap "dib-block-device --phase=delete ..." EXIT
+    dib-block-device create ...
+    trap "dib-block-device delete ..." EXIT
     # copy / install files
-    dib-block-device --phase=umount ...
+    dib-block-device umount ...
     # convert image(s)
-    dib-block-device --phase=cleanup ...
+    dib-block-device cleanup ...
     trap - EXIT
     """
 

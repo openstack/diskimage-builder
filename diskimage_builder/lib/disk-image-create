@@ -299,7 +299,7 @@ mount-base: ${TMP_BUILD_DIR}/mnt
 build-dir: ${TMP_BUILD_DIR}
 EOF
 
-dib-block-device --phase=init
+dib-block-device init
 
 create_base
 # This variable needs to be propagated into the chroot
@@ -424,14 +424,13 @@ if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
     # After changeing the parameters, there is the need to
     # re-run dib-block-device init because some value might
     # change based on the new set parameters.
-    dib-block-device --phase=init
+    dib-block-device init
 
     # values to dib-block-device: using the YAML config and
-    dib-block-device --phase=create
+    dib-block-device create
 
     # It's called 'DEVICE' but it's the partition.
-    IMAGE_BLOCK_DEVICE=$(dib-block-device \
-                             --phase=getval --symbol=image-block-partition)
+    IMAGE_BLOCK_DEVICE=$(dib-block-device getval image-block-partition)
 fi
 export IMAGE_BLOCK_DEVICE
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
@@ -441,7 +440,7 @@ IMAGE_BLOCK_DEVICE_WITHOUT_PART=$(echo ${IMAGE_BLOCK_DEVICE} \
 export IMAGE_BLOCK_DEVICE_WITHOUT_PART
 
 export EXTRA_DETACH="detach_loopback ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}"
-export EXTRA_UNMOUNT="dib-block-device --phase=cleanup"
+export EXTRA_UNMOUNT="dib-block-device cleanup"
 
 sudo mkfs -t $FS_TYPE $MKFS_OPTS -L ${DIB_ROOT_LABEL} ${IMAGE_BLOCK_DEVICE}
 # Tuning the rootfs uuid works only for ext filesystems.
@@ -505,12 +504,12 @@ fi
 export EXTRA_UNMOUNT=""
 unmount_image
 
-TMP_IMAGE_PATH=$(dib-block-device --phase=getval --symbol=image-path)
+TMP_IMAGE_PATH=$(dib-block-device getval image-path)
 export TMP_IMAGE_PATH
 
-dib-block-device --phase=umount
+dib-block-device umount
 
-dib-block-device --phase=cleanup
+dib-block-device cleanup
 
 cleanup_build_dir
 
