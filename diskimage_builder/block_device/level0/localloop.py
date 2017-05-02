@@ -16,8 +16,8 @@ import logging
 import os
 import subprocess
 
-from diskimage_builder.block_device.blockdevicesetupexception \
-    import BlockDeviceSetupException
+from diskimage_builder.block_device.blockdevice import \
+    BlockDeviceSetupException
 from diskimage_builder.block_device.plugin_base import NodePluginBase
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import parse_abs_size_spec

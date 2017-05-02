@@ -17,8 +17,8 @@ import os
 
 from subprocess import CalledProcessError
 
-from diskimage_builder.block_device.blockdevicesetupexception \
-    import BlockDeviceSetupException
+from diskimage_builder.block_device.blockdevice import \
+    BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
 from diskimage_builder.block_device.plugin_base import PluginBase
 from diskimage_builder.block_device.tree_config import TreeConfig
