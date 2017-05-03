@@ -16,9 +16,13 @@
 
 set -eE
 
-# Prevent perl from complaining a lot, but also remove any unexpected side-effects
-# of $LANG varying between build hosts
-export LANG=C
+# Set/override locale.  This ensures consistency in sorting etc.  We
+# need to choose a lowest-common denominator locale, as this is
+# applied when running in the building chroot too (maybe a bug and we
+# should prune this?).  Thus "C" --centOS 7 doesn't include C.utf-8
+# (fedora does, centos 8 probably will).  Note: LC_ALL to really
+# override this; it overrides LANG and all other LC_ vars
+export LC_ALL=C
 
 # Store our initial environment and command line args for later
 export DIB_ARGS="$@"
