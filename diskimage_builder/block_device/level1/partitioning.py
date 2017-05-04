@@ -12,11 +12,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import collections
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
 from diskimage_builder.block_device.plugin_base import PluginBase
+from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
 from diskimage_builder.graph.digraph import Digraph
@@ -28,15 +28,50 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
+class PartitionTreeConfig(object):
+
+    @staticmethod
+    def config_tree_to_digraph(config_key, config_value, pconfig, dconfig,
+                               base_name, plugin_manager):
+        logger.debug("called [%s] [%s] [%s]"
+                     % (config_key, config_value, base_name))
+        assert config_key == Partition.type_string
+
+        for partition in config_value:
+            name = partition['name']
+            nconfig = {'name': name}
+            for k, v in partition.items():
+                if k not in plugin_manager:
+                    nconfig[k] = v
+                else:
+                    plugin_manager[k].plugin \
+                                     .tree_config.config_tree_to_digraph(
+                                         k, v, dconfig, name, plugin_manager)
+            pconfig.append(nconfig)
+
+        logger.debug("finished [%s] [%s]" % (nconfig, dconfig))
+
+
 class Partition(Digraph.Node):
 
-    def __init__(self, name, flags, size, ptype, base, partitioning):
+    type_string = "partitions"
+    tree_config = TreeConfig("partitions")
+
+    def __init__(self, name, flags, size, ptype, base, partitioning,
+                 prev_partition):
         Digraph.Node.__init__(self, name)
+        self.name = name
         self.flags = flags
         self.size = size
         self.ptype = ptype
         self.base = base
         self.partitioning = partitioning
+        self.prev_partition = prev_partition
+
+    def __repr__(self):
+        return "<Partition [%s] on [%s] size [%s] prev [%s]>" \
+            % (self.name, self.base, self.size,
+               self.prev_partition.name if self.prev_partition else "UNSET")
 
     def get_flags(self):
         return self.flags
@@ -51,6 +86,9 @@ class Partition(Digraph.Node):
         bnode = dg.find(self.base)
         assert bnode is not None
         dg.create_edge(bnode, self)
+        if self.prev_partition is not None:
+            logger.debug("Insert edge [%s]" % self)
+            dg.create_edge(self.prev_partition, self)
 
     def create(self, result, rollback):
         self.partitioning.create(result, rollback)
@@ -68,7 +106,33 @@ class Partition(Digraph.Node):
         pass
 
 
+class PartitioningTreeConfig(object):
+
+    @staticmethod
+    def config_tree_to_digraph(config_key, config_value, dconfig,
+                               default_base_name, plugin_manager):
+        logger.debug("called [%s] [%s] [%s]"
+                     % (config_key, config_value, default_base_name))
+        assert config_key == "partitioning"
+        base_name = config_value['base'] if 'base' in config_value \
+                    else default_base_name
+        nconfig = {'base': base_name}
+        for k, v in config_value.items():
+            if k != 'partitions':
+                nconfig[k] = v
+            else:
+                pconfig = []
+                PartitionTreeConfig.config_tree_to_digraph(
+                    k, v, pconfig, dconfig, base_name, plugin_manager)
+                nconfig['partitions'] = pconfig
+
+        dconfig.append({config_key: nconfig})
+        logger.debug("finished new [%s] complete [%s]" % (nconfig, dconfig))
+
+
 class Partitioning(PluginBase):
+
+    tree_config = PartitioningTreeConfig()
 
     flag_boot = 1
     flag_primary = 2
@@ -109,7 +173,9 @@ class Partitioning(PluginBase):
         if 'partitions' not in config:
             self._config_error("Partitioning config needs 'partitions'")
 
-        self.partitions = collections.OrderedDict()
+        self.partitions = []
+        prev_partition = None
+
         for part_cfg in config['partitions']:
             if 'name' not in part_cfg:
                 self.config_error("Missing 'name' in partition config")
@@ -133,8 +199,10 @@ class Partitioning(PluginBase):
 
             ptype = int(part_cfg['type'], 16) if 'type' in part_cfg else 0x83
 
-            self.partitions[part_name] \
-                = Partition(part_name, flags, size, ptype, self.base, self)
+            np = Partition(part_name, flags, size, ptype, self.base, self,
+                           prev_partition)
+            self.partitions.append(np)
+            prev_partition = np
             logger.debug(part_cfg)
 
     def _config_error(self, msg):
@@ -147,7 +215,8 @@ class Partitioning(PluginBase):
             return fd.tell()
 
     def insert_nodes(self, dg):
-        for _, part in self.partitions.items():
+        for part in self.partitions:
+            logger.debug("Insert node [%s]" % part)
             dg.add_node(part)
 
     def _exec_sudo(self, cmd):
@@ -212,7 +281,8 @@ class Partitioning(PluginBase):
         partition_devices = set()
         disk_size = self._size_of_block_dev(image_path)
         with MBR(image_path, disk_size, self.align) as part_impl:
-            for part_name, part_cfg in self.partitions.items():
+            for part_cfg in self.partitions:
+                part_name = part_cfg.get_name()
                 part_bootflag = Partitioning.flag_boot \
                                 in part_cfg.get_flags()
                 part_primary = Partitioning.flag_primary \
