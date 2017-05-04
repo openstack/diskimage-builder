@@ -125,7 +125,7 @@ class BlockDevice(object):
                 raise BlockDeviceSetupException(
                     "Top level config must contain exactly one key per entry")
             logger.debug("Config entry [%s]" % config_entry)
-            config_key = config_entry.keys()[0]
+            config_key = list(config_entry)[0]
             config_value = config_entry[config_key]
             name = config_value['name'] \
                    if 'name' in config_value else None
