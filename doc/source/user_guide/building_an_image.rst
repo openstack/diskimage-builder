@@ -60,20 +60,30 @@ formats are:
 Disk Image Layout
 -----------------
 
-When generating a vm block image (e.g. qcow2 or raw), by default one
-image with one partition holding all files is created.
+The disk image layout (like number of images, partitions, LVM, disk
+encryption) is something which should be set up during the initial
+image build: it is mostly not possible to change these things later
+on.
 
-The configuration is done by means of the environment variable
-`DIB_BLOCK_DEVICE_CONFIG`.  This variable must hold YAML structured
-configuration data.
+There are currently two defaults:
 
-The default is:
+* When using the `vm` element a MBR based partition layout is created
+  with exactly one partition that fills up the whole disk and used as
+  root device.
+* When not using the `vm` element a plain filesystem image, without
+  any partitioning, is created.
 
-::
+The user can overwrite the default handling by setting the environment
+variable `DIB_BLOCK_DEVICE_CONFIG`.  This variable must hold YAML
+structured configuration data.
+
+The default when using the `vm` element is:
+
+.. code-block:: yaml
 
     DIB_BLOCK_DEVICE_CONFIG='
       - local_loop:
-          name: image0
+        name: image0
 
       - partitioning:
           base: image0
@@ -81,10 +91,25 @@ The default is:
           partitions:
             - name: root
               flags: [ boot, primary ]
-              size: 100%'
+              size: 100%
+
+The default when not using the `vm` element is:
+
+.. code-block:: yaml
+
+    DIB_BLOCK_DEVICE_CONFIG='
+      - local_loop:
+          name: image0
+
+There are a lot of different options for the different levels.  The
+following sections describe each level in detail.
+
+General Remarks
++++++++++++++++
 
 In general each module that depends on another module has a `base`
-element that points to the depending base.
+element that points to the depending base.  Also each module has a
+`name` that can be used to reference the module.
 
 Tree-Like vs. Complete Digraph Configuration
 ++++++++++++++++++++++++++++++++++++++++++++
@@ -186,6 +211,8 @@ directory
 
 Example:
 
+.. code-block:: yaml
+
 ::
         local_loop:
           name: image0
@@ -209,20 +236,22 @@ Level 1
 Module: Partitioning
 ....................
 
-This module generates partitions into existing block devices.  This
+This module generates partitions on existing block devices.  This
 means that it is possible to take any kind of block device (e.g. LVM,
 encrypted, ...) and create partition information in it.
 
 The symbolic name for this module is `partitioning`.
 
-Currently the only partitioning layout is Master Boot Record `MBR`.
+Currently the only supported partitioning layout is Master Boot Record
+`MBR`.
 
 It is possible to create primary or logical partitions or a mix of
-them. The numbering of the logical partitions will typically start
+them. The numbering of the primary partitions will start at 1,
+e.g. `/dev/vda1`; logical partitions will typically start
 with `5`, e.g. `/dev/vda5` for the first partition, `/dev/vda6` for
 the second and so on.
 
-The number of partitions created by this module is theoretical
+The number of logical partitions created by this module is theoretical
 unlimited and it was tested with more than 1000 partitions inside one
 block device.  Nevertheless the Linux kernel and different tools (like
 `parted`, `sfdisk`, `fdisk`) have some default maximum number of
@@ -233,7 +262,8 @@ partitions.
 Partitions are created in the order they are configured.  Primary
 partitions - if needed - must be first in the list.
 
-There are the following key / value pairs to define one disk:
+There are the following key / value pairs to define one partition
+table:
 
 base
    (mandatory) The base device where to create the partitions in.
@@ -266,7 +296,7 @@ The following key / value pairs can be given for each partition:
 
 name
    (mandatory) The name of the partition.  With the help of this name,
-   the partition can later be referenced, e.g. while creating a
+   the partition can later be referenced, e.g. when creating a
    file system.
 
 flags
