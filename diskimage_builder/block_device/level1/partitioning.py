@@ -17,12 +17,12 @@ from diskimage_builder.block_device.blockdevicesetupexception \
 from diskimage_builder.block_device.level1.mbr import MBR
 from diskimage_builder.block_device.plugin_base import PluginBase
 from diskimage_builder.block_device.tree_config import TreeConfig
+from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
 from diskimage_builder.graph.digraph import Digraph
 import logging
 import os
-import subprocess
 
 
 logger = logging.getLogger(__name__)
@@ -219,19 +219,6 @@ class Partitioning(PluginBase):
             logger.debug("Insert node [%s]" % part)
             dg.add_node(part)
 
-    def _exec_sudo(self, cmd):
-        sudo_cmd = ["sudo"]
-        sudo_cmd.extend(cmd)
-        logger.info("Calling [%s]" % " ".join(sudo_cmd))
-        # note we supress output, as it is captured
-        try:
-            subprocess.check_output(sudo_cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            logger.error("Calling [%s] failed with [%s]" %
-                         (e.cmd, e.returncode))
-            logger.error(e.output)
-            logger.error("Trying to continue")
-
     def _all_part_devices_exist(self, expected_part_devices):
         for part_device in expected_part_devices:
             logger.debug("Checking if partition device [%s] exists" %
@@ -251,8 +238,8 @@ class Partitioning(PluginBase):
         These calls are highly distribution and version specific. Here
         a couple of different methods are used to get the best result.
         """
-        self._exec_sudo(["partprobe", device_path])
-        self._exec_sudo(["udevadm", "settle"])
+        exec_sudo(["partprobe", device_path])
+        exec_sudo(["udevadm", "settle"])
 
         if self._all_part_devices_exist(partition_devices):
             return
@@ -260,11 +247,11 @@ class Partitioning(PluginBase):
         # will not be working.
         if os.path.exists("/.dockerenv"):
             # kpartx cannot run in sync mode in docker.
-            self._exec_sudo(["kpartx", "-av", device_path])
-            self._exec_sudo(["dmsetup", "--noudevsync", "mknodes"])
+            exec_sudo(["kpartx", "-av", device_path])
+            exec_sudo(["dmsetup", "--noudevsync", "mknodes"])
             return
 
-        self._exec_sudo(["kpartx", "-avs", device_path])
+        exec_sudo(["kpartx", "-avs", device_path])
 
     def create(self, result, rollback):
         image_path = result['blockdev'][self.base]['image']

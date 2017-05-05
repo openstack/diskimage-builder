@@ -12,7 +12,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import re
+import subprocess
+
+logger = logging.getLogger(__name__)
 
 
 SIZE_UNIT_SPECS = [
@@ -81,3 +85,15 @@ def parse_rel_size_spec(size_spec, abs_size):
         return True, int(abs_size * percent / 100.0)
 
     return False, parse_abs_size_spec(size_spec)
+
+
+def exec_sudo(cmd):
+    sudo_cmd = ["sudo"]
+    sudo_cmd.extend(cmd)
+    logger.info("Calling [%s]" % " ".join(sudo_cmd))
+    subp = subprocess.Popen(sudo_cmd)
+    rval = subp.wait()
+    if rval != 0:
+        logger.error("Calling [%s] failed with [%s]" %
+                     (" ".join(sudo_cmd), rval))
+    return rval
