@@ -274,8 +274,8 @@ class BlockDevice(object):
 
         try:
             self.create(self.state, rollback)
-        except BlockDeviceSetupException as bdse:
-            logger.error("exception [%s]" % bdse)
+        except Exception:
+            logger.exception("Create failed; rollback initiated")
             for rollback_cb in reversed(rollback):
                 rollback_cb()
             sys.exit(1)

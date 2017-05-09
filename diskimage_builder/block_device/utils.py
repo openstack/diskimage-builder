@@ -88,15 +88,41 @@ def parse_rel_size_spec(size_spec, abs_size):
 
 
 def exec_sudo(cmd):
+    """Run a command under sudo
+
+    Run command under sudo, with debug trace of output.  This is like
+    subprocess.check_call() but sudo wrapped and with output tracing
+    at debug levels.
+
+    Arguments:
+    :param cmd: str command list; for Popen()
+    :return: nothing
+    :raises: subprocess.CalledProcessError if return code != 0
+
+    """
+    assert isinstance(cmd, list)
     sudo_cmd = ["sudo"]
     sudo_cmd.extend(cmd)
-    logger.info("Calling [%s]" % " ".join(sudo_cmd))
-    subp = subprocess.Popen(sudo_cmd)
-    rval = subp.wait()
-    if rval != 0:
-        logger.error("Calling [%s] failed with [%s]" %
-                     (" ".join(sudo_cmd), rval))
-    return rval
+    try:
+        logger.info("Calling [%s]" % " ".join(sudo_cmd))
+    except TypeError:
+        # Popen actually doesn't care, but we've managed to get mixed
+        # str and bytes in argument lists which causes errors logging
+        # commands.  Give a clue as to what's going on.
+        logger.exception("Ensure all arguments are str type!")
+        raise
+
+    proc = subprocess.Popen(sudo_cmd,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT)
+
+    for line in iter(proc.stdout.readline, b""):
+        logger.debug("exec_sudo: %s" % line.rstrip())
+
+    proc.wait()
+    if proc.returncode != 0:
+        raise subprocess.CalledProcessError(proc.returncode,
+                                            ' '.join(sudo_cmd))
 
 
 def sort_mount_points(mount_points):

@@ -23,7 +23,7 @@ from diskimage_builder.block_device.utils import parse_rel_size_spec
 from diskimage_builder.graph.digraph import Digraph
 import logging
 import os
-
+from subprocess import CalledProcessError
 
 logger = logging.getLogger(__name__)
 
@@ -238,8 +238,12 @@ class Partitioning(PluginBase):
         These calls are highly distribution and version specific. Here
         a couple of different methods are used to get the best result.
         """
-        exec_sudo(["partprobe", device_path])
-        exec_sudo(["udevadm", "settle"])
+        try:
+            exec_sudo(["partprobe", device_path])
+            exec_sudo(["udevadm", "settle"])
+        except CalledProcessError as e:
+            logger.info("Ignoring settling failure: %s" % e)
+            pass
 
         if self._all_part_devices_exist(partition_devices):
             return
