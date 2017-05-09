@@ -12,12 +12,12 @@
 
 import fixtures
 import logging
+import subprocess
 import testtools
 
 from diskimage_builder import block_device
 from diskimage_builder.block_device.level0 import localloop
 from diskimage_builder.logging_config import setup
-from diskimage_builder import utils as dib_utils
 
 
 # Setup Logging
@@ -80,8 +80,7 @@ class TestBlockDevice(testtools.TestCase):
         lb_dev = bd.state['image0']['device']
         # partprobe loopback so we can get partition info
         args = ['sudo', 'partprobe', lb_dev]
-        subp, rval = dib_utils.await_popen_cmd(logging, args)
-        self.assertEqual(0, rval)
-
+        logging.info("Call: %s" % args)
+        subprocess.check_call(args)
         bd.cmd_cleanup()
         self._assert_loopbacks_cleaned(bd)
