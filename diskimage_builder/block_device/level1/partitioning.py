@@ -152,14 +152,19 @@ class Partitioning(PluginBase):
 
         # Parameter check
         if 'base' not in config:
-            self._config_error("Partitioning config needs 'base'")
+            raise BlockDeviceSetupException("Partitioning config needs 'base'")
         self.base = config['base']
 
+        if 'partitions' not in config:
+            raise BlockDeviceSetupException(
+                "Partitioning config needs 'partitions'")
+
         if 'label' not in config:
-            self._config_error("Partitioning config needs 'label'")
+            raise BlockDeviceSetupException(
+                "Partitioning config needs 'label'")
         self.label = config['label']
         if self.label not in ("mbr", ):
-            self._config_error("Label must be 'mbr'")
+            raise BlockDeviceSetupException("Label must be 'mbr'")
 
         # It is VERY important to get the alignment correct. If this
         # is not correct, the disk performance might be very poor.
@@ -176,15 +181,13 @@ class Partitioning(PluginBase):
         if 'align' in config:
             self.align = parse_abs_size_spec(config['align'])
 
-        if 'partitions' not in config:
-            self._config_error("Partitioning config needs 'partitions'")
-
         self.partitions = []
         prev_partition = None
 
         for part_cfg in config['partitions']:
             if 'name' not in part_cfg:
-                self.config_error("Missing 'name' in partition config")
+                raise BlockDeviceSetupException(
+                    "Missing 'name' in partition config")
             part_name = part_cfg['name']
 
             flags = set()
@@ -195,12 +198,13 @@ class Partitioning(PluginBase):
                     elif f == 'primary':
                         flags.add(Partitioning.flag_primary)
                     else:
-                        self._config_error("Unknown flag [%s] in "
-                                           "partitioning for [%s]"
-                                           % (f, part_name))
+                        raise BlockDeviceSetupException(
+                            "Unknown flag [%s] in partitioning for [%s]"
+                            % (f, part_name))
+
             if 'size' not in part_cfg:
-                self._config_error("No 'size' in partition [%s]"
-                                   % part_name)
+                raise BlockDeviceSetupException("No 'size' in partition [%s]"
+                                                % part_name)
             size = part_cfg['size']
 
             ptype = int(part_cfg['type'], 16) if 'type' in part_cfg else 0x83
@@ -210,10 +214,6 @@ class Partitioning(PluginBase):
             self.partitions.append(np)
             prev_partition = np
             logger.debug(part_cfg)
-
-    def _config_error(self, msg):
-        logger.error(msg)
-        raise BlockDeviceSetupException(msg)
 
     def _size_of_block_dev(self, dev):
         with open(dev, "r") as fd:
