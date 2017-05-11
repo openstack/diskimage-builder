@@ -18,10 +18,6 @@ from diskimage_builder import logging_config
 import logging
 
 
-def val_else_none(s):
-    return s if s is None or len(s) > 0 else None
-
-
 def generate_phase_doc():
     phase_doc = ""
     bdattrs = dir(BlockDevice)
