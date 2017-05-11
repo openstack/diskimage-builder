@@ -12,15 +12,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
+import os
+import subprocess
+
 from diskimage_builder.block_device.blockdevicesetupexception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.plugin_base import NodePluginBase
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.graph.digraph import Digraph
-import logging
-import os
-import subprocess
 
 
 logger = logging.getLogger(__name__)

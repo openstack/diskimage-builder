@@ -13,8 +13,9 @@
 # under the License.
 
 import abc
-from diskimage_builder.graph.digraph import Digraph
 import six
+
+from diskimage_builder.graph.digraph import Digraph
 
 
 @six.add_metaclass(abc.ABCMeta)

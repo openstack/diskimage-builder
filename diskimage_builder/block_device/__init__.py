@@ -13,9 +13,10 @@
 # under the License.
 
 import argparse
+import logging
+
 from diskimage_builder.block_device.blockdevice import BlockDevice
 from diskimage_builder import logging_config
-import logging
 
 
 def generate_phase_doc():

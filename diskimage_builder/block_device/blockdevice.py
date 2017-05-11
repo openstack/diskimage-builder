@@ -13,16 +13,18 @@
 # under the License.
 
 import codecs
-from diskimage_builder.block_device.blockdevicesetupexception \
-    import BlockDeviceSetupException
-from diskimage_builder.graph.digraph import Digraph
 import json
 import logging
 import os
 import shutil
-from stevedore import extension
 import sys
 import yaml
+
+from stevedore import extension
+
+from diskimage_builder.block_device.blockdevicesetupexception \
+    import BlockDeviceSetupException
+from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
