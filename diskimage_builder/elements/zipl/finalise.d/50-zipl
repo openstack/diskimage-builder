@@ -1,0 +1,70 @@
+#!/bin/bash
+# Copyright (c) 2017 IBM Corp.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+#
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Configure zipl.
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# get the device containing the /boot directory
+base_device=`df /boot --output=source | grep "/dev/*"`
+
+cat > /lib/s390-tools/zipl_helper.loop  <<EOF
+#!/bin/bash
+# This helper file is only required during image build if DIB is
+# called without any partitioning configured (e.g. without the "vm"
+# element). In that case the file system is put on a plain loop
+# device.
+#
+# It's not required if
+# * zipl is executed in in a running VM.
+# * DIB is configured to create partitions (e.g. with the "vm"
+#   element).
+#
+# In both cases the disks block layout can be determined by
+# the operating system shipped zipl_helper.device-mapper file.
+
+echo "targetbase=${base_device}"
+echo "targettype=scsi"
+# DIB only supports 512 Byte disk sectors and blocks (not to confuse
+# with filesystem block size which is 4k by default)
+echo "targetblocksize=512"
+# If no partitions are present, no MBR is present - the file system can start
+# at block 0
+echo "targetoffset=0"
+EOF
+
+chmod +x /lib/s390-tools/zipl_helper.loop
+
+cat > /etc/zipl.conf <<EOF
+# This has been modified by the cloud image build process
+[defaultboot]
+default=ubuntu
+
+[ubuntu]
+target = /boot
+image = /boot/vmlinuz
+ramdisk = /boot/initrd.img
+parameters="root=LABEL=${DIB_ROOT_LABEL} $DIB_ZIPL_DEFAULT_CMDLINE"
+EOF
+
+zipl -V
+
+rm -f /lib/s390-tools/zipl_helper.loop
