@@ -343,6 +343,8 @@ function unmount_dir {
     local dir="$1"
     local real_dir
     local mnts
+    local split_mounts
+    local found_mountpoint
 
     if [ ! -d $dir ]; then
         echo "*** $dir is not a directory"
@@ -353,12 +355,30 @@ function unmount_dir {
     # /proc/mounts is the real path
     real_dir=$(readlink -e $dir)
 
+    # populate the exported mountpoints
+    IFS='|' read -ra split_mounts <<< "$DIB_MOUNTPOINTS"
+
+
     # note the "/" on real_dir ... we are just looking for things
     # mounted *underneath* this directory.
     mnts=$(awk '{print $2}' < /proc/mounts | grep "^$real_dir/" | sort -r)
     for m in $mnts; do
-        echo "Unmount $m"
-        sudo umount -fl $m || true
+        # check if suffix is in array
+        found_mountpoint=false
+        for mountpoint in "${split_mounts[@]}"; do
+            if [[ "$mountpoint" != "/" ]]; then
+                if [[ "$m" == *$mountpoint ]]; then
+                    echo "Mountpoint $m managed by block device; skipping"
+                    found_mountpoint=true
+                    break
+                fi
+            fi
+        done
+        if [ $found_mountpoint == false ]; then
+            # unmount the directory as it is not managed by block device
+            echo "Unmount $m"
+            sudo umount -fl $m || true
+        fi
     done
 }
 
