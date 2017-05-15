@@ -18,7 +18,6 @@ import subprocess
 
 from diskimage_builder.block_device.blockdevice import \
     BlockDeviceSetupException
-from diskimage_builder.block_device.plugin_base import NodePluginBase
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.graph.digraph import Digraph
@@ -27,7 +26,7 @@ from diskimage_builder.graph.digraph import Digraph
 logger = logging.getLogger(__name__)
 
 
-class LocalLoop(NodePluginBase):
+class LocalLoop(Digraph.Node):
     """Level0: Local loop image device handling.
 
     This class handles local loop devices that can be used
@@ -55,6 +54,10 @@ class LocalLoop(NodePluginBase):
     def insert_edges(self, dg):
         """Because this is created without base, there are no edges."""
         pass
+
+    def insert_nodes(self, dg):
+        """Adds self as a node to the given digraph"""
+        dg.add_node(self)
 
     @staticmethod
     def image_create(filename, size):
