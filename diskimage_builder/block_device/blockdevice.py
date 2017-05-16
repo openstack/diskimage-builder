@@ -298,7 +298,10 @@ class BlockDevice(object):
             return 0
         if symbol == 'mount-points':
             mount_points = self._config_get_all_mount_points()
-            print("%s" % " ".join(mount_points))
+            # we return the mountpoints joined by a pipe, because it is not
+            # a valid char in directories, so it is a safe separator for the
+            # mountpoints list
+            print("%s" % "|".join(mount_points))
             return 0
         if symbol == 'image-block-partition':
             # If there is no partition needed, pass back directly the
