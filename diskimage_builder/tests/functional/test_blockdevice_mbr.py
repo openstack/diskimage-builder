@@ -11,15 +11,19 @@
 # under the License.
 
 import copy
-from diskimage_builder.block_device.level0.localloop import LocalLoop
-from diskimage_builder.block_device.level1.mbr import MBR
-from diskimage_builder.logging_config import setup
+import fixtures
 import logging
 import os
 import shutil
 import subprocess
 import tempfile
 import testtools
+
+from diskimage_builder.block_device.level0.localloop import LocalLoop
+from diskimage_builder.block_device.level1.mbr import MBR
+
+
+logger = logging.getLogger(__name__)
 
 
 class TestMBR(testtools.TestCase):
@@ -48,7 +52,10 @@ class TestMBR(testtools.TestCase):
 
     def setUp(self):
         super(TestMBR, self).setUp()
-        setup()
+        fs = '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+        self.log_fixture = self.useFixture(
+            fixtures.FakeLogger(level=logging.DEBUG,
+                                format=fs))
 
     def _create_image(self):
         tmp_dir = tempfile.mkdtemp(prefix="dib-bd-mbr-")
@@ -61,7 +68,7 @@ class TestMBR(testtools.TestCase):
         partx_path = self._get_path_for_partx()
         largs.insert(0, partx_path)
         largs.append(image_path)
-        logging.info("Running command [%s]", largs)
+        logger.info("Running command [%s]", largs)
         return subprocess.check_output(largs).decode("ascii")
 
     def test_one_ext_partition(self):
