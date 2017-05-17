@@ -17,7 +17,6 @@ import os
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
-from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import sort_mount_points
 from diskimage_builder.graph.digraph import Digraph
@@ -131,7 +130,6 @@ class MountPoint(Digraph.Node):
 class Mount(object):
 
     type_string = "mount"
-    tree_config = TreeConfig("mount")
 
     def __init__(self, config, params):
         logger.debug("Mounting object; config [%s]" % config)

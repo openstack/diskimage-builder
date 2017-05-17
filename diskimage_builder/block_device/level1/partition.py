@@ -14,44 +14,15 @@ import logging
 
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
-from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
 
 
-class PartitionTreeConfig(object):
-
-    @staticmethod
-    def config_tree_to_digraph(config_key, config_value, pconfig, dconfig,
-                               base_name, plugin_manager):
-        logger.debug("called [%s] [%s] [%s]"
-                     % (config_key, config_value, base_name))
-        assert config_key == Partition.type_string
-
-        for partition in config_value:
-            name = partition['name']
-            nconfig = {
-                'name': name,
-                'base': base_name
-            }
-            for k, v in partition.items():
-                if k not in plugin_manager:
-                    nconfig[k] = v
-                else:
-                    plugin_manager[k].plugin \
-                                     .tree_config.config_tree_to_digraph(
-                                         k, v, dconfig, name, plugin_manager)
-            pconfig.append(nconfig)
-
-        logger.debug("finished [%s] [%s]" % (nconfig, dconfig))
-
-
 class Partition(Digraph.Node):
 
     type_string = "partitions"
-    tree_config = TreeConfig("partitions")
 
     flag_boot = 1
     flag_primary = 2

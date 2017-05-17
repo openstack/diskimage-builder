@@ -14,7 +14,5 @@
 # under the License.
 
 from diskimage_builder.block_device.level1.partitioning import Partitioning
-from diskimage_builder.block_device.level1.partitioning \
-    import PartitioningTreeConfig
 
-__all__ = [Partitioning, PartitioningTreeConfig]
+__all__ = [Partitioning]

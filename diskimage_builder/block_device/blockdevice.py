@@ -22,6 +22,8 @@ import yaml
 
 from stevedore import extension
 
+from diskimage_builder.block_device.config import \
+    config_tree_to_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.utils import exec_sudo
@@ -120,30 +122,6 @@ class BlockDevice(object):
                             v['label'] = "cloudimg-rootfs"
 
     @staticmethod
-    def _config_tree_to_digraph(tconfig, plugin_manager):
-        """Converts a possible tree-like config into a complete digraph"""
-        dconfig = []
-        for config_entry in tconfig:
-            if len(config_entry) != 1:
-                logger.error("Invalid config entry: more than one key "
-                             "on top level [%s]" % config_entry)
-                raise BlockDeviceSetupException(
-                    "Top level config must contain exactly one key per entry")
-            logger.debug("Config entry [%s]" % config_entry)
-            config_key = list(config_entry)[0]
-            config_value = config_entry[config_key]
-            name = config_value['name'] \
-                   if 'name' in config_value else None
-            if config_key not in plugin_manager:
-                dconfig.append(config_entry)
-            else:
-                plugin_manager[config_key].plugin \
-                    .tree_config.config_tree_to_digraph(
-                        config_key, config_value, dconfig, name,
-                        plugin_manager)
-        return dconfig
-
-    @staticmethod
     def _load_json(file_name):
         if os.path.exists(file_name):
             with codecs.open(file_name, encoding="utf-8", mode="r") as fd:
@@ -211,6 +189,7 @@ class BlockDevice(object):
                 return 1
             cfg_obj = self.plugin_manager[cfg_obj_name].plugin(
                 cfg_obj_val, default_config)
+
             # At this point it is only possible to add the nodes:
             # adding the edges needs all nodes first.
             cfg_obj.insert_nodes(dg)
@@ -238,8 +217,7 @@ class BlockDevice(object):
         with open(self.params['config'], "rt") as config_fd:
             self.config = yaml.safe_load(config_fd)
         logger.debug("Config before merge [%s]" % self.config)
-        self.config = self._config_tree_to_digraph(self.config,
-                                                   self.plugin_manager)
+        self.config = config_tree_to_graph(self.config)
         logger.debug("Config before merge [%s]" % self.config)
         self._merge_into_config()
         logger.debug("Final config [%s]" % self.config)

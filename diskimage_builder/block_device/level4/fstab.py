@@ -14,7 +14,6 @@
 
 import logging
 
-from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.graph.digraph import Digraph
 
 
@@ -24,7 +23,6 @@ logger = logging.getLogger(__name__)
 class Fstab(Digraph.Node):
 
     type_string = "fstab"
-    tree_config = TreeConfig("fstab")
 
     def __init__(self, config, params):
         logger.debug("Fstab object; config [%s]" % config)

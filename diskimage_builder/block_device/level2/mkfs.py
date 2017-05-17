@@ -17,7 +17,6 @@ import uuid
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
-from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.graph.digraph import Digraph
 
@@ -164,7 +163,6 @@ class Mkfs(object):
     """
 
     type_string = "mkfs"
-    tree_config = TreeConfig("mkfs")
 
     def __init__(self, config, default_config):
         logger.debug("Create Mkfs object; config [%s]" % config)
