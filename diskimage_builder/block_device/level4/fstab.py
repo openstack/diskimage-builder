@@ -14,8 +14,6 @@
 
 import logging
 
-from diskimage_builder.block_device.blockdevice \
-    import BlockDeviceSetupException
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.graph.digraph import Digraph
 
@@ -27,10 +25,6 @@ class Fstab(Digraph.Node):
 
     type_string = "fstab"
     tree_config = TreeConfig("fstab")
-
-    def _config_error(self, msg):
-        logger.error(msg)
-        raise BlockDeviceSetupException(msg)
 
     def __init__(self, config, params):
         logger.debug("Fstab object; config [%s]" % config)

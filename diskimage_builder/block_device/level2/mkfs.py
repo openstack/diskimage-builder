@@ -43,16 +43,13 @@ file_system_max_label_length = {
 
 class Filesystem(Digraph.Node):
 
-    def _config_error(self, msg):
-        logger.error(msg)
-        raise BlockDeviceSetupException(msg)
-
     def __init__(self, config):
         logger.debug("Create filesystem object; config [%s]" % config)
         # Parameter check (mandatory)
         for pname in ['base', 'name', 'type']:
             if pname not in config:
-                self._config_error("Mkfs config needs [%s]" % pname)
+                raise BlockDeviceSetupException(
+                    "Mkfs config needs [%s]" % pname)
             setattr(self, pname, config[pname])
 
         # Parameter check (optional)
@@ -71,20 +68,19 @@ class Filesystem(Digraph.Node):
             self.label = "img-rootfs"
 
         if self.label in file_system_labels:
-            self._config_error(
-                "File system label [%s] used more than once" %
-                self.label)
+            raise BlockDeviceSetupException(
+                "File system label [%s] used more than once" % self.label)
         file_system_labels.add(self.label)
 
         if self.type in file_system_max_label_length:
-            if file_system_max_label_length[self.type] < \
-               len(self.label):
-                self._config_error(
-                    "Label [%s] too long for filesystem [%s]: "
-                    "maximum length [%d] provided length [%d]" %
-                    (self.label, self.type,
-                     file_system_max_label_length[self.type],
-                     len(self.label)))
+            if file_system_max_label_length[self.type] < len(self.label):
+                raise BlockDeviceSetupException(
+                    "Label [{label}] too long for filesystem [{type}]: "
+                    " [{len}] > [{max_len}]".format({
+                        'label': self.label,
+                        'type': self.type,
+                        'len': len(self.label),
+                        'max': file_system_max_label_length[self.type]}))
         else:
             logger.warning("Length of label [%s] cannot be checked for "
                            "filesystem [%s]: unknown max length" %

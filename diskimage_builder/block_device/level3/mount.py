@@ -35,17 +35,13 @@ sorted_mount_points = None
 
 class MountPoint(Digraph.Node):
 
-    @staticmethod
-    def _config_error(msg):
-        logger.error(msg)
-        raise BlockDeviceSetupException(msg)
-
     def __init__(self, mount_base, config):
         # Parameter check
         self.mount_base = mount_base
         for pname in ['base', 'name', 'mount_point']:
             if pname not in config:
-                self._config_error("MountPoint config needs [%s]" % pname)
+                raise BlockDeviceSetupException(
+                    "MountPoint config needs [%s]" % pname)
             setattr(self, pname, config[pname])
         Digraph.Node.__init__(self, self.name)
         logger.debug("MountPoint created [%s]" % self)
@@ -57,8 +53,9 @@ class MountPoint(Digraph.Node):
     def insert_node(self, dg):
         global mount_points
         if self.mount_point in mount_points:
-            self._config_error("Mount point [%s] specified more than once"
-                               % self.mount_point)
+            raise BlockDeviceSetupException(
+                "Mount point [%s] specified more than once"
+                % self.mount_point)
         logger.debug("Insert node [%s]" % self)
         mount_points[self.mount_point] = self
         dg.add_node(self)
@@ -136,17 +133,14 @@ class Mount(object):
     type_string = "mount"
     tree_config = TreeConfig("mount")
 
-    def _config_error(self, msg):
-        logger.error(msg)
-        raise BlockDeviceSetupException(msg)
-
     def __init__(self, config, params):
         logger.debug("Mounting object; config [%s]" % config)
         self.config = config
         self.params = params
 
         if 'mount-base' not in self.params:
-            MountPoint._config_error("Mount default config needs 'mount-base'")
+            raise BlockDeviceSetupException(
+                "Mount default config needs 'mount-base'")
         self.mount_base = self.params['mount-base']
 
         self.mount_points = {}
