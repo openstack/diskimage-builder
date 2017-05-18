@@ -16,7 +16,7 @@ import logging
 import os
 import subprocess
 
-from diskimage_builder.block_device.blockdevice import \
+from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import parse_abs_size_spec

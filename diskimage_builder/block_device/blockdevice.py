@@ -22,15 +22,13 @@ import yaml
 
 from stevedore import extension
 
+from diskimage_builder.block_device.exception import \
+    BlockDeviceSetupException
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
-
-
-class BlockDeviceSetupException(Exception):
-    pass
 
 
 class BlockDevice(object):

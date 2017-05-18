@@ -15,7 +15,7 @@
 import logging
 import uuid
 
-from diskimage_builder.block_device.blockdevice \
+from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import exec_sudo
