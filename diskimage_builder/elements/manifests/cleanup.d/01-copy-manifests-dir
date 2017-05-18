@@ -34,3 +34,7 @@ echo "$DIB_ARGS" | sudo dd of=${MANIFEST_IMAGE_PATH}/dib_arguments  # dib-lint: 
 
 mkdir -p ${DIB_MANIFEST_SAVE_DIR}
 cp --no-preserve=ownership -rv ${MANIFEST_IMAGE_PATH} ${DIB_MANIFEST_SAVE_DIR}
+
+# may contain passwords, etc, so limit permissions
+find ${DIB_MANIFEST_SAVE_DIR} -type f | xargs sudo chown root:root # dib-lint: safe_sudo
+find ${DIB_MANIFEST_SAVE_DIR} -type f | xargs sudo chmod 600 # dib-lint: safe_sudo
