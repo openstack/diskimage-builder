@@ -41,6 +41,10 @@ function get_if_link() {
     cat /sys/class/net/${1}/carrier || echo 0
 }
 
+function get_if_type() {
+    cat /sys/class/net/${1}/type
+}
+
 function enable_interface() {
     local interface=$1
 
@@ -48,13 +52,18 @@ function enable_interface() {
     if [ "$CONF_TYPE" == "eni" ]; then
         printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
     elif [ "$CONF_TYPE" == "rhel-netscripts" ]; then
-        printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"${SCRIPTS_PATH}ifcfg-$interface"
+        if [ "$(get_if_type $interface)" == "32" ]; then
+            printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"InfiniBand\"\nCONNECTED_MODE=\"no\"\nDEFROUTE=\"yes\"\nPEERDNS=\"yes\"\nPEERROUTES=\"yes\"\nIPV4_FAILURE_FATAL=\"yes\"\nIPV6INIT=\"no\"" >"${SCRIPTS_PATH}ifcfg-$interface"
+        else
+            printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"${SCRIPTS_PATH}ifcfg-$interface"
+    fi
     elif [ "$CONF_TYPE" == "suse-netscripts" ]; then
         printf "BOOTPROTO=\"dhcp\"\nSTARTMODE=\"auto\"" >"${SCRIPTS_PATH}ifcfg-$interface"
     fi
     echo "Configured $1"
 
 }
+
 
 function config_exists() {
     local interface=$1
