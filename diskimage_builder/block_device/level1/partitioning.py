@@ -20,7 +20,6 @@ from subprocess import CalledProcessError
 from diskimage_builder.block_device.blockdevice import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
-from diskimage_builder.block_device.plugin_base import PluginBase
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
@@ -136,7 +135,7 @@ class PartitioningTreeConfig(object):
         logger.debug("finished new [%s] complete [%s]" % (nconfig, dconfig))
 
 
-class Partitioning(PluginBase):
+class Partitioning(Digraph.Node):
 
     tree_config = PartitioningTreeConfig()
 
