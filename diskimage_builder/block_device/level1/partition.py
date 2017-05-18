@@ -12,6 +12,8 @@
 
 import logging
 
+from diskimage_builder.block_device.exception import \
+    BlockDeviceSetupException
 from diskimage_builder.block_device.tree_config import TreeConfig
 from diskimage_builder.graph.digraph import Digraph
 
@@ -30,7 +32,10 @@ class PartitionTreeConfig(object):
 
         for partition in config_value:
             name = partition['name']
-            nconfig = {'name': name}
+            nconfig = {
+                'name': name,
+                'base': base_name
+            }
             for k, v in partition.items():
                 if k not in plugin_manager:
                     nconfig[k] = v
@@ -48,16 +53,36 @@ class Partition(Digraph.Node):
     type_string = "partitions"
     tree_config = TreeConfig("partitions")
 
-    def __init__(self, name, flags, size, ptype, base, partitioning,
-                 prev_partition):
-        Digraph.Node.__init__(self, name)
-        self.name = name
-        self.flags = flags
-        self.size = size
-        self.ptype = ptype
-        self.base = base
-        self.partitioning = partitioning
+    flag_boot = 1
+    flag_primary = 2
+
+    def __init__(self, config, parent, prev_partition):
+        if 'name' not in config:
+            raise BlockDeviceSetupException(
+                "Missing 'name' in partition config: %s" % config)
+        self.name = config['name']
+
+        Digraph.Node.__init__(self, self.name)
+
+        self.base = config['base']
+        self.partitioning = parent
         self.prev_partition = prev_partition
+
+        self.flags = set()
+        if 'flags' in config:
+            for f in config['flags']:
+                if f == 'boot':
+                    self.flags.add(self.flag_boot)
+                elif f == 'primary':
+                    self.flags.add(self.flag_primary)
+                else:
+                    raise BlockDeviceSetupException("Unknown flag: %s" % f)
+
+        if 'size' not in config:
+            raise BlockDeviceSetupException("No size in partition" % self.name)
+        self.size = config['size']
+
+        self.ptype = int(config['type'], 16) if 'type' in config else 0x83
 
     def __repr__(self):
         return "<Partition [%s] on [%s] size [%s] prev [%s]>" \

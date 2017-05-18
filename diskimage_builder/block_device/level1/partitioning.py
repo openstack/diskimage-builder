@@ -61,9 +61,6 @@ class Partitioning(Digraph.Node):
 
     tree_config = PartitioningTreeConfig()
 
-    flag_boot = 1
-    flag_primary = 2
-
     def __init__(self, config, default_config):
         logger.debug("Creating Partitioning object; config [%s]" % config)
         # Because using multiple partitions of one base is done
@@ -106,35 +103,9 @@ class Partitioning(Digraph.Node):
         prev_partition = None
 
         for part_cfg in config['partitions']:
-            if 'name' not in part_cfg:
-                raise BlockDeviceSetupException(
-                    "Missing 'name' in partition config")
-            part_name = part_cfg['name']
-
-            flags = set()
-            if 'flags' in part_cfg:
-                for f in part_cfg['flags']:
-                    if f == 'boot':
-                        flags.add(Partitioning.flag_boot)
-                    elif f == 'primary':
-                        flags.add(Partitioning.flag_primary)
-                    else:
-                        raise BlockDeviceSetupException(
-                            "Unknown flag [%s] in partitioning for [%s]"
-                            % (f, part_name))
-
-            if 'size' not in part_cfg:
-                raise BlockDeviceSetupException("No 'size' in partition [%s]"
-                                                % part_name)
-            size = part_cfg['size']
-
-            ptype = int(part_cfg['type'], 16) if 'type' in part_cfg else 0x83
-
-            np = Partition(part_name, flags, size, ptype, self.base, self,
-                           prev_partition)
+            np = Partition(part_cfg, self, prev_partition)
             self.partitions.append(np)
             prev_partition = np
-            logger.debug(part_cfg)
 
     def _size_of_block_dev(self, dev):
         with open(dev, "r") as fd:
@@ -201,9 +172,9 @@ class Partitioning(Digraph.Node):
         with MBR(image_path, disk_size, self.align) as part_impl:
             for part_cfg in self.partitions:
                 part_name = part_cfg.get_name()
-                part_bootflag = Partitioning.flag_boot \
+                part_bootflag = Partition.flag_boot \
                                 in part_cfg.get_flags()
-                part_primary = Partitioning.flag_primary \
+                part_primary = Partition.flag_primary \
                                in part_cfg.get_flags()
                 part_size = part_cfg.get_size()
                 part_free = part_impl.free()
