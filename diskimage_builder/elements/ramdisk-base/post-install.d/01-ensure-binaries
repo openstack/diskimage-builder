@@ -32,7 +32,7 @@ for _FILE in $(ls ${TARGET_DIR}/binary-deps.d/) ; do
 done
 
 for _BIN in $BINARY_DEPS ; do
-    _LOCATION=$(which "$_BIN" || echo "")
+    _LOCATION=$(type -p "$_BIN" || echo "")
     if [ -z "$_LOCATION" ]; then
         echo "$_BIN is not found in PATH. Please ensure your elements install it"
         exit 1

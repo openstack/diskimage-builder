@@ -208,7 +208,7 @@ fi
 for X in ${!IMAGE_TYPES[@]}; do
     case "${IMAGE_TYPES[$X]}" in
         qcow2)
-            if [ -z "$(which qemu-img)" ]; then
+            if ! type qemu-img > /dev/null 2>&1; then
                 echo "qcow2 output format specified but qemu-img executable not found."
                 exit 1
             fi
@@ -218,19 +218,19 @@ for X in ${!IMAGE_TYPES[@]}; do
             IMAGE_TYPES+=('tar')
             ;;
         vhd)
-            if [ -z "$(which vhd-util)" ]; then
+            if ! type vhd-util > /dev/null 2>&1; then
                 echo "vhd output format specified but no vhd-util executable found."
                 exit 1
             fi
             ;;
         squashfs)
-            if [ -z "$(which mksquashfs)" ]; then
+            if ! type mksquashfs > /dev/null 2>&1; then
                 echo "squashfs output format specified but no mksquashfs executable found."
                 exit 1
             fi
             ;;
         docker)
-            if [ -z "$(which docker)" ]; then
+            if ! type docker > /dev/null 2>&1; then
                 echo "docker output format specified but no docker executable found."
                 exit 1
             fi
@@ -244,7 +244,7 @@ done
 
 # NOTE: fstrim is on most all recent systems. It is provided by the util-linux
 # package.
-if [[ -z "$(which fstrim)" ]]; then
+if ! type fstrim > /dev/null 2>&1; then
     echo "fstrim utility is not found. This is provided by util-linux package"
     echo "Please check your PATH variable is set correctly"
     exit 1

@@ -163,7 +163,7 @@ function populate_lib () {
     if busybox_list | grep -v "^ip$" | grep "^$i\$" >/dev/null; then
       continue
     fi
-    path=`which $i 2>/dev/null` || path=$i
+    path=`type -p $i 2>/dev/null` || path=$i
     if ! [ -x "$path" ]; then
       echo "$i is not found in PATH" 2>&1
       exit 1

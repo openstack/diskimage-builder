@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-SETFILES=$(which setfiles || true)
+SETFILES=$(type -p setfiles || true)
 if [ -e /etc/selinux/targeted/contexts/files/file_contexts -a -x "${SETFILES}" ]; then
     # get all mounpoints in the system
     IFS='|' read -ra SPLIT_MOUNTS <<< "$DIB_MOUNTPOINTS"
