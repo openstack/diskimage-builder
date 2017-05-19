@@ -14,15 +14,10 @@ There are two ways to configure apt-sources:
    overwrite the two environment variables to adapt the behavior:
 
    * ``DIB_DISTRIBUTION_MIRROR``: the mirror to use (default:
-     `<http://ftp.us.debian.org/debian>`__)
+     `<http://deb.debian.org/debian>`__)
    * ``DIB_DEBIAN_COMPONENTS``: (default: ``main``) a comma
      separated list of components. For Debian this can be
      e.g. ``main,contrib,non-free``.
-
-   Note it is not recommended to use
-   `<http://httpredir.debian.org/>`__ for ``DIB_DISTRIBUTION_MIRROR``
-   due to how unreliable it is.  Be sure to select a mirror from the
-   official mirror list at `<https://www.debian.org/mirror/list>`__
 
    By default only the ``main`` component is used. If
    ``DIB_DEBIAN_COMPONENTS`` (comma separated) from the
