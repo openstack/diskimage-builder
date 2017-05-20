@@ -12,9 +12,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import testtools
+
+from diskimage_builder.graph.digraph import Digraph
 from diskimage_builder.graph.digraph import digraph_create_from_dict
 from diskimage_builder.graph.digraph import node_list_to_node_name_list
-import testtools
 
 
 class TestTopologicalSearch(testtools.TestCase):
@@ -67,3 +69,48 @@ class TestTopologicalSearch(testtools.TestCase):
         self.assertTrue(tnames.index('A') < tnames.index('B'))
         self.assertTrue(tnames.index('B') < tnames.index('C'))
         self.assertTrue(tnames.index('D') < tnames.index('E'))
+
+    def test_tsort_006(self):
+        """Complex digraph with weights"""
+
+        digraph = Digraph()
+        node0 = Digraph.Node("R")
+        digraph.add_node(node0)
+        node1 = Digraph.Node("A")
+        digraph.add_node(node1)
+        node2 = Digraph.Node("B")
+        digraph.add_node(node2)
+        node3 = Digraph.Node("C")
+        digraph.add_node(node3)
+        node4 = Digraph.Node("B1")
+        digraph.add_node(node4)
+        node5 = Digraph.Node("B2")
+        digraph.add_node(node5)
+        node6 = Digraph.Node("B3")
+        digraph.add_node(node6)
+
+        digraph.create_edge(node0, node1, 1)
+        digraph.create_edge(node0, node2, 2)
+        digraph.create_edge(node0, node3, 3)
+
+        digraph.create_edge(node2, node4, 7)
+        digraph.create_edge(node2, node5, 14)
+        digraph.create_edge(node2, node6, 21)
+
+        tsort = digraph.topological_sort()
+        tnames = node_list_to_node_name_list(tsort)
+
+        # Also here: many possible solutions
+        self.assertTrue(tnames.index('R') < tnames.index('A'))
+        self.assertTrue(tnames.index('R') < tnames.index('B'))
+        self.assertTrue(tnames.index('R') < tnames.index('C'))
+        self.assertTrue(tnames.index('B') < tnames.index('B1'))
+        self.assertTrue(tnames.index('B') < tnames.index('B2'))
+        self.assertTrue(tnames.index('B') < tnames.index('B3'))
+
+        # In addition in the weighted graph the following
+        # must also hold:
+        self.assertTrue(tnames.index('B') < tnames.index('A'))
+        self.assertTrue(tnames.index('C') < tnames.index('B'))
+        self.assertTrue(tnames.index('B2') < tnames.index('B1'))
+        self.assertTrue(tnames.index('B3') < tnames.index('B2'))

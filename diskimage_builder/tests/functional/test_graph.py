@@ -121,3 +121,23 @@ class TestDigraph(testtools.TestCase):
             self.assertTrue(False)
         except RuntimeError:
             pass
+
+    def test_iter_outgoing_weight_01(self):
+        """Tests iter_outgoing in a graph with weights"""
+
+        digraph = Digraph()
+        node0 = Digraph.Node("R")
+        digraph.add_node(node0)
+        node1 = Digraph.Node("A")
+        digraph.add_node(node1)
+        node2 = Digraph.Node("B")
+        digraph.add_node(node2)
+        node3 = Digraph.Node("C")
+        digraph.add_node(node3)
+
+        digraph.create_edge(node0, node1, 1)
+        digraph.create_edge(node0, node2, 2)
+        digraph.create_edge(node0, node3, 3)
+
+        self.assertEqual([node1, node2, node3],
+                         list(node0.get_iter_outgoing()))
