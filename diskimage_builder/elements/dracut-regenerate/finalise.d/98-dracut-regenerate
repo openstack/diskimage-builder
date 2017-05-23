@@ -1,0 +1,67 @@
+#!/usr/local/bin/dib-python
+
+# Copyright 2017 Red Hat, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+import os
+import re
+import subprocess
+import yaml
+
+
+def main():
+    dracut_env = os.getenv('DIB_DRACUT_ENABLED_MODULES')
+    dracut_objects = yaml.safe_load(dracut_env)
+
+    modules_to_boot = []
+    for dracut_object in dracut_objects:
+        # first, install dependent packages
+        packages = dracut_object.get('packages', [])
+        for package in packages:
+            cmdline = ["install-packages", package]
+            subp = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+            out = subp.communicate()[0]
+            if subp.returncode:
+                e = subprocess.CalledProcessError(subp.returncode, cmdline)
+                e.output = out
+                raise e
+
+        # second, compose the list of modules to boot
+        modules_to_boot.append(dracut_object.get('name', None))
+
+    # regenerate dracut with the list of installed modules
+    if len(modules_to_boot) > 0:
+        cmdline = ["select-boot-kernel-initrd"]
+        subp = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
+        out, err = subp.communicate()
+
+        if subp.returncode:
+            e = subprocess.CalledProcessError(subp.returncode, cmdline)
+            e.output = out
+            raise e
+
+        kernel_set = out.split(':')
+        kernel_search = re.match("vmlinuz-(.*)", kernel_set[0])
+        kernel_version = "%s" % kernel_search.groups(1)
+        ramdisk_path = "/boot/%s" % kernel_set[1].strip()
+        modules_to_boot = ' ' .join(modules_to_boot)
+
+        subp = subprocess.Popen(['dracut', '--force', '--add', modules_to_boot,
+                                 '-f', ramdisk_path, kernel_version],
+                                stdout=subprocess.PIPE)
+        subp.wait()
+
+
+if __name__ == '__main__':
+    main()
