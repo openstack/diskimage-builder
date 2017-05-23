@@ -45,11 +45,7 @@ class MountPoint(Digraph.Node):
         Digraph.Node.__init__(self, self.name)
         logger.debug("MountPoint created [%s]" % self)
 
-    def __repr__(self):
-        return "<MountPoint base [%s] name [%s] mount_point [%s]>" \
-            % (self.base, self.name, self.mount_point)
-
-    def insert_node(self, dg):
+    def get_node(self):
         global mount_points
         if self.mount_point in mount_points:
             raise BlockDeviceSetupException(
@@ -57,9 +53,9 @@ class MountPoint(Digraph.Node):
                 % self.mount_point)
         logger.debug("Insert node [%s]" % self)
         mount_points[self.mount_point] = self
-        dg.add_node(self)
+        return self
 
-    def insert_edges(self, dg):
+    def get_edges(self):
         """Insert all edges
 
         After inserting all the nodes, the order of the mounting and
@@ -74,7 +70,8 @@ class MountPoint(Digraph.Node):
         ensures that during mounting (and umounting) the correct
         order is used.
         """
-        logger.debug("Insert edge [%s]" % self)
+        edge_from = []
+        edge_to = []
         global mount_points
         global sorted_mount_points
         if sorted_mount_points is None:
@@ -86,11 +83,11 @@ class MountPoint(Digraph.Node):
         mpi = sorted_mount_points.index(self.mount_point)
         if mpi > 0:
             # If not the first: add also the dependency
-            dg.create_edge(mount_points[sorted_mount_points[mpi - 1]], self)
+            dep = mount_points[sorted_mount_points[mpi - 1]]
+            edge_from.append(dep.name)
 
-        bnode = dg.find(self.base)
-        assert bnode is not None
-        dg.create_edge(bnode, self)
+        edge_from.append(self.base)
+        return (edge_from, edge_to)
 
     def create(self, result, rollback):
         logger.debug("mount called [%s]" % self.mount_point)
@@ -142,12 +139,13 @@ class Mount(object):
         self.mount_base = self.params['mount-base']
 
         self.mount_points = {}
-
         mp = MountPoint(self.mount_base, self.config)
         self.mount_points[mp.get_name()] = mp
 
-    def insert_nodes(self, dg):
+    def get_nodes(self):
         global sorted_mount_points
         assert sorted_mount_points is None
+        nodes = []
         for _, mp in self.mount_points.items():
-            mp.insert_node(dg)
+            nodes.append(mp.get_node())
+        return nodes

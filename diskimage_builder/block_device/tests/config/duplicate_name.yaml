@@ -1,0 +1,28 @@
+- local_loop:
+    name: this_is_a_duplicate
+
+- partitioning:
+    base: this_is_a_duplicate
+    name: root
+    label: mbr
+    partitions:
+      - flags: [boot, primary]
+        name: root
+        base: image0
+        size: 100%
+
+- mount:
+    base: mkfs_root
+    name: this_is_a_duplicate
+    mount_point: /
+
+- fstab:
+    base: mount_mkfs_root
+    name: fstab_mount_mkfs_root
+    fsck-passno: 1
+    options: defaults
+
+- mkfs:
+    base: root
+    name: mkfs_root
+    type: ext4

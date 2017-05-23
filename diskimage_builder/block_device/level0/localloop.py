@@ -48,13 +48,13 @@ class LocalLoop(Digraph.Node):
         Digraph.Node.__init__(self, self.name)
         self.filename = os.path.join(self.image_dir, self.name + ".raw")
 
-    def insert_edges(self, dg):
+    def get_edges(self):
         """Because this is created without base, there are no edges."""
-        pass
+        return ([], [])
 
-    def insert_nodes(self, dg):
-        """Adds self as a node to the given digraph"""
-        dg.add_node(self)
+    def get_nodes(self):
+        """Returns nodes for adding to the graph"""
+        return [self]
 
     @staticmethod
     def image_create(filename, size):

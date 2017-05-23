@@ -69,11 +69,21 @@ class TestGraphGeneration(TestConfig):
 class TestConfigParsing(TestConfig):
     """Test parsing config file into a graph"""
 
+    # test an entry in the config not being a valid plugin
     def test_config_bad_plugin(self):
         config = self.load_config_file('bad_plugin.yaml')
         self.assertRaises(BlockDeviceSetupException,
                           config_tree_to_graph,
                           config)
+
+    # test a config that has multiple keys for a top-level entry
+    def test_config_multikey_node(self):
+        config = self.load_config_file('multi_key_node.yaml')
+        self.assertRaisesRegexp(BlockDeviceSetupException,
+                                "Config entry top-level should be a single "
+                                "dict:",
+                                config_tree_to_graph,
+                                config)
 
     # a graph should remain the same
     def test_graph(self):
@@ -105,6 +115,23 @@ class TestConfigParsing(TestConfig):
 
 
 class TestCreateGraph(TestGraphGeneration):
+
+    # Test a graph with bad edge pointing to an invalid node
+    def test_invalid_missing(self):
+        config = self.load_config_file('bad_edge_graph.yaml')
+        self.assertRaisesRegexp(BlockDeviceSetupException,
+                                "Edge not defined: this_is_not_a_node",
+                                self.bd.create_graph,
+                                config, self.fake_default_config)
+
+    # Test a graph with bad edge pointing to an invalid node
+    def test_duplicate_name(self):
+        config = self.load_config_file('duplicate_name.yaml')
+        self.assertRaisesRegexp(BlockDeviceSetupException,
+                                "Duplicate node name: "
+                                "this_is_a_duplicate",
+                                self.bd.create_graph,
+                                config, self.fake_default_config)
 
     # Test digraph generation from deep_graph config file
     def test_deep_graph_generator(self):

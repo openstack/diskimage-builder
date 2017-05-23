@@ -2,8 +2,7 @@
     name: root_fs
     base: root_part
     type: xfs
-
-- mount:
+  mount:
     name: mount_root_fs
     base: root_fs
     mount_point: /
