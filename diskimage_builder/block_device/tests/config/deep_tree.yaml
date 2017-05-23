@@ -1,0 +1,18 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+    name: mbr
+    base: image0
+    label: mbr
+    partitions:
+      - name: root
+        flags: [ boot, primary ]
+        size: 100%
+        mkfs:
+          type: ext4
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1

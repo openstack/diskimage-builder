@@ -1,0 +1,159 @@
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+import fixtures
+import logging
+import os
+import testtools
+import yaml
+
+from diskimage_builder.block_device.blockdevice \
+    import BlockDevice
+
+
+logger = logging.getLogger(__name__)
+
+
+class TestConfig(testtools.TestCase):
+    """Helper for setting up and reading a config"""
+    def setUp(self):
+        super(TestConfig, self).setUp()
+
+        fs = '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+        self.log_fixture = self.useFixture(
+            fixtures.FakeLogger(level=logging.DEBUG, format=fs))
+
+        # reset all globals for each test.
+        # XXX: remove globals :/
+        import diskimage_builder.block_device.level2.mkfs
+        diskimage_builder.block_device.level2.mkfs.file_system_labels = set()
+        import diskimage_builder.block_device.level3.mount
+        diskimage_builder.block_device.level3.mount.mount_points = {}
+        diskimage_builder.block_device.level3.mount.sorted_mount_points = None
+
+    def load_config_file(self, f):
+        path = os.path.join(os.path.dirname(__file__),
+                            'config', f)
+        with open(path, 'r') as config:
+            return yaml.safe_load(config)
+
+
+class TestGraphGeneration(TestConfig):
+    """Extra helper class for testing graph generation"""
+    def setUp(self):
+        super(TestGraphGeneration, self).setUp()
+
+        self.fake_default_config = {
+            'build-dir': '/fake',
+            'image-size': '1000',
+            'image-dir': '/fake',
+            'mount-base': '/fake',
+        }
+
+        self.bd = BlockDevice(self.fake_default_config)
+
+
+# NOTE: inherits from TestGraphGeneration for simplicity to get
+# BlockDevice.plugin_manager object for _config_tree_to_diagraph.
+# Config parsing can be moved separately (and not require a
+# BlockDevice object) in a later change.
+class TestConfigParsing(TestGraphGeneration):
+    """Test parsing config file into a graph"""
+
+    def test_config_bad_plugin(self):
+        # Currently, configuration parsing does not notice a missing
+        # plugin.  This is left as a stub
+        return
+        # config = self.load_config_file('bad_plugin.yaml')
+        # self.assertRaises(BlockDeviceSetupException,
+        #                  self.bd._config_tree_to_digraph,
+        #                  config, self.bd.plugin_manager)
+
+    # a graph should remain the same
+    def test_graph(self):
+        graph = self.load_config_file('simple_graph.yaml')
+        parsed_graph = self.bd._config_tree_to_digraph(graph,
+                                                       self.bd.plugin_manager)
+        self.assertEqual(parsed_graph, graph)
+
+    # equivalence of simple tree to graph
+    def test_simple_tree(self):
+        tree = self.load_config_file('simple_tree.yaml')
+        graph = self.load_config_file('simple_graph.yaml')
+        parsed_graph = self.bd.\
+                       _config_tree_to_digraph(tree,
+                                               self.bd.plugin_manager)
+        self.assertItemsEqual(parsed_graph, graph)
+
+    # equivalence of a deeper tree to graph
+    def test_deep_tree(self):
+        tree = self.load_config_file('deep_tree.yaml')
+        graph = self.load_config_file('deep_graph.yaml')
+        parsed_graph = self.bd.\
+                       _config_tree_to_digraph(tree, self.bd.plugin_manager)
+        self.assertItemsEqual(parsed_graph, graph)
+
+    # equivalence of a complicated multi-partition tree to graph
+    def test_multipart_tree(self):
+        tree = self.load_config_file('multiple_partitions_tree.yaml')
+        graph = self.load_config_file('multiple_partitions_graph.yaml')
+        parsed_graph = self.bd._config_tree_to_digraph(tree,
+                                                       self.bd.plugin_manager)
+        logger.debug(parsed_graph)
+        self.assertItemsEqual(parsed_graph, graph)
+
+
+class TestCreateGraph(TestGraphGeneration):
+
+    # Test digraph generation from deep_graph config file
+    def test_deep_graph_generator(self):
+        config = self.load_config_file('deep_graph.yaml')
+
+        graph, call_order = self.bd.create_graph(config,
+                                                 self.fake_default_config)
+
+        call_order_list = [n.name for n in call_order]
+
+        # manually created from deep_graph.yaml
+        # Note unlike below, the sort here is stable because the graph
+        # doesn't have multiple paths with only one partition
+        call_order_names = ['image0', 'root', 'mkfs_root',
+                            'mount_mkfs_root',
+                            'fstab_mount_mkfs_root']
+
+        self.assertListEqual(call_order_list, call_order_names)
+
+    # Test multiple parition digraph generation
+    def test_multiple_partitions_graph_generator(self):
+        config = self.load_config_file('multiple_partitions_graph.yaml')
+
+        graph, call_order = self.bd.create_graph(config,
+                                                 self.fake_default_config)
+        call_order_list = [n.name for n in call_order]
+
+        # The sort creating call_order_list is unstable.
+
+        # We want to ensure we see the "partitions" object in
+        # root->var->var_log order
+        root_pos = call_order_list.index('root')
+        var_pos = call_order_list.index('var')
+        var_log_pos = call_order_list.index('var_log')
+        self.assertGreater(var_pos, root_pos)
+        self.assertGreater(var_log_pos, var_pos)
+
+        # Ensure mkfs happens after partition
+        mkfs_root_pos = call_order_list.index('mkfs_root')
+        self.assertLess(root_pos, mkfs_root_pos)
+        mkfs_var_pos = call_order_list.index('mkfs_var')
+        self.assertLess(var_pos, mkfs_var_pos)
+        mkfs_var_log_pos = call_order_list.index('mkfs_var_log')
+        self.assertLess(var_log_pos, mkfs_var_log_pos)
