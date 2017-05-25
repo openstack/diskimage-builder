@@ -20,21 +20,22 @@ from subprocess import CalledProcessError
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
-from diskimage_builder.block_device.level1.partition import \
-    Partition
+from diskimage_builder.block_device.level1.partition import PartitionNode
+from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
-from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
 
 
-class Partitioning(Digraph.Node):
+class Partitioning(PluginBase):
 
     def __init__(self, config, default_config):
         logger.debug("Creating Partitioning object; config [%s]" % config)
+        super(Partitioning, self).__init__()
+
         # Because using multiple partitions of one base is done
         # within one object, there is the need to store a flag if the
         # creation of the partitions was already done.
@@ -75,18 +76,18 @@ class Partitioning(Digraph.Node):
         prev_partition = None
 
         for part_cfg in config['partitions']:
-            np = Partition(part_cfg, self, prev_partition)
+            np = PartitionNode(part_cfg, self, prev_partition)
             self.partitions.append(np)
             prev_partition = np
+
+    def get_nodes(self):
+        # return the list of partitions
+        return self.partitions
 
     def _size_of_block_dev(self, dev):
         with open(dev, "r") as fd:
             fd.seek(0, 2)
             return fd.tell()
-
-    def get_nodes(self):
-        # We just add partitions
-        return self.partitions
 
     def _all_part_devices_exist(self, expected_part_devices):
         for part_device in expected_part_devices:
@@ -127,11 +128,18 @@ class Partitioning(Digraph.Node):
         exec_sudo(["kpartx", "-avs", device_path])
 
     def create(self, result, rollback):
+        # not this is NOT a node and this is not called directly!  The
+        # create() calls in the partition nodes this plugin has
+        # created are calling back into this.
         image_path = result['blockdev'][self.base]['image']
         device_path = result['blockdev'][self.base]['device']
         logger.info("Creating partition on [%s] [%s]" %
                     (self.base, image_path))
 
+        # This is a bit of a hack.  Each of the partitions is actually
+        # in the graph, so for every partition we get a create() call
+        # as the walk happens.  But we only need to create the
+        # partition table once...
         if self.already_created:
             logger.info("Not creating the partitions a second time.")
             return
@@ -143,9 +151,9 @@ class Partitioning(Digraph.Node):
         with MBR(image_path, disk_size, self.align) as part_impl:
             for part_cfg in self.partitions:
                 part_name = part_cfg.get_name()
-                part_bootflag = Partition.flag_boot \
+                part_bootflag = PartitionNode.flag_boot \
                                 in part_cfg.get_flags()
-                part_primary = Partition.flag_primary \
+                part_primary = PartitionNode.flag_primary \
                                in part_cfg.get_flags()
                 part_size = part_cfg.get_size()
                 part_free = part_impl.free()

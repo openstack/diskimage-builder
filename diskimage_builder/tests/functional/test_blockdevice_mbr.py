@@ -19,7 +19,8 @@ import subprocess
 import tempfile
 import testtools
 
-from diskimage_builder.block_device.level0.localloop import LocalLoop
+from diskimage_builder.block_device.level0.localloop \
+    import LocalLoopNode as LocalLoop
 from diskimage_builder.block_device.level1.mbr import MBR
 
 

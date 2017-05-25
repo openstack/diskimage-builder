@@ -17,9 +17,10 @@ import os
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
+from diskimage_builder.block_device.plugin import NodeBase
+from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import sort_mount_points
-from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
@@ -32,17 +33,18 @@ mount_points = {}
 sorted_mount_points = None
 
 
-class MountPoint(Digraph.Node):
+class MountPointNode(NodeBase):
 
     def __init__(self, mount_base, config):
+        super(MountPointNode, self).__init__(config['name'])
+
         # Parameter check
         self.mount_base = mount_base
-        for pname in ['base', 'name', 'mount_point']:
+        for pname in ['base', 'mount_point']:
             if pname not in config:
                 raise BlockDeviceSetupException(
                     "MountPoint config needs [%s]" % pname)
             setattr(self, pname, config[pname])
-        Digraph.Node.__init__(self, self.name)
         logger.debug("MountPoint created [%s]" % self)
 
     def get_node(self):
@@ -116,30 +118,22 @@ class MountPoint(Digraph.Node):
         logger.info("Called for [%s]" % self.name)
         exec_sudo(["umount", state['mount'][self.mount_point]['path']])
 
-    def cleanup(self, state):
-        """Mount does not need any cleanup."""
-        pass
-
     def delete(self, state):
         self.umount(state)
 
 
-class Mount(object):
-
-    type_string = "mount"
-
-    def __init__(self, config, params):
-        logger.debug("Mounting object; config [%s]" % config)
-        self.config = config
-        self.params = params
-
-        if 'mount-base' not in self.params:
-            raise BlockDeviceSetupException(
-                "Mount default config needs 'mount-base'")
-        self.mount_base = self.params['mount-base']
+class Mount(PluginBase):
+    def __init__(self, config, defaults):
+        super(Mount, self).__init__()
 
         self.mount_points = {}
-        mp = MountPoint(self.mount_base, self.config)
+
+        if 'mount-base' not in defaults:
+            raise BlockDeviceSetupException(
+                "Mount default config needs 'mount-base'")
+        self.mount_base = defaults['mount-base']
+
+        mp = MountPointNode(self.mount_base, config)
         self.mount_points[mp.get_name()] = mp
 
     def get_nodes(self):

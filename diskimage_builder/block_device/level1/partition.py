@@ -14,26 +14,20 @@ import logging
 
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
-from diskimage_builder.graph.digraph import Digraph
+from diskimage_builder.block_device.plugin import NodeBase
 
 
 logger = logging.getLogger(__name__)
 
 
-class Partition(Digraph.Node):
-
-    type_string = "partitions"
+class PartitionNode(NodeBase):
 
     flag_boot = 1
     flag_primary = 2
 
     def __init__(self, config, parent, prev_partition):
-        if 'name' not in config:
-            raise BlockDeviceSetupException(
-                "Missing 'name' in partition config: %s" % config)
-        self.name = config['name']
 
-        Digraph.Node.__init__(self, self.name)
+        super(PartitionNode, self).__init__(config['name'])
 
         self.base = config['base']
         self.partitioning = parent
@@ -64,9 +58,6 @@ class Partition(Digraph.Node):
     def get_type(self):
         return self.ptype
 
-    def get_name(self):
-        return self.name
-
     def get_edges(self):
         edge_from = [self.base]
         edge_to = []
@@ -76,15 +67,3 @@ class Partition(Digraph.Node):
 
     def create(self, result, rollback):
         self.partitioning.create(result, rollback)
-
-    def umount(self, state):
-        """Partition does not need any umount task."""
-        pass
-
-    def cleanup(self, state):
-        """Partition does not need any cleanup."""
-        pass
-
-    def delete(self, state):
-        """Partition does not need any cleanup."""
-        pass

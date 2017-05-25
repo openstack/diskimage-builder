@@ -28,6 +28,8 @@ from diskimage_builder.block_device.config import \
     config_tree_to_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
+from diskimage_builder.block_device.plugin import NodeBase
+from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
 
 
@@ -189,20 +191,24 @@ class BlockDevice(object):
 
             # Instantiate a "plugin" object, passing it the
             # configuration entry
+            # XXX would a "factory" pattern for plugins, where we make
+            # a method call on an object stevedore has instantiated be
+            # better here?
             if cfg_obj_name not in self.plugin_manager:
                 raise BlockDeviceSetupException(
                     ("Config element [%s] is not implemented" % cfg_obj_name))
-            cfg_obj = self.plugin_manager[cfg_obj_name].plugin(
-                cfg_obj_val, default_config)
+            plugin = self.plugin_manager[cfg_obj_name].plugin
+            assert issubclass(plugin, PluginBase)
+            cfg_obj = plugin(cfg_obj_val, default_config)
 
             # Ask the plugin for the nodes it would like to insert
             # into the graph.  Some plugins, such as partitioning,
             # return multiple nodes from one config entry.
             nodes = cfg_obj.get_nodes()
+            assert isinstance(nodes, list)
             for node in nodes:
-                # would only be missing if a plugin was way out of
-                # line and didn't put it in...
-                assert node.name
+                # plugins should return nodes...
+                assert isinstance(node, NodeBase)
                 # ensure node names are unique.  networkx by default
                 # just appends the attribute to the node dict for
                 # existing nodes, which is not what we want.
