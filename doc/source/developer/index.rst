@@ -35,6 +35,13 @@ and testing your changes.  When you are done editing, use ``git
 review`` to submit changes to the upstream gerrit.
 
 
+Python module documentation
+---------------------------
+
+For internal documentation on the DIB python components, see the
+:ref:`modindex`
+
+
 Finding Work
 ------------
 

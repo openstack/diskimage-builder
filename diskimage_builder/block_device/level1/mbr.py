@@ -69,6 +69,7 @@ class MBR(object):
 
     Primary partitions are created first - and must also be passed in
     first.
+
     The extended partition layout is done in the way, that there is
     one entry in the MBR (the last) that uses the whole disk.
     EBR (extended boot records) are used to describe the partitions
@@ -76,21 +77,29 @@ class MBR(object):
     be used for all partitions and arbitrarily many partitions can be
     created in the same way (the EBR is placed as block 0 in each
     partition itself).
+
     In conjunction with a fixed and 'fits all' partition alignment the
     major design focus is maximum performance for the installed image
     (vs. minimal size).
+
     Because of the chosen default alignment of 1MiB there will be
     (1MiB - 512B) unused disk space for the MBR and also the same
     size unused in every partition.
+
     Assuming that 512 byte blocks are used, the resulting layout for
     extended partitions looks like (blocks offset in extended
     partition given):
-           0: MBR - 2047 blocks unused
-        2048: EBR for partition 1 - 2047 blocks unused
-        4096: Start of data for partition 1
-         ...
-           X: EBR for partition N - 2047 blocks unused
-      X+2048: Start of data for partition N
+
+    ======== ==============================================
+    Offset    Description
+    ======== ==============================================
+        0     MBR - 2047 blocks unused
+     2048     EBR for partition 1 - 2047 blocks unused
+     4096     Start of data for partition 1
+     ...     ...
+      X       EBR for partition N - 2047 blocks unused
+      X+2048  Start of data for partition N
+    ======== ==============================================
 
     Direct (native) writing of MBR, EBR (partition table) is
     implemented - no other parititoning library or tools is used -
