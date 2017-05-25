@@ -24,9 +24,14 @@ export LC_ALL=
 DEFAULT_SKIP_TESTS=(
     # we run version pinned test in gate (this just runs latest)
     fedora/build-succeeds
+    # These require "zypper" on the host which is not available on
+    # all platforms
+    opensuse-minimal/build-succeeds
+    opensuse-minimal/opensuse423-build-succeeds
     # in non-voting
     gentoo/build-succeeds
     opensuse/build-succeeds
+    opensuse/opensuse423-build-succeeds
     ubuntu-minimal/precise-build-succeeds
     # good to have the test case around - but because of changes
     # in testing does not work always.
