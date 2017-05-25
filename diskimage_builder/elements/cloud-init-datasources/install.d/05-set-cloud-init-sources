@@ -15,17 +15,9 @@ if [ -z "$DIB_CLOUD_INIT_DATASOURCES" ] ; then
 fi
 
 if [ -d /etc/cloud/cloud.cfg.d ]; then
-    # DatasourceNone doesn't exist in Ubuntu 12.04 (Precise)
-    # which uses cloud-init version 0.6.3
-    if [ "$(lsb_release -cs)" = 'precise' ] ; then
-        cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
-datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES ]
-EOF
-    else
-        cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
+    cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
 datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES, None ]
 EOF
-    fi
     # Newer cloud-init versions complain by default when they should
     # use the Ec2 datasource on a non-AWS cloud.  If the Ec2
     # datasource is desired, we need to tell cloud-init that we really

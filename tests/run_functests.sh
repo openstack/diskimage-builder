@@ -32,7 +32,6 @@ DEFAULT_SKIP_TESTS=(
     gentoo/build-succeeds
     opensuse/build-succeeds
     opensuse/opensuse423-build-succeeds
-    ubuntu-minimal/precise-build-succeeds
     # good to have the test case around - but because of changes
     # in testing does not work always.
     debian-minimal/testing-build-succeeds

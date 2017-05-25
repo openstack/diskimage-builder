@@ -1,6 +1,5 @@
 adduser:
 ca-certificates:
-cloud-initramfs-growroot:
 locales:
 lsb-release:
   phase: pre-install.d
