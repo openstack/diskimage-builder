@@ -157,7 +157,7 @@ is exactly the same as writing
    mount:
      name: mount_root_fs
      base: root_fs
-       mount_point: /
+     mount_point: /
 
 Non existing `name` and `base` entries in the tree notation are
 automatically generated: the `name` is the name of the base module

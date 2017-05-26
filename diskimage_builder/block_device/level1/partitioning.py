@@ -22,8 +22,6 @@ from diskimage_builder.block_device.exception import \
 from diskimage_builder.block_device.level1.mbr import MBR
 from diskimage_builder.block_device.level1.partition import \
     Partition
-from diskimage_builder.block_device.level1.partition import \
-    PartitionTreeConfig
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
@@ -33,33 +31,7 @@ from diskimage_builder.graph.digraph import Digraph
 logger = logging.getLogger(__name__)
 
 
-class PartitioningTreeConfig(object):
-
-    @staticmethod
-    def config_tree_to_digraph(config_key, config_value, dconfig,
-                               default_base_name, plugin_manager):
-        logger.debug("called [%s] [%s] [%s]"
-                     % (config_key, config_value, default_base_name))
-        assert config_key == "partitioning"
-        base_name = config_value['base'] if 'base' in config_value \
-                    else default_base_name
-        nconfig = {'base': base_name}
-        for k, v in config_value.items():
-            if k != 'partitions':
-                nconfig[k] = v
-            else:
-                pconfig = []
-                PartitionTreeConfig.config_tree_to_digraph(
-                    k, v, pconfig, dconfig, base_name, plugin_manager)
-                nconfig['partitions'] = pconfig
-
-        dconfig.append({config_key: nconfig})
-        logger.debug("finished new [%s] complete [%s]" % (nconfig, dconfig))
-
-
 class Partitioning(Digraph.Node):
-
-    tree_config = PartitioningTreeConfig()
 
     def __init__(self, config, default_config):
         logger.debug("Creating Partitioning object; config [%s]" % config)

@@ -18,6 +18,10 @@ import yaml
 
 from diskimage_builder.block_device.blockdevice \
     import BlockDevice
+from diskimage_builder.block_device.config \
+    import config_tree_to_graph
+from diskimage_builder.block_device.exception import \
+    BlockDeviceSetupException
 
 
 logger = logging.getLogger(__name__)
@@ -62,52 +66,40 @@ class TestGraphGeneration(TestConfig):
         self.bd = BlockDevice(self.fake_default_config)
 
 
-# NOTE: inherits from TestGraphGeneration for simplicity to get
-# BlockDevice.plugin_manager object for _config_tree_to_diagraph.
-# Config parsing can be moved separately (and not require a
-# BlockDevice object) in a later change.
-class TestConfigParsing(TestGraphGeneration):
+class TestConfigParsing(TestConfig):
     """Test parsing config file into a graph"""
 
     def test_config_bad_plugin(self):
-        # Currently, configuration parsing does not notice a missing
-        # plugin.  This is left as a stub
-        return
-        # config = self.load_config_file('bad_plugin.yaml')
-        # self.assertRaises(BlockDeviceSetupException,
-        #                  self.bd._config_tree_to_digraph,
-        #                  config, self.bd.plugin_manager)
+        config = self.load_config_file('bad_plugin.yaml')
+        self.assertRaises(BlockDeviceSetupException,
+                          config_tree_to_graph,
+                          config)
 
     # a graph should remain the same
     def test_graph(self):
         graph = self.load_config_file('simple_graph.yaml')
-        parsed_graph = self.bd._config_tree_to_digraph(graph,
-                                                       self.bd.plugin_manager)
-        self.assertEqual(parsed_graph, graph)
+        parsed_graph = config_tree_to_graph(graph)
+        self.assertItemsEqual(parsed_graph, graph)
 
     # equivalence of simple tree to graph
     def test_simple_tree(self):
         tree = self.load_config_file('simple_tree.yaml')
         graph = self.load_config_file('simple_graph.yaml')
-        parsed_graph = self.bd.\
-                       _config_tree_to_digraph(tree,
-                                               self.bd.plugin_manager)
+        parsed_graph = config_tree_to_graph(tree)
         self.assertItemsEqual(parsed_graph, graph)
 
     # equivalence of a deeper tree to graph
     def test_deep_tree(self):
         tree = self.load_config_file('deep_tree.yaml')
         graph = self.load_config_file('deep_graph.yaml')
-        parsed_graph = self.bd.\
-                       _config_tree_to_digraph(tree, self.bd.plugin_manager)
+        parsed_graph = config_tree_to_graph(tree)
         self.assertItemsEqual(parsed_graph, graph)
 
     # equivalence of a complicated multi-partition tree to graph
     def test_multipart_tree(self):
         tree = self.load_config_file('multiple_partitions_tree.yaml')
         graph = self.load_config_file('multiple_partitions_graph.yaml')
-        parsed_graph = self.bd._config_tree_to_digraph(tree,
-                                                       self.bd.plugin_manager)
+        parsed_graph = config_tree_to_graph(tree)
         logger.debug(parsed_graph)
         self.assertItemsEqual(parsed_graph, graph)
 
