@@ -1,0 +1,18 @@
+#!/bin/bash
+# Prevent libsolv/zypper from installing recommended packages
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+fgrep -qx "solver.onlyRequires = true" /etc/zypp/zypp.conf || {
+    cat >> /etc/zypp/zypp.conf << _EOF_
+## Disable installation of recommended packages, language packages
+## and packages which depend on hardware (modalias).
+
+solver.onlyRequires = true
+
+_EOF_
+}
