@@ -1,0 +1,5 @@
+- mkfs:
+    name: root_fs
+    base: root_part
+    mount:
+      mount_point: /

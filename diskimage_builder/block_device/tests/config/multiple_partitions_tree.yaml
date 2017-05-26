@@ -1,0 +1,37 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+      base: image0
+      name: mbr
+      label: mbr
+      partitions:
+        - name: root
+          flags: [ boot, primary ]
+          size: 55%
+          mkfs:
+            type: xfs
+            mount:
+              mount_point: /
+              fstab:
+                options: "defaults"
+                fsck-passno: 1
+        - name: var
+          size: 40%
+          mkfs:
+            type: xfs
+            mount:
+              mount_point: /var
+              fstab:
+                options: "defaults"
+                fsck-passno: 1
+        - name: var_log
+          size: 5%
+          mkfs:
+            type: xfs
+            mount:
+              mount_point: /var/log
+              fstab:
+                options: "defaults"
+                fsck-passno: 1
+
