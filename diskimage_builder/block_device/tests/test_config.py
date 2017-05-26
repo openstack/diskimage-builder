@@ -16,10 +16,8 @@ import os
 import testtools
 import yaml
 
-from diskimage_builder.block_device.blockdevice \
-    import BlockDevice
-from diskimage_builder.block_device.config \
-    import config_tree_to_graph
+from diskimage_builder.block_device.config import config_tree_to_graph
+from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 
@@ -62,8 +60,6 @@ class TestGraphGeneration(TestConfig):
             'image-dir': '/fake',
             'mount-base': '/fake',
         }
-
-        self.bd = BlockDevice(self.fake_default_config)
 
 
 class TestConfigParsing(TestConfig):
@@ -121,7 +117,7 @@ class TestCreateGraph(TestGraphGeneration):
         config = self.load_config_file('bad_edge_graph.yaml')
         self.assertRaisesRegexp(BlockDeviceSetupException,
                                 "Edge not defined: this_is_not_a_node",
-                                self.bd.create_graph,
+                                create_graph,
                                 config, self.fake_default_config)
 
     # Test a graph with bad edge pointing to an invalid node
@@ -130,15 +126,14 @@ class TestCreateGraph(TestGraphGeneration):
         self.assertRaisesRegexp(BlockDeviceSetupException,
                                 "Duplicate node name: "
                                 "this_is_a_duplicate",
-                                self.bd.create_graph,
+                                create_graph,
                                 config, self.fake_default_config)
 
     # Test digraph generation from deep_graph config file
     def test_deep_graph_generator(self):
         config = self.load_config_file('deep_graph.yaml')
 
-        graph, call_order = self.bd.create_graph(config,
-                                                 self.fake_default_config)
+        graph, call_order = create_graph(config, self.fake_default_config)
 
         call_order_list = [n.name for n in call_order]
 
@@ -155,8 +150,7 @@ class TestCreateGraph(TestGraphGeneration):
     def test_multiple_partitions_graph_generator(self):
         config = self.load_config_file('multiple_partitions_graph.yaml')
 
-        graph, call_order = self.bd.create_graph(config,
-                                                 self.fake_default_config)
+        graph, call_order = create_graph(config, self.fake_default_config)
         call_order_list = [n.name for n in call_order]
 
         # The sort creating call_order_list is unstable.

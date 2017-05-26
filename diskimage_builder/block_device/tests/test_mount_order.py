@@ -15,6 +15,7 @@ import mock
 
 import diskimage_builder.block_device.tests.test_config as tc
 
+from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.level3.mount import MountPointNode
 
 logger = logging.getLogger(__name__)
@@ -27,8 +28,7 @@ class TestMountOrder(tc.TestGraphGeneration):
 
         config = self.load_config_file('multiple_partitions_graph.yaml')
 
-        graph, call_order = self.bd.create_graph(config,
-                                                 self.fake_default_config)
+        graph, call_order = create_graph(config, self.fake_default_config)
 
         result = {}
         result['filesys'] = {}
