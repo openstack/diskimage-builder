@@ -18,14 +18,15 @@ import subprocess
 
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
+from diskimage_builder.block_device.plugin import NodeBase
+from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import parse_abs_size_spec
-from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
 
 
-class LocalLoop(Digraph.Node):
+class LocalLoopNode(NodeBase):
     """Level0: Local loop image device handling.
 
     This class handles local loop devices that can be used
@@ -34,6 +35,7 @@ class LocalLoop(Digraph.Node):
     def __init__(self, config, default_config):
         logger.debug("Creating LocalLoop object; config [%s] "
                      "default_config [%s]" % (config, default_config))
+        super(LocalLoopNode, self).__init__(config['name'])
         if 'size' in config:
             self.size = parse_abs_size_spec(config['size'])
             logger.debug("Image size [%s]" % self.size)
@@ -44,17 +46,11 @@ class LocalLoop(Digraph.Node):
             self.image_dir = config['directory']
         else:
             self.image_dir = default_config['image-dir']
-        self.name = config['name']
-        Digraph.Node.__init__(self, self.name)
         self.filename = os.path.join(self.image_dir, self.name + ".raw")
 
     def get_edges(self):
         """Because this is created without base, there are no edges."""
         return ([], [])
-
-    def get_nodes(self):
-        """Returns nodes for adding to the graph"""
-        return [self]
 
     @staticmethod
     def image_create(filename, size):
@@ -131,3 +127,13 @@ class LocalLoop(Digraph.Node):
 
     def delete(self, state):
         self._image_delete(state['blockdev'][self.name]['image'])
+
+
+class LocalLoop(PluginBase):
+
+    def __init__(self, config, defaults):
+        super(PluginBase, self).__init__()
+        self.node = LocalLoopNode(config, defaults)
+
+    def get_nodes(self):
+        return [self.node]

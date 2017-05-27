@@ -17,8 +17,9 @@ import uuid
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
+from diskimage_builder.block_device.plugin import NodeBase
+from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
-from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
@@ -40,12 +41,14 @@ file_system_max_label_length = {
 }
 
 
-class Filesystem(Digraph.Node):
+class FilesystemNode(NodeBase):
 
     def __init__(self, config):
         logger.debug("Create filesystem object; config [%s]" % config)
+        super(FilesystemNode, self).__init__(config['name'])
+
         # Parameter check (mandatory)
-        for pname in ['base', 'name', 'type']:
+        for pname in ['base', 'type']:
             if pname not in config:
                 raise BlockDeviceSetupException(
                     "Mkfs config needs [%s]" % pname)
@@ -92,8 +95,6 @@ class Filesystem(Digraph.Node):
         if self.uuid is None:
             self.uuid = str(uuid.uuid4())
 
-        Digraph.Node.__init__(self, self.name)
-
         logger.debug("Filesystem created [%s]" % self)
 
     def get_edges(self):
@@ -137,36 +138,18 @@ class Filesystem(Digraph.Node):
                'fstype': self.type, 'opts': self.opts,
                'device': device}
 
-    def umount(self, state):
-        """Mkfs does not need any umount."""
-        pass
 
-    def cleanup(self, state):
-        """Mkfs does not need any cleanup."""
-        pass
-
-    def delete(self, state):
-        """Mkfs does not need any delete."""
-        pass
-
-
-class Mkfs(object):
-    """Module for creating file systems
+class Mkfs(PluginBase):
+    """Create a file system
 
     This block device module handles creating different file
     systems.
     """
 
-    type_string = "mkfs"
-
-    def __init__(self, config, default_config):
-        logger.debug("Create Mkfs object; config [%s]" % config)
-        logger.debug("default_config [%s]" % default_config)
-        self.config = config
-        self.default_config = default_config
+    def __init__(self, config, defaults):
+        super(Mkfs, self).__init__()
         self.filesystems = {}
-
-        fs = Filesystem(self.config)
+        fs = FilesystemNode(config)
         self.filesystems[fs.get_name()] = fs
 
     def get_nodes(self):

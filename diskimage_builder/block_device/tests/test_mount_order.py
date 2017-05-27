@@ -15,7 +15,7 @@ import mock
 
 import diskimage_builder.block_device.tests.test_config as tc
 
-from diskimage_builder.block_device.level3.mount import MountPoint
+from diskimage_builder.block_device.level3.mount import MountPointNode
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class TestMountOrder(tc.TestGraphGeneration):
         rollback = []
 
         for node in call_order:
-            if isinstance(node, MountPoint):
+            if isinstance(node, MountPointNode):
                 # XXX: do we even need to create?  We could test the
                 # sudo arguments from the mock in the below asserts
                 # too

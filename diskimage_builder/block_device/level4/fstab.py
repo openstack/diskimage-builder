@@ -14,30 +14,20 @@
 
 import logging
 
-from diskimage_builder.graph.digraph import Digraph
+from diskimage_builder.block_device.plugin import NodeBase
+from diskimage_builder.block_device.plugin import PluginBase
 
 
 logger = logging.getLogger(__name__)
 
 
-class Fstab(Digraph.Node):
-
-    type_string = "fstab"
-
+class FstabNode(NodeBase):
     def __init__(self, config, params):
-        logger.debug("Fstab object; config [%s]" % config)
-        self.config = config
-        self.params = params
-        self.name = self.config['name']
-        self.base = self.config['base']
-        Digraph.Node.__init__(self, self.name)
-
-        self.options = self.config.get('options', 'defaults')
-        self.dump_freq = self.config.get('dump-freq', 0)
-        self.fsck_passno = self.config.get('fsck-passno', 2)
-
-    def get_nodes(self):
-        return [self]
+        super(FstabNode, self).__init__(config['name'])
+        self.base = config['base']
+        self.options = config.get('options', 'defaults')
+        self.dump_freq = config.get('dump-freq', 0)
+        self.fsck_passno = config.get('fsck-passno', 2)
 
     def get_edges(self):
         edge_from = [self.base]
@@ -59,14 +49,12 @@ class Fstab(Digraph.Node):
             'fsck-passno': self.fsck_passno
         }
 
-    def umount(self, state):
-        """Fstab does not need any umount task."""
-        pass
 
-    def cleanup(self, state):
-        """Fstab does not need any cleanup."""
-        pass
+class Fstab(PluginBase):
+    def __init__(self, config, defaults):
+        super(Fstab, self).__init__()
 
-    def delete(self, state):
-        """Fstab does not need any cleanup."""
-        pass
+        self.node = FstabNode(config, defaults)
+
+    def get_nodes(self):
+        return [self.node]
