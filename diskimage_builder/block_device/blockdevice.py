@@ -20,16 +20,8 @@ import shutil
 import sys
 import yaml
 
-import networkx as nx
-
-from stevedore import extension
-
-from diskimage_builder.block_device.config import \
-    config_tree_to_graph
-from diskimage_builder.block_device.exception import \
-    BlockDeviceSetupException
-from diskimage_builder.block_device.plugin import NodeBase
-from diskimage_builder.block_device.plugin import PluginBase
+from diskimage_builder.block_device.config import config_tree_to_graph
+from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.utils import exec_sudo
 
 
@@ -147,9 +139,6 @@ class BlockDevice(object):
             self.params['build-dir'], "states/block-device")
         self.state_json_file_name \
             = os.path.join(self.state_dir, "state.json")
-        self.plugin_manager = extension.ExtensionManager(
-            namespace='diskimage_builder.block_device.plugin',
-            invoke_on_load=False)
         self.config_json_file_name \
             = os.path.join(self.state_dir, "config.json")
 
@@ -168,95 +157,8 @@ class BlockDevice(object):
         with open(self.state_json_file_name, "w") as fd:
             json.dump(state, fd)
 
-    def create_graph(self, config, default_config):
-        """Generate configuration digraph
-
-        Generate the configuration digraph from the config
-
-        :param config: graph configuration file
-        :param default_config: default parameters (from --params)
-        :return: tuple with the graph object, nodes in call order
-        """
-        # This is the directed graph of nodes: each parse method must
-        # add the appropriate nodes and edges.
-        dg = nx.DiGraph()
-
-        for config_entry in config:
-            # this should have been checked by generate_config
-            assert len(config_entry) == 1
-
-            logger.debug("Config entry [%s]" % config_entry)
-            cfg_obj_name = list(config_entry.keys())[0]
-            cfg_obj_val = config_entry[cfg_obj_name]
-
-            # Instantiate a "plugin" object, passing it the
-            # configuration entry
-            # XXX would a "factory" pattern for plugins, where we make
-            # a method call on an object stevedore has instantiated be
-            # better here?
-            if cfg_obj_name not in self.plugin_manager:
-                raise BlockDeviceSetupException(
-                    ("Config element [%s] is not implemented" % cfg_obj_name))
-            plugin = self.plugin_manager[cfg_obj_name].plugin
-            assert issubclass(plugin, PluginBase)
-            cfg_obj = plugin(cfg_obj_val, default_config)
-
-            # Ask the plugin for the nodes it would like to insert
-            # into the graph.  Some plugins, such as partitioning,
-            # return multiple nodes from one config entry.
-            nodes = cfg_obj.get_nodes()
-            assert isinstance(nodes, list)
-            for node in nodes:
-                # plugins should return nodes...
-                assert isinstance(node, NodeBase)
-                # ensure node names are unique.  networkx by default
-                # just appends the attribute to the node dict for
-                # existing nodes, which is not what we want.
-                if node.name in dg.node:
-                    raise BlockDeviceSetupException(
-                        "Duplicate node name: %s" % (node.name))
-                logger.debug("Adding %s : %s", node.name, node)
-                dg.add_node(node.name, obj=node)
-
-        # Now find edges
-        for name, attr in dg.nodes(data=True):
-            obj = attr['obj']
-            # Unfortunately, we can not determine node edges just from
-            # the configuration file.  It's not always simply the
-            # "base:" pointer.  So ask nodes for a list of nodes they
-            # want to point to.  *mostly* it's just base: ... but
-            # mounting is different.
-            #  edges_from are the nodes that point to us
-            #  edges_to are the nodes we point to
-            edges_from, edges_to = obj.get_edges()
-            logger.debug("Edges for %s: f:%s t:%s", name,
-                         edges_from, edges_to)
-            for edge_from in edges_from:
-                if edge_from not in dg.node:
-                    raise BlockDeviceSetupException(
-                        "Edge not defined: %s->%s" % (edge_from, name))
-                dg.add_edge(edge_from, name)
-            for edge_to in edges_to:
-                if edge_to not in dg.node:
-                    raise BlockDeviceSetupException(
-                        "Edge not defined: %s->%s" % (name, edge_to))
-                dg.add_edge(name, edge_to)
-
-        # this can be quite helpful debugging but needs pydotplus.
-        # run "dotty /tmp/out.dot"
-        #  XXX: maybe an env var that dumps to a tmpdir or something?
-        # nx.nx_pydot.write_dot(dg, '/tmp/graph_dump.dot')
-
-        # Topological sort (i.e. create a linear array that satisfies
-        # dependencies) and return the object list
-        call_order_nodes = nx.topological_sort(dg)
-        logger.debug("Call order: %s", list(call_order_nodes))
-        call_order = [dg.node[n]['obj'] for n in call_order_nodes]
-
-        return dg, call_order
-
     def create(self, result, rollback):
-        dg, call_order = self.create_graph(self.config, self.params)
+        dg, call_order = create_graph(self.config, self.params)
         for node in call_order:
             node.create(result, rollback)
 
@@ -413,7 +315,7 @@ class BlockDevice(object):
             return 0
 
         # Deleting must be done in reverse order
-        dg, call_order = self.create_graph(self.config, self.params)
+        dg, call_order = create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
         if dg is None:
@@ -427,7 +329,7 @@ class BlockDevice(object):
         """Cleanup all remaining relicts - in good case"""
 
         # Deleting must be done in reverse order
-        dg, call_order = self.create_graph(self.config, self.params)
+        dg, call_order = create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
@@ -442,7 +344,7 @@ class BlockDevice(object):
         """Cleanup all remaining relicts - in case of an error"""
 
         # Deleting must be done in reverse order
-        dg, call_order = self.create_graph(self.config, self.params)
+        dg, call_order = create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
