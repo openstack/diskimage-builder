@@ -1,5 +1,6 @@
 - mkfs:
     name: root_fs
     base: root_part
+    type: xfs
     mount:
       mount_point: /

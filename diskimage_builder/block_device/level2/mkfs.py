@@ -96,15 +96,10 @@ class Filesystem(Digraph.Node):
 
         logger.debug("Filesystem created [%s]" % self)
 
-    def __repr__(self):
-        return "<Filesystem base [%s] name [%s] type [%s]>" \
-            % (self.base, self.name, self.type)
-
-    def insert_edges(self, dg):
-        logger.debug("Insert edge [%s]" % self)
-        bnode = dg.find(self.base)
-        assert bnode is not None
-        dg.create_edge(bnode, self)
+    def get_edges(self):
+        edge_from = [self.base]
+        edge_to = []
+        return (edge_from, edge_to)
 
     def create(self, result, rollback):
         logger.info("create called; result [%s]" % result)
@@ -174,7 +169,8 @@ class Mkfs(object):
         fs = Filesystem(self.config)
         self.filesystems[fs.get_name()] = fs
 
-    def insert_nodes(self, dg):
+    def get_nodes(self):
+        nodes = []
         for _, fs in self.filesystems.items():
-            logger.debug("Insert node [%s]" % fs)
-            dg.add_node(fs)
+            nodes.append(fs)
+        return nodes

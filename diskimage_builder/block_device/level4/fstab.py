@@ -36,15 +36,13 @@ class Fstab(Digraph.Node):
         self.dump_freq = self.config.get('dump-freq', 0)
         self.fsck_passno = self.config.get('fsck-passno', 2)
 
-    def insert_nodes(self, dg):
-        logger.debug("Insert node")
-        dg.add_node(self)
+    def get_nodes(self):
+        return [self]
 
-    def insert_edges(self, dg):
-        logger.debug("Insert edge [%s]" % self)
-        bnode = dg.find(self.base)
-        assert bnode is not None
-        dg.create_edge(bnode, self)
+    def get_edges(self):
+        edge_from = [self.base]
+        edge_to = []
+        return (edge_from, edge_to)
 
     def create(self, result, rollback):
         logger.debug("fstab create called [%s]" % self.name)

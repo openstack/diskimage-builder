@@ -84,10 +84,9 @@ class Partitioning(Digraph.Node):
             fd.seek(0, 2)
             return fd.tell()
 
-    def insert_nodes(self, dg):
-        for part in self.partitions:
-            logger.debug("Insert node [%s]" % part)
-            dg.add_node(part)
+    def get_nodes(self):
+        # We just add partitions
+        return self.partitions
 
     def _all_part_devices_exist(self, expected_part_devices):
         for part_device in expected_part_devices:

@@ -55,11 +55,6 @@ class Partition(Digraph.Node):
 
         self.ptype = int(config['type'], 16) if 'type' in config else 0x83
 
-    def __repr__(self):
-        return "<Partition [%s] on [%s] size [%s] prev [%s]>" \
-            % (self.name, self.base, self.size,
-               self.prev_partition.name if self.prev_partition else "UNSET")
-
     def get_flags(self):
         return self.flags
 
@@ -72,13 +67,12 @@ class Partition(Digraph.Node):
     def get_name(self):
         return self.name
 
-    def insert_edges(self, dg):
-        bnode = dg.find(self.base)
-        assert bnode is not None
-        dg.create_edge(bnode, self)
+    def get_edges(self):
+        edge_from = [self.base]
+        edge_to = []
         if self.prev_partition is not None:
-            logger.debug("Insert edge [%s]" % self)
-            dg.create_edge(self.prev_partition, self)
+            edge_from.append(self.prev_partition.name)
+        return (edge_from, edge_to)
 
     def create(self, result, rollback):
         self.partitioning.create(result, rollback)

@@ -20,6 +20,8 @@ import shutil
 import sys
 import yaml
 
+import networkx as nx
+
 from stevedore import extension
 
 from diskimage_builder.block_device.config import \
@@ -27,7 +29,6 @@ from diskimage_builder.block_device.config import \
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.utils import exec_sudo
-from diskimage_builder.graph.digraph import Digraph
 
 
 logger = logging.getLogger(__name__)
@@ -166,40 +167,86 @@ class BlockDevice(object):
             json.dump(state, fd)
 
     def create_graph(self, config, default_config):
-        logger.debug("Create graph [%s]" % config)
+        """Generate configuration digraph
+
+        Generate the configuration digraph from the config
+
+        :param config: graph configuration file
+        :param default_config: default parameters (from --params)
+        :return: tuple with the graph object, nodes in call order
+        """
         # This is the directed graph of nodes: each parse method must
         # add the appropriate nodes and edges.
-        dg = Digraph()
+        dg = nx.DiGraph()
 
         for config_entry in config:
-            if len(config_entry) != 1:
-                logger.error("Invalid config entry: more than one key "
-                             "on top level [%s]" % config_entry)
-                raise BlockDeviceSetupException(
-                    "Top level config must contain exactly one key per entry")
+            # this should have been checked by generate_config
+            assert len(config_entry) == 1
+
             logger.debug("Config entry [%s]" % config_entry)
             cfg_obj_name = list(config_entry.keys())[0]
             cfg_obj_val = config_entry[cfg_obj_name]
 
-            # As the first step the configured objects are created
-            # (if it exists)
+            # Instantiate a "plugin" object, passing it the
+            # configuration entry
             if cfg_obj_name not in self.plugin_manager:
-                logger.error("Configured top level element [%s] "
-                             "does not exists." % cfg_obj_name)
-                return 1
+                raise BlockDeviceSetupException(
+                    ("Config element [%s] is not implemented" % cfg_obj_name))
             cfg_obj = self.plugin_manager[cfg_obj_name].plugin(
                 cfg_obj_val, default_config)
 
-            # At this point it is only possible to add the nodes:
-            # adding the edges needs all nodes first.
-            cfg_obj.insert_nodes(dg)
+            # Ask the plugin for the nodes it would like to insert
+            # into the graph.  Some plugins, such as partitioning,
+            # return multiple nodes from one config entry.
+            nodes = cfg_obj.get_nodes()
+            for node in nodes:
+                # would only be missing if a plugin was way out of
+                # line and didn't put it in...
+                assert node.name
+                # ensure node names are unique.  networkx by default
+                # just appends the attribute to the node dict for
+                # existing nodes, which is not what we want.
+                if node.name in dg.node:
+                    raise BlockDeviceSetupException(
+                        "Duplicate node name: %s" % (node.name))
+                logger.debug("Adding %s : %s", node.name, node)
+                dg.add_node(node.name, obj=node)
 
-        # Now that all the nodes exists: add also the edges
-        for node in dg.get_iter_nodes_values():
-            node.insert_edges(dg)
+        # Now find edges
+        for name, attr in dg.nodes(data=True):
+            obj = attr['obj']
+            # Unfortunately, we can not determine node edges just from
+            # the configuration file.  It's not always simply the
+            # "base:" pointer.  So ask nodes for a list of nodes they
+            # want to point to.  *mostly* it's just base: ... but
+            # mounting is different.
+            #  edges_from are the nodes that point to us
+            #  edges_to are the nodes we point to
+            edges_from, edges_to = obj.get_edges()
+            logger.debug("Edges for %s: f:%s t:%s", name,
+                         edges_from, edges_to)
+            for edge_from in edges_from:
+                if edge_from not in dg.node:
+                    raise BlockDeviceSetupException(
+                        "Edge not defined: %s->%s" % (edge_from, name))
+                dg.add_edge(edge_from, name)
+            for edge_to in edges_to:
+                if edge_to not in dg.node:
+                    raise BlockDeviceSetupException(
+                        "Edge not defined: %s->%s" % (name, edge_to))
+                dg.add_edge(name, edge_to)
 
-        call_order = dg.topological_sort()
-        logger.debug("Call order [%s]" % (list(call_order)))
+        # this can be quite helpful debugging but needs pydotplus.
+        # run "dotty /tmp/out.dot"
+        #  XXX: maybe an env var that dumps to a tmpdir or something?
+        # nx.nx_pydot.write_dot(dg, '/tmp/graph_dump.dot')
+
+        # Topological sort (i.e. create a linear array that satisfies
+        # dependencies) and return the object list
+        call_order_nodes = nx.topological_sort(dg)
+        logger.debug("Call order: %s", list(call_order_nodes))
+        call_order = [dg.node[n]['obj'] for n in call_order_nodes]
+
         return dg, call_order
 
     def create(self, result, rollback):
