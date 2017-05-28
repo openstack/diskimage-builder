@@ -24,6 +24,15 @@ sudo apt-get install -y --force-yes \
         kpartx \
         util-linux \
         qemu-img || \
+    sudo zypper -n install \
+        bzip2 \
+        debootstrap \
+        docker \
+        kpartx \
+        util-linux \
+        python-pyliblzma \
+        yum-utils \
+        qemu-tools || \
     sudo emerge \
         app-arch/bzip2 \
         app-emulation/qemu \
