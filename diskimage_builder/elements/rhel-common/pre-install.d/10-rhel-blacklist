@@ -6,4 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-echo "ccache dkms" > /tmp/yum-blacklist
+# This is packages that are required for installation by other
+# elements (like base) but aren't actually available for this
+# platform.  This is a bit of a hack
+echo "dkms" > /tmp/yum-blacklist

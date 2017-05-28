@@ -4,7 +4,6 @@
       "iscsi_package": "iscsi-initiator-utils"
     },
     "gentoo": {
-      "ccache_package": "dev-util/ccache",
       "curl": "net-misc/curl",
       "dhcp_client": "net-misc/dhcp",
       "extlinux": "sys-boot/syslinux",
@@ -26,7 +25,6 @@
     }
   },
   "default": {
-    "ccache_package": "ccache",
     "iscsi_package": "open-iscsi"
   }
 }
