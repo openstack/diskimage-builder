@@ -27,7 +27,7 @@ data_dir = os.path.abspath(
 
 
 def _populate_element(element_dir, element_name, element_deps=[], provides=[]):
-    logger.debug("Populate %s <%s>" % (element_name, element_dir))
+    logger.debug("Populate %s <%s>", element_name, element_dir)
     element_home = os.path.join(element_dir, element_name)
     os.mkdir(element_home)
     deps_path = os.path.join(element_home, 'element-deps')

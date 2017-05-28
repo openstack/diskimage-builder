@@ -64,8 +64,8 @@ class TestBlockDevice(testtools.TestCase):
         logging.info("test_create_default_config called")
         builddir = self.useFixture(fixtures.TempDir()).path
         imagedir = self.useFixture(fixtures.TempDir()).path
-        logging.info("builddir [%s]" % builddir)
-        logging.info("imagedir [%s]" % imagedir)
+        logging.info("builddir [%s]", builddir)
+        logging.info("imagedir [%s]", imagedir)
 
         logging.info("Calling BlockDevice constructor")
         bd = self.useFixture(BlockDeviceFixture(
@@ -75,12 +75,12 @@ class TestBlockDevice(testtools.TestCase):
         bd.cmd_create()
 
         logging.info("Check result")
-        logging.info("State [%s]" % bd.state)
+        logging.info("State [%s]", bd.state)
         self.assertTrue('device' in bd.state['image0'])
         lb_dev = bd.state['image0']['device']
         # partprobe loopback so we can get partition info
         args = ['sudo', 'partprobe', lb_dev]
-        logging.info("Call: %s" % args)
+        logging.info("Call: %s", args)
         subprocess.check_call(args)
         bd.cmd_cleanup()
         self._assert_loopbacks_cleaned(bd)

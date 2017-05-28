@@ -164,8 +164,8 @@ def _expand_element_dependencies(user_elements, all_elements):
         logger.error(
             "The following elements are already provided by another element")
         for element in conflicts:
-            logger.error("%s : already provided by %s" %
-                         (element, provided_by[element]))
+            logger.error("%s : already provided by %s",
+                         element, provided_by[element])
         raise AlreadyProvidedException()
 
     if "operating-system" not in provided:
@@ -200,7 +200,7 @@ def _find_all_elements(paths=None):
     else:
         paths = list(reversed(paths.split(':')))
 
-    logger.debug("ELEMENTS_PATH is: %s" % ":".join(paths))
+    logger.debug("ELEMENTS_PATH is: %s", ":".join(paths))
 
     for path in paths:
         if not os.path.isdir(path):

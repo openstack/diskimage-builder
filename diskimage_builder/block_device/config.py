@@ -160,7 +160,7 @@ def create_graph(config, default_config):
         # this should have been checked by generate_config
         assert len(config_entry) == 1
 
-        logger.debug("Config entry [%s]" % config_entry)
+        logger.debug("Config entry [%s]", config_entry)
         cfg_obj_name = list(config_entry.keys())[0]
         cfg_obj_val = config_entry[cfg_obj_name]
 

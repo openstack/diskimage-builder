@@ -44,7 +44,7 @@ file_system_max_label_length = {
 class FilesystemNode(NodeBase):
 
     def __init__(self, config):
-        logger.debug("Create filesystem object; config [%s]" % config)
+        logger.debug("Create filesystem object; config [%s]", config)
         super(FilesystemNode, self).__init__(config['name'])
 
         # Parameter check (mandatory)
@@ -85,8 +85,8 @@ class FilesystemNode(NodeBase):
                         'max': file_system_max_label_length[self.type]}))
         else:
             logger.warning("Length of label [%s] cannot be checked for "
-                           "filesystem [%s]: unknown max length" %
-                           (self.label, self.type))
+                           "filesystem [%s]: unknown max length",
+                           self.label, self.type)
             logger.warning("Continue - but this might lead to an error")
 
         if self.opts is not None:
@@ -95,7 +95,7 @@ class FilesystemNode(NodeBase):
         if self.uuid is None:
             self.uuid = str(uuid.uuid4())
 
-        logger.debug("Filesystem created [%s]" % self)
+        logger.debug("Filesystem created [%s]", self)
 
     def get_edges(self):
         edge_from = [self.base]
@@ -103,7 +103,7 @@ class FilesystemNode(NodeBase):
         return (edge_from, edge_to)
 
     def create(self, result, rollback):
-        logger.info("create called; result [%s]" % result)
+        logger.info("create called; result [%s]", result)
 
         cmd = ["mkfs"]
 
@@ -117,8 +117,8 @@ class FilesystemNode(NodeBase):
         elif self.type == 'xfs':
             cmd.extend(['-m', "uuid=%s" % self.uuid])
         else:
-            logger.warning("UUID will not be written for fs type [%s]"
-                           % self.type)
+            logger.warning("UUID will not be written for fs type [%s]",
+                           self.type)
 
         if self.type in ('ext2', 'ext3', 'ext4', 'xfs'):
             cmd.append('-q')
@@ -128,7 +128,7 @@ class FilesystemNode(NodeBase):
         device = result['blockdev'][self.base]['device']
         cmd.append(device)
 
-        logger.debug("Creating fs command [%s]" % (cmd))
+        logger.debug("Creating fs command [%s]", cmd)
         exec_sudo(cmd)
 
         if 'filesys' not in result:
