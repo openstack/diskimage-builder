@@ -27,15 +27,17 @@ data_dir = os.path.abspath(
 
 
 def _populate_element(element_dir, element_name, element_deps=[], provides=[]):
-        logger.debug("Populate %s <%s>" % (element_name, element_dir))
-        element_home = os.path.join(element_dir, element_name)
-        os.mkdir(element_home)
-        deps_path = os.path.join(element_home, 'element-deps')
-        with open(deps_path, 'w') as deps_file:
-            deps_file.write("\n".join(element_deps))
+    logger.debug("Populate %s <%s>" % (element_name, element_dir))
+    element_home = os.path.join(element_dir, element_name)
+    os.mkdir(element_home)
+    deps_path = os.path.join(element_home, 'element-deps')
+
+    with open(deps_path, 'w') as deps_file:
+        deps_file.write("\n".join(element_deps))
         provides_path = os.path.join(element_home, 'element-provides')
-        with open(provides_path, 'w') as provides_file:
-            provides_file.write("\n".join(provides))
+
+    with open(provides_path, 'w') as provides_file:
+        provides_file.write("\n".join(provides))
 
 
 class TestElementDeps(testtools.TestCase):
@@ -94,11 +96,11 @@ class TestElementDeps(testtools.TestCase):
 
     # helper to return an (element, path) tuple from the standard dir
     def _e(self, element):
-            return (element, os.path.join(self.element_dir, element))
+        return (element, os.path.join(self.element_dir, element))
 
     # helper to return an (element, path) tuple from the override dir
     def _eo(self, element):
-            return (element, os.path.join(self.element_override_dir, element))
+        return (element, os.path.join(self.element_override_dir, element))
 
     def test_non_transitive_deps(self):
         result = element_dependencies.get_elements(['requires-foo'],
