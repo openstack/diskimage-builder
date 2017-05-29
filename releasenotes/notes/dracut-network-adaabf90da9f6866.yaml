@@ -1,0 +1,4 @@
+---
+deprecations:
+  - The ``dracut-network`` element has been removed.  It has not been
+    functioning for some time due to incorrect paths.

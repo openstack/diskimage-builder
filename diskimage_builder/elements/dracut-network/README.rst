@@ -1,4 +1,6 @@
 ==============
 dracut-network
 ==============
-Extends dracut and build an initramfs with network support.
+
+This element was removed in the Pike cycle. Please consider using the
+dracut-regenerate element instead.
