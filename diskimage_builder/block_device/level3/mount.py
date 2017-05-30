@@ -45,7 +45,7 @@ class MountPointNode(NodeBase):
                 raise BlockDeviceSetupException(
                     "MountPoint config needs [%s]" % pname)
             setattr(self, pname, config[pname])
-        logger.debug("MountPoint created [%s]" % self)
+        logger.debug("MountPoint created [%s]", self)
 
     def get_node(self):
         global mount_points
@@ -53,7 +53,7 @@ class MountPointNode(NodeBase):
             raise BlockDeviceSetupException(
                 "Mount point [%s] specified more than once"
                 % self.mount_point)
-        logger.debug("Insert node [%s]" % self)
+        logger.debug("Insert node [%s]", self)
         mount_points[self.mount_point] = self
         return self
 
@@ -77,9 +77,9 @@ class MountPointNode(NodeBase):
         global mount_points
         global sorted_mount_points
         if sorted_mount_points is None:
-            logger.debug("Mount points [%s]" % mount_points)
+            logger.debug("Mount points [%s]", mount_points)
             sorted_mount_points = sort_mount_points(mount_points.keys())
-            logger.info("Sorted mount points [%s]" % (sorted_mount_points))
+            logger.info("Sorted mount points [%s]", sorted_mount_points)
 
         # Look for the occurance in the list
         mpi = sorted_mount_points.index(self.mount_point)
@@ -92,8 +92,8 @@ class MountPointNode(NodeBase):
         return (edge_from, edge_to)
 
     def create(self, result, rollback):
-        logger.debug("mount called [%s]" % self.mount_point)
-        logger.debug("result [%s]" % result)
+        logger.debug("mount called [%s]", self.mount_point)
+        logger.debug("result [%s]", result)
         rel_mp = self.mount_point if self.mount_point[0] != '/' \
                  else self.mount_point[1:]
         mount_point = os.path.join(self.mount_base, rel_mp)
@@ -101,7 +101,7 @@ class MountPointNode(NodeBase):
             # Need to sudo this because of permissions in the new
             # file system tree.
             exec_sudo(['mkdir', '-p', mount_point])
-        logger.info("Mounting [%s] to [%s]" % (self.name, mount_point))
+        logger.info("Mounting [%s] to [%s]", self.name, mount_point)
         exec_sudo(["mount", result['filesys'][self.base]['device'],
                    mount_point])
 
@@ -115,7 +115,7 @@ class MountPointNode(NodeBase):
         result['mount_order'].append(self.mount_point)
 
     def umount(self, state):
-        logger.info("Called for [%s]" % self.name)
+        logger.info("Called for [%s]", self.name)
         exec_sudo(["umount", state['mount'][self.mount_point]['path']])
 
     def delete(self, state):

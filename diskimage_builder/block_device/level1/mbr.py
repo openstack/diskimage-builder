@@ -190,8 +190,8 @@ class MBR(object):
         head = (lba // MBR.sectors_per_track) % MBR.heads_per_cylinder
         sector = (lba % MBR.sectors_per_track) + 1
 
-        logger.debug("Convert LBA to CHS [%d] -> [%d, %d, %d]"
-                     % (lba, cylinder, head, sector))
+        logger.debug("Convert LBA to CHS [%d] -> [%d, %d, %d]",
+                     lba, cylinder, head, sector)
         return cylinder, head, sector
 
     def encode_chs(self, cylinders, heads, sectors):
@@ -212,8 +212,8 @@ class MBR(object):
         es = es | hc          # pass them into the top two bits of the sector
 
         logger.debug("Encode CHS to disk format [%d %d %d] "
-                     "-> [%02x %02x %02x]" % (cylinders, heads, sectors,
-                                              eh, es, ec))
+                     "-> [%02x %02x %02x]", cylinders, heads, sectors,
+                     eh, es, ec)
         return eh, es, ec
 
     def write_mbr(self):
@@ -246,8 +246,8 @@ class MBR(object):
         and also the EBR use the same format.
         """
         logger.info("Write partition entry blockno [%d] entry [%d] "
-                    "start [%d] length [%d]" % (blockno, entry,
-                                                lba_start, lba_length))
+                    "start [%d] length [%d]", blockno, entry,
+                    lba_start, lba_length)
 
         self.image_fd.seek(
             blockno * MBR.bytes_per_sector +
@@ -290,9 +290,9 @@ class MBR(object):
         lba_abs_partition_end \
             = self.align(lba_partition_abs_start + lba_partition_length)
         logger.info("Partition absolute [%d] relative [%d] "
-                    "length [%d] absolute end [%d]"
-                    % (lba_partition_abs_start, lba_partition_rel_start,
-                       lba_partition_length, lba_abs_partition_end))
+                    "length [%d] absolute end [%d]",
+                    lba_partition_abs_start, lba_partition_rel_start,
+                    lba_partition_length, lba_abs_partition_end)
         return lba_partition_abs_start, lba_partition_length, \
             lba_abs_partition_end
 
@@ -305,14 +305,14 @@ class MBR(object):
             self.align(lba_partition_abs_start), lba_partition_length)
 
         self.partition_abs_next_free = lba_abs_partition_end
-        logger.debug("Next free [%d]" % self.partition_abs_next_free)
+        logger.debug("Next free [%d]", self.partition_abs_next_free)
         self.primary_partitions_created += 1
         self.partition_number += 1
         return self.partition_number
 
     def add_extended_partition(self, bootflag, size, ptype):
         lba_ebr_abs = self.partition_abs_next_free
-        logger.info("EBR block absolute [%d]" % lba_ebr_abs)
+        logger.info("EBR block absolute [%d]", lba_ebr_abs)
 
         _, lba_partition_length, lba_abs_partition_end \
             = self.compute_partition_lbas(lba_ebr_abs + 1, size)
@@ -332,7 +332,7 @@ class MBR(object):
         self.write_mbr_signature(lba_ebr_abs)
 
         self.partition_abs_next_free = lba_abs_partition_end
-        logger.debug("Next free [%d]" % self.partition_abs_next_free)
+        logger.debug("Next free [%d]", self.partition_abs_next_free)
         self.disk_block_last_ref = lba_ebr_abs
         self.extended_partitions_created += 1
         self.partition_number += 1
@@ -341,8 +341,8 @@ class MBR(object):
     def add_partition(self, primaryflag, bootflag, size, ptype):
         """Adds a partition with the given type and size"""
         logger.debug("Add new partition primary [%s] boot [%s] "
-                     "size [%d] type [%x]" %
-                     (primaryflag, bootflag, size, ptype))
+                     "size [%d] type [%x]",
+                     primaryflag, bootflag, size, ptype)
 
         # primaries must be created before extended
         if primaryflag and self.extended_partitions_created > 0:

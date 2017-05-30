@@ -133,7 +133,7 @@ class BlockDevice(object):
         logger.debug("Creating BlockDevice object")
 
         self.params = params
-        logger.debug("Params [%s]" % self.params)
+        logger.debug("Params [%s]", self.params)
 
         self.state_dir = os.path.join(
             self.params['build-dir'], "states/block-device")
@@ -153,7 +153,7 @@ class BlockDevice(object):
             pass
 
     def write_state(self, state):
-        logger.debug("Write state [%s]" % self.state_json_file_name)
+        logger.debug("Write state [%s]", self.state_json_file_name)
         with open(self.state_json_file_name, "w") as fd:
             json.dump(state, fd)
 
@@ -171,16 +171,16 @@ class BlockDevice(object):
         """
         with open(self.params['config'], "rt") as config_fd:
             self.config = yaml.safe_load(config_fd)
-        logger.debug("Config before merge [%s]" % self.config)
+        logger.debug("Config before merge [%s]", self.config)
         self.config = config_tree_to_graph(self.config)
-        logger.debug("Config before merge [%s]" % self.config)
+        logger.debug("Config before merge [%s]", self.config)
         self._merge_into_config()
-        logger.debug("Final config [%s]" % self.config)
+        logger.debug("Final config [%s]", self.config)
         # Write the final config
         with open(self.config_json_file_name, "wt") as fd:
             json.dump(self.config, fd)
-        logger.info("Wrote final block device config to [%s]"
-                    % self.config_json_file_name)
+        logger.info("Wrote final block device config to [%s]",
+                    self.config_json_file_name)
 
     def _config_get_mount(self, path):
         for entry in self.config:
@@ -214,17 +214,17 @@ class BlockDevice(object):
         Arguments:
         :param symbol: the symbol to get
         """
-        logger.info("Getting value for [%s]" % symbol)
+        logger.info("Getting value for [%s]", symbol)
         if symbol == "root-label":
             root_mount = self._config_get_mount("/")
             root_fs = self._config_get_mkfs(root_mount['base'])
-            logger.debug("root-label [%s]" % root_fs['label'])
+            logger.debug("root-label [%s]", root_fs['label'])
             print("%s" % root_fs['label'])
             return 0
         if symbol == "root-fstype":
             root_mount = self._config_get_mount("/")
             root_fs = self._config_get_mkfs(root_mount['base'])
-            logger.debug("root-fstype [%s]" % root_fs['type'])
+            logger.debug("root-fstype [%s]", root_fs['type'])
             print("%s" % root_fs['type'])
             return 0
         if symbol == 'mount-points':
@@ -246,7 +246,7 @@ class BlockDevice(object):
             print("%s" % self.state['blockdev']['image0']['image'])
             return 0
 
-        logger.error("Invalid symbol [%s] for getval" % symbol)
+        logger.error("Invalid symbol [%s] for getval", symbol)
         return 1
 
     def cmd_writefstab(self):
@@ -257,7 +257,7 @@ class BlockDevice(object):
         with open(tmp_fstab, "wt") as fstab_fd:
             # This gives the order in which this must be mounted
             for mp in self.state['mount_order']:
-                logger.debug("Writing fstab entry for [%s]" % mp)
+                logger.debug("Writing fstab entry for [%s]", mp)
                 fs_base = self.state['mount'][mp]['base']
                 fs_name = self.state['mount'][mp]['name']
                 fs_val = self.state['filesys'][fs_base]
@@ -290,7 +290,7 @@ class BlockDevice(object):
         """Creates the block device"""
 
         logger.info("create() called")
-        logger.debug("Using config [%s]" % self.config)
+        logger.debug("Using config [%s]", self.config)
 
         self.state = {}
         rollback = []
@@ -335,7 +335,7 @@ class BlockDevice(object):
         for node in reverse_order:
             node.cleanup(self.state)
 
-        logger.info("Removing temporary dir [%s]" % self.state_dir)
+        logger.info("Removing temporary dir [%s]", self.state_dir)
         shutil.rmtree(self.state_dir)
 
         return 0
@@ -350,7 +350,7 @@ class BlockDevice(object):
         for node in reverse_order:
             node.delete(self.state)
 
-        logger.info("Removing temporary dir [%s]" % self.state_dir)
+        logger.info("Removing temporary dir [%s]", self.state_dir)
         shutil.rmtree(self.state_dir)
 
         return 0

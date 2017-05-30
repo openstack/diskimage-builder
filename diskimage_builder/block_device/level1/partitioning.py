@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 class Partitioning(PluginBase):
 
     def __init__(self, config, default_config):
-        logger.debug("Creating Partitioning object; config [%s]" % config)
+        logger.debug("Creating Partitioning object; config [%s]", config)
         super(Partitioning, self).__init__()
 
         # Because using multiple partitions of one base is done
@@ -91,13 +91,13 @@ class Partitioning(PluginBase):
 
     def _all_part_devices_exist(self, expected_part_devices):
         for part_device in expected_part_devices:
-            logger.debug("Checking if partition device [%s] exists" %
+            logger.debug("Checking if partition device [%s] exists",
                          part_device)
             if not os.path.exists(part_device):
-                logger.info("Partition device [%s] does not exists"
-                            % part_device)
+                logger.info("Partition device [%s] does not exists",
+                            part_device)
                 return False
-            logger.debug("Partition already exists [%s]" % part_device)
+            logger.debug("Partition already exists [%s]", part_device)
         return True
 
     def _notify_os_of_partition_changes(self, device_path, partition_devices):
@@ -112,7 +112,7 @@ class Partitioning(PluginBase):
             exec_sudo(["partprobe", device_path])
             exec_sudo(["udevadm", "settle"])
         except CalledProcessError as e:
-            logger.info("Ignoring settling failure: %s" % e)
+            logger.info("Ignoring settling failure: %s", e)
             pass
 
         if self._all_part_devices_exist(partition_devices):
@@ -133,8 +133,8 @@ class Partitioning(PluginBase):
         # created are calling back into this.
         image_path = result['blockdev'][self.base]['image']
         device_path = result['blockdev'][self.base]['device']
-        logger.info("Creating partition on [%s] [%s]" %
-                    (self.base, image_path))
+        logger.info("Creating partition on [%s] [%s]",
+                    self.base, image_path)
 
         # This is a bit of a hack.  Each of the partitions is actually
         # in the graph, so for every partition we get a create() call
@@ -158,14 +158,14 @@ class Partitioning(PluginBase):
                 part_size = part_cfg.get_size()
                 part_free = part_impl.free()
                 part_type = part_cfg.get_type()
-                logger.debug("Not partitioned space [%d]" % part_free)
+                logger.debug("Not partitioned space [%d]", part_free)
                 part_size = parse_rel_size_spec(part_size,
                                                 part_free)[1]
                 part_no \
                     = part_impl.add_partition(part_primary, part_bootflag,
                                               part_size, part_type)
-                logger.debug("Create partition [%s] [%d]" %
-                             (part_name, part_no))
+                logger.debug("Create partition [%s] [%d]",
+                             part_name, part_no)
                 partition_device_name = device_path + "p%d" % part_no
                 result['blockdev'][part_name] \
                     = {'device': partition_device_name}

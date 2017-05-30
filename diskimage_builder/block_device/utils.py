@@ -104,7 +104,7 @@ def exec_sudo(cmd):
     sudo_cmd = ["sudo"]
     sudo_cmd.extend(cmd)
     try:
-        logger.info("Calling [%s]" % " ".join(sudo_cmd))
+        logger.info("Calling [%s]", " ".join(sudo_cmd))
     except TypeError:
         # Popen actually doesn't care, but we've managed to get mixed
         # str and bytes in argument lists which causes errors logging
@@ -117,7 +117,7 @@ def exec_sudo(cmd):
                             stderr=subprocess.STDOUT)
 
     for line in iter(proc.stdout.readline, b""):
-        logger.debug("exec_sudo: %s" % line.rstrip())
+        logger.debug("exec_sudo: %s", line.rstrip())
 
     proc.wait()
     if proc.returncode != 0:
@@ -126,7 +126,7 @@ def exec_sudo(cmd):
 
 
 def sort_mount_points(mount_points):
-    logger.debug("sort_mount_points called [%s]" % mount_points)
+    logger.debug("sort_mount_points called [%s]", mount_points)
 
     def insert_sorted(mp, sorted_mount_points):
         if len(sorted_mount_points) == 0:
@@ -141,5 +141,5 @@ def sort_mount_points(mount_points):
     sorted_mount_points = []
     for mp in mount_points:
         insert_sorted(mp, sorted_mount_points)
-    logger.debug("sort_mount_points result [%s]" % sorted_mount_points)
+    logger.debug("sort_mount_points result [%s]", sorted_mount_points)
     return sorted_mount_points

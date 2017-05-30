@@ -34,14 +34,14 @@ class LocalLoopNode(NodeBase):
     """
     def __init__(self, config, default_config):
         logger.debug("Creating LocalLoop object; config [%s] "
-                     "default_config [%s]" % (config, default_config))
+                     "default_config [%s]", config, default_config)
         super(LocalLoopNode, self).__init__(config['name'])
         if 'size' in config:
             self.size = parse_abs_size_spec(config['size'])
-            logger.debug("Image size [%s]" % self.size)
+            logger.debug("Image size [%s]", self.size)
         else:
             self.size = parse_abs_size_spec(default_config['image-size'])
-            logger.debug("Using default image size [%s]" % self.size)
+            logger.debug("Using default image size [%s]", self.size)
         if 'directory' in config:
             self.image_dir = config['directory']
         else:
@@ -54,14 +54,14 @@ class LocalLoopNode(NodeBase):
 
     @staticmethod
     def image_create(filename, size):
-        logger.info("Create image file [%s]" % filename)
+        logger.info("Create image file [%s]", filename)
         with open(filename, "w") as fd:
             fd.seek(size - 1)
             fd.write("\0")
 
     @staticmethod
     def _image_delete(filename):
-        logger.info("Remove image file [%s]" % filename)
+        logger.info("Remove image file [%s]", filename)
         os.remove(filename)
 
     @staticmethod
@@ -74,7 +74,7 @@ class LocalLoopNode(NodeBase):
         if rval == 0:
             # [:-1]: Cut of the newline
             block_device = subp.stdout.read()[:-1].decode("utf-8")
-            logger.info("New block device [%s]" % block_device)
+            logger.info("New block device [%s]", block_device)
             return block_device
         else:
             logger.error("losetup failed")
@@ -91,18 +91,18 @@ class LocalLoopNode(NodeBase):
                                      loopdev])
             rval = subp.wait()
             if rval == 0:
-                logger.info("Successfully detached [%s]" % loopdev)
+                logger.info("Successfully detached [%s]", loopdev)
                 return 0
             else:
                 logger.error("loopdev detach failed")
                 # Do not raise an error - maybe other cleanup methods
                 # can at least do some more work.
-        logger.debug("Gave up trying to detach [%s]" % loopdev)
+        logger.debug("Gave up trying to detach [%s]", loopdev)
         return rval
 
     def create(self, result, rollback):
-        logger.debug("[%s] Creating loop on [%s] with size [%d]" %
-                     (self.name, self.filename, self.size))
+        logger.debug("[%s] Creating loop on [%s] with size [%d]",
+                     self.name, self.filename, self.size)
 
         rollback.append(lambda: self._image_delete(self.filename))
         self.image_create(self.filename, self.size)
@@ -115,8 +115,8 @@ class LocalLoopNode(NodeBase):
 
         result['blockdev'][self.name] = {"device": block_device,
                                          "image": self.filename}
-        logger.debug("Created loop  name [%s] device [%s] image [%s]"
-                     % (self.name, block_device, self.filename))
+        logger.debug("Created loop  name [%s] device [%s] image [%s]",
+                     self.name, block_device, self.filename)
         return
 
     def umount(self, state):

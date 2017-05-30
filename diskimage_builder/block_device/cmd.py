@@ -101,7 +101,7 @@ class BlockDeviceCmd(object):
                     "DIB_BLOCK_DEVICE_PARAMS_YAML or --params not set")
         else:
             param_file = self.args.params
-            logger.info("params [%s]" % param_file)
+            logger.info("params [%s]", param_file)
         try:
             with open(param_file) as f:
                 self.params = yaml.safe_load(f)
