@@ -74,7 +74,7 @@ class NodeBase(object):
         return
 
     @abc.abstractmethod
-    def create(self, results, rollback):
+    def create(self, state, rollback):
         """Main creation driver
 
         This is the main driver function.  After the graph is
@@ -82,10 +82,11 @@ class NodeBase(object):
 
         Arguments:
 
-        :param results: A shared dictionary of prior results.  This
+        :param state: A shared dictionary of prior results.  This
           dictionary is passed by reference to each call, meaning any
           entries inserted will be available to subsequent :func:`create`
-          calls of following nodes.
+          calls of following nodes.  The ``state`` dictionary will be
+          saved and available to other calls.
 
         :param rollback: A shared list of functions to be called in
           the failure case.  Nodes should only append to this list.
@@ -105,7 +106,7 @@ class NodeBase(object):
         Actions to taken when ``dib-block-device umount`` is called
 
         :param state: the current state dictionary.  This is the
-          `results` dictionary from :func:`create` before this call is
+          `state` dictionary from :func:`create` before this call is
           made.
         :return: None
         """
@@ -119,7 +120,7 @@ class NodeBase(object):
         called in the reverse order to :func:`create`
 
         :param state: the current state dictionary.  This is the
-          `results` dictionary from :func:`create` before this call is
+          `state` dictionary from :func:`create` before this call is
           made.
         :return: None
         """
@@ -134,7 +135,7 @@ class NodeBase(object):
         :func:`create`
 
         :param state: the current state dictionary.  This is the
-          `results` dictionary from :func:`create` before this call is
+          `state` dictionary from :func:`create` before this call is
           made.
         :return: None
         """

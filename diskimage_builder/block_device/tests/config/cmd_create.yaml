@@ -1,0 +1,6 @@
+- test_a:
+    name: test_node_a
+
+- test_b:
+    name: test_node_b
+    base: test_node_a

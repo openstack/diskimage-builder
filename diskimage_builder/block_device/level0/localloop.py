@@ -100,7 +100,7 @@ class LocalLoopNode(NodeBase):
         logger.debug("Gave up trying to detach [%s]", loopdev)
         return rval
 
-    def create(self, result, rollback):
+    def create(self, state, rollback):
         logger.debug("[%s] Creating loop on [%s] with size [%d]",
                      self.name, self.filename, self.size)
 
@@ -110,11 +110,11 @@ class LocalLoopNode(NodeBase):
         block_device = self._loopdev_attach(self.filename)
         rollback.append(lambda: self._loopdev_detach(block_device))
 
-        if 'blockdev' not in result:
-            result['blockdev'] = {}
+        if 'blockdev' not in state:
+            state['blockdev'] = {}
 
-        result['blockdev'][self.name] = {"device": block_device,
-                                         "image": self.filename}
+        state['blockdev'][self.name] = {"device": block_device,
+                                        "image": self.filename}
         logger.debug("Created loop  name [%s] device [%s] image [%s]",
                      self.name, block_device, self.filename)
         return

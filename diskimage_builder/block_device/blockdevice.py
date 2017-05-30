@@ -16,16 +16,85 @@ import codecs
 import json
 import logging
 import os
+import pprint
 import shutil
 import sys
 import yaml
 
 from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
+from diskimage_builder.block_device.exception import \
+    BlockDeviceSetupException
 from diskimage_builder.block_device.utils import exec_sudo
 
 
 logger = logging.getLogger(__name__)
+
+
+def _load_json(file_name):
+    """Load file from .json file on disk, return None if not existing"""
+    if os.path.exists(file_name):
+        with codecs.open(file_name, encoding="utf-8", mode="r") as fd:
+            return json.load(fd)
+    return None
+
+
+class BlockDeviceState(object):
+    """The global state singleton
+
+    An reference to an instance of this object is passed between nodes
+    as a global repository.  It contains a single dictionary "state"
+    and a range of helper functions.
+
+    This is used in two contexts:
+
+    - The state is built by the :func:`NodeBase.create` commands as
+      called during :func:`BlockDevice.cmd_create`.  It is then
+      persisted to disk by :func:`save_state`
+
+    - Later calls (cleanup, umount, etc) load the state dictionary
+      from disk and are thus passed the full state.
+    """
+    # XXX:
+    #  - might it make sense to make state implement MutableMapping,
+    #    so that callers treat it as a dictionary?
+    #  - we could implement getters/setters such that if loaded from
+    #    disk, the state is read-only? or make it append-only
+    #    (i.e. you can't overwrite existing keys)
+    def __init__(self, filename=None):
+        """Initialise state
+
+        :param filename: if :param:`filename` is passed and exists, it
+          will be loaded as the state.  If it does not exist an
+          exception is raised.  If :param:`filename` is not
+          passed, state will be initalised to a blank dictionary.
+        """
+        if filename:
+            if not os.path.exists(filename):
+                raise BlockDeviceSetupException("State dump not found")
+            else:
+                self.state = _load_json(filename)
+                assert self.state is not None
+        else:
+            self.state = {}
+
+    def save_state(self, filename):
+        """Persist the state to disk
+
+        :param filename: The file to persist state to
+        """
+        logger.debug("Writing state to: %s", filename)
+        self.debug_dump()
+        with open(filename, "w") as fd:
+            json.dump(self.state, fd)
+
+    def debug_dump(self):
+        """Log state to debug"""
+        # This is pretty good for human consumption, but maybe a bit
+        # verbose.
+        nice_output = pprint.pformat(self.state, width=40)
+        for line in nice_output.split('\n'):
+            logger.debug(" " + line)
 
 
 class BlockDevice(object):
@@ -116,13 +185,6 @@ class BlockDevice(object):
                         else:
                             v['label'] = "cloudimg-rootfs"
 
-    @staticmethod
-    def _load_json(file_name):
-        if os.path.exists(file_name):
-            with codecs.open(file_name, encoding="utf-8", mode="r") as fd:
-                return json.load(fd)
-        return None
-
     def __init__(self, params):
         """Create BlockDevice object
 
@@ -142,25 +204,13 @@ class BlockDevice(object):
         self.config_json_file_name \
             = os.path.join(self.state_dir, "config.json")
 
-        self.config = self._load_json(self.config_json_file_name)
-        self.state = self._load_json(self.state_json_file_name)
-        logger.debug("Using state [%s]", self.state)
+        self.config = _load_json(self.config_json_file_name)
 
         # This needs to exists for the state and config files
         try:
             os.makedirs(self.state_dir)
         except OSError:
             pass
-
-    def write_state(self, state):
-        logger.debug("Write state [%s]", self.state_json_file_name)
-        with open(self.state_json_file_name, "w") as fd:
-            json.dump(state, fd)
-
-    def create(self, result, rollback):
-        dg, call_order = create_graph(self.config, self.params)
-        for node in call_order:
-            node.create(result, rollback)
 
     def cmd_init(self):
         """Initialize block device setup
@@ -234,16 +284,23 @@ class BlockDevice(object):
             # mountpoints list
             print("%s" % "|".join(mount_points))
             return 0
+
+        # the following symbols all come from the global state
+        # dictionary.  They can only be accessed after the state has
+        # been dumped; i.e. after cmd_create() called.
+        state = BlockDeviceState(self.state_json_file_name)
+        state = state.state
+
         if symbol == 'image-block-partition':
             # If there is no partition needed, pass back directly the
             # image.
-            if 'root' in self.state['blockdev']:
-                print("%s" % self.state['blockdev']['root']['device'])
+            if 'root' in state['blockdev']:
+                print("%s" % state['blockdev']['root']['device'])
             else:
-                print("%s" % self.state['blockdev']['image0']['device'])
+                print("%s" % state['blockdev']['image0']['device'])
             return 0
         if symbol == 'image-path':
-            print("%s" % self.state['blockdev']['image0']['image'])
+            print("%s" % state['blockdev']['image0']['image'])
             return 0
 
         logger.error("Invalid symbol [%s] for getval", symbol)
@@ -253,28 +310,33 @@ class BlockDevice(object):
         """Creates the fstab"""
         logger.info("Creating fstab")
 
+        # State should have been created by prior calls; we only need
+        # the dict
+        state = BlockDeviceState(self.state_json_file_name)
+        state = state.state
+
         tmp_fstab = os.path.join(self.state_dir, "fstab")
         with open(tmp_fstab, "wt") as fstab_fd:
             # This gives the order in which this must be mounted
-            for mp in self.state['mount_order']:
+            for mp in state['mount_order']:
                 logger.debug("Writing fstab entry for [%s]", mp)
-                fs_base = self.state['mount'][mp]['base']
-                fs_name = self.state['mount'][mp]['name']
-                fs_val = self.state['filesys'][fs_base]
+                fs_base = state['mount'][mp]['base']
+                fs_name = state['mount'][mp]['name']
+                fs_val = state['filesys'][fs_base]
                 if 'label' in fs_val:
                     diskid = "LABEL=%s" % fs_val['label']
                 else:
                     diskid = "UUID=%s" % fs_val['uuid']
 
                 # If there is no fstab entry - do not write anything
-                if 'fstab' not in self.state:
+                if 'fstab' not in state:
                     continue
-                if fs_name not in self.state['fstab']:
+                if fs_name not in state['fstab']:
                     continue
 
-                options = self.state['fstab'][fs_name]['options']
-                dump_freq = self.state['fstab'][fs_name]['dump-freq']
-                fsck_passno = self.state['fstab'][fs_name]['fsck-passno']
+                options = state['fstab'][fs_name]['options']
+                dump_freq = state['fstab'][fs_name]['dump-freq']
+                fsck_passno = state['fstab'][fs_name]['fsck-passno']
 
                 fstab_fd.write("%s %s %s %s %s %s\n"
                                % (diskid, mp, fs_val['fstype'],
@@ -292,25 +354,34 @@ class BlockDevice(object):
         logger.info("create() called")
         logger.debug("Using config [%s]", self.config)
 
-        self.state = {}
         rollback = []
-
+        # Create a new, empty state
+        state = BlockDeviceState()
         try:
-            self.create(self.state, rollback)
+            dg, call_order = create_graph(self.config, self.params)
+            for node in call_order:
+                node.create(state.state, rollback)
         except Exception:
             logger.exception("Create failed; rollback initiated")
             for rollback_cb in reversed(rollback):
                 rollback_cb()
             sys.exit(1)
 
-        self.write_state(self.state)
+        state.save_state(self.state_json_file_name)
 
         logger.info("create() finished")
         return 0
 
     def cmd_umount(self):
         """Unmounts the blockdevice and cleanup resources"""
-        if self.state is None:
+
+        # State should have been created by prior calls; we only need
+        # the dict.  If it is not here, it has been cleaned up already
+        # (? more details?)
+        try:
+            state = BlockDeviceState(self.state_json_file_name)
+            state = state.state
+        except BlockDeviceSetupException:
             logger.info("State already cleaned - no way to do anything here")
             return 0
 
@@ -321,36 +392,44 @@ class BlockDevice(object):
         if dg is None:
             return 0
         for node in reverse_order:
-            node.umount(self.state)
+            node.umount(state)
 
         return 0
 
     def cmd_cleanup(self):
         """Cleanup all remaining relicts - in good case"""
+        # State should have been created by prior calls; we only need
+        # the dict
+        state = BlockDeviceState(self.state_json_file_name)
+        state = state.state
 
         # Deleting must be done in reverse order
         dg, call_order = create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
-            node.cleanup(self.state)
+            node.cleanup(state)
 
-        logger.info("Removing temporary dir [%s]", self.state_dir)
+        logger.info("Removing temporary state dir [%s]", self.state_dir)
         shutil.rmtree(self.state_dir)
 
         return 0
 
     def cmd_delete(self):
         """Cleanup all remaining relicts - in case of an error"""
+        # State should have been created by prior calls; we only need
+        # the dict
+        state = BlockDeviceState(self.state_json_file_name)
+        state = state.state
 
         # Deleting must be done in reverse order
         dg, call_order = create_graph(self.config, self.params)
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
-            node.delete(self.state)
+            node.delete(state)
 
-        logger.info("Removing temporary dir [%s]", self.state_dir)
+        logger.info("Removing temporary state dir [%s]", self.state_dir)
         shutil.rmtree(self.state_dir)
 
         return 0
