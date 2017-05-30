@@ -51,7 +51,7 @@ def main():
             e.output = out
             raise e
 
-        kernel_set = out.split(':')
+        kernel_set = out.decode().split(':')
         kernel_search = re.match("vmlinuz-(.*)", kernel_set[0])
         kernel_version = "%s" % kernel_search.groups(1)
         ramdisk_path = "/boot/%s" % kernel_set[1].strip()
