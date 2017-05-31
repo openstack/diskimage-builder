@@ -123,23 +123,3 @@ def exec_sudo(cmd):
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(proc.returncode,
                                             ' '.join(sudo_cmd))
-
-
-def sort_mount_points(mount_points):
-    logger.debug("sort_mount_points called [%s]", mount_points)
-
-    def insert_sorted(mp, sorted_mount_points):
-        if len(sorted_mount_points) == 0:
-            sorted_mount_points.append(mp)
-            return
-        for idx in range(0, len(sorted_mount_points)):
-            if sorted_mount_points[idx].startswith(mp):
-                sorted_mount_points.insert(idx, mp)
-                return
-        sorted_mount_points.append(mp)
-
-    sorted_mount_points = []
-    for mp in mount_points:
-        insert_sorted(mp, sorted_mount_points)
-    logger.debug("sort_mount_points result [%s]", sorted_mount_points)
-    return sorted_mount_points
