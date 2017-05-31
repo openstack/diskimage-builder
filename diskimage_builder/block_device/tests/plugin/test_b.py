@@ -35,6 +35,12 @@ class TestBNode(NodeBase):
         state['test_b']['value'] = 'baz'
         return
 
+    def umount(self, state):
+        # umount run in reverse.  this should run before test_a
+        assert 'umount' not in state
+        state['umount'] = []
+        state['umount'].append('test_b')
+
 
 class TestB(PluginBase):
 

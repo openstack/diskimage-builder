@@ -62,9 +62,7 @@ class TestState(TestStateBase):
         bd_obj.cmd_create()
 
         # cmd_create should have persisted this to disk
-        state_file = os.path.join(self.build_dir.path,
-                                  'states', 'block-device',
-                                  'state.json')
+        state_file = bd_obj.state_json_file_name
         self.assertThat(state_file, FileExists())
 
         # ensure we see the values put in by the test extensions
@@ -75,6 +73,14 @@ class TestState(TestStateBase):
                              {'test_a': {'value': 'foo',
                                          'value2': 'bar'},
                               'test_b': {'value': 'baz'}})
+
+        pickle_file = bd_obj.node_pickle_file_name
+        self.assertThat(pickle_file, FileExists())
+
+        # run umount, which should load the picked nodes and run in
+        # reverse.  This will create some state in "test_b" that it
+        # added to by "test_a" ... ensuring it was run backwards.
+        bd_obj.cmd_umount()
 
     # Test state going missing between phases
     def test_missing_state(self):

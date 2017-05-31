@@ -17,6 +17,7 @@ import collections
 import json
 import logging
 import os
+import pickle
 import pprint
 import shutil
 import sys
@@ -217,6 +218,8 @@ class BlockDevice(object):
             = os.path.join(self.state_dir, "state.json")
         self.config_json_file_name \
             = os.path.join(self.state_dir, "config.json")
+        self.node_pickle_file_name \
+            = os.path.join(self.state_dir, "nodes.pickle")
 
         self.config = _load_json(self.config_json_file_name)
 
@@ -379,7 +382,12 @@ class BlockDevice(object):
                 rollback_cb()
             sys.exit(1)
 
+        # dump state and nodes, in order
+        # XXX: we only dump the call_order (i.e. nodes) not the whole
+        #      graph here, because later calls do not need the graph
+        #      at this stage.  might they?
         state.save_state(self.state_json_file_name)
+        pickle.dump(call_order, open(self.node_pickle_file_name, 'wb'))
 
         logger.info("create() finished")
         return 0
@@ -397,11 +405,9 @@ class BlockDevice(object):
             return 0
 
         # Deleting must be done in reverse order
-        dg, call_order = create_graph(self.config, self.params)
+        call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
         reverse_order = reversed(call_order)
 
-        if dg is None:
-            return 0
         for node in reverse_order:
             node.umount(state)
 
@@ -414,7 +420,7 @@ class BlockDevice(object):
         state = BlockDeviceState(self.state_json_file_name)
 
         # Deleting must be done in reverse order
-        dg, call_order = create_graph(self.config, self.params)
+        call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
@@ -432,7 +438,7 @@ class BlockDevice(object):
         state = BlockDeviceState(self.state_json_file_name)
 
         # Deleting must be done in reverse order
-        dg, call_order = create_graph(self.config, self.params)
+        call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
