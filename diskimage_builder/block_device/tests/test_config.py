@@ -32,8 +32,7 @@ class TestConfig(TestBase):
         import diskimage_builder.block_device.level2.mkfs
         diskimage_builder.block_device.level2.mkfs.file_system_labels = set()
         import diskimage_builder.block_device.level3.mount
-        diskimage_builder.block_device.level3.mount.mount_points = {}
-        diskimage_builder.block_device.level3.mount.sorted_mount_points = None
+        diskimage_builder.block_device.level3.mount.sorted_mount_points = []
 
 
 class TestGraphGeneration(TestConfig):

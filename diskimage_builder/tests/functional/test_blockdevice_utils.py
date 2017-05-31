@@ -15,7 +15,6 @@
 
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
-from diskimage_builder.block_device.utils import sort_mount_points
 import testtools
 
 
@@ -48,9 +47,3 @@ class TestBlockDeviceUtils(testtools.TestCase):
         """Call parse_abs_size_spec with a completely broken unit spec"""
 
         self.assertRaises(RuntimeError, parse_abs_size_spec, "_+!HuHi+-=")
-
-    def test_sort_mount_points(self):
-        """Run sort_mount_points with a set of paths"""
-
-        smp = sort_mount_points(["/boot", "/", "/var/tmp", "/var"])
-        self.assertEqual(['/', '/boot', '/var', '/var/tmp'], smp)
