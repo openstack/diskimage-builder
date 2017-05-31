@@ -6,10 +6,6 @@ located in distribution specific sub directories under
 
     http://download.opensuse.org/repositories/Cloud:/Images:/
 
-For example, the images of openSUSE 13.2 can be found here:
-
-    http://download.opensuse.org/repositories/Cloud:/Images:/openSUSE_13.2/images/
-
 These images should be considered experimental. There are currently only x86_64
 images.
 
