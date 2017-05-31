@@ -21,7 +21,7 @@ set -eu
 set -o pipefail
 
 EXTRA_ARGS="--no-recommends"
-MAP_ELEMENT=""
+MAP_ELEMENT=
 ACTION=install
 
 SCRIPTNAME=$(basename $0)
@@ -57,39 +57,16 @@ while true ; do
     esac
 done
 
-# Packages that aren't available in the distro but requested for installation
-# can be ignored by adding them to the exclude list
-BLACKLIST=('')
-WHITELIST=('')
+PKGS=$@
+if [ -n "$MAP_ELEMENT" ]; then
+    if ! PKGS=$(pkg-map --element $MAP_ELEMENT $@); then
+        echo "bin/pkg-map error. $PKGS"
+        exit 1
+    fi
+fi
 
-for i in "$@"
-do
-    PKG_NAME=$i
-    if [ -n "$MAP_ELEMENT" ]; then
-        if !  PKG_NAME=$(pkg-map --element $MAP_ELEMENT $i); then
-            echo "bin/pkg-map error. $PKG_NAME"
-            exit 1
-        fi
-    fi
-    if [[ ! ${BLACKLIST[*]} =~ $PKG_NAME ]]; then
-        WHITELIST+="$i "
-    else
-        echo "The package $i is not available and will not be installed"
-    fi
-done
-
-if [ -n "$WHITELIST" ]; then
-    if [ -n "$MAP_ELEMENT" ]; then
-        if ! PKGS=$(pkg-map --element $MAP_ELEMENT $WHITELIST); then
-            echo "bin/pkg-map error. $PKGS"
-            exit 1
-        fi
-    else
-        PKGS=$(map-packages $WHITELIST)
-    fi
-    if [ -z "${PKGS}" ]; then
-        echo 'No packages need to be installed'
-    else
-        run_zypper $ACTION $EXTRA_ARGS $PKGS
-    fi
+if [ -z "${PKGS}" ]; then
+    echo "Not running install-packages $ACTION with empty packages list"
+else
+    run_zypper $ACTION $EXTRA_ARGS $PKGS
 fi

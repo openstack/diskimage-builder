@@ -22,6 +22,9 @@
       "syslinux-common": "",
       "tftp": "net-ftp/tftp-hpa",
       "tgt": "sys-block/tgt"
+    },
+    "suse": {
+      "qemu-utils": "qemu-tools"
     }
   },
   "default": {

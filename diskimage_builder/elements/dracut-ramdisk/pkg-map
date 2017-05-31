@@ -6,6 +6,9 @@
     },
     "redhat":{
       "ncat":"nmap-ncat"
+    },
+    "suse":{
+      "arping": "iputils"
     }
   },
   "default":{
