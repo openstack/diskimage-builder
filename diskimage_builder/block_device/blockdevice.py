@@ -13,6 +13,7 @@
 # under the License.
 
 import codecs
+import collections
 import json
 import logging
 import os
@@ -39,12 +40,12 @@ def _load_json(file_name):
     return None
 
 
-class BlockDeviceState(object):
+class BlockDeviceState(collections.MutableMapping):
     """The global state singleton
 
     An reference to an instance of this object is passed between nodes
-    as a global repository.  It contains a single dictionary "state"
-    and a range of helper functions.
+    as a global repository.  It wraps a single dictionary "state"
+    and provides a few helper functions.
 
     This is used in two contexts:
 
@@ -56,8 +57,6 @@ class BlockDeviceState(object):
       from disk and are thus passed the full state.
     """
     # XXX:
-    #  - might it make sense to make state implement MutableMapping,
-    #    so that callers treat it as a dictionary?
     #  - we could implement getters/setters such that if loaded from
     #    disk, the state is read-only? or make it append-only
     #    (i.e. you can't overwrite existing keys)
@@ -77,6 +76,21 @@ class BlockDeviceState(object):
                 assert self.state is not None
         else:
             self.state = {}
+
+    def __delitem__(self, key):
+        del self.state[key]
+
+    def __getitem__(self, key):
+        return self.state[key]
+
+    def __setitem__(self, key, value):
+        self.state[key] = value
+
+    def __iter__(self):
+        return iter(self.state)
+
+    def __len__(self):
+        return len(self.state)
 
     def save_state(self, filename):
         """Persist the state to disk
@@ -289,7 +303,6 @@ class BlockDevice(object):
         # dictionary.  They can only be accessed after the state has
         # been dumped; i.e. after cmd_create() called.
         state = BlockDeviceState(self.state_json_file_name)
-        state = state.state
 
         if symbol == 'image-block-partition':
             # If there is no partition needed, pass back directly the
@@ -313,7 +326,6 @@ class BlockDevice(object):
         # State should have been created by prior calls; we only need
         # the dict
         state = BlockDeviceState(self.state_json_file_name)
-        state = state.state
 
         tmp_fstab = os.path.join(self.state_dir, "fstab")
         with open(tmp_fstab, "wt") as fstab_fd:
@@ -360,7 +372,7 @@ class BlockDevice(object):
         try:
             dg, call_order = create_graph(self.config, self.params)
             for node in call_order:
-                node.create(state.state, rollback)
+                node.create(state, rollback)
         except Exception:
             logger.exception("Create failed; rollback initiated")
             for rollback_cb in reversed(rollback):
@@ -380,7 +392,6 @@ class BlockDevice(object):
         # (? more details?)
         try:
             state = BlockDeviceState(self.state_json_file_name)
-            state = state.state
         except BlockDeviceSetupException:
             logger.info("State already cleaned - no way to do anything here")
             return 0
@@ -401,7 +412,6 @@ class BlockDevice(object):
         # State should have been created by prior calls; we only need
         # the dict
         state = BlockDeviceState(self.state_json_file_name)
-        state = state.state
 
         # Deleting must be done in reverse order
         dg, call_order = create_graph(self.config, self.params)
@@ -420,7 +430,6 @@ class BlockDevice(object):
         # State should have been created by prior calls; we only need
         # the dict
         state = BlockDeviceState(self.state_json_file_name)
-        state = state.state
 
         # Deleting must be done in reverse order
         dg, call_order = create_graph(self.config, self.params)
