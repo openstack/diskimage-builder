@@ -102,9 +102,7 @@ class FilesystemNode(NodeBase):
         edge_to = []
         return (edge_from, edge_to)
 
-    def create(self, result, rollback):
-        logger.info("create called; result [%s]", result)
-
+    def create(self, state, rollback):
         cmd = ["mkfs"]
 
         cmd.extend(['-t', self.type])
@@ -123,17 +121,17 @@ class FilesystemNode(NodeBase):
         if self.type in ('ext2', 'ext3', 'ext4', 'xfs'):
             cmd.append('-q')
 
-        if 'blockdev' not in result:
-            result['blockdev'] = {}
-        device = result['blockdev'][self.base]['device']
+        if 'blockdev' not in state:
+            state['blockdev'] = {}
+        device = state['blockdev'][self.base]['device']
         cmd.append(device)
 
         logger.debug("Creating fs command [%s]", cmd)
         exec_sudo(cmd)
 
-        if 'filesys' not in result:
-            result['filesys'] = {}
-        result['filesys'][self.name] \
+        if 'filesys' not in state:
+            state['filesys'] = {}
+        state['filesys'][self.name] \
             = {'uuid': self.uuid, 'label': self.label,
                'fstype': self.type, 'opts': self.opts,
                'device': device}

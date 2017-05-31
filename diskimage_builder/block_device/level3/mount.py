@@ -91,9 +91,8 @@ class MountPointNode(NodeBase):
         edge_from.append(self.base)
         return (edge_from, edge_to)
 
-    def create(self, result, rollback):
+    def create(self, state, rollback):
         logger.debug("mount called [%s]", self.mount_point)
-        logger.debug("result [%s]", result)
         rel_mp = self.mount_point if self.mount_point[0] != '/' \
                  else self.mount_point[1:]
         mount_point = os.path.join(self.mount_base, rel_mp)
@@ -102,17 +101,17 @@ class MountPointNode(NodeBase):
             # file system tree.
             exec_sudo(['mkdir', '-p', mount_point])
         logger.info("Mounting [%s] to [%s]", self.name, mount_point)
-        exec_sudo(["mount", result['filesys'][self.base]['device'],
+        exec_sudo(["mount", state['filesys'][self.base]['device'],
                    mount_point])
 
-        if 'mount' not in result:
-            result['mount'] = {}
-        result['mount'][self.mount_point] \
+        if 'mount' not in state:
+            state['mount'] = {}
+        state['mount'][self.mount_point] \
             = {'name': self.name, 'base': self.base, 'path': mount_point}
 
-        if 'mount_order' not in result:
-            result['mount_order'] = []
-        result['mount_order'].append(self.mount_point)
+        if 'mount_order' not in state:
+            state['mount_order'] = []
+        state['mount_order'].append(self.mount_point)
 
     def umount(self, state):
         logger.info("Called for [%s]", self.name)

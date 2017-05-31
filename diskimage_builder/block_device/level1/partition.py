@@ -65,5 +65,5 @@ class PartitionNode(NodeBase):
             edge_from.append(self.prev_partition.name)
         return (edge_from, edge_to)
 
-    def create(self, result, rollback):
-        self.partitioning.create(result, rollback)
+    def create(self, state, rollback):
+        self.partitioning.create(state, rollback)

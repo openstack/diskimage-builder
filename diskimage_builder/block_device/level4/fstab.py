@@ -34,14 +34,13 @@ class FstabNode(NodeBase):
         edge_to = []
         return (edge_from, edge_to)
 
-    def create(self, result, rollback):
+    def create(self, state, rollback):
         logger.debug("fstab create called [%s]", self.name)
-        logger.debug("result [%s]", result)
 
-        if 'fstab' not in result:
-            result['fstab'] = {}
+        if 'fstab' not in state:
+            state['fstab'] = {}
 
-        result['fstab'][self.base] = {
+        state['fstab'][self.base] = {
             'name': self.name,
             'base': self.base,
             'options': self.options,

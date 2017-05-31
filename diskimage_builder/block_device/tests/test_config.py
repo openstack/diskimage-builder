@@ -10,29 +10,22 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import fixtures
 import logging
-import os
-import testtools
-import yaml
 
 from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
+from diskimage_builder.block_device.tests.test_base import TestBase
 
 
 logger = logging.getLogger(__name__)
 
 
-class TestConfig(testtools.TestCase):
+class TestConfig(TestBase):
     """Helper for setting up and reading a config"""
     def setUp(self):
         super(TestConfig, self).setUp()
-
-        fs = '%(asctime)s %(levelname)s [%(name)s] %(message)s'
-        self.log_fixture = self.useFixture(
-            fixtures.FakeLogger(level=logging.DEBUG, format=fs))
 
         # reset all globals for each test.
         # XXX: remove globals :/
@@ -41,12 +34,6 @@ class TestConfig(testtools.TestCase):
         import diskimage_builder.block_device.level3.mount
         diskimage_builder.block_device.level3.mount.mount_points = {}
         diskimage_builder.block_device.level3.mount.sorted_mount_points = None
-
-    def load_config_file(self, f):
-        path = os.path.join(os.path.dirname(__file__),
-                            'config', f)
-        with open(path, 'r') as config:
-            return yaml.safe_load(config)
 
 
 class TestGraphGeneration(TestConfig):

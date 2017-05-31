@@ -127,14 +127,13 @@ class Partitioning(PluginBase):
 
         exec_sudo(["kpartx", "-avs", device_path])
 
-    def create(self, result, rollback):
+    def create(self, state, rollback):
         # not this is NOT a node and this is not called directly!  The
         # create() calls in the partition nodes this plugin has
         # created are calling back into this.
-        image_path = result['blockdev'][self.base]['image']
-        device_path = result['blockdev'][self.base]['device']
-        logger.info("Creating partition on [%s] [%s]",
-                    self.base, image_path)
+        image_path = state['blockdev'][self.base]['image']
+        device_path = state['blockdev'][self.base]['device']
+        logger.info("Creating partition on [%s] [%s]", self.base, image_path)
 
         # This is a bit of a hack.  Each of the partitions is actually
         # in the graph, so for every partition we get a create() call
@@ -167,7 +166,7 @@ class Partitioning(PluginBase):
                 logger.debug("Create partition [%s] [%d]",
                              part_name, part_no)
                 partition_device_name = device_path + "p%d" % part_no
-                result['blockdev'][part_name] \
+                state['blockdev'][part_name] \
                     = {'device': partition_device_name}
                 partition_devices.add(partition_device_name)
 
