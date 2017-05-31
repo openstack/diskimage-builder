@@ -32,12 +32,6 @@ source-repositories
 Git repositories and tarballs obtained via the
 :doc:`../elements/source-repositories/README` element will be cached.
 
-C and C++ compilation
----------------------
-
-Ccache is configured by the :doc:`../elements/base/README` element. Any
-compilation that honours ccache will be cached.
-
 PyPI
 ----
 
