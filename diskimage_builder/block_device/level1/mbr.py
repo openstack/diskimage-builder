@@ -102,7 +102,7 @@ class MBR(object):
     ======== ==============================================
 
     Direct (native) writing of MBR, EBR (partition table) is
-    implemented - no other parititoning library or tools is used -
+    implemented - no other partitioning library or tools is used -
     to be sure to get the correct CHS and alignment for a wide range
     of host systems.
     """
@@ -240,7 +240,7 @@ class MBR(object):
 
     def write_partition_entry(self, bootflag, blockno, entry, ptype,
                               lba_start, lba_length):
-        """Writes a parititon entry
+        """Writes a partition entry
 
         The entries are always the same and contain 16 bytes. The MBR
         and also the EBR use the same format.

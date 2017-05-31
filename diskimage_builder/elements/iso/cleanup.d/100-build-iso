@@ -75,7 +75,7 @@ function build_iso() {
         EXTRA_KERNEL_PARAMS=""
     fi
 
-    # Create a temporary build directory for holiding the contents of iso
+    # Create a temporary build directory for holding the contents of iso
     TMP_IMAGE_DIR="$TMP_BUILD_DIR/image"
     echo "Creating temporary directory $TMP_IMAGE_DIR"
     mkdir -p "$TMP_IMAGE_DIR"

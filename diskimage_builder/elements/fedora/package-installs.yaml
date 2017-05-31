@@ -11,12 +11,12 @@ openssl:
 
 # FIXME: To avoid conflict between the pyOpenSSL installed via python-pip
 # and pyOpenSSL installed via yum, we are going to sort it out installing
-# it earlier at the beginning of the image building process. Pyhton-pip
+# it earlier at the beginning of the image building process. Python-pip
 # is installing pyOpenSSL as part of satisfying the requirements.txt
 # in python-glanceclient and afterwards yum tries to install it as a
 # dependency of the python-paste package needed for the heat element,
 # this seems to be conflicting and causing the image building process to
-# fail. The problem is hapenning on a Fedora 18 system.
+# fail. The problem is happening on a Fedora 18 system.
 pyOpenSSL:
 
 # Workaround for:

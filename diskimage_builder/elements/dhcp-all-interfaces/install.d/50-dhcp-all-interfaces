@@ -15,7 +15,7 @@ fi
 
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
     if [ -e "/etc/redhat-release" ] ; then
-        # the init system is upstart but networking is using sysv compatabiliy (i.e. Centos/RHEL 6)
+        # the init system is upstart but networking is using sysv compatibility (i.e. Centos/RHEL 6)
         install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.init /etc/init.d/dhcp-all-interfaces
         chkconfig dhcp-all-interfaces on
     else

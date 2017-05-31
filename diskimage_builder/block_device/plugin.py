@@ -32,7 +32,7 @@ class NodeBase(object):
 
     Every node has a unique string ``name``.  This is its key in the
     graph and used for edge relationships.  Implementations must
-    ensure they initalize it; e.g.
+    ensure they initialize it; e.g.
 
     .. code-block:: python
 
