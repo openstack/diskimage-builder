@@ -40,9 +40,9 @@ class TestANode(NodeBase):
         self.state['test_a']['value2'] = 'bar'
         return
 
-    def umount(self, state):
+    def umount(self):
         # Umount is run in reverse.  This key should exist from test_b
-        state['umount'].append('test_a')
+        self.state['umount'].append('test_a')
 
 
 class TestA(PluginBase):

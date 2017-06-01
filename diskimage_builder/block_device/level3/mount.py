@@ -94,12 +94,12 @@ class MountPointNode(NodeBase):
             self.state['mount_order'] = []
         self.state['mount_order'].append(self.mount_point)
 
-    def umount(self, state):
+    def umount(self):
         logger.info("Called for [%s]", self.name)
-        exec_sudo(["umount", state['mount'][self.mount_point]['path']])
+        exec_sudo(["umount", self.state['mount'][self.mount_point]['path']])
 
-    def delete(self, state):
-        self.umount(state)
+    def delete(self):
+        self.umount()
 
 
 class Mount(PluginBase):

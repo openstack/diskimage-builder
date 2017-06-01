@@ -396,36 +396,34 @@ class BlockDevice(object):
     def cmd_umount(self):
         """Unmounts the blockdevice and cleanup resources"""
 
-        # State should have been created by prior calls; we only need
-        # the dict.  If it is not here, it has been cleaned up already
-        # (? more details?)
-        try:
-            state = BlockDeviceState(self.state_json_file_name)
-        except BlockDeviceSetupException:
+        # If the state is not here, cmd_cleanup removed it?  Nothing
+        # more to do?
+        #  XXX: better understand this...
+        if not os.path.exists(self.node_pickle_file_name):
             logger.info("State already cleaned - no way to do anything here")
             return 0
 
-        # Deleting must be done in reverse order
         call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
-            node.umount(state)
+            node.umount()
 
         return 0
 
     def cmd_cleanup(self):
         """Cleanup all remaining relicts - in good case"""
-        # State should have been created by prior calls; we only need
-        # the dict
-        state = BlockDeviceState(self.state_json_file_name)
 
-        # Deleting must be done in reverse order
-        call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
+        # Cleanup must be done in reverse order
+        try:
+            call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
+        except IOError:
+            raise BlockDeviceSetupException("Pickle file not found")
+
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
-            node.cleanup(state)
+            node.cleanup()
 
         logger.info("Removing temporary state dir [%s]", self.state_dir)
         shutil.rmtree(self.state_dir)
@@ -434,16 +432,16 @@ class BlockDevice(object):
 
     def cmd_delete(self):
         """Cleanup all remaining relicts - in case of an error"""
-        # State should have been created by prior calls; we only need
-        # the dict
-        state = BlockDeviceState(self.state_json_file_name)
 
         # Deleting must be done in reverse order
-        call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
+        try:
+            call_order = pickle.load(open(self.node_pickle_file_name, 'rb'))
+        except IOError:
+            raise BlockDeviceSetupException("Pickle file not found")
         reverse_order = reversed(call_order)
 
         for node in reverse_order:
-            node.delete(state)
+            node.delete()
 
         logger.info("Removing temporary state dir [%s]", self.state_dir)
         shutil.rmtree(self.state_dir)

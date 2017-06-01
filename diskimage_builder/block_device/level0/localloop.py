@@ -119,14 +119,11 @@ class LocalLoopNode(NodeBase):
                      self.name, block_device, self.filename)
         return
 
-    def umount(self, state):
-        loopdev_detach(state['blockdev'][self.name]['device'])
+    def umount(self):
+        loopdev_detach(self.state['blockdev'][self.name]['device'])
 
-    def cleanup(self, state):
-        pass
-
-    def delete(self, state):
-        image_delete(state['blockdev'][self.name]['image'])
+    def delete(self):
+        image_delete(self.state['blockdev'][self.name]['image'])
 
 
 class LocalLoop(PluginBase):

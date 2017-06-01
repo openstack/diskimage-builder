@@ -95,33 +95,29 @@ class NodeBase(object):
         """
         return
 
-    def umount(self, state):
+    def umount(self):
         """Umount actions
 
-        Actions to taken when ``dib-block-device umount`` is called
+        Actions to taken when ``dib-block-device umount`` is called.
+        The nodes are called in the reverse order to :func:`create`
 
-        :param state: the current state dictionary.  This is the
-          `state` dictionary from :func:`create` before this call is
-          made.
         :return: None
+
         """
         return
 
-    def cleanup(self, state):
+    def cleanup(self):
         """Cleanup actions
 
         Actions to taken when ``dib-block-device cleanup`` is called.
         This is the cleanup path in the *success* case.  The nodes are
         called in the reverse order to :func:`create`
 
-        :param state: the current state dictionary.  This is the
-          `state` dictionary from :func:`create` before this call is
-          made.
         :return: None
         """
         return
 
-    def delete(self, state):
+    def delete(self):
         """Cleanup actions
 
         Actions to taken when ``dib-block-device delete`` is called.
@@ -129,9 +125,6 @@ class NodeBase(object):
         *failure*.  The nodes are called in the reverse order to
         :func:`create`
 
-        :param state: the current state dictionary.  This is the
-          `state` dictionary from :func:`create` before this call is
-          made.
         :return: None
         """
         return

@@ -80,7 +80,9 @@ class TestState(TestStateBase):
 
         # run umount, which should load the picked nodes and run in
         # reverse.  This will create some state in "test_b" that it
-        # added to by "test_a" ... ensuring it was run backwards.
+        # added to by "test_a" ... ensuring it was run backwards.  It
+        # also checks the state was persisted through the pickling
+        # process.
         bd_obj.cmd_umount()
 
     # Test state going missing between phases
@@ -95,20 +97,29 @@ class TestState(TestStateBase):
         bd_obj.cmd_create()
 
         # cmd_create should have persisted this to disk
-        state_file = os.path.join(self.build_dir.path,
-                                  'states', 'block-device',
-                                  'state.json')
+        state_file = bd_obj.state_json_file_name
         self.assertThat(state_file, FileExists())
+        pickle_file = bd_obj.node_pickle_file_name
+        self.assertThat(pickle_file, FileExists())
 
         # simulate the state somehow going missing, and ensure that
         # later calls notice
         os.unlink(state_file)
+        os.unlink(pickle_file)
+        # This reads from the state dump json file
         self.assertRaisesRegex(BlockDeviceSetupException,
                                "State dump not found",
-                               bd_obj.cmd_cleanup)
+                               bd_obj.cmd_getval, 'image-path')
         self.assertRaisesRegex(BlockDeviceSetupException,
                                "State dump not found",
                                bd_obj.cmd_writefstab)
+
+        # this uses the pickled nodes
         self.assertRaisesRegex(BlockDeviceSetupException,
-                               "State dump not found",
+                               "Pickle file not found",
                                bd_obj.cmd_delete)
+        self.assertRaisesRegex(BlockDeviceSetupException,
+                               "Pickle file not found",
+                               bd_obj.cmd_cleanup)
+
+        # XXX: figure out unit test for umount

@@ -38,11 +38,14 @@ class TestBNode(NodeBase):
         self.state['test_b']['value'] = 'baz'
         return
 
-    def umount(self, state):
+    def umount(self):
+        # these values should have persisteted from create()
+        assert self.state['test_b']['value'] == 'baz'
+
         # umount run in reverse.  this should run before test_a
-        assert 'umount' not in state
-        state['umount'] = []
-        state['umount'].append('test_b')
+        assert 'umount' not in self.state
+        self.state['umount'] = []
+        self.state['umount'].append('test_b')
 
 
 class TestB(PluginBase):
