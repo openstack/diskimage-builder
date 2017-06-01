@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import functools
 import logging
 import os
 
@@ -23,10 +24,6 @@ from diskimage_builder.block_device.utils import exec_sudo
 
 
 logger = logging.getLogger(__name__)
-
-
-# The order of mounting and unmounting is important.
-sorted_mount_points = []
 
 
 class MountPointNode(NodeBase):
@@ -43,12 +40,6 @@ class MountPointNode(NodeBase):
             setattr(self, pname, config[pname])
         logger.debug("MountPoint created [%s]", self)
 
-    def __lt__(self, other):
-        # in words: if the other mount-point has us as it's
-        # parent, we come before it (less than it).  e.g.
-        #  /var < /var/log < /var/log/foo
-        return other.mount_point.startswith(self.mount_point)
-
     def get_edges(self):
         """Insert all edges
 
@@ -62,12 +53,20 @@ class MountPointNode(NodeBase):
         edge_from = []
         edge_to = []
 
+        # should have been added by __init__...
+        assert 'sorted_mount_points' in self.state
+        sorted_mount_points = self.state['sorted_mount_points']
+
         # If we are not first, add our parent in the global dependency
-        # list
-        mpi = sorted_mount_points.index(self)
+        # list.  sorted_mount_points is tuples (mount_point, node_name).
+        # find ourselves in the mount_points, and our parent node
+        # is one before us in node_name list.
+        mount_points = [x[0] for x in sorted_mount_points]
+        node_name = [x[1] for x in sorted_mount_points]
+        mpi = mount_points.index(self.mount_point)
         if mpi > 0:
-            dep = sorted_mount_points[mpi - 1]
-            edge_from.append(dep.name)
+            dep = node_name[mpi - 1]
+            edge_from.append(dep)
 
         edge_from.append(self.base)
         return (edge_from, edge_to)
@@ -102,6 +101,30 @@ class MountPointNode(NodeBase):
         self.umount()
 
 
+def cmp_mount_order(this, other):
+    """Sort comparision function for mount-point sorting
+
+    See if ``this`` comes before ``other`` in mount-order list.  In
+    words: if the other mount-point has us as it's parent, we come
+    before it (are less than it). e.g. ``/var < /var/log <
+    /var/log/foo``
+
+    :param this: tuple of mount_point, node name
+    :param other: tuple of mount_point, node name
+    :returns int: cmp value
+
+    """
+    # sort is only based on the mount_point.
+    this, _ = this
+    other, _ = other
+    if this == other:
+        return 0
+    if other.startswith(this):
+        return -1
+    else:
+        return 1
+
+
 class Mount(PluginBase):
     def __init__(self, config, defaults, state):
         super(Mount, self).__init__()
@@ -112,15 +135,23 @@ class Mount(PluginBase):
         self.node = MountPointNode(defaults['mount-base'], config, state)
 
         # save this new node to the global mount-point list and
-        # re-order it.
-        global sorted_mount_points
-        mount_points = [x.mount_point for x in sorted_mount_points]
+        # re-order it to keep it in mount-order.  Used in get_edges()
+        # to ensure we build the mount graph in order
+        #
+        # note we can't just put the MountPointNode into the state,
+        # because it's not json serialisable and we still dump the
+        # state to json.  that's why we have this (mount_point, name)
+        # tuples and sorting trickery
+        sorted_mount_points = state.get('sorted_mount_points', [])
+        mount_points = [mp for mp, name in sorted_mount_points]
         if self.node.mount_point in mount_points:
             raise BlockDeviceSetupException(
                 "Mount point [%s] specified more than once"
                 % self.node.mount_point)
-        sorted_mount_points.append(self.node)
-        sorted_mount_points.sort()
+        sorted_mount_points.append((self.node.mount_point, self.node.name))
+        sorted(sorted_mount_points, key=functools.cmp_to_key(cmp_mount_order))
+        # reset the state key to the new list
+        state['sorted_mount_points'] = sorted_mount_points
         logger.debug("Ordered mounts now: %s", sorted_mount_points)
 
     def get_nodes(self):

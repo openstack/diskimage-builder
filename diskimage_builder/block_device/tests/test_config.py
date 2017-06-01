@@ -26,11 +26,7 @@ class TestConfig(TestBase):
     """Helper for setting up and reading a config"""
     def setUp(self):
         super(TestConfig, self).setUp()
-
-        # reset all globals for each test.
-        # XXX: remove globals :/
-        import diskimage_builder.block_device.level3.mount
-        diskimage_builder.block_device.level3.mount.sorted_mount_points = []
+        # previously we mocked some globals here ...
 
 
 class TestGraphGeneration(TestConfig):
