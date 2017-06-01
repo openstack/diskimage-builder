@@ -22,20 +22,22 @@ logger = logging.getLogger(__name__)
 
 
 class TestANode(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, state):
         logger.debug("Create test 1")
-        super(TestANode, self).__init__(name)
+        super(TestANode, self).__init__(name, state)
+        # put something in the state for test_b to check for
+        state['test_init_state'] = 'here'
 
     def get_edges(self):
         # this is like the loop node; it's a root and doesn't have a
         # base
         return ([], [])
 
-    def create(self, state, rollback):
+    def create(self, rollback):
         # put some fake entries into state
-        state['test_a'] = {}
-        state['test_a']['value'] = 'foo'
-        state['test_a']['value2'] = 'bar'
+        self.state['test_a'] = {}
+        self.state['test_a']['value'] = 'foo'
+        self.state['test_a']['value2'] = 'bar'
         return
 
     def umount(self, state):
@@ -45,9 +47,9 @@ class TestANode(NodeBase):
 
 class TestA(PluginBase):
 
-    def __init__(self, config, defaults):
+    def __init__(self, config, defaults, state):
         super(TestA, self).__init__()
-        self.node = TestANode(config['name'])
+        self.node = TestANode(config['name'], state)
 
     def get_nodes(self):
         return [self.node]

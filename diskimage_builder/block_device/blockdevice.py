@@ -44,18 +44,19 @@ def _load_json(file_name):
 class BlockDeviceState(collections.MutableMapping):
     """The global state singleton
 
-    An reference to an instance of this object is passed between nodes
-    as a global repository.  It wraps a single dictionary "state"
-    and provides a few helper functions.
+    An reference to an instance of this object is saved into nodes as
+    a global repository.  It wraps a single dictionary "state" and
+    provides a few helper functions.
 
-    This is used in two contexts:
+    The state ends up used in two contexts:
 
-    - The state is built by the :func:`NodeBase.create` commands as
-      called during :func:`BlockDevice.cmd_create`.  It is then
-      persisted to disk by :func:`save_state`
+     - The node list (including this state) is pickled and dumped
+       between cmd_create() and later cmd_* calls that need to call
+       the nodes.
 
-    - Later calls (cleanup, umount, etc) load the state dictionary
-      from disk and are thus passed the full state.
+     - Some other cmd_* calls, such as cmd_writefstab, only need
+       access to values inside the state and not the whole node list,
+       and load it from the json dump created after cmd_create()
     """
     # XXX:
     #  - we could implement getters/setters such that if loaded from
@@ -373,9 +374,9 @@ class BlockDevice(object):
         # Create a new, empty state
         state = BlockDeviceState()
         try:
-            dg, call_order = create_graph(self.config, self.params)
+            dg, call_order = create_graph(self.config, self.params, state)
             for node in call_order:
-                node.create(state, rollback)
+                node.create(rollback)
         except Exception:
             logger.exception("Create failed; rollback initiated")
             for rollback_cb in reversed(rollback):

@@ -72,7 +72,8 @@ class TestState(TestStateBase):
         self.assertDictEqual(state,
                              {'test_a': {'value': 'foo',
                                          'value2': 'bar'},
-                              'test_b': {'value': 'baz'}})
+                              'test_b': {'value': 'baz'},
+                              'test_init_state': 'here'})
 
         pickle_file = bd_obj.node_pickle_file_name
         self.assertThat(pickle_file, FileExists())

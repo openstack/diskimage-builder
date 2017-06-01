@@ -28,9 +28,16 @@ class TestMountOrder(tc.TestGraphGeneration):
 
         config = self.load_config_file('multiple_partitions_graph.yaml')
 
-        graph, call_order = create_graph(config, self.fake_default_config)
-
         state = {}
+
+        graph, call_order = create_graph(config, self.fake_default_config,
+                                         state)
+
+        rollback = []
+
+        # build up some fake state so that we don't have to mock out
+        # all the parent calls that would really make these values, as
+        # we just want to test MountPointNode
         state['filesys'] = {}
         state['filesys']['mkfs_root'] = {}
         state['filesys']['mkfs_root']['device'] = 'fake'
@@ -39,14 +46,12 @@ class TestMountOrder(tc.TestGraphGeneration):
         state['filesys']['mkfs_var_log'] = {}
         state['filesys']['mkfs_var_log']['device'] = 'fake'
 
-        rollback = []
-
         for node in call_order:
             if isinstance(node, MountPointNode):
                 # XXX: do we even need to create?  We could test the
                 # sudo arguments from the mock in the below asserts
                 # too
-                node.create(state, rollback)
+                node.create(rollback)
 
         # ensure that partitions are mounted in order root->var->var/log
         self.assertListEqual(state['mount_order'], ['/', '/var', '/var/log'])

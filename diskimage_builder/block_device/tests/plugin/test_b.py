@@ -22,17 +22,20 @@ logger = logging.getLogger(__name__)
 
 
 class TestBNode(NodeBase):
-    def __init__(self, name, base):
+    def __init__(self, name, state, base):
         logger.debug("Create test 1")
-        super(TestBNode, self).__init__(name)
+        super(TestBNode, self).__init__(name, state)
         self.base = base
 
     def get_edges(self):
+        # this should have been inserted by test_a before
+        # we are called
+        assert self.state['test_init_state'] == 'here'
         return ([self.base], [])
 
-    def create(self, state, rollback):
-        state['test_b'] = {}
-        state['test_b']['value'] = 'baz'
+    def create(self, rollback):
+        self.state['test_b'] = {}
+        self.state['test_b']['value'] = 'baz'
         return
 
     def umount(self, state):
@@ -44,9 +47,10 @@ class TestBNode(NodeBase):
 
 class TestB(PluginBase):
 
-    def __init__(self, config, defaults):
+    def __init__(self, config, defaults, state):
         super(TestB, self).__init__()
         self.node = TestBNode(config['name'],
+                              state,
                               config['base'])
 
     def get_nodes(self):

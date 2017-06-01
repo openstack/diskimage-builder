@@ -32,9 +32,14 @@ logger = logging.getLogger(__name__)
 
 class Partitioning(PluginBase):
 
-    def __init__(self, config, default_config):
+    def __init__(self, config, default_config, state):
         logger.debug("Creating Partitioning object; config [%s]", config)
         super(Partitioning, self).__init__()
+
+        # Unlike other PluginBase we are somewhat persistent, as the
+        # partition nodes call back to us (see create() below).  We
+        # need to keep this reference.
+        self.state = state
 
         # Because using multiple partitions of one base is done
         # within one object, there is the need to store a flag if the
@@ -76,7 +81,7 @@ class Partitioning(PluginBase):
         prev_partition = None
 
         for part_cfg in config['partitions']:
-            np = PartitionNode(part_cfg, self, prev_partition)
+            np = PartitionNode(part_cfg, state, self, prev_partition)
             self.partitions.append(np)
             prev_partition = np
 
@@ -127,12 +132,12 @@ class Partitioning(PluginBase):
 
         exec_sudo(["kpartx", "-avs", device_path])
 
-    def create(self, state, rollback):
+    def create(self, rollback):
         # not this is NOT a node and this is not called directly!  The
         # create() calls in the partition nodes this plugin has
         # created are calling back into this.
-        image_path = state['blockdev'][self.base]['image']
-        device_path = state['blockdev'][self.base]['device']
+        image_path = self.state['blockdev'][self.base]['image']
+        device_path = self.state['blockdev'][self.base]['device']
         logger.info("Creating partition on [%s] [%s]", self.base, image_path)
 
         # This is a bit of a hack.  Each of the partitions is actually
@@ -166,7 +171,7 @@ class Partitioning(PluginBase):
                 logger.debug("Create partition [%s] [%d]",
                              part_name, part_no)
                 partition_device_name = device_path + "p%d" % part_no
-                state['blockdev'][part_name] \
+                self.state['blockdev'][part_name] \
                     = {'device': partition_device_name}
                 partition_devices.add(partition_device_name)
 

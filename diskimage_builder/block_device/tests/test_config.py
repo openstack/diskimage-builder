@@ -104,7 +104,7 @@ class TestCreateGraph(TestGraphGeneration):
         self.assertRaisesRegex(BlockDeviceSetupException,
                                "Edge not defined: this_is_not_a_node",
                                create_graph,
-                               config, self.fake_default_config)
+                               config, self.fake_default_config, {})
 
     # Test a graph with bad edge pointing to an invalid node
     def test_duplicate_name(self):
@@ -113,13 +113,13 @@ class TestCreateGraph(TestGraphGeneration):
                                "Duplicate node name: "
                                "this_is_a_duplicate",
                                create_graph,
-                               config, self.fake_default_config)
+                               config, self.fake_default_config, {})
 
     # Test digraph generation from deep_graph config file
     def test_deep_graph_generator(self):
         config = self.load_config_file('deep_graph.yaml')
 
-        graph, call_order = create_graph(config, self.fake_default_config)
+        graph, call_order = create_graph(config, self.fake_default_config, {})
 
         call_order_list = [n.name for n in call_order]
 
@@ -136,7 +136,7 @@ class TestCreateGraph(TestGraphGeneration):
     def test_multiple_partitions_graph_generator(self):
         config = self.load_config_file('multiple_partitions_graph.yaml')
 
-        graph, call_order = create_graph(config, self.fake_default_config)
+        graph, call_order = create_graph(config, self.fake_default_config, {})
         call_order_list = [n.name for n in call_order]
 
         # The sort creating call_order_list is unstable.

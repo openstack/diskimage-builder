@@ -80,10 +80,10 @@ class LocalLoopNode(NodeBase):
     This class handles local loop devices that can be used
     for VM image installation.
     """
-    def __init__(self, config, default_config):
+    def __init__(self, config, default_config, state):
         logger.debug("Creating LocalLoop object; config [%s] "
                      "default_config [%s]", config, default_config)
-        super(LocalLoopNode, self).__init__(config['name'])
+        super(LocalLoopNode, self).__init__(config['name'], state)
         if 'size' in config:
             self.size = parse_abs_size_spec(config['size'])
             logger.debug("Image size [%s]", self.size)
@@ -100,7 +100,7 @@ class LocalLoopNode(NodeBase):
         """Because this is created without base, there are no edges."""
         return ([], [])
 
-    def create(self, state, rollback):
+    def create(self, rollback):
         logger.debug("[%s] Creating loop on [%s] with size [%d]",
                      self.name, self.filename, self.size)
 
@@ -110,11 +110,11 @@ class LocalLoopNode(NodeBase):
         block_device = loopdev_attach(self.filename)
         rollback.append(lambda: loopdev_detach(block_device))
 
-        if 'blockdev' not in state:
-            state['blockdev'] = {}
+        if 'blockdev' not in self.state:
+            self.state['blockdev'] = {}
 
-        state['blockdev'][self.name] = {"device": block_device,
-                                        "image": self.filename}
+        self.state['blockdev'][self.name] = {"device": block_device,
+                                             "image": self.filename}
         logger.debug("Created loop  name [%s] device [%s] image [%s]",
                      self.name, block_device, self.filename)
         return
@@ -131,9 +131,9 @@ class LocalLoopNode(NodeBase):
 
 class LocalLoop(PluginBase):
 
-    def __init__(self, config, defaults):
+    def __init__(self, config, defaults, state):
         super(LocalLoop, self).__init__()
-        self.node = LocalLoopNode(config, defaults)
+        self.node = LocalLoopNode(config, defaults, state)
 
     def get_nodes(self):
         return [self.node]

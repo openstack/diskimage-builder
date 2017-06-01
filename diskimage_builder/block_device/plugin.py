@@ -32,7 +32,7 @@ class NodeBase(object):
 
     Every node has a unique string ``name``.  This is its key in the
     graph and used for edge relationships.  Implementations must
-    ensure they initialize it; e.g.
+    ensure they initalize it; e.g.
 
     .. code-block:: python
 
@@ -41,8 +41,9 @@ class NodeBase(object):
                super(FooNode, self).__init__(name)
 
     """
-    def __init__(self, name):
+    def __init__(self, name, state):
         self.name = name
+        self.state = state
 
     def get_name(self):
         return self.name
@@ -74,19 +75,13 @@ class NodeBase(object):
         return
 
     @abc.abstractmethod
-    def create(self, state, rollback):
+    def create(self, rollback):
         """Main creation driver
 
         This is the main driver function.  After the graph is
         linearised, each node has it's :func:`create` function called.
 
         Arguments:
-
-        :param state: A shared dictionary of prior results.  This
-          dictionary is passed by reference to each call, meaning any
-          entries inserted will be available to subsequent :func:`create`
-          calls of following nodes.  The ``state`` dictionary will be
-          saved and available to other calls.
 
         :param rollback: A shared list of functions to be called in
           the failure case.  Nodes should only append to this list.
@@ -164,13 +159,16 @@ class PluginBase(object):
          argument_a: bar
          argument_b: baz
 
-    The ``__init__`` function will be passed two arguments:
+    The ``__init__`` function will be passed three arguments:
 
     ``config``
        The full configuration dictionary for the entry.
        A unique ``name`` entry can be assumed.  In most cases
        a ``base`` entry will be present giving the parent node
        (see :func:`NodeBase.get_edges`).
+    ``state``
+       A reference to the gobal state dictionary.  This should be
+       passed to :func:`NodeBase.__init__` on node creation
     ``defaults``
        The global defaults dictionary (see ``--params``)
 
@@ -183,9 +181,9 @@ class PluginBase(object):
 
        class Foo(PluginBase):
 
-         def __init__(self, config, defaults):
+         def __init__(self, config, defaults, state):
              super(Foo, self).__init__()
-             self.node = FooNode(config.name, ...)
+             self.node = FooNode(config.name, state, ...)
 
          def get_nodes(self):
              return [self.node]

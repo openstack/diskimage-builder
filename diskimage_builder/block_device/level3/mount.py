@@ -31,8 +31,8 @@ sorted_mount_points = []
 
 class MountPointNode(NodeBase):
 
-    def __init__(self, mount_base, config):
-        super(MountPointNode, self).__init__(config['name'])
+    def __init__(self, mount_base, config, state):
+        super(MountPointNode, self).__init__(config['name'], state)
 
         # Parameter check
         self.mount_base = mount_base
@@ -72,7 +72,7 @@ class MountPointNode(NodeBase):
         edge_from.append(self.base)
         return (edge_from, edge_to)
 
-    def create(self, state, rollback):
+    def create(self, rollback):
         logger.debug("mount called [%s]", self.mount_point)
         rel_mp = self.mount_point if self.mount_point[0] != '/' \
                  else self.mount_point[1:]
@@ -82,17 +82,17 @@ class MountPointNode(NodeBase):
             # file system tree.
             exec_sudo(['mkdir', '-p', mount_point])
         logger.info("Mounting [%s] to [%s]", self.name, mount_point)
-        exec_sudo(["mount", state['filesys'][self.base]['device'],
+        exec_sudo(["mount", self.state['filesys'][self.base]['device'],
                    mount_point])
 
-        if 'mount' not in state:
-            state['mount'] = {}
-        state['mount'][self.mount_point] \
+        if 'mount' not in self.state:
+            self.state['mount'] = {}
+        self.state['mount'][self.mount_point] \
             = {'name': self.name, 'base': self.base, 'path': mount_point}
 
-        if 'mount_order' not in state:
-            state['mount_order'] = []
-        state['mount_order'].append(self.mount_point)
+        if 'mount_order' not in self.state:
+            self.state['mount_order'] = []
+        self.state['mount_order'].append(self.mount_point)
 
     def umount(self, state):
         logger.info("Called for [%s]", self.name)
@@ -103,13 +103,13 @@ class MountPointNode(NodeBase):
 
 
 class Mount(PluginBase):
-    def __init__(self, config, defaults):
+    def __init__(self, config, defaults, state):
         super(Mount, self).__init__()
 
         if 'mount-base' not in defaults:
             raise BlockDeviceSetupException(
                 "Mount default config needs 'mount-base'")
-        self.node = MountPointNode(defaults['mount-base'], config)
+        self.node = MountPointNode(defaults['mount-base'], config, state)
 
         # save this new node to the global mount-point list and
         # re-order it.

@@ -43,9 +43,9 @@ file_system_max_label_length = {
 
 class FilesystemNode(NodeBase):
 
-    def __init__(self, config):
+    def __init__(self, config, state):
         logger.debug("Create filesystem object; config [%s]", config)
-        super(FilesystemNode, self).__init__(config['name'])
+        super(FilesystemNode, self).__init__(config['name'], state)
 
         # Parameter check (mandatory)
         for pname in ['base', 'type']:
@@ -102,7 +102,7 @@ class FilesystemNode(NodeBase):
         edge_to = []
         return (edge_from, edge_to)
 
-    def create(self, state, rollback):
+    def create(self, rollback):
         cmd = ["mkfs"]
 
         cmd.extend(['-t', self.type])
@@ -121,17 +121,17 @@ class FilesystemNode(NodeBase):
         if self.type in ('ext2', 'ext3', 'ext4', 'xfs'):
             cmd.append('-q')
 
-        if 'blockdev' not in state:
-            state['blockdev'] = {}
-        device = state['blockdev'][self.base]['device']
+        if 'blockdev' not in self.state:
+            self.state['blockdev'] = {}
+        device = self.state['blockdev'][self.base]['device']
         cmd.append(device)
 
         logger.debug("Creating fs command [%s]", cmd)
         exec_sudo(cmd)
 
-        if 'filesys' not in state:
-            state['filesys'] = {}
-        state['filesys'][self.name] \
+        if 'filesys' not in self.state:
+            self.state['filesys'] = {}
+        self.state['filesys'][self.name] \
             = {'uuid': self.uuid, 'label': self.label,
                'fstype': self.type, 'opts': self.opts,
                'device': device}
@@ -144,10 +144,10 @@ class Mkfs(PluginBase):
     systems.
     """
 
-    def __init__(self, config, defaults):
+    def __init__(self, config, defaults, state):
         super(Mkfs, self).__init__()
         self.filesystems = {}
-        fs = FilesystemNode(config)
+        fs = FilesystemNode(config, state)
         self.filesystems[fs.get_name()] = fs
 
     def get_nodes(self):

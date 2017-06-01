@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 class FstabNode(NodeBase):
-    def __init__(self, config, params):
-        super(FstabNode, self).__init__(config['name'])
+    def __init__(self, config, state):
+        super(FstabNode, self).__init__(config['name'], state)
         self.base = config['base']
         self.options = config.get('options', 'defaults')
         self.dump_freq = config.get('dump-freq', 0)
@@ -34,13 +34,13 @@ class FstabNode(NodeBase):
         edge_to = []
         return (edge_from, edge_to)
 
-    def create(self, state, rollback):
+    def create(self, rollback):
         logger.debug("fstab create called [%s]", self.name)
 
-        if 'fstab' not in state:
-            state['fstab'] = {}
+        if 'fstab' not in self.state:
+            self.state['fstab'] = {}
 
-        state['fstab'][self.base] = {
+        self.state['fstab'][self.base] = {
             'name': self.name,
             'base': self.base,
             'options': self.options,
@@ -50,10 +50,10 @@ class FstabNode(NodeBase):
 
 
 class Fstab(PluginBase):
-    def __init__(self, config, defaults):
+    def __init__(self, config, defaults, state):
         super(Fstab, self).__init__()
 
-        self.node = FstabNode(config, defaults)
+        self.node = FstabNode(config, state)
 
     def get_nodes(self):
         return [self.node]

@@ -25,9 +25,9 @@ class PartitionNode(NodeBase):
     flag_boot = 1
     flag_primary = 2
 
-    def __init__(self, config, parent, prev_partition):
+    def __init__(self, config, state, parent, prev_partition):
 
-        super(PartitionNode, self).__init__(config['name'])
+        super(PartitionNode, self).__init__(config['name'], state)
 
         self.base = config['base']
         self.partitioning = parent
@@ -65,5 +65,5 @@ class PartitionNode(NodeBase):
             edge_from.append(self.prev_partition.name)
         return (edge_from, edge_to)
 
-    def create(self, state, rollback):
-        self.partitioning.create(state, rollback)
+    def create(self, rollback):
+        self.partitioning.create(rollback)

@@ -142,13 +142,15 @@ def config_tree_to_graph(config):
     return output
 
 
-def create_graph(config, default_config):
+def create_graph(config, default_config, state):
     """Generate configuration digraph
 
     Generate the configuration digraph from the config
 
     :param config: graph configuration file
     :param default_config: default parameters (from --params)
+    :param state: reference to global state dictionary.
+      Passed to :func:`PluginBase.__init__`
     :return: tuple with the graph object (a :class:`nx.Digraph`),
       ordered list of :class:`NodeBase` objects
 
@@ -175,7 +177,7 @@ def create_graph(config, default_config):
                 ("Config element [%s] is not implemented" % cfg_obj_name))
         plugin = _extensions[cfg_obj_name].plugin
         assert issubclass(plugin, PluginBase)
-        cfg_obj = plugin(cfg_obj_val, default_config)
+        cfg_obj = plugin(cfg_obj_val, default_config, state)
 
         # Ask the plugin for the nodes it would like to insert
         # into the graph.  Some plugins, such as partitioning,
