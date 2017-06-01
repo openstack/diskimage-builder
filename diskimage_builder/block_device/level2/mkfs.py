@@ -25,10 +25,6 @@ from diskimage_builder.block_device.utils import exec_sudo
 logger = logging.getLogger(__name__)
 
 
-# There is the need that filesystem labels are unique:
-# if not the boot and / or mount (with LABEL=) might fail.
-file_system_labels = set()
-
 # There is the need to check the length of the label of
 # the filesystem.  The maximum length depends on the used filesystem.
 # This map provides information about the maximum label length.
@@ -69,20 +65,25 @@ class FilesystemNode(NodeBase):
                            "file system - using [img-rootfs] instead")
             self.label = "img-rootfs"
 
-        if self.label in file_system_labels:
-            raise BlockDeviceSetupException(
-                "File system label [%s] used more than once" % self.label)
-        file_system_labels.add(self.label)
+        # ensure we don't already have a fs with this label ... they
+        # all must be unique.
+        if 'fs_labels' in self.state:
+            if self.label in self.state['fs_labels']:
+                raise BlockDeviceSetupException(
+                    "File system label [%s] used more than once" % self.label)
+            self.state['fs_labels'].append(self.label)
+        else:
+            self.state['fs_labels'] = [self.label]
 
         if self.type in file_system_max_label_length:
             if file_system_max_label_length[self.type] < len(self.label):
                 raise BlockDeviceSetupException(
                     "Label [{label}] too long for filesystem [{type}]: "
-                    " [{len}] > [{max_len}]".format({
+                    "{len} > {max_len}".format(**{
                         'label': self.label,
                         'type': self.type,
                         'len': len(self.label),
-                        'max': file_system_max_label_length[self.type]}))
+                        'max_len': file_system_max_label_length[self.type]}))
         else:
             logger.warning("Length of label [%s] cannot be checked for "
                            "filesystem [%s]: unknown max length",

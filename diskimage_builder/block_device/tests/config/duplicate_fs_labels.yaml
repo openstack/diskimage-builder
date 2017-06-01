@@ -1,0 +1,68 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+      base: image0
+      name: mbr
+      label: mbr
+      partitions:
+        - name: root
+          base: image0
+          flags: [ boot, primary ]
+          size: 55%
+        - name: var
+          base: image0
+          size: 40%
+        - name: var_log
+          base: image0
+          size: 5%
+
+- mkfs:
+    base: root
+    name: mkfs_root
+    label: duplicate
+    type: xfs
+
+- mount:
+    base: mkfs_root
+    name: mount_mkfs_root
+    mount_point: /
+
+- fstab:
+    base: mount_mkfs_root
+    name: fstab_mount_mkfs_root
+    fsck-passno: 1
+    options: defaults
+
+- mkfs:
+    base: var
+    name: mkfs_var
+    label: duplicate
+    type: xfs
+
+- mount:
+    base: mkfs_var
+    name: mount_mkfs_var
+    mount_point: /var
+
+- fstab:
+    base: mount_mkfs_var
+    name: fstab_mount_mkfs_var
+    fsck-passno: 1
+    options: defaults
+
+- mkfs:
+    base: var_log
+    name: mkfs_var_log
+    type: xfs
+
+- mount:
+    base: mkfs_var_log
+    name: mount_mkfs_var_log
+    mount_point: /var/log
+
+- fstab:
+    base: mount_mkfs_var_log
+    name: fstab_mount_mkfs_var_log
+    fsck-passno: 1
+    options: defaults
