@@ -132,7 +132,7 @@ class Partitioning(PluginBase):
 
         exec_sudo(["kpartx", "-avs", device_path])
 
-    def create(self, rollback):
+    def create(self):
         # not this is NOT a node and this is not called directly!  The
         # create() calls in the partition nodes this plugin has
         # created are calling back into this.

@@ -34,7 +34,7 @@ class FstabNode(NodeBase):
         edge_to = []
         return (edge_from, edge_to)
 
-    def create(self, rollback):
+    def create(self):
         logger.debug("fstab create called [%s]", self.name)
 
         if 'fstab' not in self.state:

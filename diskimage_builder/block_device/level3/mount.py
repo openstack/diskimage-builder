@@ -71,7 +71,7 @@ class MountPointNode(NodeBase):
         edge_from.append(self.base)
         return (edge_from, edge_to)
 
-    def create(self, rollback):
+    def create(self):
         logger.debug("mount called [%s]", self.mount_point)
         rel_mp = self.mount_point if self.mount_point[0] != '/' \
                  else self.mount_point[1:]

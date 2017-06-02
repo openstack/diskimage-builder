@@ -100,15 +100,15 @@ class LocalLoopNode(NodeBase):
         """Because this is created without base, there are no edges."""
         return ([], [])
 
-    def create(self, rollback):
+    def create(self):
         logger.debug("[%s] Creating loop on [%s] with size [%d]",
                      self.name, self.filename, self.size)
 
-        rollback.append(lambda: image_delete(self.filename))
+        self.add_rollback(image_delete, self.filename)
         image_create(self.filename, self.size)
 
         block_device = loopdev_attach(self.filename)
-        rollback.append(lambda: loopdev_detach(block_device))
+        self.add_rollback(loopdev_detach, block_device)
 
         if 'blockdev' not in self.state:
             self.state['blockdev'] = {}

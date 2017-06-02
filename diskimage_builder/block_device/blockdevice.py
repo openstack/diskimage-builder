@@ -20,7 +20,6 @@ import os
 import pickle
 import pprint
 import shutil
-import sys
 import yaml
 
 from diskimage_builder.block_device.config import config_tree_to_graph
@@ -370,18 +369,21 @@ class BlockDevice(object):
         logger.info("create() called")
         logger.debug("Using config [%s]", self.config)
 
-        rollback = []
         # Create a new, empty state
         state = BlockDeviceState()
         try:
             dg, call_order = create_graph(self.config, self.params, state)
             for node in call_order:
-                node.create(rollback)
+                node.create()
         except Exception:
             logger.exception("Create failed; rollback initiated")
-            for rollback_cb in reversed(rollback):
-                rollback_cb()
-            sys.exit(1)
+            reverse_order = reversed(call_order)
+            for node in reverse_order:
+                node.rollback()
+            # save the state for debugging
+            state.save_state(self.state_json_file_name)
+            logger.error("Rollback complete, exiting")
+            raise
 
         # dump state and nodes, in order
         # XXX: we only dump the call_order (i.e. nodes) not the whole

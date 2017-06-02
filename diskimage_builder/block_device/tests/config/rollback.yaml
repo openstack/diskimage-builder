@@ -1,0 +1,29 @@
+- test_a:
+    name: test_node_a
+    rollback_one_arg: down
+    rollback_two_arg: you
+
+- test_b:
+    base: test_node_a
+    name: test_node_b
+    rollback_one_arg: let
+    rollback_two_arg: gonna
+
+- test_a:
+    base: test_node_b
+    name: test_node_aa
+    rollback_one_arg: never
+    rollback_two_arg: up
+
+- test_b:
+    base: test_node_aa
+    name: test_node_bb
+    rollback_one_arg: you
+    rollback_two_arg: give
+
+- test_a:
+    base: test_node_bb
+    name: test_node_aaa
+    rollback_one_arg: gonna
+    rollback_two_arg: never
+    trigger_rollback: yes

@@ -123,3 +123,30 @@ class TestState(TestStateBase):
                                bd_obj.cmd_cleanup)
 
         # XXX: figure out unit test for umount
+
+    # Test ordering of rollback calls if create() fails
+    def test_rollback(self):
+        params = {
+            'build-dir': self.build_dir.path,
+            'config': self.get_config_file('rollback.yaml'),
+            'test_rollback': True
+        }
+
+        bd_obj = bd.BlockDevice(params)
+        bd_obj.cmd_init()
+
+        # The config file has flags in that tell the last node to
+        # fail, which will trigger the rollback.
+        self.assertRaises(RuntimeError, bd_obj.cmd_create)
+
+        # cmd_create should have persisted this to disk even after the
+        # failure
+        state_file = bd_obj.state_json_file_name
+        self.assertThat(state_file, FileExists())
+        with codecs.open(state_file, encoding='utf-8', mode='r') as fd:
+            state = json.load(fd)
+
+        # ensure the rollback was called in order
+        self.assertListEqual(state['rollback_test'],
+                             ['never', 'gonna', 'give', 'you', 'up',
+                              'never', 'gonna', 'let', 'you', 'down'])

@@ -103,7 +103,7 @@ class FilesystemNode(NodeBase):
         edge_to = []
         return (edge_from, edge_to)
 
-    def create(self, rollback):
+    def create(self):
         cmd = ["mkfs"]
 
         cmd.extend(['-t', self.type])

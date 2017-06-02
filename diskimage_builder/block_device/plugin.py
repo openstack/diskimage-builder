@@ -11,12 +11,15 @@
 #  under the License.
 
 import abc
+import logging
 import six
 
 #
 # Plugins convert configuration entries into graph nodes ready for
 # processing.  This defines the abstract classes for both.
 #
+
+logger = logging.getLogger(__name__)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -44,12 +47,42 @@ class NodeBase(object):
     def __init__(self, name, state):
         self.name = name
         self.state = state
+        self.rollbacks = []
 
     def get_name(self):
         return self.name
 
+    def add_rollback(self, func, *args, **kwargs):
+        """Add a call for rollback
+
+        Functions registered with this method will be called in
+        reverse-order in the case of failures during
+        :func:`Nodebase.create`.
+
+        :param func: function to call
+        :param args: arguments
+        :param kwargs: keyword arguments
+        :return: None
+        """
+        self.rollbacks.append((func, args, kwargs))
+
+    def rollback(self):
+        """Initiate rollback
+
+        Call registered rollback in reverse order.  This method is
+        called by the driver in the case of failures during
+        :func:`Nodebase.create`.
+
+        :return None:
+        """
+        # XXX: maybe ignore SystemExit so we always continue?
+        logger.debug("Calling rollback for %s", self.name)
+        for func, args, kwargs in reversed(self.rollbacks):
+            func(*args, **kwargs)
+
     @abc.abstractmethod
     def get_edges(self):
+
         """Return the dependencies/edges for this node
 
         This function will be called after all nodes are created (this
@@ -75,22 +108,14 @@ class NodeBase(object):
         return
 
     @abc.abstractmethod
-    def create(self, rollback):
+    def create(self):
         """Main creation driver
 
         This is the main driver function.  After the graph is
         linearised, each node has it's :func:`create` function called.
 
-        Arguments:
-
-        :param rollback: A shared list of functions to be called in
-          the failure case.  Nodes should only append to this list.
-          On failure, the callbacks will be processed in reverse
-          order.
-
         :raises Exception: A failure should raise an exception.  This
-          will initiate the rollback
-
+          will initiate a rollback.  See :func:`Nodebase.add_rollback`.
         :return: None
         """
         return

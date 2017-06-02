@@ -33,8 +33,6 @@ class TestMountOrder(tc.TestGraphGeneration):
         graph, call_order = create_graph(config, self.fake_default_config,
                                          state)
 
-        rollback = []
-
         # build up some fake state so that we don't have to mock out
         # all the parent calls that would really make these values, as
         # we just want to test MountPointNode
@@ -51,7 +49,7 @@ class TestMountOrder(tc.TestGraphGeneration):
                 # XXX: do we even need to create?  We could test the
                 # sudo arguments from the mock in the below asserts
                 # too
-                node.create(rollback)
+                node.create()
 
         # ensure that partitions are mounted in order root->var->var/log
         self.assertListEqual(state['mount_order'], ['/', '/var', '/var/log'])
