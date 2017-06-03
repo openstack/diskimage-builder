@@ -96,12 +96,12 @@ class TestState(TestStateBase):
         # simulate the state somehow going missing, and ensure that
         # later calls notice
         os.unlink(state_file)
-        self.assertRaisesRegexp(BlockDeviceSetupException,
-                                "State dump not found",
-                                bd_obj.cmd_cleanup)
-        self.assertRaisesRegexp(BlockDeviceSetupException,
-                                "State dump not found",
-                                bd_obj.cmd_writefstab)
-        self.assertRaisesRegexp(BlockDeviceSetupException,
-                                "State dump not found",
-                                bd_obj.cmd_delete)
+        self.assertRaisesRegex(BlockDeviceSetupException,
+                               "State dump not found",
+                               bd_obj.cmd_cleanup)
+        self.assertRaisesRegex(BlockDeviceSetupException,
+                               "State dump not found",
+                               bd_obj.cmd_writefstab)
+        self.assertRaisesRegex(BlockDeviceSetupException,
+                               "State dump not found",
+                               bd_obj.cmd_delete)
