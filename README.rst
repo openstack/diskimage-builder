@@ -22,13 +22,13 @@ components of `TripleO <https://wiki.openstack.org/wiki/TripleO>`__
 that are responsible for building disk images.  They are also used
 extensively to build images for testing OpenStack itself, particularly
 with `nodepool
-<http://docs.openstack.org/infra/system-config/nodepool.html>`__.
+<https://docs.openstack.org/infra/system-config/nodepool.html>`__.
 Platforms supported include Ubuntu, CentOS, RHEL and Fedora.
 
 Full documentation, the source of which is in ``doc/source/``, is
 published at:
 
-* http://docs.openstack.org/developer/diskimage-builder/
+* https://docs.openstack.org/developer/diskimage-builder/
 
 Copyright
 =========
