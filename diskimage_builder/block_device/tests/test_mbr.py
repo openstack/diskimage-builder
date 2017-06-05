@@ -17,8 +17,7 @@ import subprocess
 
 import diskimage_builder.block_device.tests.test_base as tb
 
-from diskimage_builder.block_device.level0.localloop \
-    import LocalLoopNode as LocalLoop
+from diskimage_builder.block_device.level0.localloop import image_create
 from diskimage_builder.block_device.level1.mbr import MBR
 
 
@@ -52,7 +51,7 @@ class TestMBR(tb.TestBase):
         self.tmp_dir = fixtures.TempDir()
         self.useFixture(self.tmp_dir)
         self.image_path = os.path.join(self.tmp_dir.path, "image.raw")
-        LocalLoop.image_create(self.image_path, TestMBR.disk_size_1G)
+        image_create(self.image_path, TestMBR.disk_size_1G)
         logger.debug("Temp image is %s", self.image_path)
 
         self.partx_args = [self._get_path_for_partx(), "--raw",

@@ -26,6 +26,54 @@ from diskimage_builder.block_device.utils import parse_abs_size_spec
 logger = logging.getLogger(__name__)
 
 
+def image_create(filename, size):
+    logger.info("Create image file [%s]", filename)
+    with open(filename, "w") as fd:
+        fd.seek(size - 1)
+        fd.write("\0")
+
+
+def image_delete(filename):
+    logger.info("Remove image file [%s]", filename)
+    os.remove(filename)
+
+
+def loopdev_attach(filename):
+    logger.info("loopdev attach")
+    logger.debug("Calling [sudo losetup --show -f %s]", filename)
+    subp = subprocess.Popen(["sudo", "losetup", "--show", "-f",
+                             filename], stdout=subprocess.PIPE)
+    rval = subp.wait()
+    if rval == 0:
+        # [:-1]: Cut of the newline
+        block_device = subp.stdout.read()[:-1].decode("utf-8")
+        logger.info("New block device [%s]", block_device)
+        return block_device
+    else:
+        logger.error("losetup failed")
+        raise BlockDeviceSetupException("losetup failed")
+
+
+def loopdev_detach(loopdev):
+    logger.info("loopdev detach")
+    # loopback dev may be tied up a bit by udev events triggered
+    # by partition events
+    for try_cnt in range(10, 1, -1):
+        logger.debug("Calling [sudo losetup -d %s]", loopdev)
+        subp = subprocess.Popen(["sudo", "losetup", "-d",
+                                 loopdev])
+        rval = subp.wait()
+        if rval == 0:
+            logger.info("Successfully detached [%s]", loopdev)
+            return 0
+        else:
+            logger.error("loopdev detach failed")
+            # Do not raise an error - maybe other cleanup methods
+            # can at least do some more work.
+    logger.debug("Gave up trying to detach [%s]", loopdev)
+    return rval
+
+
 class LocalLoopNode(NodeBase):
     """Level0: Local loop image device handling.
 
@@ -52,63 +100,15 @@ class LocalLoopNode(NodeBase):
         """Because this is created without base, there are no edges."""
         return ([], [])
 
-    @staticmethod
-    def image_create(filename, size):
-        logger.info("Create image file [%s]", filename)
-        with open(filename, "w") as fd:
-            fd.seek(size - 1)
-            fd.write("\0")
-
-    @staticmethod
-    def _image_delete(filename):
-        logger.info("Remove image file [%s]", filename)
-        os.remove(filename)
-
-    @staticmethod
-    def _loopdev_attach(filename):
-        logger.info("loopdev attach")
-        logger.debug("Calling [sudo losetup --show -f %s]", filename)
-        subp = subprocess.Popen(["sudo", "losetup", "--show", "-f",
-                                 filename], stdout=subprocess.PIPE)
-        rval = subp.wait()
-        if rval == 0:
-            # [:-1]: Cut of the newline
-            block_device = subp.stdout.read()[:-1].decode("utf-8")
-            logger.info("New block device [%s]", block_device)
-            return block_device
-        else:
-            logger.error("losetup failed")
-            raise BlockDeviceSetupException("losetup failed")
-
-    @staticmethod
-    def _loopdev_detach(loopdev):
-        logger.info("loopdev detach")
-        # loopback dev may be tied up a bit by udev events triggered
-        # by partition events
-        for try_cnt in range(10, 1, -1):
-            logger.debug("Calling [sudo losetup -d %s]", loopdev)
-            subp = subprocess.Popen(["sudo", "losetup", "-d",
-                                     loopdev])
-            rval = subp.wait()
-            if rval == 0:
-                logger.info("Successfully detached [%s]", loopdev)
-                return 0
-            else:
-                logger.error("loopdev detach failed")
-                # Do not raise an error - maybe other cleanup methods
-                # can at least do some more work.
-        logger.debug("Gave up trying to detach [%s]", loopdev)
-        return rval
-
     def create(self, state, rollback):
         logger.debug("[%s] Creating loop on [%s] with size [%d]",
                      self.name, self.filename, self.size)
 
-        rollback.append(lambda: self._image_delete(self.filename))
-        self.image_create(self.filename, self.size)
+        rollback.append(lambda: image_delete(self.filename))
+        image_create(self.filename, self.size)
 
-        block_device = self._loopdev_attach(self.filename)
-        rollback.append(lambda: self._loopdev_detach(block_device))
+        block_device = loopdev_attach(self.filename)
+        rollback.append(lambda: loopdev_detach(block_device))
 
         if 'blockdev' not in state:
             state['blockdev'] = {}
@@ -120,13 +120,13 @@ class LocalLoopNode(NodeBase):
         return
 
     def umount(self, state):
-        self._loopdev_detach(state['blockdev'][self.name]['device'])
+        loopdev_detach(state['blockdev'][self.name]['device'])
 
     def cleanup(self, state):
         pass
 
     def delete(self, state):
-        self._image_delete(state['blockdev'][self.name]['image'])
+        image_delete(state['blockdev'][self.name]['image'])
 
 
 class LocalLoop(PluginBase):
