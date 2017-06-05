@@ -12,12 +12,46 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import testtools
+import logging
+
+import diskimage_builder.block_device.tests.test_base as tb
 
 from diskimage_builder.block_device.utils import parse_abs_size_spec
+from diskimage_builder.block_device.utils import parse_rel_size_spec
 
 
-class TestLoggingConfig(testtools.TestCase):
+logger = logging.getLogger(__name__)
+
+
+class TestBlockDeviceUtils(tb.TestBase):
+    """Tests for the utils.py
+
+    This tests mostly the error and failure cases - because the good
+    cases are tested implicitly with the higher level unit tests.
+    """
+
+    def test_parse_rel_size_with_abs(self):
+        """Calls parse_rel_size_spec with an absolute number"""
+
+        is_rel, size = parse_rel_size_spec("154MiB", 0)
+        self.assertFalse(is_rel)
+        self.assertEqual(154 * 1024 * 1024, size)
+
+    def test_parse_abs_size_without_spec(self):
+        """Call parse_abs_size_spec without spec"""
+
+        size = parse_abs_size_spec("198")
+        self.assertEqual(198, size)
+
+    def test_invalid_unit_spec(self):
+        """Call parse_abs_size_spec with invalid unit spec"""
+
+        self.assertRaises(RuntimeError, parse_abs_size_spec, "747InVaLiDUnIt")
+
+    def test_broken_unit_spec(self):
+        """Call parse_abs_size_spec with a completely broken unit spec"""
+
+        self.assertRaises(RuntimeError, parse_abs_size_spec, "_+!HuHi+-=")
 
     def test_parse_size_spec(self):
         map(lambda tspec:
