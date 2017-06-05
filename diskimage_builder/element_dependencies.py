@@ -274,15 +274,15 @@ def expand_dependencies(user_elements, element_dirs):
 
     .. warning::
 
-       DO NOT USE THIS FUNCTION.  For compatability reasons, this
+       DO NOT USE THIS FUNCTION.  For compatibility reasons, this
        function does not provide paths to the returned elements.  This
        means the caller must process override rules if two elements
        with the same name appear in element_dirs
 
     :param user_elements: iterable enumerating the elements a user requested
-    :param elements_dir: The ELEMENTS_PATH to process
+    :param element_dirs: The ELEMENTS_PATH to process
 
-    :return: a set contatining user_elements and all dependent
+    :return: a set containing user_elements and all dependent
              elements including any transitive dependencies.
     """
     logger.warning("expand_dependencies() deprecated, use get_elements")
@@ -339,7 +339,7 @@ def main():
     if args.env:
         _output_env_vars(elements)
     else:
-        # deprecated compatability output; doesn't include paths.
+        # deprecated compatibility output; doesn't include paths.
         print(' '.join([element.name for element in elements]))
 
     return 0

@@ -101,7 +101,7 @@ EOF
         echo "exclude=$packages" >> ${conf}
     fi
 else
-    # pre-install packages so depedencies are there.  We will
+    # pre-install packages so dependencies are there.  We will
     # overwrite with latest below.
     packages="python-pip python3-pip python-virtualenv"
     # unfortunately older ubuntu (trusty) doesn't have a

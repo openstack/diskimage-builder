@@ -132,7 +132,7 @@ class TestCreateGraph(TestGraphGeneration):
 
         self.assertListEqual(call_order_list, call_order_names)
 
-    # Test multiple parition digraph generation
+    # Test multiple partition digraph generation
     def test_multiple_partitions_graph_generator(self):
         config = self.load_config_file('multiple_partitions_graph.yaml')
 

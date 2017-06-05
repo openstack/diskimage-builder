@@ -69,7 +69,7 @@ def main():
     args, extra = parser.parse_known_args()
 
     # Logs have traditionally gone to stderr with this tool.  Maintain
-    # compatability
+    # compatibility
     level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(stream=sys.stderr, level=level)
 

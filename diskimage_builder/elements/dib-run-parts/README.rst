@@ -4,7 +4,7 @@ dib-run-parts
 
 .. warning::
 
-   This element is deprecated and is left only for compatability.
+   This element is deprecated and is left only for compatibility.
    Please read the notes.
 
 This element install the ``dib-utils`` package to provide
@@ -17,6 +17,6 @@ stayed in the final image.  The image build process now uses a private
 copy of ``dib-run-parts`` during the build, so this element has become
 deprecated.
 
-For compatability this element simply installs the ``dib-utils``
+For compatibility this element simply installs the ``dib-utils``
 package, which will provide ``dib-run-parts``.  However, this is
 probably better expressed as a dependency in individual elements.
