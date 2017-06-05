@@ -389,34 +389,56 @@ function unmount_dir {
 # Parameters:
 #   - name of the to be created config file
 function block_device_create_config_file {
-    local CONFIG_YAML="$1"
+    # nosiy; we manually trace
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
 
-    # User setting overwrites this
+    local config_yaml="$1"
+
     if [[ ${DIB_BLOCK_DEVICE_CONFIG:-} == file://* ]]; then
-        cp $(echo ${DIB_BLOCK_DEVICE_CONFIG} | cut -c 8-) ${CONFIG_YAML}
+        cp $(echo ${DIB_BLOCK_DEVICE_CONFIG} | cut -c 8-) ${config_yaml}
+        echo "Using file-based block-device config: ${DIB_BLOCK_DEVICE_CONFIG}"
         return
     fi
     if [ -n "${DIB_BLOCK_DEVICE_CONFIG:-}" ]; then
-        printf "%s" "${DIB_BLOCK_DEVICE_CONFIG}" >${CONFIG_YAML}
+        printf "%s" "${DIB_BLOCK_DEVICE_CONFIG}" >${config_yaml}
+        echo "User specified block-device config from DIB_BLOCK_DEVICE_CONFIG"
         return
     fi
 
+    # Search the elements for a matching block-device config.
+    # XXX: first match wins?
+    echo "Searching elements for block-device[-${ARCH}].yaml ..."
     eval declare -A image_elements=($(get_image_element_array))
     for i in ${!image_elements[@]}; do
-        local BLOCK_DEVICE_CFG_PATH=${image_elements[$i]}/block-device-${ARCH}.yaml
-        if [ -e ${BLOCK_DEVICE_CFG_PATH} ]; then
-            cp ${BLOCK_DEVICE_CFG_PATH} ${CONFIG_YAML}
+        local cfg
+        # look for arch specific version first, then default
+        cfg=${image_elements[$i]}/block-device-${ARCH}.yaml
+        if [ -e ${cfg} ]; then
+            cp ${cfg} ${config_yaml}
+            echo "Using block-device config: ${cfg}"
+            return
         else
-            BLOCK_DEVICE_CFG_PATH=${image_elements[$i]}/block-device-default.yaml
-            if [ -e ${BLOCK_DEVICE_CFG_PATH} ]; then
-                cp ${BLOCK_DEVICE_CFG_PATH} ${CONFIG_YAML}
+            cfg=${image_elements[$i]}/block-device-default.yaml
+            if [ -e ${cfg} ]; then
+                cp ${cfg} ${config_yaml}
+                echo "Using block-device config: ${cfg}"
+                return
             fi
         fi
     done
+    echo "... done"
 
+    # how did this get here?
+    if [ -e ${config_yaml} ]; then
+        die "${config_yaml} exists?"
+    fi
+
+    echo "Using default block-device fallback config"
     # If no config is there (until now) use the default config
-    if [ ! -e ${CONFIG_YAML} ]; then
-        cat >${CONFIG_YAML} <<EOF
+
+    cat >${config_yaml} <<EOF
 - local_loop:
     name: image0
     mkfs:
@@ -427,5 +449,6 @@ function block_device_create_config_file {
           options: "defaults"
           fsck-passno: 1
 EOF
-    fi
+
+    $xtrace
 }
