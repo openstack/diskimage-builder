@@ -9,8 +9,11 @@ fi
 set -eu
 set -o pipefail
 
-PART_DEV=$IMAGE_BLOCK_DEVICE
-BOOT_DEV=$IMAGE_BLOCK_DEVICE_WITHOUT_PART
+BOOT_DEV=$IMAGE_BLOCK_DEVICE
+
+# All available devices, handy for some bootloaders...
+declare -A DEVICES
+eval DEVICES=( $IMAGE_BLOCK_DEVICES )
 
 function install_extlinux {
     install-packages -m bootloader extlinux

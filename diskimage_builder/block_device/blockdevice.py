@@ -307,16 +307,24 @@ class BlockDevice(object):
         # been dumped; i.e. after cmd_create() called.
         state = BlockDeviceState(self.state_json_file_name)
 
-        if symbol == 'image-block-partition':
-            # If there is no partition needed, pass back directly the
-            # image.
-            if 'root' in state['blockdev']:
-                print("%s" % state['blockdev']['root']['device'])
-            else:
-                print("%s" % state['blockdev']['image0']['device'])
-            return 0
+        # The path to the .raw file for conversion
         if symbol == 'image-path':
             print("%s" % state['blockdev']['image0']['image'])
+            return 0
+
+        # This is the loopback device where the above image is setup
+        if symbol == 'image-block-device':
+            print("%s" % state['blockdev']['image0']['device'])
+            return 0
+
+        # Full list of created devices by name.  Some bootloaders, for
+        # example, want to be able to see their boot partitions to
+        # copy things in.  Intended to be read into a bash array
+        if symbol == 'image-block-devices':
+            out = ""
+            for k, v in state['blockdev'].items():
+                out += " [%s]=%s " % (k, v['device'])
+            print(out)
             return 0
 
         logger.error("Invalid symbol [%s] for getval", symbol)

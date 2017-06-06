@@ -413,21 +413,28 @@ if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
     # values to dib-block-device: using the YAML config and
     dib-block-device create
 
-    # It's called 'DEVICE' but it's the partition.
-    IMAGE_BLOCK_DEVICE=$(dib-block-device getval image-block-partition)
+    # This is the device (/dev/loopX).  It's where to install the
+    # bootloader.
+    IMAGE_BLOCK_DEVICE=$(dib-block-device getval image-block-device)
+    export IMAGE_BLOCK_DEVICE
+
+    # Similar to above, but all mounted devices.  This is handy for
+    # some bootloaders that have multi-partition layouts and want to
+    # copy things to different places other than just
+    # IMAGE_BLOCK_DEVICE.  "eval" this into an array as needed
+    IMAGE_BLOCK_DEVICES=$(dib-block-device getval image-block-devices)
+    export IMAGE_BLOCK_DEVICES
 
     # Write the fstab
     dib-block-device writefstab
 fi
-export IMAGE_BLOCK_DEVICE
+
+# XXX: needed?
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
 
-IMAGE_BLOCK_DEVICE_WITHOUT_PART=$(echo ${IMAGE_BLOCK_DEVICE} \
-              | sed -e "s|^\(.*loop[0-9]*\)p[0-9]*$|\1|g")
-export IMAGE_BLOCK_DEVICE_WITHOUT_PART
-
-export EXTRA_DETACH="detach_loopback ${IMAGE_BLOCK_DEVICE_WITHOUT_PART}"
-export EXTRA_UNMOUNT="dib-block-device cleanup"
+# At this point, dib-block-device has created the raw image file
+# (IMAGE_BLOCK_DEVICE) and mounted all the partitions under
+# $TMP_BUILD_DIR/mnt for us.  We can now copy into the final image.
 
 # 'mv' is not usable here - especially when a top level directory
 # has the same name as a mount point of a partition.  If so, 'mv'
@@ -480,14 +487,15 @@ fi
 
 # Unmount and cleanup the /mnt and /build subdirectories, to save
 # space before converting the image to some other format.
+# XXX ? needed?
 export EXTRA_UNMOUNT=""
 unmount_image
 
 TMP_IMAGE_PATH=$(dib-block-device getval image-path)
 export TMP_IMAGE_PATH
 
+# remove all mounts
 dib-block-device umount
-
 dib-block-device cleanup
 
 cleanup_build_dir

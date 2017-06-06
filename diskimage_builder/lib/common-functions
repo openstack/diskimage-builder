@@ -239,22 +239,6 @@ function run_d() {
     check_break after-$1 bash
 }
 
-function detach_loopback() {
-    local loopdev=$1
-
-    # Remove the map if it exists
-    # If setup on a rhel or derivative the map was created with kpartx not losetup
-    # and subsequently needs to be removed.
-    loopdev_name=$(echo $loopdev | sed 's/\/dev\///g')
-
-    if sudo dmsetup ls | grep $loopdev_name; then
-        mapper_name=$(sudo dmsetup ls | grep $loopdev_name | awk '{ print $1 }')
-        sudo dmsetup --noudevsync remove $mapper_name
-    fi
-
-    return 0
-}
-
 function arg_to_elements() {
   for arg do IMAGE_ELEMENT="$IMAGE_ELEMENT $arg" ; done
 

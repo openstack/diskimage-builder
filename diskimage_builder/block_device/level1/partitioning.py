@@ -15,8 +15,6 @@
 import logging
 import os
 
-from subprocess import CalledProcessError
-
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.level1.mbr import MBR
@@ -45,6 +43,7 @@ class Partitioning(PluginBase):
         # within one object, there is the need to store a flag if the
         # creation of the partitions was already done.
         self.already_created = False
+        self.already_cleaned = False
 
         # Parameter check
         if 'base' not in config:
@@ -94,52 +93,10 @@ class Partitioning(PluginBase):
             fd.seek(0, 2)
             return fd.tell()
 
-    def _all_part_devices_exist(self, expected_part_devices):
-        for part_device in expected_part_devices:
-            logger.debug("Checking if partition device [%s] exists",
-                         part_device)
-            if not os.path.exists(part_device):
-                logger.info("Partition device [%s] does not exists",
-                            part_device)
-                return False
-            logger.debug("Partition already exists [%s]", part_device)
-        return True
-
-    def _notify_os_of_partition_changes(self, device_path, partition_devices):
-        """Notify of of partition table changes
-
-        There is the need to call some programs to inform the operating
-        system of partition tables changes.
-        These calls are highly distribution and version specific. Here
-        a couple of different methods are used to get the best result.
-        """
-        try:
-            exec_sudo(["partprobe", device_path])
-            exec_sudo(["udevadm", "settle"])
-        except CalledProcessError as e:
-            logger.info("Ignoring settling failure: %s", e)
-            pass
-
-        if self._all_part_devices_exist(partition_devices):
-            return
-        # If running inside Docker, make our nodes manually, because udev
-        # will not be working.
-        if os.path.exists("/.dockerenv"):
-            # kpartx cannot run in sync mode in docker.
-            exec_sudo(["kpartx", "-av", device_path])
-            exec_sudo(["dmsetup", "--noudevsync", "mknodes"])
-            return
-
-        exec_sudo(["kpartx", "-avs", device_path])
-
+    # not this is NOT a node and this is not called directly!  The
+    # create() calls in the partition nodes this plugin has
+    # created are calling back into this.
     def create(self):
-        # not this is NOT a node and this is not called directly!  The
-        # create() calls in the partition nodes this plugin has
-        # created are calling back into this.
-        image_path = self.state['blockdev'][self.base]['image']
-        device_path = self.state['blockdev'][self.base]['device']
-        logger.info("Creating partition on [%s] [%s]", self.base, image_path)
-
         # This is a bit of a hack.  Each of the partitions is actually
         # in the graph, so for every partition we get a create() call
         # as the walk happens.  But we only need to create the
@@ -147,10 +104,16 @@ class Partitioning(PluginBase):
         if self.already_created:
             logger.info("Not creating the partitions a second time.")
             return
+        self.already_created = True
+
+        # the raw file on disk
+        image_path = self.state['blockdev'][self.base]['image']
+        # the /dev/loopX device of the parent
+        device_path = self.state['blockdev'][self.base]['device']
+        logger.info("Creating partition on [%s] [%s]", self.base, image_path)
 
         assert self.label == 'mbr'
 
-        partition_devices = set()
         disk_size = self._size_of_block_dev(image_path)
         with MBR(image_path, disk_size, self.align) as part_impl:
             for part_cfg in self.partitions:
@@ -170,11 +133,36 @@ class Partitioning(PluginBase):
                                               part_size, part_type)
                 logger.debug("Create partition [%s] [%d]",
                              part_name, part_no)
-                partition_device_name = device_path + "p%d" % part_no
+
+                # We're going to mount all partitions with kpartx
+                # below once we're done.  So the device this partition
+                # will be seen at becomes "/dev/mapper/loop0pX"
+                assert device_path[:5] == "/dev/"
+                partition_device_name = "/dev/mapper/%sp%d" % \
+                                        (device_path[5:], part_no)
                 self.state['blockdev'][part_name] \
                     = {'device': partition_device_name}
-                partition_devices.add(partition_device_name)
 
-        self.already_created = True
-        self._notify_os_of_partition_changes(device_path, partition_devices)
+        # now all the partitions are created, get device-mapper to
+        # mount them
+        if not os.path.exists("/.dockerenv"):
+            exec_sudo(["kpartx", "-avs", device_path])
+        else:
+            # If running inside Docker, make our nodes manually,
+            # because udev will not be working. kpartx cannot run in
+            # sync mode in docker.
+            exec_sudo(["kpartx", "-av", device_path])
+            exec_sudo(["dmsetup", "--noudevsync", "mknodes"])
+
         return
+
+    def cleanup(self):
+        # remove the partition mappings made for the parent
+        # block-device by create() above.  this is called from the
+        # child PartitionNode umount/delete/cleanup.  Thus every
+        # partition calls it, but we only want to do it once and our
+        # gate.
+        if not self.already_cleaned:
+            self.already_cleaned = True
+            exec_sudo(["kpartx", "-d",
+                       self.state['blockdev'][self.base]['device']])

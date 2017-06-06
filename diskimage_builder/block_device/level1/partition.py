@@ -65,5 +65,15 @@ class PartitionNode(NodeBase):
             edge_from.append(self.prev_partition.name)
         return (edge_from, edge_to)
 
+    # These all call back to the parent "partitioning" object to do
+    # the real work.  Every node calls it, but only one will succeed;
+    # see the gating we do in the parent function.
+    #
+    # XXX: A better model here would be for the parent object to a
+    # real node in the config graph, so it's create() gets called.
+    # These can then just be stubs.
     def create(self):
         self.partitioning.create()
+
+    def cleanup(self):
+        self.partitioning.cleanup()
