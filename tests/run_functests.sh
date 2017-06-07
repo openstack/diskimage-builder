@@ -102,7 +102,9 @@ function run_disk_element_test() {
     local use_tmp_flag=""
     local dest_dir=$(mktemp -d)
 
-    trap "rm -rf $dest_dir" EXIT
+    if [[ ${KEEP_OUTPUT} -ne 1 ]]; then
+        trap "rm -rf $dest_dir" EXIT
+    fi
 
     if [ "${dont_use_tmp}" = "yes" ]; then
         use_tmp_flag="--no-tmpfs"
@@ -147,8 +149,13 @@ function run_disk_element_test() {
         fi
     fi
 
-    trap EXIT
-    rm -rf $dest_dir /tmp/dib-test-should-fail
+    rm -f /tmp/dib-test-should-fail
+
+    if [[ ${KEEP_OUTPUT} -ne 1 ]]; then
+        # reset trap and cleanup
+        trap EXIT
+        rm -rf $dest_dir
+    fi
 }
 
 # run_ramdisk_element_test <test_element> <element>
@@ -196,6 +203,7 @@ done
 #
 JOB_MAX_CNT=1
 LOG_DATESTAMP=0
+KEEP_OUTPUT=0
 
 #
 # Parse args
@@ -208,6 +216,7 @@ while getopts ":hlj:t" opt; do
             echo "  -l : list available tests"
             echo "  -j : parallel job count (default to 1)"
             echo "  -t : prefix log messages with timestamp"
+            echo "  -k : keep output directories"
             echo "  <test> : functional test to run"
             echo "           Special test 'all' will run all tests"
             exit 0
@@ -232,6 +241,9 @@ while getopts ":hlj:t" opt; do
             ;;
         t)
             LOG_DATESTAMP=1
+            ;;
+        k)
+            KEEP_OUTPUT=1
             ;;
         \?)
             echo "Invalid option: -$OPTARG"
