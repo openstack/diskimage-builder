@@ -117,7 +117,13 @@ function install_grub2 {
     fi
 
     if [[ "$ARCH" =~ "ppc" ]] ; then
-        $GRUBNAME --modules="part_msdos" $GRUB_OPTS $BOOT_DEV --no-nvram
+        # For PPC, we use the "boot" partition as the one to point
+        # grub-install to, not the loopback device.  ppc has a
+        # dedicated PReP boot partition.  This seems to only work on
+        # /dev/mapper/... nodes due to matching rules in grub
+        # XXX : this may not be true.  It seems to work,
+        # but requires some more investigation.
+        $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
     else
         $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
     fi
