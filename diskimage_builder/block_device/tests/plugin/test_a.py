@@ -42,7 +42,7 @@ class TestANode(NodeBase):
 class TestA(PluginBase):
 
     def __init__(self, config, defaults):
-        super(PluginBase, self).__init__()
+        super(TestA, self).__init__()
         self.node = TestANode(config['name'])
 
     def get_nodes(self):

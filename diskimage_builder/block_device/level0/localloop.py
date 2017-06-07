@@ -132,7 +132,7 @@ class LocalLoopNode(NodeBase):
 class LocalLoop(PluginBase):
 
     def __init__(self, config, defaults):
-        super(PluginBase, self).__init__()
+        super(LocalLoop, self).__init__()
         self.node = LocalLoopNode(config, defaults)
 
     def get_nodes(self):

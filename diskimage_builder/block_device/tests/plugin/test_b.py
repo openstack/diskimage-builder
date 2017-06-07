@@ -39,7 +39,7 @@ class TestBNode(NodeBase):
 class TestB(PluginBase):
 
     def __init__(self, config, defaults):
-        super(PluginBase, self).__init__()
+        super(TestB, self).__init__()
         self.node = TestBNode(config['name'],
                               config['base'])
 
