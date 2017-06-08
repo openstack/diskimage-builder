@@ -12,6 +12,7 @@
 
 import logging
 import networkx as nx
+import os
 
 from stevedore import extension
 
@@ -217,10 +218,14 @@ def create_graph(config, default_config):
                     "Edge not defined: %s->%s" % (name, edge_to))
             dg.add_edge(name, edge_to)
 
-    # this can be quite helpful debugging but needs pydotplus.
-    # run "dotty /tmp/out.dot"
-    #  XXX: maybe an env var that dumps to a tmpdir or something?
-    # nx.nx_pydot.write_dot(dg, '/tmp/graph_dump.dot')
+    # this can be quite helpful debugging but needs pydotplus which
+    # isn't in requirements.  for debugging, do
+    #   .tox/py27/bin/pip install pydotplus
+    #   DUMP_CONFIG_GRAPH=1 tox -e py27 -- specific_test
+    #   dotty /tmp/graph_dump.dot
+    # to see helpful output
+    if 'DUMP_CONFIG_GRAPH' in os.environ:
+        nx.nx_pydot.write_dot(dg, '/tmp/graph_dump.dot')
 
     # Topological sort (i.e. create a linear array that satisfies
     # dependencies) and return the object list
