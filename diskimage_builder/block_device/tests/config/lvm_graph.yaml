@@ -1,0 +1,142 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    name: mbr
+    label: mbr
+    partitions:
+      - name: root
+        base: image0
+        flags: [ boot,primary ]
+        size: 3G
+
+- lvm:
+    base: mbr
+    name: lvm_mbr
+    pvs:
+      - name: pv
+        options: ["--force"]
+        base: root
+
+    vgs:
+      - name: vg
+        base: ["pv"]
+        options: ["--force"]
+
+    lvs:
+      - name: lv_root
+        base: vg
+        size: 1800M
+
+      - name: lv_tmp
+        base: vg
+        size: 100M
+
+      - name: lv_var
+        base: vg
+        size: 500M
+
+      - name: lv_log
+        base: vg
+        size: 100M
+
+      - name: lv_audit
+        base: vg
+        size: 100M
+
+      - name: lv_home
+        base: vg
+        size: 200M
+
+- mkfs:
+    name: fs_root
+    base: lv_root
+    label: "img-rootfs"
+    type: "xfs"
+
+- mount:
+    name: mount_fs_root
+    base: fs_root
+    mount_point: /
+
+- fstab:
+    name: fstab_mount_fs_root
+    base: mount_fs_root
+    options: "rw,relatime"
+    fsck-passno: 1
+
+- mkfs:
+    name: fs_var
+    base: lv_var
+    type: "xfs"
+
+- mount:
+    name: mount_fs_var
+    base: fs_var
+    mount_point: /var
+
+- fstab:
+    name: fstab_mount_fs_var
+    base: mount_fs_var
+    options: "rw,relatime"
+
+- mkfs:
+    name: fs_log
+    base: lv_log
+    type: "xfs"
+
+- mount:
+    name: mount_fs_log
+    base: fs_log
+    mount_point: /var/log
+
+- fstab:
+    name: fstab_mount_fs_log
+    base: mount_fs_log
+    options: "rw,relatime"
+
+- mkfs:
+    name: fs_audit
+    base: lv_audit
+    type: "xfs"
+
+- mount:
+    name: mount_fs_audit
+    base: fs_audit
+    mount_point: /var/log/audit
+
+- fstab:
+    name: fstab_mount_fs_audit
+    base: mount_fs_audit
+    options: "rw,relatime"
+
+- mkfs:
+    name: fs_tmp
+    base: lv_tmp
+    type: "xfs"
+
+- mount:
+    name: mount_fs_tmp
+    base: fs_tmp
+    mount_point: /tmp
+
+- fstab:
+    name: fstab_mount_fs_tmp
+    base: mount_fs_tmp
+    options: "rw,nosuid,nodev,noexec,relatime"
+
+- mkfs:
+    name: fs_home
+    base: lv_home
+    type: "xfs"
+
+- mount:
+    name: mount_fs_home
+    base: fs_home
+    mount_point: /home
+
+- fstab:
+    name: fstab_mount_fs_home
+    base: mount_fs_home
+    options: "rw,nodev,relatime"

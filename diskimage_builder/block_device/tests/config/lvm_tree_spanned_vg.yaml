@@ -1,0 +1,69 @@
+# testing config for a LVM data volume group that spans two partitions
+
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    label: mbr
+    partitions:
+      - name: root
+        flags: [ boot,primary ]
+        size: 3G
+      - name: data1
+        flags: [ primary ]
+        size: 1G
+      - name: data2
+        flags: [ primary ]
+        size: 1G
+
+- lvm:
+    name: lvm
+    pvs:
+      - name: pv_root
+        options: ["--force"]
+        base: root
+      - name: pv_data1
+        options: ["--force"]
+        base: data1
+      - name: pv_data2
+        options: ["--force"]
+        base: data2
+
+
+    vgs:
+      - name: vg_root
+        base: ["pv_root"]
+        options: ["--force"]
+      - name: vg_data
+        base: ["pv_data1", "pv_data2"]
+        options: ["--force"]
+
+    lvs:
+      - name: lv_root
+        base: vg_root
+        size: 1800M
+
+      - name: lv_data
+        base: vg_data
+        size: 2G
+
+- mkfs:
+    name: fs_root
+    base: lv_root
+    label: "img-rootfs"
+    type: "xfs"
+    mount:
+      mount_point: /
+      fstab:
+          options: "rw,relatime"
+          fsck-passno: 1
+
+- mkfs:
+    name: fs_data
+    base: lv_data
+    type: "xfs"
+    mount:
+      mount_point: /opt
+      fstab:
+          options: "rw,relatime"
