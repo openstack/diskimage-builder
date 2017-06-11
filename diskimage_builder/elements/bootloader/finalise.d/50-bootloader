@@ -63,9 +63,9 @@ function install_grub2 {
 
     # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
     # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
-    GRUBNAME=$(which grub-install) || echo "trying grub2-install"
+    GRUBNAME=$(type -p grub-install) || echo "trying grub2-install"
     if [ -z "$GRUBNAME" ]; then
-        GRUBNAME=$(which grub2-install)
+        GRUBNAME=$(type -p grub2-install)
     fi
 
     # If no GRUB2 is found, fallback to extlinux
@@ -145,7 +145,7 @@ function install_grub2 {
     echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
     echo 'GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS0,115200 no_timer_check"' >>/etc/default/grub
     echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
-    if which grub2-mkconfig >/dev/null; then
+    if type grub2-mkconfig >/dev/null; then
         GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
     else
         GRUB_MKCONFIG="grub-mkconfig -o $GRUB_CFG"

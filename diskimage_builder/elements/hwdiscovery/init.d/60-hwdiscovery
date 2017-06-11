@@ -20,7 +20,7 @@ function pxe_mac() {
       # boot interface with no problems.
       _mac="${BASH_REMATCH[1]//-/:}"
       _mac="${_mac#*:}"
-  elif [[ -d /sys/firmware/efi ]] && which efibootmgr &>/dev/null; then
+  elif [[ -d /sys/firmware/efi ]] && type efibootmgr &>/dev/null; then
       # Likewise, if we booted via the network while running in UEFI mode, and
       # efibootmgr is installed, we can determine the MAC address of the nic we
       # booted from.  It would be good to have code that can also do this using

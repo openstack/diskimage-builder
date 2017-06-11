@@ -209,6 +209,23 @@ for i in $(find $ELEMENTS_DIR -type f \
         fi
     fi
 
+    # check that which calls are not used. It is not built in and is missing
+    # from some constrained environments
+    if ! excluded which; then
+        while read LINE
+        do
+            if [[ $LINE =~ "which " ]]; then
+                #  Don't match:
+                #  - explicitly ignored
+                #  - commented
+                if [[ $LINE =~ (dib-lint: which|^#) ]]; then
+                    continue
+                fi
+                error "$i : potential use of which\n -- $LINE"
+            fi
+        done < $i
+    fi
+
 done
 
 echo "Checking indents..."

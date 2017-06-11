@@ -46,7 +46,7 @@ mv "$TMP_MOUNT_PATH/init" "$MODULE_PATH/80deploy-ramdisk/init.sh"
 # been released for all of our supported platforms we can remove this.  Until then
 # this makes --include work correctly and will be a noop if we're running a fixed
 # Dracut version.
-sed -i 's|cp --reflink=auto --sparse=auto -fa -t "$s" "$i"$|cp --reflink=auto --sparse=auto -fa -t "${initdir}/${tgt}" "$i"|g' $(which dracut)
+sed -i 's|cp --reflink=auto --sparse=auto -fa -t "$s" "$i"$|cp --reflink=auto --sparse=auto -fa -t "${initdir}/${tgt}" "$i"|g' $(type -p dracut)
 
 # Notes on the options passed to Dracut:
 # -N: Do not build a host-specific ramdisk.  We want to be able to run this ramdisk
