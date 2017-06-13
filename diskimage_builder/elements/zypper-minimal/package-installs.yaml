@@ -1,5 +1,7 @@
 # kernel
 kernel-default:
+# locale support (we need LC_ALL=en_US.utf8)
+glibc-locale:
 # And a few useful tools. Some are pulled
 # as dependencies but that may change so lets
 # be explicit.

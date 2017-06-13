@@ -1,0 +1,12 @@
+#!/bin/bash
+# Only keep the minimum amount of locales to save disk space
+#
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+find /usr/lib/locale -mindepth 1 -maxdepth 1 -type d 2>/dev/null | \
+    grep -Ev '/(C.utf8|en_US|en_US.utf8)$' | xargs rm -rf
