@@ -36,7 +36,7 @@ usage() {
 
 
 output_prefix() {
-    printf "%s %s " "${name}" "$(date)" >&2
+    printf "%s " "${name}" >&2
 }
 
 output () {

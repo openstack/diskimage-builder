@@ -1,0 +1,14 @@
+---
+features:
+  - A ``--logfile`` option is added to save output to a given file.
+
+  - By default, all ``stdout`` will log with timestamps (this used to
+    be inconsistent; python tools logged with a timestamp, and bash
+    parts did not).  If you set ``DIB_NO_TIMESTAMP`` to ``1`` the
+    timestamp prefix will be suppressed (this would be appropriate if
+    you are running diskimage-builder and capturing its output, and
+    adding your own timestamp).  Note that output to ``--logfile``
+    will always be timestamped.
+
+  - You can set ``DIB_QUIET`` to ``1`` to suppress all output.  This
+    is likely only useful when used with the ``--logfile`` command.
