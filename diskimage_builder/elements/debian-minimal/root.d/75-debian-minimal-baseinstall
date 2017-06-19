@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# dib-lint: disable=safe_sudo
+
 if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
     set -x
 fi
@@ -54,13 +56,23 @@ $apt_get update
 $apt_get clean
 $apt_get dist-upgrade -y
 
-$apt_get install -y busybox sudo
+to_install=""
+
+# pre-stretch (9.0) brought this in via debootstrap, but init
+# dependencies have narrowed in the container world, so now we add it
+# explicitly here so it's brought in early.
+to_install+="systemd-sysv "
+
+# default required
+to_install+="busybox sudo "
 
 if [ "$DIB_PYTHON_VERSION" == "2" ]; then
-    $apt_get install -y python
+    to_install+="python "
 elif [ "$DIB_PYTHON_VERSION" == "3" ]; then
-    $apt_get install -y python3
+    to_install+="python3 "
 else
     echo "ERROR: DIB_PYTHON_VERSION is '$DIB_PYTHON_VERSION' but needs to be 2 or 3"
     exit 1
 fi
+
+$apt_get install -y $to_install
