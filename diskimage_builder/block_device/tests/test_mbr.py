@@ -12,6 +12,7 @@
 
 import fixtures
 import logging
+import mock
 import os
 import subprocess
 
@@ -62,11 +63,17 @@ class TestMBR(tb.TestBase):
         logger.info("Running command: %s", self.partx_args)
         return subprocess.check_output(self.partx_args).decode("ascii")
 
-    def test_one_ext_partition(self):
+    @mock.patch('os.fsync', wraps=os.fsync)
+    def test_one_ext_partition(self, mock_os_fsync):
         """Creates one partition and check correctness with partx."""
 
         with MBR(self.image_path, TestMBR.disk_size_1G, 1024 * 1024) as mbr:
             mbr.add_partition(False, False, TestMBR.disk_size_10M, 0x83)
+
+        # the exit handler of MBR should have synced the raw device
+        # before exit
+        mock_os_fsync.assert_called()
+
         output = self._run_partx(self.image_path)
         self.assertEqual(
             "1 2048 2097151 0xf 0x0 dos\n"

@@ -11,9 +11,10 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-import logging
-import random
 
+import logging
+import os
+import random
 
 from struct import pack
 
@@ -173,6 +174,8 @@ class MBR(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        self.image_fd.flush()
+        os.fsync(self.image_fd.fileno())
         self.image_fd.close()
 
     def lba2chs(self, lba):

@@ -143,16 +143,13 @@ class Partitioning(PluginBase):
                 self.state['blockdev'][part_name] \
                     = {'device': partition_device_name}
 
+        # "saftey sync" to make sure the partitions are written
+        exec_sudo(["sync"])
+
         # now all the partitions are created, get device-mapper to
         # mount them
         if not os.path.exists("/.dockerenv"):
             exec_sudo(["kpartx", "-avs", device_path])
-            # We need to make sure udev finishes creating the device
-            # before continuting, so "udevadm settle".  Otherwise later
-            # commands can fail with "file does not exist".
-            # XXX: "-s" (synchronous) to kpartx should avoid this,
-            # but experience shows it does not.
-            exec_sudo(["udevadm", "settle"])
         else:
             # If running inside Docker, make our nodes manually,
             # because udev will not be working. kpartx cannot run in
