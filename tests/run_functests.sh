@@ -11,6 +11,10 @@ export DIB_ELEMENTS=$(python -c '
 import diskimage_builder.paths
 diskimage_builder.paths.show_path("elements")')
 
+# XXX: This will move into the gate scripts, and happen before
+# we run this script ... just here for initial bringup
+./openstack/diskimage-builder/contrib/setup-gate-mirrors.sh
+
 # Setup sane locale defaults, because this information is leaked into DIB.
 export LANG=en_US.utf8
 export LC_ALL=
@@ -42,10 +46,6 @@ DEFAULT_SKIP_TESTS=(
     debian-minimal/stable-build-succeeds
     debian-minimal/stable-vm
     debian/build-succeeds
-    # temporary disable until change to use mirrors
-    pip-and-virtualenv/source-install-fedora
-    ironic-agent/build-succeeds-fedora
-    fedora-minimal/build-succeeds
 )
 
 # The default output formats (specified to disk-image-create's "-t"

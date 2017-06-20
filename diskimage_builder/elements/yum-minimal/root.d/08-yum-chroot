@@ -78,15 +78,23 @@ function _install_repos {
         packages+="${DISTRO_NAME}-repos "
     fi
 
+    # By default, parent elements (fedora-minimal, centos-minimal)
+    # have a yum.repos.d directory in the element with a default repo;
+    # this is copied to TMP_HOOK_PATH by the usual hook-copying
+    # routines.  In the gate, environment.d files for the funtional
+    # tests will set DIB_YUM_MINIMAL_BOOTSTRAP_REPOS -- this contains
+    # mirrors correct for the region setup by contrib/setup-gate-mirrors.sh
+    local repo=${DIB_YUM_MINIMAL_BOOTSTRAP_REPOS:-${TMP_HOOKS_PATH}/yum.repos.d}
+
     # yumdownloader puts repo xml files and such into a directory
     # ${TMPDIR}/yum-$USER-random.  Since we don't need this once the
     # initial download happens, redirect TMPDIR for this call so we
     # can clean it up nicely
     local temp_tmp
     temp_tmp=$(mktemp -d)
-    TMPDIR=${temp_tmp} yumdownloader \
+    TMPDIR=${temp_tmp} yumdownloader --verbose \
         --releasever=$DIB_RELEASE \
-        --setopt=reposdir=$TMP_HOOKS_PATH/yum.repos.d \
+        --setopt=reposdir=$repo \
         --destdir=$WORKING \
         ${packages} && rc=$? || rc=$?
     rm -rf ${temp_tmp}
@@ -97,6 +105,18 @@ function _install_repos {
     # --nodeps works around these wanting /bin/sh in some fedora
     # releases, see rhbz#1265873
     sudo $_RPM --root $TARGET_ROOT --nodeps -ivh $WORKING/*rpm
+
+    # install the bootstrap mirror repos over the default ones, if
+    # set.  we will remove this at the end so the final image has
+    # regular mirrors
+    if [[ -n ${DIB_YUM_MINIMAL_BOOTSTRAP_REPOS:-} ]]; then
+        for repo in $TARGET_ROOT/etc/yum.repos.d/*.repo; do
+            sudo mv $repo $repo.USING_MIRROR
+        done
+        sudo cp ${DIB_YUM_MINIMAL_BOOTSTRAP_REPOS}/* \
+            $TARGET_ROOT/etc/yum.repos.d/
+    fi
+
 }
 
 # _install_pkg_manager packages...
