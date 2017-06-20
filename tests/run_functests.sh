@@ -42,6 +42,10 @@ DEFAULT_SKIP_TESTS=(
     debian-minimal/stable-build-succeeds
     debian-minimal/stable-vm
     debian/build-succeeds
+    # temporary disable until change to use mirrors
+    pip-and-virtualenv/source-install-fedora
+    ironic-agent/build-succeeds-fedora
+    fedora-minimal/build-succeeds
 )
 
 # The default output formats (specified to disk-image-create's "-t"
