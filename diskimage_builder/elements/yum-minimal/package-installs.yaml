@@ -9,3 +9,4 @@ lsb_release:
 selinux-policy:
 selinux-policy-targeted:
 libselinux-python:
+redhat-rpm-config:
