@@ -36,7 +36,12 @@ DEFAULT_SKIP_TESTS=(
     # in testing does not work always.
     debian-minimal/testing-build-succeeds
     # No longer reasonable to test upstream (lacks a mirror in infra)
+    # note this is centos6
     centos/build-succeeds
+    # Needs infra mirroring to be stable
+    debian-minimal/stable-build-succeeds
+    debian-minimal/stable-vm
+    debian/build-succeeds
 )
 
 # The default output formats (specified to disk-image-create's "-t"
