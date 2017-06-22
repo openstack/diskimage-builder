@@ -154,7 +154,7 @@ function _get_chroot_processes () {
     # Deselect kernel threads, and use a python script to avoid
     # forking lots and lots of readlink / grep processes on a busy
     # system.
-    ps --ppid 2 -p 2 --deselect -o pid= | xargs python -c '
+    ps --ppid 2 -p 2 --deselect -o pid= | xargs ${DIB_PYTHON_EXEC:-python} -c '
 import os
 import sys
 
