@@ -73,14 +73,15 @@ trap "rm -rf $TMPDIR" EXIT
 
 # note .py files are run through flake8 directly in tox.ini
 for i in $(find $ELEMENTS_DIR -type f \
-                -not -name \*~        \
-                -not -name \#\*\#     \
-                -not -name \*.orig    \
                 -not -name \*.rst     \
                 -not -name \*.yaml    \
-                -not -name \*.py      \
-                -not -name \*.pyc); do
+                -not -name \*.py); do
 
+    # Skip files in .gitignore
+    if git check-ignore -q "$i" ; then
+        echo Skipping $i
+        continue
+    fi
     echo "Checking $i"
 
     exclusions=("$(parse_exclusions $i)")
@@ -232,6 +233,11 @@ echo "Checking indents..."
 
 for i in $(find $ELEMENTS_DIR -type f -and -name '*.rst' -or -type f -executable) \
              $(find $LIB_DIR -type f); do
+    # Skip files in .gitignore
+    if git check-ignore -q "$i" ; then
+        echo Skipping $i
+        continue
+    fi
     # Check for tab indentation
     if ! excluded tabindent; then
         if grep -q $'^ *\t' ${i}; then

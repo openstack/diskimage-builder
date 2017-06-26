@@ -4,6 +4,7 @@ cover/*
 *~
 .testrepository
 *.sw?
+#*#
 *.pyc
 .tox
 *.egg
