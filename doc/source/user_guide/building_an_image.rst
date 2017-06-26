@@ -506,11 +506,35 @@ image in. This will improve image build time by building it in RAM.
 By default, the tmpfs file system uses 50% of the available RAM.
 Therefore, the RAM should be at least the double of the minimum tmpfs
 size required.
+
 For larger images, when no sufficient amount of RAM is available, tmpfs
 can be disabled completely by passing --no-tmpfs to disk-image-create.
 ramdisk-image-create builds a regular image and then within that image
 creates ramdisk.
+
 If tmpfs is not used, you will need enough room in /tmp to store two
 uncompressed cloud images. If tmpfs is used, you would still need /tmp space
 for one uncompressed cloud image and about 20% of that image for working files.
 
+
+Chosing an Architecture
+-----------------------
+
+If needed you can specify an override the architecture selection by passing a
+``-a`` argument like:
+
+::
+
+    disk-image-create -a <arch> ...
+
+Notes about PowerPC Architectures
++++++++++++++++++++++++++++++++++
+
+PowerPC can operate in either Big or Little Endian mode.  ``ppc64``
+always refers to Big Endian operation.  When running in little endian
+mode it can be referred to as ``ppc64le`` or ``ppc64el``.
+
+Typically ``ppc64el`` refers to a ``.deb`` based distribution
+architecture, and ``ppc64le`` refers to a ``.rpm`` based distribution.
+Regardless of the distribution the kernel architecture is always
+``ppc64le``.
