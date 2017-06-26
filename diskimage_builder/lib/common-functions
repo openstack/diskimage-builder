@@ -398,7 +398,14 @@ function block_device_create_config_file {
     for i in ${!image_elements[@]}; do
         local cfg
         # look for arch specific version first, then default
-        cfg=${image_elements[$i]}/block-device-${ARCH}.yaml
+        if [[ "ppc64le ppc64el" =~ $ARCH ]] ; then
+            # NOTE(tonyb): ppc64el and ppc64le are the same archttechture, it's
+            # just different distro's have different names.  So if we're either
+            # of them pick the block-device-ppc64el.yaml file
+            cfg=${image_elements[$i]}/block-device-ppc64el.yaml
+        else
+            cfg=${image_elements[$i]}/block-device-${ARCH}.yaml
+        fi
         if [ -e ${cfg} ]; then
             cp ${cfg} ${config_yaml}
             echo "Using block-device config: ${cfg}"
