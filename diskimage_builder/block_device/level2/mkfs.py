@@ -109,7 +109,11 @@ class FilesystemNode(NodeBase):
         cmd.extend(['-t', self.type])
         if self.opts:
             cmd.extend(self.opts)
-        cmd.extend(["-L", self.label])
+
+        if self.type == "vfat":
+            cmd.extend(["-n", self.label])
+        else:
+            cmd.extend(["-L", self.label])
 
         if self.type in ('ext2', 'ext3', 'ext4'):
             cmd.extend(['-U', self.uuid])
