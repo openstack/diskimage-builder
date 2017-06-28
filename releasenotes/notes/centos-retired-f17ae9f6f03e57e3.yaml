@@ -1,0 +1,16 @@
+---
+deprecations:
+  - |
+    The ``centos`` and ``rhel`` elements have been removed.  These
+    were building version 6 which is no longer supported (mostly due
+    to a lack of python 2.7).  Version 7 support is available via the
+    ``centos7`` and ``rhel7`` elements (which downloads and modifies
+    the upstream cloud images) or via ``centos-minimal`` (which builds
+    the image from a empty chroot; only available for CentOS).
+    ``centos-minimal`` is suggested as this is what OpenStack
+    Infrastructure uses for its elements.
+
+    Unfortunately, ``centos-minimal`` sets ``DISTRO=centos`` while
+    ``centos7`` sets ``DISTRO=centos7``, despite building the same
+    thing as far as upper levels are concerned.  We plan to rectify
+    this in the version 8 time-frame.

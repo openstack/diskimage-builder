@@ -1,1 +1,0 @@
-export DIB_EXTLINUX=1

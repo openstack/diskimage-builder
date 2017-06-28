@@ -1,16 +1,4 @@
 {
-  "distro": {
-    "rhel": {
-      "tgt": "targetcli",
-      "curl": "curl",
-      "ironic-python-agent": "openstack-ironic-python-agent"
-    },
-    "centos":{
-      "tgt": "scsi-target-utils",
-      "curl": "curl",
-      "ironic-python-agent": "openstack-ironic-python-agent"
-    }
-  },
   "family": {
     "redhat": {
       "tgt": "scsi-target-utils",
