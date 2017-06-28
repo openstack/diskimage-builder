@@ -8,3 +8,5 @@ case ${DIB_RELEASE} in
     42*) export OPENSUSE_REPO_DIR=openSUSE_Leap_${DIB_RELEASE} ;;
     *) echo "Unsupported openSUSE release: ${DIB_RELEASE}"; exit 1 ;;
 esac
+
+export DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://download.opensuse.org}

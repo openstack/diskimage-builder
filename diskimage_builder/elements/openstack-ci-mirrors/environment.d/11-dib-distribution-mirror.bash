@@ -21,6 +21,8 @@ if [ -f /etc/ci/mirror_info.sh ]; then
         export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_CENTOS_MIRROR
     elif [[ "${DISTRO_NAME}" == "centos7" ]]; then
         export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_CENTOS_MIRROR
+    elif [[ "${DISTRO_NAME}" == "opensuse" ]]; then
+        export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_OPENSUSE_MIRROR
     fi
 
 fi
