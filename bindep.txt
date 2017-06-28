@@ -3,4 +3,4 @@
 squashfs-tools [!platform:suse]
 squashfs [platform:suse]
 zypper [!platform:redhat !platform:ubuntu-trusty]
-gnupg2 [!platform:redhat !platform:ubuntu-trusty]
+gnupg2 [!platform:redhat !platform:ubuntu-trusty !platform:suse]
