@@ -23,10 +23,6 @@ else
             RELEASE=7
             URL=$BASE_URL/$RELEASE/x86_64/e/
             ;;
-        rhel)
-            RELEASE=6
-            URL=$BASE_URL/$RELEASE/$ARCH/
-            ;;
         *)
             echo "$DISTRO_NAME is not supported"
             exit 1

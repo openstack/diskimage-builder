@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
+if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
 
     _do_py3=0
     packages="python-virtualenv python-pip python-setuptools"
