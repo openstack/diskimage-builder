@@ -15,8 +15,10 @@ if [[ "amd64 x86_64" =~ "$ARCH" ]]; then
 elif [[ "arm64 aarch64" =~ "$ARCH" ]]; then
     ARCH="aarch64"
     DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/altarch/7/images/aarch64}
+elif [[ "ppc64le" =~ "$ARCH" ]]; then
+    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/altarch/7/images/ppc64le}
 else
-    echo 'centos7 root element only support the x86_64 and aarch64 $ARCH value.'
+    echo 'centos7 root element only support the x86_64, aarch64 and ppc64le values for $ARCH'
     exit 1
 fi
 

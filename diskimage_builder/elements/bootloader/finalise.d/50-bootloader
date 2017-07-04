@@ -55,8 +55,11 @@ function install_grub2 {
     # Check for offline installation of grub
     if [ -f "/tmp/grub/install" ] ; then
         source /tmp/grub/install
+    # Right now we can't use pkg-map to branch by arch, so tag an architecture
+    # specific virtual package so we can install the rigth thing based on
+    # distribution.
     elif [[ "$ARCH" =~ "ppc" ]]; then
-        install-packages grub-ieee1275
+        install-packages -m bootloader grub-ppc64
     else
         install-packages -m bootloader grub-pc
     fi
@@ -117,12 +120,11 @@ function install_grub2 {
     fi
 
     if [[ "$ARCH" =~ "ppc" ]] ; then
-        # For PPC, we use the "boot" partition as the one to point
-        # grub-install to, not the loopback device.  ppc has a
-        # dedicated PReP boot partition.  This seems to only work on
-        # /dev/mapper/... nodes due to matching rules in grub
-        # XXX : this may not be true.  It seems to work,
-        # but requires some more investigation.
+        # For PPC (64-Bit regardless of Endian-ness), we use the "boot"
+        # partition as the one to point grub-install to, not the loopback
+        # device.  ppc has a dedicated PReP boot partition.
+        # For grub2 < 2.02~beta3 this needs to be a /dev/mapper/... node after
+        # that a dev/loopXpN node will work fine.
         $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
     else
         $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV

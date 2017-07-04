@@ -14,11 +14,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-# options for create-baremetal-image.sh
 if [ -f /etc/debian_version ]; then
   _ARCH=$(dpkg --print-architecture)
 else
   _ARCH=$(uname -m)
+  # Standardise Architecture names
   case $_ARCH in
     "x86_64")
       _ARCH="amd64"
@@ -28,9 +28,6 @@ else
       ;;
     "aarch64")
       _ARCH="arm64"
-      ;;
-    *)
-      echo "WARNING: Unknown architecture: $_ARCH"
       ;;
   esac
 fi
