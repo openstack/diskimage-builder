@@ -104,8 +104,15 @@ function run_d_in_target () {
 
 function finalise_base () {
     TARGET_ROOT=$TMP_MOUNT_PATH run_d cleanup
-    # If the file has been set immutable, we probably want to keep it
-    if lsattr $TMP_MOUNT_PATH/etc/resolv.conf | grep '^....i' >/dev/null ; then
+    # In create_base() we replaced/created the initial resolv.conf
+    # inside the image with a copy of the "outside" version so that
+    # resolving during the build will work.
+    #
+    # If that file has been replace with a symlink (resolvconf package
+    # can do this), or marked immutable, then don't restore the
+    # original version, just leave it alone.
+    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] || \
+           lsattr $TMP_MOUNT_PATH/etc/resolv.conf | grep '^....i' >/dev/null ; then
         # We're keeping the contents of resolv.conf set in the elements,
         # so remove the old saved file
         sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
