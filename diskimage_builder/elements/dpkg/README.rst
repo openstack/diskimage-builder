@@ -13,13 +13,13 @@ The dpkg specific version of install-packages is also kept here.
 Environment Variables
 ---------------------
 
-DIB_APT_KEYS
+DIB_ADD_APT_KEYS
   :Required: No
   :Default: None
   :Description: If an extra or updated apt key is needed then define
     ``DIB_ADD_APT_KEYS`` with the path to a folder. Any key files inside will be
     added to the key ring before any apt-get commands take place.
-  :Example: ``DIB_APT_KEYS=/etc/apt/trusted.gpg.d``
+  :Example: ``DIB_ADD_APT_KEYS=/etc/apt/trusted.gpg.d``
 
 DIB_APT_LOCAL_CACHE
   :Required: No
