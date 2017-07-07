@@ -145,7 +145,17 @@ function install_grub2 {
     echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
     echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
     echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
-    echo 'GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS0,115200 no_timer_check"' >>/etc/default/grub
+
+    # Serial console on Power is hvc0
+    if [ "powerpc ppc64 ppc64le" =~ "$ARCH" ] ; then
+        SERIAL_CONSOLE="hvc0"
+    else
+        SERIAL_CONSOLE="ttyS0,115200"
+    fi
+
+    GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=${SERIAL_CONSOLE} no_timer_check"
+
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT}\"" >>/etc/default/grub
     echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
     if type grub2-mkconfig >/dev/null; then
         GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
