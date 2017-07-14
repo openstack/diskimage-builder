@@ -13,6 +13,12 @@ DIB_DISTRIBUTION_MIRROR:
                  the directory containing the ``5/6/7`` directories.
    :Example: ``DIB_DISTRIBUTION_MIRROR=http://amirror.com/centos``
 
+DIB_DISTRIBUTION_MIRROR_PROXY:
+   :Required: No
+   :Default: None
+   :Description: Specify a proxy to reach the specified CentOS Yum mirror,
+   :Example: ``DIB_DISTRIBUTION_MIRROR_PROXY=http://proxyaddr:3128``
+
 DIB_CLOUD_IMAGES
   :Required: No
   :Description: Set the desired URL to fetch the images from.  ppc64le:
