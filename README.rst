@@ -28,7 +28,7 @@ Platforms supported include Ubuntu, CentOS, RHEL and Fedora.
 Full documentation, the source of which is in ``doc/source/``, is
 published at:
 
-* https://docs.openstack.org/developer/diskimage-builder/
+* https://docs.openstack.org/diskimage-builder/latest/
 
 Copyright
 =========
