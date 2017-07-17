@@ -86,7 +86,7 @@ echo -e "# This file intentionally left blank\n" | \
 echo -e 'LANG="en_US.UTF-8"' | \
 sudo tee $TARGET_ROOT/etc/locale.conf
 # default to UTC
-sudo -E chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
+sudo chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
     /etc/localtime
 
 # RPM doesn't know whether files have been changed since install
