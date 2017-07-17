@@ -5,7 +5,7 @@ import os
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 sys.path.append(os.path.abspath('../lib'))
-extensions = ['oslosphinx', 'element_deps', 'sphinx.ext.autodoc']
+extensions = ['openstackdocstheme', 'element_deps', 'sphinx.ext.autodoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -22,6 +22,12 @@ master_doc = 'index'
 # General information about the project.
 project = u'diskimage-builder'
 copyright = u'2015-2016, Various Authors'
+
+# openstackdocstheme options
+repository_name = 'openstack/diskimage-builder'
+bug_project = 'diskimage-builder'
+bug_tag = ''
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -80,7 +86,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'openstackdocs'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
