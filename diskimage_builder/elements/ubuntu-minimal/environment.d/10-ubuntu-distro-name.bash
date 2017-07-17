@@ -2,10 +2,6 @@ export DISTRO_NAME=ubuntu
 export DIB_RELEASE=${DIB_RELEASE:-xenial}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main,universe}
 
-if [ -n "${DIB_UBUNTU_DISTRIBUTION_MIRROR:-}" ]; then
-    DIB_DISTRIBUTION_MIRROR=$DIB_UBUNTU_DISTRIBUTION_MIRROR
-fi
-
 # There are two default distro mirrors depending on architecture
 ARCH=${ARCH:-}
 if [[ "arm64 armhf powerpc ppc64el s390x" =~ "$ARCH" ]]; then
