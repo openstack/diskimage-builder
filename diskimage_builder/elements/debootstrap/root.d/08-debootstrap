@@ -34,6 +34,8 @@ DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-$
 http_proxy=${http_proxy:-}
 no_proxy=${no_proxy:-}
 
+DEBOOTSTRAP_QEMU=""
+
 if [ -n "$DIB_OFFLINE" -o -n "${DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE:-}" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
     echo $DEBOOTSTRAP_TARBALL found in cache. Using.
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
@@ -47,7 +49,14 @@ else
     # Have to --include=python because of dib-run-parts
     # Have to --include=sudo for pre-install.d use of sudoers files
     # Have to --include=busybox because initramfs needs it
-    sudo sh -c "http_proxy=$http_proxy no_proxy=$no_proxy debootstrap --verbose \
+
+    if [ $(dpkg --print-architecture) != ${ARCH} ]; then
+        # Target architecture diffrent from host architecture:
+        # there is the need to call 'qemu-debootstrap'.
+        DEBOOTSTRAP_QEMU="qemu-"
+    fi
+
+    sudo sh -c "http_proxy=$http_proxy no_proxy=$no_proxy ${DEBOOTSTRAP_QEMU}debootstrap --verbose \
         --variant=minbase \
         --components=${DIB_DEBIAN_COMPONENTS} \
         --arch=${ARCH} \
@@ -63,7 +72,6 @@ else
     # and the old has to go.
     sudo rm -fr ${TARGET_ROOT}/etc/apt/sources.list \
         ${TARGET_ROOT}/etc/apt/sources.list.d
-
 
     echo Caching debootstrap result in $DEBOOTSTRAP_TARBALL
     if [ "${DIB_DEBOOTSTRAP_CACHE:-0}" != "0" ]; then
