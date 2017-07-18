@@ -157,7 +157,8 @@ function _install_pkg_manager {
         flock -w 1200 9 || die "Can not lock .rpmmacros"
         echo "%_dbpath /var/lib/rpm" >> $HOME/.rpmmacros
 
-        _lang_pack=""
+        local _lang_pack=""
+        local _extra_pkgs=""
 
         if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -le 23 ]; then
             # _install_langs is a rpm macro that limits the translation
@@ -184,13 +185,21 @@ function _install_pkg_manager {
             _lang_pack="glibc-minimal-langpack glibc-langpack-en"
         fi
 
+        # Yum has some issues choosing weak dependencies.  It can end
+        # up choosing "coreutils-single" instead of "coreutils" which
+        # causes problems later when a package actually requires
+        # coreutils.  For more info see
+        #  https://bugzilla.redhat.com/show_bug.cgi?id=1286445
+        # Really all we can do is pre-install the right thing
+        _extra_pkgs+="coreutils "
+
         sudo -E yum -y \
             --disableexcludes=all \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
             --releasever=$DIB_RELEASE \
             --installroot $TARGET_ROOT \
-            install $@ ${_lang_pack} && rc=$? || rc=$?
+            install $@ ${_lang_pack} ${_extra_pkgs} && rc=$? || rc=$?
 
         # We modified the base system - make sure we clean up always!
         rm $HOME/.rpmmacros.dib.lock
