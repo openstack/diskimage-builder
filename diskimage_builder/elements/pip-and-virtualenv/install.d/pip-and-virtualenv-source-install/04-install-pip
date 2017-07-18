@@ -15,6 +15,9 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
         packages+=" python3-virtualenv python3-pip python3-setuptools"
     fi
 
+    # force things to happen so our assumptions hold
+    pip_args="-U --force-reinstall"
+
     # GENERAL WARNING : mixing packaged python libraries with
     # pip-installed versions always creates issues.  Upstream
     # openstack-infra uses this a lot (especially devstack) but be
@@ -31,7 +34,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     fi
 
     # install the latest python2 pip; this overwrites packaged pip
-    python /tmp/get-pip.py
+    python /tmp/get-pip.py ${pip_args}
 
     # pip and setuptools are closely related; we want to ensure the
     # latest for sanity.  Because distro packages don't include enough
@@ -44,7 +47,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     # But just installing setuptools shouldn't require setuptools
     # itself, so we are safe for this small section.
     rm -rf /usr/lib/python2.7/site-packages/setuptools*
-    pip install -U setuptools
+    pip install ${pip_args} setuptools
 
     if [[ $_do_py3 -eq 1 ]]; then
         # Repeat above for python3
@@ -52,9 +55,9 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
         # python2 would work -- alas get-pip.py doesn't seem to leave
         # python3 alone:
         #  https://github.com/pypa/pip/issues/4435
-        python3 /tmp/get-pip.py
+        python3 /tmp/get-pip.py ${pip_args}
         rm -rf /usr/lib/python3.?/site-packages/setuptools*
-        pip3 install -U setuptools
+        pip3 install ${pip_args} setuptools
         # reclaim /usr/bin/pip back to pip2
         ln -sf /usr/bin/pip2 /usr/bin/pip
     fi
@@ -69,9 +72,9 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     # [2] http://pkgs.fedoraproject.org/cgit/rpms/python-virtualenv.git/tree/python-virtualenv.spec#n116)
     rm /usr/bin/virtualenv*
     if [[ $_do_py3 -eq 1 ]]; then
-        pip3 install -U virtualenv
+        pip3 install ${pip_args} virtualenv
     fi
-    pip install -U virtualenv
+    pip install ${pip_args} virtualenv
 
     # at this point, we should have the latest
     # pip/setuptools/virtualenv packages for python2 & 3, and
