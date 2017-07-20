@@ -110,7 +110,7 @@ class FilesystemNode(NodeBase):
         if self.opts:
             cmd.extend(self.opts)
 
-        if self.type == "vfat":
+        if self.type in ('vfat', 'fat'):
             cmd.extend(["-n", self.label])
         else:
             cmd.extend(["-L", self.label])
