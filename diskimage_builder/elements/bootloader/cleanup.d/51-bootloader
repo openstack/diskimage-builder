@@ -38,11 +38,18 @@ fi
 # Dig up the initrd and kernel to use.
 select_boot_kernel_initrd $TARGET_ROOT
 
+# Serial console on Power is hvc0
+if [ "powerpc ppc64 ppc64le" =~ "$ARCH" ] ; then
+    SERIAL_CONSOLE="hvc0"
+else
+    SERIAL_CONSOLE="ttyS0,115200"
+fi
+
 sudo sh -c "cat > $CONF <<_EOF_
 DEFAULT linux
 
 LABEL linux
     KERNEL /boot/$KERNEL
-    APPEND ro root=LABEL=${DIB_ROOT_LABEL} console=tty0 console=ttyS0,115200 nofb nomodeset vga=normal
+    APPEND ro root=LABEL=${DIB_ROOT_LABEL} console=tty0 console=${SERIAL_CONSOLE} nofb nomodeset vga=normal
     INITRD /boot/$RAMDISK
 _EOF_"
