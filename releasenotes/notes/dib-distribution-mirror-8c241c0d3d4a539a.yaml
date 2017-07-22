@@ -1,0 +1,9 @@
+---
+deprecations:
+  - The ``DIB_[DISTRO]_DISTRIBUTION_MIRROR`` variables have been
+    removed.  These were undocumented ways to set
+    ``DIB_DISTRIBUTION_MIRROR`` for some elements.  It was not
+    implemented consistently and causing some confusion.  If you need
+    to setup mirrors for testing purposes, the
+    ``openstack-ci-mirrors`` element is a good example that is used by
+    OpenStack gate testing.
