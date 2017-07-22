@@ -24,8 +24,6 @@ fi
 set -eu
 set -o pipefail
 
-[ -n "${ZYPPER_REPOS}" ]
-
 function cleanup() {
     sudo umount $TARGET_ROOT/proc
     sudo umount $TARGET_ROOT/dev/pts
@@ -38,6 +36,30 @@ trap cleanup EXIT
 
 ZYPPER_TARGET_OPTS="--non-interactive --gpg-auto-import-keys --root $TARGET_ROOT"
 ZYPPER_INSTALL_OPTS="--no-recommends"
+
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://download.opensuse.org}
+
+case ${DIB_RELEASE} in
+    # We are using "=>" as the assignment symbol since "@" "=" etc could be used in the URI itself.
+    # Remember, we can't export an array in bash so we use a string instead.
+    # Repo format: {name}=>{uri}
+    # Old openSUSE releases
+    13*)
+        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/${DIB_RELEASE}/ "
+        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/${DIB_RELEASE}/repo/oss/"
+        ;;
+    # New Leap releases
+    42*)
+        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
+        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
+        ;;
+    # Tumbleweed
+    tumbleweed)
+        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/${DIB_RELEASE}/ "
+        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/${DIB_RELEASE}/repo/oss/"
+        ;;
+    *) echo "Unsupported openSUSE release: ${DIB_RELEASE}"; exit 1 ;;
+esac
 
 for repo in ${ZYPPER_REPOS}; do
     reponame=repo-${repo%%=>*}
