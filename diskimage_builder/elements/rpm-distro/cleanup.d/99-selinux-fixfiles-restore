@@ -1,0 +1,74 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# parser isn't smart enough to figure out \
+# dib-lint: disable=safe_sudo
+
+# Here be dragons ... a previous dragon slayer helpfully pointed out in
+#   http://www.spinics.net/lists/selinux/msg17379.html
+#
+#   Not all of the contexts defined by the offline system's
+#   file_contexts may be valid under the policy of the host on which
+#   you are running (e.g.  if they run different distributions or even
+#   different releases of the same distribution), which will normally
+#   prevent setting those contexts (the kernel won't recognize them).
+#   If you have this issue, you'll need to run setfiles as root in a
+#   special domain, setfiles_mac_t, that is allowed to set contexts
+#   unknown to the host policy, and likely chrooted so that it doesn't
+#   ask the kernel whether the contexts are valid via
+#   /sys/fs/selinux/context.  That is how livecd-creator supported
+#   creating images for other releases.
+
+# One issue you might see without fixing selinux file labels is sshd
+# will run in the kernel_t domain instead of the sshd_t domain, making
+# ssh connections fail with "Unable to get valid context for <user>"
+# error message.  Other failures will occur too.
+
+# XXX: is it really valid to build rpm-distros without this?
+if [[ ! -f ${TARGET_ROOT}/etc/selinux/targeted/contexts/files/file_contexts ]]; then
+    echo "No selinux policy found in chroot, skipping..."
+    exit 0
+fi
+
+if [[ ! -x ${TARGET_ROOT}/usr/sbin/setfiles ]]; then
+    echo "Can not find setfiles in chroot!"
+    exit 1
+fi
+
+# If we're on a selinux system, enable permissive mode for
+# setfiles_mac_t so we can relabel within the chroot without concern
+# for whatever policy is in the host kernel.  We will run under
+# "runcon" to specifically allow this
+_runcon=""
+if [[ -x /usr/sbin/semanage ]]; then
+    sudo semanage permissive -a setfiles_mac_t
+    _runcon="runcon -t setfiles_mac_t -- "
+fi
+
+# setfiles in > Fedora 26 added this flag:
+#   do not read /proc/mounts to obtain a list of
+#   non-seclabel mounts to be excluded from relabeling
+#   checks.  Setting this option is useful where there is
+#   a non-seclabel fs mounted with a seclabel fs
+# this describes our situation of being on a loopback device on
+# an ubuntu system, say.  See also
+#  https://bugzilla.redhat.com/show_bug.cgi?id=1472709
+_dash_m=""
+if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 26 ]]; then
+    _dash_m+="-m"
+fi
+
+IFS='|' read -ra SPLIT_MOUNTS <<< "$DIB_MOUNTPOINTS"
+for MOUNTPOINT in "${SPLIT_MOUNTS[@]}"; do
+    if [ "${MOUNTPOINT}" != "/tmp/in_target.d" ] && [ "${MOUNTPOINT}" != "/dev" ]; then
+        sudo ${_runcon} chroot ${TARGET_ROOT} \
+            /usr/sbin/setfiles -F ${_dash_m} \
+            /etc/selinux/targeted/contexts/files/file_contexts ${MOUNTPOINT}
+    fi
+done
+
