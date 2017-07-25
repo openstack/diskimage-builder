@@ -11,3 +11,4 @@ lsb-release:
 openssl:
 sed:
 sudo:
+tar:
