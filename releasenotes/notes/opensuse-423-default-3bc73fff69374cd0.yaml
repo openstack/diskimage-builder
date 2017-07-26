@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The opensuse and opensuse-minimal element are now defaulting to 42.3, which
+    is the latest stable openSUSE release. Building for 42.2 is still supported,
+    however requires setting DIB_RELEASE to '42.2' explicitly.

@@ -13,5 +13,5 @@ Environment Variables
 
 DIB_RELEASE
   :Required: No
-  :Default: 42.2
+  :Default: 42.3
   :Description: Set the desired openSUSE release.
