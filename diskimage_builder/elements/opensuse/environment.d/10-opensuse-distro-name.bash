@@ -1,5 +1,5 @@
 export DISTRO_NAME=opensuse
-export DIB_RELEASE=${DIB_RELEASE:-42.2}
+export DIB_RELEASE=${DIB_RELEASE:-42.3}
 export DIB_OPENSUSE_PATTERNS=patterns-openSUSE-base
 case ${DIB_RELEASE} in
     # Old openSUSE releases
