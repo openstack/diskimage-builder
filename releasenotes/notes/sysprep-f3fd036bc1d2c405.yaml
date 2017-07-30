@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Adds sysprep element included by all systemd distros
+fixes:
+  - |
+    Adds default sysprep element clearing /etc/machine-id which
+    prevents duplicated /etc/machine-id by forcing systemd to
+    generate a new id for each booted system.
