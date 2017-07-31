@@ -23,7 +23,8 @@ sudo apt-get install -y --force-yes \
         docker \
         kpartx \
         util-linux \
-        qemu-img || \
+        qemu-img \
+        policycoreutils-python || \
     sudo zypper -n install \
         bzip2 \
         debootstrap \
