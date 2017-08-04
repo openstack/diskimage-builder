@@ -3,6 +3,10 @@ Description=DHCP interface %i
 # We want to run after network.target so it doesn't try to bring
 # up the interfaces a second time, but network-online should not
 # be reached until after we've brought up the interfaces.
+# We also need to break the default dependencies which prevents
+# this from operating on Ubuntu/Debian as the unit gets stuck
+# into a cyclical dependency loop.
+DefaultDependencies=no
 After=network.target
 Before=network-online.target
 Wants=network-online.target
