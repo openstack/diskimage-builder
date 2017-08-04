@@ -162,3 +162,13 @@ class TestMBR(tb.TestBase):
             "9 155648 176127 0x83 0x0 dos\n"
             "10 178176 198655 0x83 0x0 dos\n"
             "11 200704 221183 0x83 0x0 dos\n", output)
+
+    def test_pri_fat32_lba_partition(self):
+        """Creates a partition with a non-default 'type' and verifies."""
+
+        with MBR(self.image_path, TestMBR.disk_size_1G, 1024 * 1024) as mbr:
+            mbr.add_partition(True, False, TestMBR.disk_size_10M, 0x0c)
+
+        output = self._run_partx(self.image_path)
+        self.assertEqual(
+            "1 2048 22527 0xc 0x0 dos\n", output)

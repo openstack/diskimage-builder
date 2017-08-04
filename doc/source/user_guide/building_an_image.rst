@@ -323,6 +323,11 @@ size
    (percentage) numbers: in the later case the size is calculated
    based on the remaining free space.
 
+type (optional)
+   The partition type stored in the MBR partition table entry. The
+   default value is '0x83' (Linux Default partition). Any valid one
+   byte hexadecimal value may be specified here.
+
 Example:
 
 .. code-block:: yaml
