@@ -26,6 +26,9 @@ Most image formats require the ``qemu-img`` tool which is provided by
 the ``qemu-utils`` package on Ubuntu/Debian or the ``qemu`` package on
 Fedora/RHEL/opensuse/Gentoo.
 
+When generating images with partitions, the ``kpartx`` tool is needed,
+which is provided by the ``kpartx`` package.
+
 Some image formats, such as ``VHD``, may require additional
 tools. Please see the ``disk-image-create`` help output for more
 information.
