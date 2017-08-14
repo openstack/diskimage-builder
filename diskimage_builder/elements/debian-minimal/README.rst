@@ -3,8 +3,7 @@ debian-minimal
 ==============
 
 The ``debian-minimal`` element uses debootstrap for generating a
-minimal image. In contrast the ``debian`` element uses the cloud-image
-as the initial base.
+minimal image.
 
 By default this element creates the latest stable release.  The exact
 setting can be found in the element's ``environment.d`` directory in
