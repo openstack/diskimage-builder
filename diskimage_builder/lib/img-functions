@@ -95,7 +95,7 @@ function run_d_in_target () {
       trap - ERR
       check_break after-$1 run_in_target bash
       sudo umount -f $TMP_MOUNT_PATH/tmp/in_target.d
-      if ! timeout 5  sh -c " while ! sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d; do sleep 1; done"; then
+      if ! timeout 10  sh -c " while ! sudo rmdir $TMP_MOUNT_PATH/tmp/in_target.d; do sleep 1; done"; then
           echo "ERROR: unable to cleanly remove $TMP_MOUNT_PATH/tmp/in_target.d"
           exit 1
       fi

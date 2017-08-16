@@ -193,7 +193,7 @@ function kill_chroot_processes () {
 }
 
 function cleanup_build_dir () {
-    if ! timeout 5  sh -c " while ! sudo rm -rf $TMP_BUILD_DIR/built; do sleep 1; done"; then
+    if ! timeout 10  sh -c " while ! sudo rm -rf $TMP_BUILD_DIR/built; do sleep 1; done"; then
         echo "ERROR: unable to cleanly remove $TMP_BUILD_DIR/built"
         exit 1
     fi
