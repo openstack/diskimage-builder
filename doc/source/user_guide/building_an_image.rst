@@ -176,9 +176,6 @@ Tree and digraph notations can be mixed as needed in a configuration.
 Limitations
 +++++++++++
 
-There are a couple of new modules planned, but not yet implemented,
-like LVM, MD, encryption, ...
-
 To provide an interface towards the existing elements, there are
 currently three fixed keys used - which are not configurable:
 
@@ -356,6 +353,129 @@ Example:
 On the `image0` two partitions are created.  The size of the first is
 1GiB, the second uses the remaining free space.  On the `data_image`
 three partitions are created: all are about 1/3 of the disk size.
+
+Module: Lvm
+···········
+
+This module generates volumes on existing block devices. This means that it is
+possible to take any previous created partition, and create volumes information
+in it.
+
+The symbolic name for this module is `lvm`.
+
+There are the following key / value pairs to define one set of volumes:
+
+pvs
+    (mandatory) A list of dictionaries. Each dictionary describes one
+    physical volume.
+
+vgs
+    (mandatory) A list of dictionaries. Each dictionary describes one volume
+    group.
+
+lvs
+    (mandatory) A list of dictionaries. Each dictionary describes one logical
+    volume.
+
+The following key / value pairs can be given for each `pvs`:
+
+name
+    (mandatory) The name of the physical volume. With the help of this
+    name, the physical volume can later be referenced, e.g. when creating
+    a volume group.
+
+base
+    (mandatory) The name of the partition where the physical volume
+    needs to be created.
+
+options
+    (optional) List of options for the physical volume. It can contain
+    any option supported by the `pvcreate` command.
+
+The following key / value pairs can be given for each `vgs`:
+
+name
+    (mandatory) The name of the volume group. With the help of this name,
+    the volume group can later be referenced, e.g. when creating a logical
+    volume.
+
+base
+    (mandatory) The name(s) of the physical volumes where the volume groups
+    needs to be created. As a volume group can be created on one or more
+    physical volumes, this needs to be a list.
+
+options
+    (optional) List of options for the volume group. It can contain any
+    option supported by the `vgcreate` command.
+
+The following key / value pairs can be given for each `lvs`:
+
+name
+    (mandatory) The name of the logical volume. With the help of this name,
+    the logical volume can later be referenced, e.g. when creating a
+    filesystem.
+
+base
+    (mandatory) The name of the volume group where the logical volume
+    needs to be created.
+
+size
+    (optional) The exact size of the volume to be created. It accepts the same
+    syntax as the -L flag of the `lvcreate` command.
+
+extents
+    (optional) The relative size in extents of the volume to be created. It
+    accepts the same syntax as the -l flag of the `lvcreate` command.
+    Either size or extents need to be passed on the volume creation.
+
+options
+    (optional) List of options for the logical volume. It can contain any
+    option supported by the `lvcreate` command.
+
+Example:
+
+.. code-block: yaml
+
+    - lvm:
+        name: lvm
+        pvs:
+          - name: pv
+            options: ["--force"]
+            device: root
+
+        vgs:
+          - name: vg
+            base: ["pv"]
+            options: ["--force"]
+
+        lvs:
+          - name: lv_root
+            base: vg
+            size: 1800M
+
+          - name: lv_tmp
+            base: vg
+            size: 100M
+
+          - name: lv_var
+            base: vg
+            size: 500M
+
+          - name: lv_log
+            base: vg
+            size: 100M
+
+          - name: lv_audit
+            base: vg
+            size: 100M
+
+          - name: lv_home
+            base: vg
+            size: 200M
+
+On the `root` partition a physical volume is created. On that physical
+volume, a volume group is created. On top of this volume group, six logical
+volumes are created.
 
 
 Level 2

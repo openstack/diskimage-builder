@@ -1,0 +1,113 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    label: mbr
+    partitions:
+      - name: root
+        flags: [ boot,primary ]
+        size: 3G
+      - name: data
+        flags: [ primary ]
+        size: 1G
+
+- lvm:
+    name: lvm
+    pvs:
+      - name: pv
+        options: ["--force"]
+        base: root
+      - name: pv1
+        options: ["--force"]
+        base: data
+
+    vgs:
+      - name: vg1
+        base: ["pv"]
+        options: ["--force"]
+      - name: vg2
+        base: ["pv1"]
+        options: ["--force"]
+
+    lvs:
+      - name: lv_root
+        base: vg1
+        size: 1800M
+
+      - name: lv_tmp
+        base: vg1
+        size: 100M
+
+      - name: lv_var
+        base: vg2
+        size: 500M
+
+      - name: lv_log
+        base: vg2
+        size: 100M
+
+      - name: lv_audit
+        base: vg2
+        size: 100M
+
+      - name: lv_home
+        base: vg2
+        size: 200M
+
+- mkfs:
+    name: fs_root
+    base: lv_root
+    label: "img-rootfs"
+    type: "xfs"
+    mount:
+      mount_point: /
+      fstab:
+          options: "rw,relatime"
+          fsck-passno: 1
+
+- mkfs:
+    name: fs_var
+    base: lv_var
+    type: "xfs"
+    mount:
+      mount_point: /var
+      fstab:
+          options: "rw,relatime"
+
+- mkfs:
+    name: fs_log
+    base: lv_log
+    type: "xfs"
+    mount:
+      mount_point: /var/log
+      fstab:
+          options: "rw,relatime"
+
+- mkfs:
+    name: fs_audit
+    base: lv_audit
+    type: "xfs"
+    mount:
+      mount_point: /var/log/audit
+      fstab:
+          options: "rw,relatime"
+
+- mkfs:
+    name: fs_tmp
+    base: lv_tmp
+    type: "xfs"
+    mount:
+      mount_point: /tmp
+      fstab:
+          options: "rw,nosuid,nodev,noexec,relatime"
+
+- mkfs:
+    name: fs_home
+    base: lv_home
+    type: "xfs"
+    mount:
+      mount_point: /home
+      fstab:
+          options: "rw,nodev,relatime"
+
