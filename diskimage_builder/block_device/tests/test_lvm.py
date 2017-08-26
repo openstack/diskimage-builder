@@ -21,6 +21,7 @@ from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
+from diskimage_builder.block_device.level1.lvm import LVMCleanupNode
 from diskimage_builder.block_device.level1.lvm import LVMNode
 from diskimage_builder.block_device.level1.lvm import LVMPlugin
 from diskimage_builder.block_device.level1.lvm import LvsNode
@@ -88,7 +89,8 @@ class TestLVM(tc.TestGraphGeneration):
             # XXX: This has not mocked out the "lower" layers of
             # creating the devices, which we're assuming works OK, nor
             # the upper layers.
-            if isinstance(node, (LVMNode, PvsNode, VgsNode, LvsNode)):
+            if isinstance(node, (LVMNode, LVMCleanupNode, PvsNode,
+                                 VgsNode, LvsNode)):
                 # only the LVMNode actually does anything here...
                 node.create()
 
@@ -196,7 +198,8 @@ class TestLVM(tc.TestGraphGeneration):
                 # XXX: This has not mocked out the "lower" layers of
                 # creating the devices, which we're assuming works OK, nor
                 # the upper layers.
-                if isinstance(node, (LVMNode, PvsNode, VgsNode, LvsNode)):
+                if isinstance(node, (LVMNode, LVMCleanupNode, PvsNode,
+                                     VgsNode, LvsNode)):
                     # only the PvsNode actually does anything here...
                     node.create()
 
@@ -305,38 +308,23 @@ class TestLVM(tc.TestGraphGeneration):
 
             reverse_order = reversed(call_order)
             for node in reverse_order:
-                if isinstance(node, (LVMNode, PvsNode, VgsNode, LvsNode)):
+                if isinstance(node, (LVMNode, LVMCleanupNode, PvsNode,
+                                     VgsNode, LvsNode)):
                     node.cleanup()
 
             cmd_sequence = [
-                # copy the temporary drives
-                mock.call(['dd', 'if=/dev/fake/root', 'of=%s' % tempfiles[0]]),
-                mock.call(['dd', 'if=/dev/fake/data', 'of=%s' % tempfiles[1]]),
                 # delete the lv's
                 mock.call(['lvchange', '-an', '/dev/vg1/lv_root']),
-                mock.call(['lvremove', '--force', '/dev/vg1/lv_root']),
                 mock.call(['lvchange', '-an', '/dev/vg1/lv_tmp']),
-                mock.call(['lvremove', '--force', '/dev/vg1/lv_tmp']),
                 mock.call(['lvchange', '-an', '/dev/vg2/lv_var']),
-                mock.call(['lvremove', '--force', '/dev/vg2/lv_var']),
                 mock.call(['lvchange', '-an', '/dev/vg2/lv_log']),
-                mock.call(['lvremove', '--force', '/dev/vg2/lv_log']),
                 mock.call(['lvchange', '-an', '/dev/vg2/lv_audit']),
-                mock.call(['lvremove', '--force', '/dev/vg2/lv_audit']),
                 mock.call(['lvchange', '-an', '/dev/vg2/lv_home']),
-                mock.call(['lvremove', '--force', '/dev/vg2/lv_home']),
                 # delete the vg's
                 mock.call(['vgchange', '-an', 'vg1']),
-                mock.call(['vgremove', '--force', 'vg1']),
                 mock.call(['vgchange', '-an', 'vg2']),
-                mock.call(['vgremove', '--force', 'vg2']),
-                # delete the pv's
-                mock.call(['pvremove', '--force', '/dev/fake/root']),
-                mock.call(['pvremove', '--force', '/dev/fake/data']),
-                # copy back again
                 mock.call(['udevadm', 'settle']),
-                mock.call(['dd', 'if=%s' % tempfiles[0], 'of=/dev/fake/root']),
-                mock.call(['dd', 'if=%s' % tempfiles[1], 'of=/dev/fake/data']),
+                mock.call(['pvscan', '--cache']),
             ]
 
             self.assertListEqual(mock_exec_sudo.call_args_list, cmd_sequence)
@@ -377,7 +365,8 @@ class TestLVM(tc.TestGraphGeneration):
                 # XXX: This has not mocked out the "lower" layers of
                 # creating the devices, which we're assuming works OK, nor
                 # the upper layers.
-                if isinstance(node, (LVMNode, PvsNode, VgsNode, LvsNode)):
+                if isinstance(node, (LVMNode, LVMCleanupNode,
+                                     PvsNode, VgsNode, LvsNode)):
                     # only the LVMNode actually does anything here...
                     node.create()
 
@@ -424,39 +413,15 @@ class TestLVM(tc.TestGraphGeneration):
                     node.cleanup()
 
             cmd_sequence = [
-                # copy the temporary drives
-                mock.call(['dd', 'if=/dev/fake/root',
-                           'of=%s' % tempfiles[0]]),
-                mock.call(['dd', 'if=/dev/fake/data1',
-                           'of=%s' % tempfiles[1]]),
-                mock.call(['dd', 'if=/dev/fake/data2',
-                           'of=%s' % tempfiles[2]]),
-
-                # remove lv's
+                # deactivate lv's
                 mock.call(['lvchange', '-an', '/dev/vg_root/lv_root']),
-                mock.call(['lvremove', '--force', '/dev/vg_root/lv_root']),
                 mock.call(['lvchange', '-an', '/dev/vg_data/lv_data']),
-                mock.call(['lvremove', '--force', '/dev/vg_data/lv_data']),
 
-                # remove vg's
+                # deactivate vg's
                 mock.call(['vgchange', '-an', 'vg_root']),
-                mock.call(['vgremove', '--force', 'vg_root']),
                 mock.call(['vgchange', '-an', 'vg_data']),
-                mock.call(['vgremove', '--force', 'vg_data']),
 
-                # remove pv's
-                mock.call(['pvremove', '--force', '/dev/fake/root']),
-                mock.call(['pvremove', '--force', '/dev/fake/data1']),
-                mock.call(['pvremove', '--force', '/dev/fake/data2']),
-
-                # copy back again
                 mock.call(['udevadm', 'settle']),
-                mock.call(['dd', 'if=%s' % tempfiles[0],
-                           'of=/dev/fake/root']),
-                mock.call(['dd', 'if=%s' % tempfiles[1],
-                           'of=/dev/fake/data1']),
-                mock.call(['dd', 'if=%s' % tempfiles[2],
-                           'of=/dev/fake/data2']),
             ]
 
             self.assertListEqual(mock_exec_sudo.call_args_list, cmd_sequence)
