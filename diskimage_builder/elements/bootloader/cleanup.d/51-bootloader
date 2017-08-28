@@ -39,7 +39,7 @@ fi
 select_boot_kernel_initrd $TARGET_ROOT
 
 # Serial console on Power is hvc0
-if [ "powerpc ppc64 ppc64le" =~ "$ARCH" ] ; then
+if [[ "powerpc ppc64 ppc64le" =~ "$ARCH" ]] ; then
     SERIAL_CONSOLE="hvc0"
 else
     SERIAL_CONSOLE="ttyS0,115200"
