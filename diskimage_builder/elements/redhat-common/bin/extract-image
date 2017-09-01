@@ -96,7 +96,7 @@ function extract_image() {
             if [ 0 == `sudo chroot $WORKING/mnt bin/tar --help | grep -c xattrs-exclude` ]; then
                 TAROPTS="--no-xattrs"
             else
-                TAROPTS="--xattrs --xattrs-include='*' --xattrs-exclude='security.selinux'"
+                TAROPTS="--xattrs --xattrs-include=* --xattrs-exclude=security.selinux"
             fi
             # Chroot in so that we get the correct uid/gid
             sudo chroot $WORKING/mnt bin/tar $TAROPTS -cz . > $WORKING/tmp.tar
