@@ -10,6 +10,7 @@
     "default": {
         "alien": "",
         "gcc": "gcc",
-        "python-dev": "python-dev"
+        "python-dev": "python-dev",
+        "unzip": "unzip"
     }
 }
