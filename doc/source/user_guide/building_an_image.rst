@@ -477,6 +477,11 @@ On the `root` partition a physical volume is created. On that physical
 volume, a volume group is created. On top of this volume group, six logical
 volumes are created.
 
+Please note that in order to build images that are bootable using volumes,
+your ramdisk image will need to have that support. If the image you are using
+does not have it, you can add the needed modules and regenerate it, by
+including the `dracut-regenerate` element when building it.
+
 
 Level 2
 +++++++
