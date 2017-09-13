@@ -6,15 +6,16 @@ fi
 set -eu
 set -o pipefail
 
-# make sure system is in a consistent state
-echo 'PYTHON_TARGETS="python3_4"' >> /etc/portage/make.conf
-eselect python set python3.4
-# allow these uninstalls to fail as they may not be installed
-set +e
-emerge -C -q dev-lang/python:2.7
-emerge -C -q dev-vcs/git
-set -e
-USE="-build" emerge -q --backtrack=99 --jobs=2 --update --newuse --deep --with-bdeps=y @world
+if mountpoint -q /dev/shm; then
+    echo "/dev/shm found in /proc/self/mountinfo"
+elif [[ -k /dev/shm ]]; then
+    echo "/dev/shm exists and is stickied"
+else
+    fix_shm
+fi
+
+# make world consistant
+USE="-build" emerge -q --complete-graph=y --jobs=2 --update --newuse --deep --with-bdeps=y @world
 # rebuild packages that might need it
 USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
 # remove unneeded packages
@@ -45,3 +46,5 @@ if [[ -a /usr/sbin/grub2-install ]]; then
     mkdir -p /tmp/grub
     touch /tmp/grub/install
 fi
+
+unfix_shm

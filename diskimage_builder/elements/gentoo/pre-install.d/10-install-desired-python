@@ -1,0 +1,78 @@
+#!/bin/bash
+
+if [[ ${DIB_DEBUG_TRACE:-0} -gt 0 ]]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if mountpoint -q /dev/shm; then
+    echo "/dev/shm found in /proc/self/mountinfo"
+elif [[ -k /dev/shm ]]; then
+    echo "/dev/shm exists and is stickied"
+else
+    fix_shm
+fi
+
+if [[ ! -f /usr/portage/profiles ]]; then
+    emerge-webrsync -q
+fi
+
+# get the directories in order
+mkdir -p /etc/portage/profile
+mkdir -p /etc/portage/package.keywords
+mkdir -p /etc/portage/package.use
+
+# python-3.6 and python-3.5 are masked and considered unstable for some reason
+echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
+if [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]]; then
+    echo -e "-python_targets_python3_6\n-python_single_target_python3_6" >> /etc/portage/profile/use.stable.mask
+    echo 'dev-lang/python:3.6 ~amd64' >> /etc/portage/package.keywords/python
+    echo '~dev-python/setuptools-36.0.1 ~amd64' >> /etc/portage/package.keywords/python
+    echo '~dev-python/pyxattr-0.6.0 ~amd64' >> /etc/portage/package.keywords/python
+    echo '~sys-apps/kmod-24 ~amd64' >> /etc/portage/package.keywords/python
+    [[ ! -e /usr/lib64/libpython3.6m.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:3.6
+fi
+if [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_5"* ]]; then
+    echo -e "-python_targets_python3_5\n-python_single_target_python3_5" >> /etc/portage/profile/use.stable.mask
+    echo 'dev-lang/python:3.5 ~amd64' >> /etc/portage/package.keywords/python
+    echo '~dev-python/setuptools-36.0.1 ~amd64' >> /etc/portage/package.keywords/python
+    [[ ! -e /usr/lib64/libpython3.5m.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:3.5
+fi
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_4"* ]] && [[ ! -e /usr/lib64/libpython3.4m.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:3.4
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python2_7"* ]] && [[ ! -e /usr/lib64/libpython2.7.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:2.7
+# disable python in git if we have to, it only supports python-2.7
+if [[ "${GENTOO_PYTHON_TARGETS}" != *"python2_7"* ]]; then
+    echo 'dev-vcs/git -python' >> /etc/portage/package.use/git
+fi
+# make sure we have the new python for portage bevore we possibly remove python 2.7
+USE="-build" emerge -q --oneshot --jobs=2 --with-bdeps=y --update --newuse --deep sys-apps/portage dev-python/pyxattr
+# set the active python version
+eselect python set ${GENTOO_PYTHON_ACTIVE_VERSION}
+# allow these uninstalls to fail as they may not be installed to begin with
+set +e
+if [[ "${GENTOO_PYTHON_TARGETS}" != *"python2_7"* ]]; then
+    emerge -C -q dev-lang/python:2.7
+fi
+if [[ "${GENTOO_PYTHON_TARGETS}" != *"python3_4"* ]]; then
+    emerge -C -q dev-lang/python:3.4
+fi
+if [[ "${GENTOO_PYTHON_TARGETS}" != *"python3_5"* ]]; then
+    emerge -C -q dev-lang/python:3.5
+fi
+if [[ "${GENTOO_PYTHON_TARGETS}" != *"python3_6"* ]]; then
+    emerge -C -q dev-lang/python:3.6
+fi
+set -e
+
+# make world consistant
+USE="-build" emerge -q --complete-graph=y --jobs=2 --update --newuse --deep --with-bdeps=y @world
+# rebuild packages that might need it
+USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
+# remove unneeded packages
+USE="-build" emerge --verbose=n --depclean
+# rebuild packages that might have somehow depended on the unneeded packages
+USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
+
+
+unfix_shm

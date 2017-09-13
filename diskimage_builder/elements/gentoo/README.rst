@@ -34,3 +34,13 @@ Notes:
 * You can set the GENTOO_PORTAGE_CLEANUP environment variable to true (or
   anything other than False) to clean up portage from the system and get the
   image size smaller.
+
+* Gentoo supports many diferent versions of python, in order to select one
+  you may use the `GENTOO_PYTHON_TARGETS` environment variable to select
+  the versions of python you want on your image.  The format of this variable
+  is a string as follows `"python2_7 python3_5"`.
+
+* In addition you can select the primary python version you wish to use (that
+  which will be called by running the `python` command.  The
+  `GENTOO_PYTHON_ACTIVE_VERSION` is used to set that mapping.  The variable
+  contents can be something like `python3.5`.

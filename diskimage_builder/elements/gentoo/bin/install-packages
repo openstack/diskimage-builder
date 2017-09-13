@@ -32,49 +32,9 @@ function show_options {
     exit 0
 }
 
-function fix_shm {
-    # make /dev/shm dir if it doesn't exist
-    # mount tmpfs and chown it
-    # existing programs could be using /dev/shm
-    #  This means it cannot be moved or backed
-    #  up as a copy easily.  The only remaining
-    #  option is to move the link if it exists
-    #  as a link.  Existing programs will still
-    #  hold the file handle of the original
-    #  location open and new programs can use
-    #  the fixed /dev/shm.
-    if [[ "${RUN_ONCE_SHM}" == '1' ]]; then
-        if [[ ! -d /dev/shm ]]; then
-            if [[ ! -e /dev/shm ]]; then
-                if [[ -L /dev/shm ]]; then
-                    mv /dev/shm /dev/shm.orig
-                fi
-                mkdir /dev/shm
-            fi
-        fi
-        mount -t tmpfs none /dev/shm
-        chmod 1777 /dev/shm
-        RUN_ONCE_SHM='0'
-    fi
-}
-
-function unfix_shm {
-    # unmount tmpfs
-    # care about anything still using it
-    if [[ "${RUN_ONCE_SHM}" == '0' ]]; then
-        umount /dev/shm
-        if fuser /dev/shm; then
-            rmdir /dev/shm
-        fi
-        if [[ -e /dev/shm.orig ]]; then
-            mv /dev/shm.orig /dev/shm
-        fi
-    fi
-}
-
 function install_gentoo_packages {
     RUN_ONCE_SHM='1'
-    if grep -q /dev/shm /proc/mounts; then
+    if mountpoint -q /dev/shm; then
         emerge $@
     elif [[ -k /dev/shm ]]; then
         emerge $@
@@ -98,7 +58,7 @@ while true; do
             if [[ ! -f /usr/portage/profiles ]]; then
                 emerge-webrsync -q
             fi
-            install_gentoo_packages -uDNv --with-bdeps=y --backtrack=99 --jobs=2 @world
+            install_gentoo_packages -uDNv --with-bdeps=y --complete-graph=y --jobs=2 @world
             install_gentoo_packages --verbose=n --depclean
             install_gentoo_packages -v --usepkg=n @preserved-rebuild
             etc-update --automode -5
