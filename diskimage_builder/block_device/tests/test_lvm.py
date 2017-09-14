@@ -21,9 +21,9 @@ from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
-from diskimage_builder.block_device.level1.lvm import LVMCleanupNode
 from diskimage_builder.block_device.level1.lvm import LVMNode
 from diskimage_builder.block_device.level1.lvm import LVMPlugin
+from diskimage_builder.block_device.level1.lvm import LVMUmountNode
 from diskimage_builder.block_device.level1.lvm import LvsNode
 from diskimage_builder.block_device.level1.lvm import PvsNode
 from diskimage_builder.block_device.level1.lvm import VgsNode
@@ -89,7 +89,7 @@ class TestLVM(tc.TestGraphGeneration):
             # XXX: This has not mocked out the "lower" layers of
             # creating the devices, which we're assuming works OK, nor
             # the upper layers.
-            if isinstance(node, (LVMNode, LVMCleanupNode, PvsNode,
+            if isinstance(node, (LVMNode, LVMUmountNode, PvsNode,
                                  VgsNode, LvsNode)):
                 # only the LVMNode actually does anything here...
                 node.create()
@@ -198,7 +198,7 @@ class TestLVM(tc.TestGraphGeneration):
                 # XXX: This has not mocked out the "lower" layers of
                 # creating the devices, which we're assuming works OK, nor
                 # the upper layers.
-                if isinstance(node, (LVMNode, LVMCleanupNode, PvsNode,
+                if isinstance(node, (LVMNode, LVMUmountNode, PvsNode,
                                      VgsNode, LvsNode)):
                     # only the PvsNode actually does anything here...
                     node.create()
@@ -282,7 +282,7 @@ class TestLVM(tc.TestGraphGeneration):
             self.assertDictEqual(state['blockdev'], blockdev_state)
 
         #
-        # Cleanup test
+        # Umount test
         #
         with mock.patch(exec_sudo) as mock_exec_sudo, \
              mock.patch('tempfile.NamedTemporaryFile') as mock_temp, \
@@ -308,9 +308,9 @@ class TestLVM(tc.TestGraphGeneration):
 
             reverse_order = reversed(call_order)
             for node in reverse_order:
-                if isinstance(node, (LVMNode, LVMCleanupNode, PvsNode,
+                if isinstance(node, (LVMNode, LVMUmountNode, PvsNode,
                                      VgsNode, LvsNode)):
-                    node.cleanup()
+                    node.umount()
 
             cmd_sequence = [
                 # delete the lv's
@@ -365,7 +365,7 @@ class TestLVM(tc.TestGraphGeneration):
                 # XXX: This has not mocked out the "lower" layers of
                 # creating the devices, which we're assuming works OK, nor
                 # the upper layers.
-                if isinstance(node, (LVMNode, LVMCleanupNode,
+                if isinstance(node, (LVMNode, LVMUmountNode,
                                      PvsNode, VgsNode, LvsNode)):
                     # only the LVMNode actually does anything here...
                     node.create()
@@ -409,8 +409,9 @@ class TestLVM(tc.TestGraphGeneration):
 
             reverse_order = reversed(call_order)
             for node in reverse_order:
-                if isinstance(node, (LVMNode, PvsNode, VgsNode, LvsNode)):
-                    node.cleanup()
+                if isinstance(node, (LVMNode, LVMUmountNode,
+                                     PvsNode, VgsNode, LvsNode)):
+                    node.umount()
 
             cmd_sequence = [
                 # deactivate lv's
@@ -422,6 +423,7 @@ class TestLVM(tc.TestGraphGeneration):
                 mock.call(['vgchange', '-an', 'vg_data']),
 
                 mock.call(['udevadm', 'settle']),
+                mock.call(['pvscan', '--cache']),
             ]
 
             self.assertListEqual(mock_exec_sudo.call_args_list, cmd_sequence)
