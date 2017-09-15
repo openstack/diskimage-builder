@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# The systemd .spec file does this in %post [1] and it turns out that
+# (in what is possibly a bug [2]) that kernel install requires
+# /etc/machine-id.  This affects "fedora" (the image-based build) if
+# there is no systemd update to install ... with "fedora-minimal" we
+# are always installing into the chroot so, so %post always runs and
+# this is always run
+#
+# [1] https://src.fedoraproject.org/rpms/systemd/blob/master/f/systemd.spec
+# [2] https://bugzilla.redhat.com/show_bug.cgi?id=1486124
+
+systemd-machine-id-setup
