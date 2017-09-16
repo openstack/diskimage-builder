@@ -95,6 +95,17 @@ class MountPointNode(NodeBase):
 
     def umount(self):
         logger.info("Called for [%s]", self.name)
+        # Before calling umount call 'fstrim' on the mounted file
+        # system.  This discards unused blocks from the mounted
+        # file system and therefore decreases the resulting image
+        # size.
+        # A race condition can occur when trying to fstrim immediately after
+        # deleting a file resulting in that free space not being reclaimed.
+        # Calling sync before fstrim is a workaround for this behaviour.
+        # https://lists.gnu.org/archive/html/qemu-devel/2014-03/msg02978.html
+        exec_sudo(["sync"])
+        exec_sudo(["fstrim", "--verbose",
+                   self.state['mount'][self.mount_point]['path']])
         exec_sudo(["umount", self.state['mount'][self.mount_point]['path']])
 
     def delete(self):

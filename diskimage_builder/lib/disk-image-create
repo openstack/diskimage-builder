@@ -480,11 +480,6 @@ for X in ${!IMAGE_TYPES[@]} ; do
   fi
 done
 
-if [[ ! $IMAGE_ELEMENT =~ no-final-image ]]; then
-  # Prep filesystem by discarding all unused space
-  fstrim_image
-fi
-
 # Unmount and cleanup the /mnt and /build subdirectories, to save
 # space before converting the image to some other format.
 # XXX ? needed?

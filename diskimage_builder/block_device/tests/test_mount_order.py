@@ -13,6 +13,7 @@
 import functools
 import logging
 import mock
+import os
 
 import diskimage_builder.block_device.tests.test_config as tc
 
@@ -51,39 +52,67 @@ class TestMountComparator(TestBase):
 
 class TestMountOrder(tc.TestGraphGeneration):
 
-    @mock.patch('diskimage_builder.block_device.level3.mount.exec_sudo')
+    def _exec_sudo_log(*args, **kwargs):
+        # Used as a side-effect from exec_sudo mocking so we can see
+        # the call in-place in logs
+        logger.debug("exec_sudo: %s", " ".join(args[0]))
+
+    @mock.patch('diskimage_builder.block_device.level3.mount.exec_sudo',
+                side_effect=_exec_sudo_log)
     def test_mount_order(self, mock_exec_sudo):
+        # XXX: better mocking for the os.path.exists calls to avoid
+        # failing if this exists.
+        self.assertFalse(os.path.exists('/fake/'))
+
         # This is probably in order after graph creation, so ensure it
-        # remains stable
+        # remains stable.  We test the mount and umount call sequences
         config = self.load_config_file('multiple_partitions_graph.yaml')
-
         state = {}
-
         graph, call_order = create_graph(config, self.fake_default_config,
                                          state)
 
         # build up some fake state so that we don't have to mock out
         # all the parent calls that would really make these values, as
         # we just want to test MountPointNode
-        state['filesys'] = {}
-        state['filesys']['mkfs_root'] = {}
-        state['filesys']['mkfs_root']['device'] = 'fake'
-        state['filesys']['mkfs_var'] = {}
-        state['filesys']['mkfs_var']['device'] = 'fake'
-        state['filesys']['mkfs_var_log'] = {}
-        state['filesys']['mkfs_var_log']['device'] = 'fake'
+        state['filesys'] = {
+            'mkfs_root': {'device': 'fake_root_device'},
+            'mkfs_var': {'device': 'fake_var_device'},
+            'mkfs_var_log': {'device': 'fake_var_log_device'}
+        }
 
         for node in call_order:
             if isinstance(node, MountPointNode):
-                # XXX: do we even need to create?  We could test the
-                # sudo arguments from the mock in the below asserts
-                # too
                 node.create()
+        for node in reversed(call_order):
+            if isinstance(node, MountPointNode):
+                node.umount()
 
         # ensure that partitions are mounted in order root->var->var/log
         self.assertListEqual(state['mount_order'], ['/', '/var', '/var/log'])
 
-    @mock.patch('diskimage_builder.block_device.level3.mount.exec_sudo')
+        cmd_sequence = [
+            # mount sequence
+            mock.call(['mkdir', '-p', '/fake/']),
+            mock.call(['mount', 'fake_root_device', '/fake/']),
+            mock.call(['mkdir', '-p', '/fake/var']),
+            mock.call(['mount', 'fake_var_device', '/fake/var']),
+            mock.call(['mkdir', '-p', '/fake/var/log']),
+            mock.call(['mount', 'fake_var_log_device', '/fake/var/log']),
+            # umount sequence
+            mock.call(['sync']),
+            mock.call(['fstrim', '--verbose', '/fake/var/log']),
+            mock.call(['umount', '/fake/var/log']),
+            mock.call(['sync']),
+            mock.call(['fstrim', '--verbose', '/fake/var']),
+            mock.call(['umount', '/fake/var']),
+            mock.call(['sync']),
+            mock.call(['fstrim', '--verbose', '/fake/']),
+            mock.call(['umount', '/fake/'])
+        ]
+        self.assertListEqual(mock_exec_sudo.call_args_list, cmd_sequence)
+
+    @mock.patch('diskimage_builder.block_device.level3.mount.exec_sudo',
+                side_effect=_exec_sudo_log)
     def test_mount_order_unsorted(self, mock_exec_sudo):
         # As above, but this is out of order and gets sorted
         # so that root is mounted first.
@@ -94,17 +123,39 @@ class TestMountOrder(tc.TestGraphGeneration):
         graph, call_order = create_graph(parsed_graph,
                                          self.fake_default_config,
                                          state)
-        state['filesys'] = {}
-        state['filesys']['mkfs_root'] = {}
-        state['filesys']['mkfs_root']['device'] = 'fake'
-        state['filesys']['mkfs_var'] = {}
-        state['filesys']['mkfs_var']['device'] = 'fake'
-        state['filesys']['mkfs_boot'] = {}
-        state['filesys']['mkfs_boot']['device'] = 'fake'
+        state['filesys'] = {
+            'mkfs_root': {'device': 'fake_root_device'},
+            'mkfs_var': {'device': 'fake_var_device'},
+            'mkfs_boot': {'device': 'fake_boot_device'}
+        }
 
         for node in call_order:
             if isinstance(node, MountPointNode):
                 node.create()
+        for node in reversed(call_order):
+            if isinstance(node, MountPointNode):
+                node.umount()
 
         # ensure that partitions are mounted in order / -> /boot -> /var
         self.assertListEqual(state['mount_order'], ['/', '/boot', '/var'])
+
+        cmd_sequence = [
+            # mount sequence
+            mock.call(['mkdir', '-p', '/fake/']),
+            mock.call(['mount', 'fake_root_device', '/fake/']),
+            mock.call(['mkdir', '-p', '/fake/boot']),
+            mock.call(['mount', 'fake_boot_device', '/fake/boot']),
+            mock.call(['mkdir', '-p', '/fake/var']),
+            mock.call(['mount', 'fake_var_device', '/fake/var']),
+            # umount sequence
+            mock.call(['sync']),
+            mock.call(['fstrim', '--verbose', '/fake/var']),
+            mock.call(['umount', '/fake/var']),
+            mock.call(['sync']),
+            mock.call(['fstrim', '--verbose', '/fake/boot']),
+            mock.call(['umount', '/fake/boot']),
+            mock.call(['sync']),
+            mock.call(['fstrim', '--verbose', '/fake/']),
+            mock.call(['umount', '/fake/'])
+        ]
+        self.assertListEqual(mock_exec_sudo.call_args_list, cmd_sequence)
