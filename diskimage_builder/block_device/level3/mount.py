@@ -149,8 +149,8 @@ class Mount(PluginBase):
                 "Mount point [%s] specified more than once"
                 % self.node.mount_point)
         sorted_mount_points.append((self.node.mount_point, self.node.name))
-        sorted(sorted_mount_points, key=functools.cmp_to_key(cmp_mount_order))
-        # reset the state key to the new list
+        sorted_mount_points.sort(key=functools.cmp_to_key(cmp_mount_order))
+        # Save the state if it's new (otherwise this is idempotent update)
         state['sorted_mount_points'] = sorted_mount_points
         logger.debug("Ordered mounts now: %s", sorted_mount_points)
 

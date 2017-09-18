@@ -10,22 +10,51 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import functools
 import logging
 import mock
 
 import diskimage_builder.block_device.tests.test_config as tc
 
+from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
+from diskimage_builder.block_device.level3.mount import cmp_mount_order
 from diskimage_builder.block_device.level3.mount import MountPointNode
+from diskimage_builder.block_device.tests.test_base import TestBase
 
 logger = logging.getLogger(__name__)
+
+
+class TestMountComparator(TestBase):
+
+    def test_mount_comparator(self):
+        # This tests cmp_mount_order to ensure it sorts in the
+        # expected order.  The comparator takes a tuple of
+        # (mount_point, node_name) but we can ignore the name
+        partitions = [
+            ('/var/log', 'fake_log'),
+            ('/boot', 'fake_boot'),
+            ('/', 'fake_name'),
+            ('/var', 'fake_name')]
+        partitions.sort(key=functools.cmp_to_key(cmp_mount_order))
+
+        res = list(x[0] for x in partitions)
+
+        # "/" must be first
+        self.assertEqual(res[0], '/')
+
+        # /var before /var/log
+        var_pos = res.index('/var')
+        var_log_pos = res.index('/var/log')
+        self.assertGreater(var_log_pos, var_pos)
 
 
 class TestMountOrder(tc.TestGraphGeneration):
 
     @mock.patch('diskimage_builder.block_device.level3.mount.exec_sudo')
     def test_mount_order(self, mock_exec_sudo):
-
+        # This is probably in order after graph creation, so ensure it
+        # remains stable
         config = self.load_config_file('multiple_partitions_graph.yaml')
 
         state = {}
@@ -53,3 +82,29 @@ class TestMountOrder(tc.TestGraphGeneration):
 
         # ensure that partitions are mounted in order root->var->var/log
         self.assertListEqual(state['mount_order'], ['/', '/var', '/var/log'])
+
+    @mock.patch('diskimage_builder.block_device.level3.mount.exec_sudo')
+    def test_mount_order_unsorted(self, mock_exec_sudo):
+        # As above, but this is out of order and gets sorted
+        # so that root is mounted first.
+        config = self.load_config_file('lvm_tree_partition_ordering.yaml')
+        parsed_graph = config_tree_to_graph(config)
+        state = {}
+
+        graph, call_order = create_graph(parsed_graph,
+                                         self.fake_default_config,
+                                         state)
+        state['filesys'] = {}
+        state['filesys']['mkfs_root'] = {}
+        state['filesys']['mkfs_root']['device'] = 'fake'
+        state['filesys']['mkfs_var'] = {}
+        state['filesys']['mkfs_var']['device'] = 'fake'
+        state['filesys']['mkfs_boot'] = {}
+        state['filesys']['mkfs_boot']['device'] = 'fake'
+
+        for node in call_order:
+            if isinstance(node, MountPointNode):
+                node.create()
+
+        # ensure that partitions are mounted in order / -> /boot -> /var
+        self.assertListEqual(state['mount_order'], ['/', '/boot', '/var'])
