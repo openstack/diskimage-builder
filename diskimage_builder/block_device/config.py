@@ -190,7 +190,7 @@ def create_graph(config, default_config, state):
             # ensure node names are unique.  networkx by default
             # just appends the attribute to the node dict for
             # existing nodes, which is not what we want.
-            if node.name in dg.node:
+            if node.name in dg.nodes:
                 raise BlockDeviceSetupException(
                     "Duplicate node name: %s" % (node.name))
             logger.debug("Adding %s : %s", node.name, node)
@@ -210,12 +210,12 @@ def create_graph(config, default_config, state):
         logger.debug("Edges for %s: f:%s t:%s", name,
                      edges_from, edges_to)
         for edge_from in edges_from:
-            if edge_from not in dg.node:
+            if edge_from not in dg.nodes:
                 raise BlockDeviceSetupException(
                     "Edge not defined: %s->%s" % (edge_from, name))
             dg.add_edge(edge_from, name)
         for edge_to in edges_to:
-            if edge_to not in dg.node:
+            if edge_to not in dg.nodes:
                 raise BlockDeviceSetupException(
                     "Edge not defined: %s->%s" % (name, edge_to))
             dg.add_edge(name, edge_to)
@@ -231,9 +231,9 @@ def create_graph(config, default_config, state):
 
     # Topological sort (i.e. create a linear array that satisfies
     # dependencies) and return the object list
-    call_order_nodes = nx.topological_sort(dg)
-    logger.debug("Call order: %s", list(call_order_nodes))
-    call_order = [dg.node[n]['obj'] for n in call_order_nodes]
+    call_order_nodes = list(nx.topological_sort(dg))
+    logger.debug("Call order: %s", call_order_nodes)
+    call_order = [dg.nodes[n]['obj'] for n in call_order_nodes]
 
     return dg, call_order
 
