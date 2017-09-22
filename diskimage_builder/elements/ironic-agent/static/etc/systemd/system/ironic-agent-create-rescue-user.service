@@ -1,0 +1,10 @@
+[Unit]
+Description=Ironic agent rescue user creation
+
+[Service]
+ExecStart=/bin/bash /usr/local/bin/ironic-python-agent-create-rescue-user.sh
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
