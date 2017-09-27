@@ -1,0 +1,64 @@
+- local_loop:
+    name: image0
+    size: 5G
+
+- partitioning:
+    base: image0
+    label: mbr
+    partitions:
+      - name: boot
+        flags: [ boot,primary ]
+        size: 1G
+      - name: root
+        flags: [ primary ]
+        size: 3G
+
+- lvm:
+    name: lvm
+    base: [root]
+    pvs:
+      - name: pv
+        base: root
+
+    vgs:
+      - name: vg
+        base: ["pv"]
+
+    lvs:
+      - name: lv_root
+        base: vg
+        size: 2000M
+
+      - name: lv_var
+        base: vg
+        size: 500M
+
+- mkfs:
+    base: boot
+    type: ext3
+    mount:
+      mount_point: /boot
+      fstab:
+        options: "nodev,nosuid"
+        fsck-passno: 2
+
+- mkfs:
+    name: mkfs_root
+    base: lv_root
+    label: "img-rootfs"
+    type: "ext4"
+    mount:
+      mount_point: /
+      fstab:
+          options: "noacl,errors=remount-ro"
+          fsck-passno: 1
+
+- mkfs:
+    name: mkfs_var
+    base: lv_var
+    type: "ext4"
+    mount:
+      mount_point: /var
+      fstab:
+          options: "noacl"
+          fsck-passno: 2
