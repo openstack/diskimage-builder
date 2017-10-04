@@ -30,5 +30,5 @@ proliant-tools
     `HPE End User License Agreement – Enterprise Version`_.
 
 .. _`proliantutils`: https://pypi.python.org/pypi/proliantutils
-.. _`HPE Smart Storage Administrator (HPE SSA) CLI for Linux 64-bit`: http://h20564.www2.hpe.com/hpsc/swd/public/detail?swItemId=MTX_3d16386b418a443388c18da82f&swEnvOid=4181
+.. _`HPE Smart Storage Administrator (HPE SSA) CLI for Linux 64-bit`: http://h20564.www2.hpe.com/hpsc/swd/public/detail?swItemId=MTX_5530b3f5b38b4e0781e6bf9c74
 .. _`HPE End User License Agreement – Enterprise Version`: https://downloads.hpe.com/pub/softlib2/software1/doc/p1796552785/v113125/eula-en.html
