@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+mkdir -p /etc/portage/package.use
+mkdir -p /etc/portage/package.keywords
+
+# needed in order to install pip packages as root
+echo 'dev-python/pip vanilla' >> /etc/portage/package.use/pip
+# needed to create disk images
+echo 'sys-fs/lvm2 -thin' >> /etc/portage/package.use/grub
+echo 'sys-boot/grub device-mapper' >> /etc/portage/package.use/grub
+
+# needed in order to install pip packages as root
+echo '=dev-python/pip-9.0.1-r2 ~amd64' >> /etc/portage/package.keywords/pip

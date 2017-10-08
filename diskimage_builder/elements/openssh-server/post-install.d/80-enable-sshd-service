@@ -19,8 +19,7 @@ case "$DIB_INIT_SYSTEM" in
         fi
         ;;
     openrc)
-        # let dib-init-system's postinstall handle enabling init scripts
-        exit 0
+        rc-update add sshd default
         ;;
     sysv)
         # ssh is enabled by default, nothing to do
