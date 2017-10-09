@@ -59,6 +59,7 @@ function show_options () {
     echo "    -x -- turn on tracing (use -x -x for very detailed tracing)."
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
+    echo "    --logfile -- save run output to given logfile"
     echo "    --checksum -- generate MD5 and SHA256 checksum files for the created image"
     echo "    --image-size size -- image size in GB for the created image"
     echo "    --image-cache directory -- location for cached images(default ~/.cache/image-create)"
@@ -88,7 +89,12 @@ function show_options () {
     echo "    -h|--help -- display this help and exit"
     echo "    --version -- display version and exit"
     echo
-    echo "ELEMENTS_PATH will allow you to specify multiple locations for the elements."
+    echo "Environment Variables:"
+    echo "  (this is not a complete list)"
+    echo
+    echo "  * ELEMENTS_PATH: specify external locations for the elements.  As for \$PATH"
+    echo "  * DIB_NO_TIMESTAMP: no timestamp prefix on output.  Useful if capturing output"
+    echo "  * DIB_QUIET: do not output log output to stdout.  See --logfile"
     echo
     echo "NOTE: At least one distribution root element must be specified."
     echo
@@ -120,7 +126,8 @@ DIB_DEFAULT_INSTALLTYPE=${DIB_DEFAULT_INSTALLTYPE:-"source"}
 MKFS_OPTS=""
 ACI_MANIFEST=${ACI_MANIFEST:-}
 DOCKER_TARGET=""
-TEMP=`getopt -o a:ho:t:xucnp: -l checksum,no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target: -n $SCRIPTNAME -- "$@"`
+LOGFILE=""
+TEMP=`getopt -o a:ho:t:xucnp: -l checksum,no-tmpfs,offline,help,version,min-tmpfs:,image-size:,image-cache:,max-online-resize:,mkfs-options:,qemu-img-options:,ramdisk-element:,root-label:,install-type:,docker-target:,logfile: -n $SCRIPTNAME -- "$@"`
 if [ $? -ne 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -151,6 +158,7 @@ while true ; do
         --ramdisk-element) RAMDISK_ELEMENT=$2; shift 2;;
         --install-type) DIB_DEFAULT_INSTALLTYPE=$2; shift 2;;
         --docker-target) export DOCKER_TARGET=$2; shift 2 ;;
+        --logfile) export LOGFILE=$2; shift 2 ;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -166,6 +174,23 @@ if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   echo "(note this will prevent much of the local_config element from working)"
   exec -c $0 "$@"
 fi
+
+# We send stdout & stderr through "outfilter" which does timestamping,
+# basic filtering and log file output.
+_TS_FLAG=""
+if [[ "${DIB_NO_TIMESTAMP:-0}" -eq 1 ]]; then
+    _TS_FLAG="--no-timestamp"
+fi
+_QUIET_FLAG="-v"
+if [[ "${DIB_QUIET:-0}" -eq 1 ]]; then
+    _QUIET_FLAG=""
+fi
+_LOGFILE_FLAG=""
+if [[ -n "${LOGFILE}" ]]; then
+    echo "Output logs going to: ${LOGFILE}"
+    _LOGFILE_FLAG="-o ${LOGFILE}"
+fi
+exec 1> >( ${DIB_PYTHON_EXEC:-python} $_LIB/outfilter.py ${_TS_FLAG} ${_QUIET_FLAG} ${_LOGFILE_FLAG} ) 2>&1
 
 
 # Display the current file/function/line in the debug output

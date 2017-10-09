@@ -63,9 +63,7 @@ function log_with_prefix {
 
     while read a; do
         log="[$pr] $a"
-        if [[ ${LOG_DATESTAMP} -ne 0 ]]; then
-            log="$(date +"%Y%m%d-%H%M%S.%N") ${log}"
-        fi
+        # note: dib logs have timestamp by default now
         echo "${log}"
     done
 }

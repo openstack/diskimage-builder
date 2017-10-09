@@ -65,11 +65,13 @@ def setup():
         'version': 1,
         'disable_existing_loggers': False,
 
+        # note that disk-image-create runs stdout through
+        # outfilter.py, which adds the timestamp.  this doesn't have a
+        # timestamp to avoid double logging
         'formatters': {
             'standard': {
                 '()': 'diskimage_builder.logging_config.DibFormatter',
-                'datefmt': '%Y-%m-%d %H:%M:%S',
-                'fmt': '%(asctime)s.%(msecs)03d %(levelname)s '
+                'fmt': '%(levelname)s '
                 '%(name)s [-] %(message)s',
                 'debug_suffix': ' %(funcName)s %(pathname)s:%(lineno)d'
             }
