@@ -75,4 +75,4 @@ else
     exit 1
 fi
 
-$apt_get install -y $to_install
+$apt_get install --force-yes -y $to_install
