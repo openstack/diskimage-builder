@@ -3,7 +3,9 @@
     "debian":{
       "signed_grub_efi": "grub-efi-amd64-signed",
       "signed_shim_efi": "shim-signed",
-      "grub_bios": "grub-pc-bin"
+      "grub_bios": "grub-pc-bin",
+      "signed_grub_efi_arm64": "grub-efi-arm64",
+      "grub_bios_arm64": "grub-efi-arm64-bin"
     },
     "redhat":{
       "signed_grub_efi": "efibootmgr grub2-efi-modules grub2-efi",

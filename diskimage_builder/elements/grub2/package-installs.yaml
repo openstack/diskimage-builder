@@ -1,3 +1,10 @@
 signed_grub_efi:
+  arch: amd64
 signed_shim_efi:
+  arch: amd64
 grub_bios:
+  arch: amd64
+signed_grub_efi_arm64:
+  arch: arm64
+grub_bios_arm64:
+  arch: arm64
