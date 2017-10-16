@@ -1,0 +1,82 @@
+- hosts: all
+  name: Autoconverted job legacy-dib-dsvm-functests-python2-centos-7-extras from old
+    job gate-dib-dsvm-functests-python2-centos-7-extras-nv
+  tasks:
+
+    - name: Ensure legacy workspace directory
+      file:
+        path: '{{ ansible_user_dir }}/workspace'
+        state: directory
+
+    - shell:
+        cmd: |
+          set -u
+          set -e
+          set -x
+          cd ~
+
+          /usr/zuul-env/bin/zuul-cloner --cache-dir /opt/git \
+            git://git.openstack.org \
+            openstack/diskimage-builder \
+            openstack/requirements
+        executable: /bin/bash
+        chdir: '{{ ansible_user_dir }}/workspace'
+      environment: '{{ zuul | zuul_legacy_vars }}'
+
+    - shell:
+        cmd: |
+          set -e
+          set -x
+          cd ~/openstack/diskimage-builder
+          /usr/local/jenkins/slave_scripts/install-distro-packages.sh
+        executable: /bin/bash
+        chdir: '{{ ansible_user_dir }}/workspace'
+      environment: '{{ zuul | zuul_legacy_vars }}'
+
+    - shell:
+        cmd: |
+          set -u
+          set -e
+          set -x
+          #
+          # We do things that might exceed the default 2GiB tmpfs, and
+          # use the larger mounted space.
+          cd ~
+          sudo mkdir /opt/dib_cache
+          sudo chown zuul:zuul /opt/dib_cache
+          export DIB_NO_TMPFS=1
+          export TMPDIR=/opt/dib_cache
+
+          virtualenv -p python2 env
+
+          export UPPER_CONSTRAINTS_FILE=$(pwd)/openstack/requirements/upper-constraints.txt
+          sed -i '/^diskimage-builder/d' $UPPER_CONSTRAINTS_FILE
+          ./env/bin/pip install $(pwd)/openstack/diskimage-builder -c $UPPER_CONSTRAINTS_FILE
+
+          # TODO(pabelanger): Remove once we migrated to bindep
+          ./openstack/diskimage-builder/tests/install_test_deps.sh
+
+          # This sets up some repo files pointing to the infra mirrors
+          # which are used during test runs
+          ./openstack/diskimage-builder/contrib/setup-gate-mirrors.sh
+
+          # UPPER_CONSTRAINTS_FILE is causing side effects when doing image
+          # build, unset it
+          unset UPPER_CONSTRAINTS_FILE
+
+          # activate the virtualenv so that any tools run by dib run
+          # using the python inside it
+          set +u
+          source ./env/bin/activate
+          set -u
+
+          ./openstack/diskimage-builder/tests/run_functests.sh \
+            gentoo/build-succeeds \
+            debian-minimal/stable-vm
+
+          set +u
+          deactivate
+          set -u
+        executable: /bin/bash
+        chdir: '{{ ansible_user_dir }}/workspace'
+      environment: '{{ zuul | zuul_legacy_vars }}'

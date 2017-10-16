@@ -1,0 +1,173 @@
+- project:
+    name: openstack/diskimage-builder
+    check:
+      jobs:
+        - dib-dsvm-functests-python2-ubuntu-trusty:
+            branches: (master|feature/v2)
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python2-ubuntu-trusty-extras:
+            voting: false
+            branches: (master|feature/v2)
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python2-ubuntu-trusty-image:
+            voting: false
+            branches: (master|feature/v2)
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python3:
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python3-extras:
+            voting: false
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python3-image:
+            voting: false
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python2-centos-7:
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python2-centos-7-extras:
+            voting: false
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python2-centos-7-image:
+            voting: false
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+
+    gate:
+      jobs:
+        - dib-dsvm-functests-python2-ubuntu-trusty:
+            branches: (master|feature/v2)
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python3:
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+        - dib-dsvm-functests-python2-centos-7:
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+
+- job:
+    name: dib-dsvm-functests-python2-centos-7
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/post
+    timeout: 3600
+    nodeset: legacy-centos-7
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python2-centos-7-extras
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/post
+    timeout: 3600
+    nodeset: legacy-centos-7
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python2-centos-7-image
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/post
+    timeout: 3600
+    nodeset: legacy-centos-7
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python2-opensuse-423
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/post
+    timeout: 3600
+    nodeset: legacy-opensuse-423
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python2-ubuntu-trusty
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/post
+    timeout: 3600
+    nodeset: legacy-ubuntu-trusty
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python2-ubuntu-trusty-extras
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/post
+    timeout: 3600
+    nodeset: legacy-ubuntu-trusty
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python2-ubuntu-trusty-image
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/post
+    timeout: 3600
+    nodeset: legacy-ubuntu-trusty
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python3
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python3/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python3/post
+    timeout: 3600
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python3-extras
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python3-extras/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python3-extras/post
+    timeout: 3600
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python3-image
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python3-image/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python3-image/post
+    timeout: 3600
+    required-projects:
+      - openstack/diskimage-builder
+
+- job:
+    name: dib-dsvm-functests-python3-opensuse-423
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/run
+    post-run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/post
+    timeout: 3600
+    nodeset: legacy-opensuse-423
+    required-projects:
+      - openstack/diskimage-builder
+

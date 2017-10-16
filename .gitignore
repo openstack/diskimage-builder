@@ -16,6 +16,7 @@ dist
 *.vmlinuz
 /*-manifests
 /*.d
+!/.zuul.d
 build
 AUTHORS
 ChangeLog
