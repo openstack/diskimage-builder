@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
 import logging
-import os
-import tempfile
+import subprocess
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
@@ -106,10 +104,6 @@ class PvsNode(NodeBase):
             'device': phys_dev
         }
 
-    def _cleanup(self):
-        exec_sudo(['pvremove', '--force',
-                   self.state['pvs'][self.name]['device']])
-
     def get_edges(self):
         # See LVMNode.get_edges() for how this gets connected
         return ([], [])
@@ -163,7 +157,6 @@ class VgsNode(NodeBase):
 
     def _cleanup(self):
         exec_sudo(['vgchange', '-an', self.name])
-        exec_sudo(['vgremove', '--force', self.name])
 
     def get_edges(self):
         # self.base is already a list, per the config.  There might be
@@ -224,8 +217,6 @@ class LvsNode(NodeBase):
     def _cleanup(self):
         exec_sudo(['lvchange', '-an',
                    '/dev/%s/%s' % (self.base, self.name)])
-        exec_sudo(['lvremove', '--force',
-                   '/dev/%s/%s' % (self.base, self.name)])
 
     def get_edges(self):
         edge_from = [self.base]
@@ -249,16 +240,6 @@ class LVMNode(NodeBase):
         lv's and vg.  The <Pvs|Lvs|Vgs>Node objects in the graph are
         therefore just dependency place holders whose create() call
         does nothing.
-
-        This is quite important in the cleanup phase.  In theory, you
-        would remove the vg's, then the lv's and then free-up the
-        pv's.  But the process of removing these also removes them
-        from the LVM meta-data in the image, undoing all the
-        configuration.  Thus the unwind process is also "atomic" in
-        this node; we do a copy of the devices before removing the LVM
-        components, and then copy them back (better ideas welcome!)
-        As with creation, the cleanup() calls in the other nodes are
-        just placeholders.
 
         Arguments:
         :param name: name of this node
@@ -300,37 +281,48 @@ class LVMNode(NodeBase):
             lvs._create()
 
     def cleanup(self):
-        # First do a copy of all physical devices to individual
-        # temporary files.  This is because the physical device is
-        # full of LVM metadata describing the volumes and we don't
-        # have a better way to handle removing the devices/volumes
-        # from the host system while persisting this metadata in the
-        # underlying devices.
-        tempfiles = collections.OrderedDict()  # to unwind in same order!
-        for pvs in self.pvs:
-            phys_dev = self.state['blockdev'][pvs.base]['device']
-            target_file = tempfile.NamedTemporaryFile(delete=False)
-            target_file.close()
-            exec_sudo(['dd', 'if=%s' % phys_dev,
-                       'of=%s' % target_file.name])
-            tempfiles[target_file.name] = phys_dev
-
-        # once copied, start the removal in reverse order
         for lvs in self.lvs:
             lvs._cleanup()
 
         for vgs in self.vgs:
             vgs._cleanup()
 
-        for pvs in self.pvs:
-            pvs._cleanup()
-
         exec_sudo(['udevadm', 'settle'])
 
-        # after the cleanup copy devices back
-        for tmp_name, phys_dev in tempfiles.items():
-            exec_sudo(['dd', 'if=%s' % tmp_name, 'of=%s' % phys_dev])
-            os.unlink(tmp_name)
+
+class LVMCleanupNode(NodeBase):
+    def __init__(self, name, state, pvs):
+        """Cleanup Node for LVM
+
+        Information about the PV, VG and LV is typically
+        cached in lvmetad. Even after removing PV device and
+        partitions this data is not automatically updated
+        which leads to a couple of problems.
+        the 'pvscan --cache' scans the available disks
+        and updates the cache.
+        This must be called after the cleanup of the
+        containing block device is done.
+        """
+        super(LVMCleanupNode, self).__init__(name, state)
+        self.pvs = pvs
+
+    def create(self):
+        # This class is used for cleanup only
+        pass
+
+    def cleanup(self):
+        try:
+            exec_sudo(['pvscan', '--cache'])
+        except subprocess.CalledProcessError as cpe:
+            logger.debug("pvscan call result [%s]", cpe)
+
+    def get_edges(self):
+        # This node depends on all physical device(s), which is
+        # recorded in the "base" argument of the PV nodes.
+        edge_to = set()
+        for pv in self.pvs:
+            edge_to.add(pv.base)
+        return ([], edge_to)
 
 
 class LVMPlugin(PluginBase):
@@ -420,8 +412,12 @@ class LVMPlugin(PluginBase):
         # create the "driver" node
         self.lvm_node = LVMNode(config['name'], state,
                                 self.pvs, self.lvs, self.vgs)
+        self.lvm_cleanup_node = LVMCleanupNode(
+            config['name'] + "-CLEANUP", state, self.pvs)
 
     def get_nodes(self):
         # the nodes for insertion into the graph are all of the pvs,
-        # vgs and lvs nodes we have created above, and the root node.
-        return self.pvs + self.vgs + self.lvs + [self.lvm_node]
+        # vgs and lvs nodes we have created above, the root node and
+        # the cleanup node.
+        return self.pvs + self.vgs + self.lvs \
+            + [self.lvm_node, self.lvm_cleanup_node]
