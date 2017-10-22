@@ -166,8 +166,15 @@ done
 
 export DIB_DEBUG_TRACE
 
+# TODO: namespace this under ~/.cache/dib/ for consistency
 export DIB_IMAGE_CACHE=${DIB_IMAGE_CACHE:-~/.cache/image-create}
 mkdir -p $DIB_IMAGE_CACHE
+
+# We have a couple of critical sections (touching parts of the host
+# system or download images to common cache) that we use flock around.
+# Use this directory for lockfiles.
+export DIB_LOCKFILES=${DIB_LOCKFILES:-~/.cache/dib/lockfiles}
+mkdir -p $DIB_LOCKFILES
 
 if [ "$CLEAR_ENV" = "1" -a "$HOME" != "" ]; then
   echo "Re-execing to clear environment."

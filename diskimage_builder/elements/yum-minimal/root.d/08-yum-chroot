@@ -201,14 +201,14 @@ function _install_pkg_manager {
             --installroot $TARGET_ROOT \
             install $@ ${_lang_pack} ${_extra_pkgs} && rc=$? || rc=$?
 
-        # We modified the base system - make sure we clean up always!
-        rm $HOME/.rpmmacros.dib.lock
+        # Note we've modified the base system's .rpmmacros.  Ensure we
+        # clean it up *always*
         # sed makes it easy to remove last line, but not last n lines...
         sed -i '$ d' $HOME/.rpmmacros; sed -i '$ d' $HOME/.rpmmacros;
         if [ $rc != 0 ]; then
             die "Initial yum install to chroot failed!  Can not continue."
         fi
-    ) 9>$HOME/.rpmmacros.dib.lock
+    ) 9>$DIB_LOCKFILES/.rpmmacros.dib.lock
 
     # Set gpg path back because subsequent actions will take place in
     # the chroot
