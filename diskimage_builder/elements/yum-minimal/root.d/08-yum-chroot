@@ -223,7 +223,7 @@ function _install_pkg_manager {
 sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
 sudo mount -t proc none $TARGET_ROOT/proc
 sudo mount --bind /dev $TARGET_ROOT/dev
-sudo mount --bind /dev/pts $TARGET_ROOT/dev/pts
+sudo mount -t devpts /dev/pts $TARGET_ROOT/dev/pts
 sudo mount -t sysfs none $TARGET_ROOT/sys
 
 # initalize rpmdb
