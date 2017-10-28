@@ -67,8 +67,8 @@
 - job:
     name: dib-dsvm-functests-python2-centos-7
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/post.yaml
     timeout: 3600
     nodeset: legacy-centos-7
     required-projects:
@@ -77,8 +77,8 @@
 - job:
     name: dib-dsvm-functests-python2-centos-7-extras
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/post.yaml
     timeout: 3600
     nodeset: legacy-centos-7
     required-projects:
@@ -87,8 +87,8 @@
 - job:
     name: dib-dsvm-functests-python2-centos-7-image
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/post.yaml
     timeout: 3600
     nodeset: legacy-centos-7
     required-projects:
@@ -97,8 +97,8 @@
 - job:
     name: dib-dsvm-functests-python2-opensuse-423
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/post.yaml
     timeout: 3600
     nodeset: legacy-opensuse-423
     required-projects:
@@ -107,8 +107,8 @@
 - job:
     name: dib-dsvm-functests-python2-ubuntu-trusty
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/post.yaml
     timeout: 3600
     nodeset: legacy-ubuntu-trusty
     required-projects:
@@ -117,8 +117,8 @@
 - job:
     name: dib-dsvm-functests-python2-ubuntu-trusty-extras
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/post.yaml
     timeout: 3600
     nodeset: legacy-ubuntu-trusty
     required-projects:
@@ -127,8 +127,8 @@
 - job:
     name: dib-dsvm-functests-python2-ubuntu-trusty-image
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/post
+    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/post.yaml
     timeout: 3600
     nodeset: legacy-ubuntu-trusty
     required-projects:
@@ -137,8 +137,8 @@
 - job:
     name: dib-dsvm-functests-python3
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python3/post
+    run: playbooks/legacy/dib-dsvm-functests-python3/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python3/post.yaml
     timeout: 3600
     required-projects:
       - openstack/diskimage-builder
@@ -146,8 +146,8 @@
 - job:
     name: dib-dsvm-functests-python3-extras
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3-extras/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python3-extras/post
+    run: playbooks/legacy/dib-dsvm-functests-python3-extras/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python3-extras/post.yaml
     timeout: 3600
     required-projects:
       - openstack/diskimage-builder
@@ -155,8 +155,8 @@
 - job:
     name: dib-dsvm-functests-python3-image
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3-image/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python3-image/post
+    run: playbooks/legacy/dib-dsvm-functests-python3-image/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python3-image/post.yaml
     timeout: 3600
     required-projects:
       - openstack/diskimage-builder
@@ -164,8 +164,8 @@
 - job:
     name: dib-dsvm-functests-python3-opensuse-423
     parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/run
-    post-run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/post
+    run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/run.yaml
+    post-run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/post.yaml
     timeout: 3600
     nodeset: legacy-opensuse-423
     required-projects:
