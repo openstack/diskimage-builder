@@ -18,11 +18,6 @@ if [[ ! -f /usr/portage/profiles ]]; then
     emerge-webrsync -q
 fi
 
-# get the directories in order
-mkdir -p /etc/portage/profile
-mkdir -p /etc/portage/package.keywords
-mkdir -p /etc/portage/package.use
-
 # python-3.6 and python-3.5 are masked and considered unstable for some reason
 echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
 if [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]]; then
