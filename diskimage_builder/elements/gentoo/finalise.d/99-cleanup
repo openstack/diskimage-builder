@@ -34,6 +34,13 @@ eselect news read all
 rm -Rf /root/.ccache/* /usr/src/* /var/cache/edb/dep/* /var/cache/genkernel/* /var/empty/* /var/run/* /var/state/* /var/tmp/*
 rm -Rf /etc/*- /etc/*.old /etc/ssh/ssh_host_* /root/.*history /root/.lesshst /root/.ssh/known_hosts /root/.viminfo /usr/share/genkernel /usr/lib64/python*/site-packages/gentoolkit/test/eclean/testdistfiles.tar.gz
 if [[ "${GENTOO_PORTAGE_CLEANUP}" != "False" ]]; then
+    # remove the overlays
+    if [[ ${GENTOO_OVERLAYS} != '' ]]; then
+        for OVERLAY in ${GENTOO_OVERLAYS}; do
+            layman -d "${OVERLAY}"
+        done
+    fi
+    # remove portage files
     rm -Rf /usr/portage/* /var/cache/portage/distfiles
 fi
 
