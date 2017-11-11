@@ -103,6 +103,9 @@ EOF
         fi
         echo "exclude=$packages" >> ${conf}
     fi
+elif [[ $DISTRO_NAME = gentoo ]]; then
+    packages="dev-python/pip dev-python/virtualenv"
+    emerge -U $packages
 else
     # pre-install packages so dependencies are there.  We will
     # overwrite with latest below.
