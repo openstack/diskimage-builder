@@ -112,7 +112,7 @@ else
     # time and you had to use "python -m venv".  Since then virtualenv
     # has gained 3.4 support so the pip install below will work
     if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
-        packages=$(echo "$packages" | sed s/python-virtualenv/python3-virtualenv/)
+        packages=$(echo "$packages" | sed s/python-virtualenv/python3-virtualenv/ | sed s/python-pip/python3-pip/)
     fi
 
     apt-get -y install $packages
@@ -123,9 +123,12 @@ else
     # These install into /usr/local/bin so override any packages, even
     # if installed later.
 
-    python3 /tmp/get-pip.py $pip_args
-    python2 /tmp/get-pip.py $pip_args
+    if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
+        python3 /tmp/get-pip.py $pip_args
+        pip3 install $pip_args virtualenv
+    else
+        python2 /tmp/get-pip.py $pip_args
+        pip install $pip_args virtualenv
+    fi
 
-    pip3 install $pip_args virtualenv
-    pip install $pip_args virtualenv
 fi
