@@ -256,7 +256,10 @@ _install_repos
 
 # install dnf for >= f22
 if [ $DIB_RELEASE -ge 22 ]; then
-    _install_pkg_manager dnf dnf-plugins-core yum
+    # Fedora 27 has a "curl-minimal" package that will get pulled in as a
+    # rpm dependency.  This causes problems later if/when "curl" gets
+    # installed.  To avoid this, just install the full curl first up.
+    _install_pkg_manager dnf dnf-plugins-core yum curl
 else
     _install_pkg_manager yum
 fi
@@ -271,22 +274,20 @@ sudo -E chroot $TARGET_ROOT ${YUM} clean all
 echo "%_install_langs C:en_US:en_US.UTF-8" | \
     sudo tee -a $TARGET_ROOT/etc/rpm/macros.langs > /dev/null
 
-# bootstrap the environment within the chroot; bring in new
-# metadata with an update and install some base packages we need.
-sudo -E chroot $TARGET_ROOT ${YUM} -y update
-sudo -E chroot $TARGET_ROOT ${YUM} -y \
-    --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
-    install systemd passwd findutils sudo util-linux-ng
+_base_packages="systemd passwd findutils sudo util-linux-ng "
 
 # This package is split out from systemd on >F24, dracut is
 # missing the dependency and will fail to make an initrd without
 # it; see
 #  https://bugzilla.redhat.com/show_bug.cgi?id=1398505
-if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -ge 24 ]; then
-    sudo -E chroot $TARGET_ROOT ${YUM} -y \
-        --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
-        install systemd-udev
-fi
+_base_packages+="systemd-udev "
+
+# bootstrap the environment within the chroot; bring in new
+# metadata with an update and install some base packages we need.
+sudo -E chroot $TARGET_ROOT ${YUM} -y update
+sudo -E chroot $TARGET_ROOT ${YUM} -y \
+    --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
+    install ${_base_packages}
 
 # Put in a dummy /etc/resolv.conf over the temporary one we used
 # to bootstrap.  systemd has a bug/feature [1] that it will assume
