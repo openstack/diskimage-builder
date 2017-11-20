@@ -72,10 +72,15 @@ function _install_repos {
     packages="basesystem filesystem setup "
 
     packages+="${DISTRO_NAME}-release "
-    # after fedora21, this is split into into a separate -repos
-    # package
-    if [ $DISTRO_NAME = fedora ]; then
-        packages+="${DISTRO_NAME}-repos "
+
+    # Starting in F21 this was split into a separate package
+    if [[ ${DISTRO_NAME} == 'fedora' ]]; then
+        packages+="fedora-repos "
+    fi
+
+    # F27 started putting gpg keys into this separate package
+    if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 26 ]]; then
+        packages+="fedora-gpg-keys "
     fi
 
     # By default, parent elements (fedora-minimal, centos-minimal)
