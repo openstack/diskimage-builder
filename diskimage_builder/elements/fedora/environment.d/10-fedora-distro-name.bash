@@ -1,5 +1,5 @@
 export DISTRO_NAME=fedora
-export DIB_RELEASE=${DIB_RELEASE:-26}
+export DIB_RELEASE=${DIB_RELEASE:-27}
 
 # Note the filename URL has a "sub-release" in it
 #  http:// ... Fedora-Cloud-Base-25-1.3.x86_64.qcow2
@@ -15,6 +15,8 @@ if [[ ${DIB_RELEASE} == '25' ]]; then
     export DIB_FEDORA_SUBRELEASE=1.3
 elif [[ ${DIB_RELEASE} == '26' ]]; then
     export DIB_FEDORA_SUBRELEASE=1.5
+elif [[ ${DIB_RELEASE} == '27' ]]; then
+    export DIB_FEDORA_SUBRELEASE=1.6
 else
     echo "Unsupported Fedora release"
     exit 1
