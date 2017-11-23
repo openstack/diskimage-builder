@@ -24,6 +24,8 @@ fi
 set -eu
 set -o pipefail
 
+source $_LIB/common-functions
+
 function cleanup() {
     sudo umount $TARGET_ROOT/proc
     sudo umount $TARGET_ROOT/dev/pts
@@ -87,13 +89,7 @@ sudo zypper ${ZYPPER_TARGET_OPTS} refresh
 sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
 sudo mount -t proc none $TARGET_ROOT/proc
 sudo mount --bind /dev $TARGET_ROOT/dev
-# Kernel commit https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eedf265aa003b4781de24cfed40a655a664457e6
-# introduced in v4.7 allows multiple instances of devpts. However,
-# some distributions are running older kernels so we need to take
-# care on what options we use to mount a new instance of devpts
-# filesystem since it's not completely independent. The best thing
-# to do is to simply use the existing mount options.
-sudo mount -t devpts -o $(mount | grep devpts | sed 's/.*(\(.*\))/\1/') devpts $TARGET_ROOT/dev/pts
+sudo mount -t devpts $(mount_dev_pts_options) devpts $TARGET_ROOT/dev/pts
 sudo mount -t sysfs none $TARGET_ROOT/sys
 
 # Install filesystem, base and useful tools

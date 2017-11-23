@@ -312,17 +312,22 @@ function create_base () {
     mount_proc_dev_sys
 }
 
+# Get mount options for mounting /dev/pts
+# Kernel commit https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eedf265aa003b4781de24cfed40a655a664457e6
+# introduced in v4.7 allows multiple instances of devpts. However,
+# some distributions are running older kernels so we need to take
+# care on what options we use to mount a new instance of devpts
+# filesystem since it's not completely independent. The best thing
+# to do is to simply use the existing mount options.
+function mount_dev_pts_options() {
+    echo "-o $(findmnt --first-only /dev/pts --noheadings --output OPTIONS)"
+}
+
 function mount_proc_dev_sys () {
     # supporting kernel file systems
     sudo mount -t proc none $TMP_MOUNT_PATH/proc
     sudo mount --bind /dev $TMP_MOUNT_PATH/dev
-    # Kernel commit https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eedf265aa003b4781de24cfed40a655a664457e6
-    # introduced in v4.7 allows multiple instances of devpts. However,
-    # some distributions are running older kernels so we need to take
-    # care on what options we use to mount a new instance of devpts
-    # filesystem since it's not completely independent. The best thing
-    # to do is to simply use the existing mount options.
-    sudo mount -t devpts -o $(mount | grep devpts | sed 's/.*(\(.*\))/\1/') devpts $TMP_MOUNT_PATH/dev/pts
+    sudo mount -t devpts $(mount_dev_pts_options) devpts $TMP_MOUNT_PATH/dev/pts
     sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
 }
 
