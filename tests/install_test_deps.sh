@@ -17,8 +17,9 @@ sudo apt-get install -y --force-yes \
         rpm \
         uuid-runtime \
         yum-utils || \
-    sudo yum -y install \
+    sudo yum -y install --enablerepo=epel \
         bzip2 \
+        dpkg \
         debootstrap \
         docker \
         kpartx \
