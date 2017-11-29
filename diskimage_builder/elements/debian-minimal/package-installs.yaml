@@ -2,4 +2,6 @@ linux-image-amd64:
   arch: amd64
 linux-image-686:
   arch: i386
+linux-image-arm64:
+  arch: arm64
 netbase:
