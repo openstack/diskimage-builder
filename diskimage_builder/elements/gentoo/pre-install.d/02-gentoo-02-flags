@@ -6,8 +6,12 @@ fi
 set -eu
 set -o pipefail
 
-mkdir -p /etc/portage/package.use
+# get the directories in order
+mkdir -p /etc/portage/profile
 mkdir -p /etc/portage/package.keywords
+mkdir -p /etc/portage/package.mask
+mkdir -p /etc/portage/package.unmask
+mkdir -p /etc/portage/package.use
 
 # needed in order to install pip packages as root
 echo 'dev-python/pip vanilla' >> /etc/portage/package.use/pip
