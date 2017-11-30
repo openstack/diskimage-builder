@@ -21,3 +21,9 @@ echo 'sys-boot/grub device-mapper' >> /etc/portage/package.use/grub
 
 # needed in order to install pip packages as root
 echo '=dev-python/pip-9.0.1-r2 ~amd64' >> /etc/portage/package.keywords/pip
+
+if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then
+    echo "dev-vcs/git -gpg" >> /etc/portage/package.use/musl  # gpg doesn't build on musl profiles
+    echo "=sys-block/open-iscsi-2.0.874-r1 ~amd64" >> /etc/portage/package.keywords/musl
+    echo "=sys-block/open-isns-0.97 ~amd64" >> /etc/portage/package.keywords/musl
+fi
