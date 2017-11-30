@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [[ ${GENTOO_OVERLAYS} != '' ]]; then
+    if mountpoint -q /dev/shm; then
+    echo "/dev/shm found in /proc/self/mountinfo"
+    elif [[ -k /dev/shm ]]; then
+        echo "/dev/shm exists and is stickied"
+    else
+        fix_shm
+    fi
+
+    if [[ ! -f /usr/portage/profiles ]]; then
+        emerge-webrsync -q
+    fi
+
+    # layman requires cryptography, which needs ecc crypto functions.
+    # binaries providing those functions have questionable legality for
+    # redistribution, so we have to use a version of openssl that works around
+    # it (using fedora's patchset) and also use a version of cryptography that
+    # depends on that version of openssl.
+    echo '=dev-python/cryptography-2.1.3 ~amd64' >> /etc/portage/package.keywords/layman
+    echo '=dev-libs/openssl-1.1.0g-r1 ~amd64' >> /etc/portage/package.keywords/layman
+    echo '=dev-libs/openssl-1.1.0g-r1' >> /etc/portage/package.unmask/layman
+    emerge -q --oneshot --jobs=2 openssl openssh
+    # install layman
+    USE="-build" emerge --deep -q --jobs=2 layman
+    # sync the initial overlay list
+    layman -S
+    # enable the various overlays
+    for OVERLAY in ${GENTOO_OVERLAYS}; do
+        layman -a "${OVERLAY}"
+    done
+
+    unfix_shm
+fi

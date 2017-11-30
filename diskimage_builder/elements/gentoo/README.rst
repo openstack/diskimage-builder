@@ -44,3 +44,7 @@ Notes:
   which will be called by running the `python` command.  The
   `GENTOO_PYTHON_ACTIVE_VERSION` is used to set that mapping.  The variable
   contents can be something like `python3.5`.
+
+* You can enable overlays using the `GENTOO_OVERLAYS` variable.  In it you
+  should put a space separated list of overlays.  The overlays must be in the
+  official overlay list and must be git based.
