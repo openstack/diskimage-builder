@@ -62,9 +62,13 @@ case ${DIB_RELEASE} in
 esac
 
 for repo in ${ZYPPER_REPOS}; do
+    refresh_repo=""
     reponame=repo-${repo%%=>*}
     repouri=${repo##*=>}
-    sudo zypper ${ZYPPER_TARGET_OPTS} addrepo --name ${reponame} --keep-packages ${repouri} ${reponame}
+    # Refresh all repos in TW and only the update one for the stable ones. This will ensure that
+    # we always get the latest information from the repo.
+    [[ ${DIB_RELEASE} == tumbleweed ]] || [[ ${reponame} == "repo-update" ]] && refresh_repo="-f"
+    sudo zypper ${ZYPPER_TARGET_OPTS} addrepo --name ${reponame} --keep-packages ${refresh_repo} ${repouri} ${reponame}
 done
 
 # It appears that zypper will clean up the repo's cache when it (re-)adds the
