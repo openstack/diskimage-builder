@@ -21,7 +21,7 @@ else
     case "$DISTRO_NAME" in
         rhel7)
             RELEASE=7
-            URL=$BASE_URL/$RELEASE/x86_64/e/
+            URL=$BASE_URL/$RELEASE/x86_64/Packages/e/
             ;;
         *)
             echo "$DISTRO_NAME is not supported"
