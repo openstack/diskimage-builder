@@ -1,0 +1,4 @@
+s390-tools:
+  arch: s390x
+dmsetup:
+  arch: s390x

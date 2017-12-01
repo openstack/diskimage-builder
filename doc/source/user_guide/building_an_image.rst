@@ -668,3 +668,11 @@ Typically ``ppc64el`` refers to a ``.deb`` based distribution
 architecture, and ``ppc64le`` refers to a ``.rpm`` based distribution.
 Regardless of the distribution the kernel architecture is always
 ``ppc64le``.
+
+Notes about s390x (z Systems) Architecture
+++++++++++++++++++++++++++++++++++++++++++
+
+Images for s390x can only be build on s390x hosts. Trying to build
+it with the architecture override on other architecture will
+cause the build to fail.
+
