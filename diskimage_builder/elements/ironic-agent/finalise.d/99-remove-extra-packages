@@ -18,7 +18,7 @@ if [ $DISTRO_NAME = 'fedora' ] ; then
 
     install-packages -e kernel-debug-devel gcc fedora-logos \
                     rsync pykickstart \
-                    make genisoimage tcpdump \
+                    genisoimage tcpdump \
                     man-db kbd-misc \
                     plymouth cronie ${_remove_yum}
 
