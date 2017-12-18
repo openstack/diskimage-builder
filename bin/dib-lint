@@ -86,6 +86,15 @@ for i in $(find $ELEMENTS_DIR -type f \
 
     exclusions=("$(parse_exclusions $i)")
 
+    # source-repository does a read < $file and can miss the last line
+    # (or only line, if there's only one) when not newline terminated.
+    if [[ $(basename "${i}") =~ "source-repository-" ]]; then
+        nl=$(tail -c 1 ${i})
+        if [[ "${nl}" != "" ]]; then
+            error "$i does not end with a newline"
+        fi
+    fi
+
     # Check that files starting with a shebang are +x
     firstline=$(head -n 1 "$i")
     if [ "${firstline:0:2}" = "#!" ]; then
