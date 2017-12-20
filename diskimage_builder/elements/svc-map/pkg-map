@@ -5,6 +5,9 @@
     },
     "debian": {
       "PyYAML": "python-yaml"
+    },
+    "suse": {
+      "PyYAML": "python-PyYAML"
     }
   },
   "default": {
