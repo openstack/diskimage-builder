@@ -11,6 +11,7 @@ SCRIPTDIR=$(dirname $0)
 # this script is not needed on Gentoo.
 if [ "$DISTRO_NAME" != "gentoo" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.sh /usr/local/sbin/dhcp-all-interfaces.sh
+    sed -i "s/DIB_DHCP_TIMEOUT/${DIB_DHCP_TIMEOUT:-30}/" /usr/local/sbin/dhcp-all-interfaces.sh
 fi
 
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
