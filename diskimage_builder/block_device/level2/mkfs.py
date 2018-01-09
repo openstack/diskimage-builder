@@ -58,13 +58,6 @@ class FilesystemNode(NodeBase):
         if self.label is None:
             self.label = self.name
 
-        # Historic reasons - this will hopefully vanish in one of
-        # the next major releases
-        if self.label == "cloudimg-rootfs" and self.type == "xfs":
-            logger.warning("Default label [cloudimg-rootfs] too long for xfs "
-                           "file system - using [img-rootfs] instead")
-            self.label = "img-rootfs"
-
         # ensure we don't already have a fs with this label ... they
         # all must be unique.
         if 'fs_labels' in self.state:

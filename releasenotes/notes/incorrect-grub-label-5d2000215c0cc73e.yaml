@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    This fixes bug 1742170 where the grub root label is different than the
+    file system label when booting from a whole disk image.
