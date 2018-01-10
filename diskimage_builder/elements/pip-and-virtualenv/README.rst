@@ -4,6 +4,10 @@ pip-and-virtualenv
 
 This element installs pip and virtualenv in the image.
 
+.. note:: This element setups and Python 2 and Python 3 environment.
+          This means it will bring in python2 packages, so isn't
+          appropriate if you want a python3 only environment.
+
 Package install
 ===============
 
