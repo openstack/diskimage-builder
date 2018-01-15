@@ -58,8 +58,8 @@ class Partitioning(PluginBase):
             raise BlockDeviceSetupException(
                 "Partitioning config needs 'label'")
         self.label = config['label']
-        if self.label not in ("mbr", ):
-            raise BlockDeviceSetupException("Label must be 'mbr'")
+        if self.label not in ("mbr", "gpt"):
+            raise BlockDeviceSetupException("Label must be 'mbr' or 'gpt'")
 
         # It is VERY important to get the alignment correct. If this
         # is not correct, the disk performance might be very poor.
@@ -93,29 +93,9 @@ class Partitioning(PluginBase):
             fd.seek(0, 2)
             return fd.tell()
 
-    # not this is NOT a node and this is not called directly!  The
-    # create() calls in the partition nodes this plugin has
-    # created are calling back into this.
-    def create(self):
-        # This is a bit of a hack.  Each of the partitions is actually
-        # in the graph, so for every partition we get a create() call
-        # as the walk happens.  But we only need to create the
-        # partition table once...
-        if self.already_created:
-            logger.info("Not creating the partitions a second time.")
-            return
-        self.already_created = True
-
-        # the raw file on disk
-        image_path = self.state['blockdev'][self.base]['image']
-        # the /dev/loopX device of the parent
-        device_path = self.state['blockdev'][self.base]['device']
-        logger.info("Creating partition on [%s] [%s]", self.base, image_path)
-
-        assert self.label == 'mbr'
-
-        disk_size = self._size_of_block_dev(image_path)
-        with MBR(image_path, disk_size, self.align) as part_impl:
+    def _create_mbr(self):
+        """Create partitions with MBR"""
+        with MBR(self.image_path, self.disk_size, self.align) as part_impl:
             for part_cfg in self.partitions:
                 part_name = part_cfg.get_name()
                 part_bootflag = PartitionNode.flag_boot \
@@ -137,11 +117,87 @@ class Partitioning(PluginBase):
                 # We're going to mount all partitions with kpartx
                 # below once we're done.  So the device this partition
                 # will be seen at becomes "/dev/mapper/loop0pX"
-                assert device_path[:5] == "/dev/"
+                assert self.device_path[:5] == "/dev/"
                 partition_device_name = "/dev/mapper/%sp%d" % \
-                                        (device_path[5:], part_no)
+                                        (self.device_path[5:], part_no)
                 self.state['blockdev'][part_name] \
                     = {'device': partition_device_name}
+
+    def _create_gpt(self):
+        """Create partitions with GPT"""
+
+        cmd = ['sgdisk', self.image_path]
+
+        # This padding gives us a little room for rounding so we don't
+        # go over the end of the disk
+        disk_free = self.disk_size - (2048 * 1024)
+        pnum = 1
+
+        for p in self.partitions:
+            args = {}
+            args['pnum'] = pnum
+            args['name'] = '"%s"' % p.get_name()
+            args['type'] = '%s' % p.get_type()
+
+            # convert from a relative/string size to bytes
+            size = parse_rel_size_spec(p.get_size(), disk_free)[1]
+
+            # We keep track in bytes, but specify things to sgdisk in
+            # megabytes so it can align on sensible boundaries. And
+            # create partitions right after previous so no need to
+            # calculate start/end - just size.
+            assert size <= disk_free
+            args['size'] = size // (1024 * 1024)
+
+            new_cmd = ("-n {pnum}:0:+{size}M -t {pnum}:{type} "
+                       "-c {pnum}:{name}".format(**args))
+            cmd.extend(new_cmd.strip().split(' '))
+
+            # Fill the state; we mount all partitions with kpartx
+            # below once we're done.  So the device this partition
+            # will be seen at becomes "/dev/mapper/loop0pX"
+            assert self.device_path[:5] == "/dev/"
+            device_name = "/dev/mapper/%sp%d" % (self.device_path[5:], pnum)
+            self.state['blockdev'][p.get_name()] \
+                = {'device': device_name}
+
+            disk_free = disk_free - size
+            pnum = pnum + 1
+            logger.debug("Partition %s added, %s remaining in disk",
+                         pnum, disk_free)
+
+        logger.debug("cmd: %s", ' '.join(cmd))
+        exec_sudo(cmd)
+
+    # not this is NOT a node and this is not called directly!  The
+    # create() calls in the partition nodes this plugin has
+    # created are calling back into this.
+    def create(self):
+        # This is a bit of a hack.  Each of the partitions is actually
+        # in the graph, so for every partition we get a create() call
+        # as the walk happens.  But we only need to create the
+        # partition table once...
+        if self.already_created:
+            logger.info("Not creating the partitions a second time.")
+            return
+        self.already_created = True
+
+        # the raw file on disk
+        self.image_path = self.state['blockdev'][self.base]['image']
+        # the /dev/loopX device of the parent
+        self.device_path = self.state['blockdev'][self.base]['device']
+        # underlying size
+        self.disk_size = self._size_of_block_dev(self.image_path)
+
+        logger.info("Creating partition on [%s] [%s]",
+                    self.base, self.image_path)
+
+        assert self.label in ('mbr', 'gpt')
+
+        if self.label == 'mbr':
+            self._create_mbr()
+        elif self.label == 'gpt':
+            self._create_gpt()
 
         # "saftey sync" to make sure the partitions are written
         exec_sudo(["sync"])
@@ -149,12 +205,12 @@ class Partitioning(PluginBase):
         # now all the partitions are created, get device-mapper to
         # mount them
         if not os.path.exists("/.dockerenv"):
-            exec_sudo(["kpartx", "-avs", device_path])
+            exec_sudo(["kpartx", "-avs", self.device_path])
         else:
             # If running inside Docker, make our nodes manually,
             # because udev will not be working. kpartx cannot run in
             # sync mode in docker.
-            exec_sudo(["kpartx", "-av", device_path])
+            exec_sudo(["kpartx", "-av", self.device_path])
             exec_sudo(["dmsetup", "--noudevsync", "mknodes"])
 
         return

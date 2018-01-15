@@ -75,7 +75,8 @@ There are currently two defaults:
 
 The user can overwrite the default handling by setting the environment
 variable `DIB_BLOCK_DEVICE_CONFIG`.  This variable must hold YAML
-structured configuration data.
+structured configuration data or be a ``file://`` URL reference to a
+on-disk configuration file.
 
 The default when using the `vm` element is:
 
@@ -247,8 +248,8 @@ encrypted, ...) and create partition information in it.
 
 The symbolic name for this module is `partitioning`.
 
-Currently the only supported partitioning layout is Master Boot Record
-`MBR`.
+MBR
+***
 
 It is possible to create primary or logical partitions or a mix of
 them. The numbering of the primary partitions will start at 1,
@@ -267,19 +268,27 @@ partitions.
 Partitions are created in the order they are configured.  Primary
 partitions - if needed - must be first in the list.
 
+GPT
+***
+
+GPT partitioning requires the ``sgdisk`` tool to be available.
+
+Options
+*******
+
 There are the following key / value pairs to define one partition
 table:
 
 base
-   (mandatory) The base device where to create the partitions in.
+   (mandatory) The base device to create the partitions in.
 
 label
-   (mandatory) Possible values: 'mbr'
-   This uses the Master Boot Record (MBR) layout for the disk.
-   (There are currently plans to add GPT later on.)
+   (mandatory) Possible values: 'mbr', 'gpt'
+   Configure use of either the Master Boot Record (MBR) or GUID
+   Partition Table (GPT) formats
 
 align
-   (optional - default value '1MiB')
+   (optional - default value '1MiB'; MBR only)
    Set the alignment of the partition.  This must be a multiple of the
    block size (i.e. 512 bytes).  The default of 1MiB (~ 2048 * 512
    bytes blocks) is the default for modern systems and known to
@@ -308,9 +317,9 @@ flags
    (optional) List of flags for the partition. Default: empty.
    Possible values:
 
-   boot
+   boot (MBR only)
       Sets the boot flag for the partition
-   primary
+   primary (MBR only)
       Partition should be a primary partition. If not set a logical
       partition will be created.
 
@@ -321,9 +330,14 @@ size
    based on the remaining free space.
 
 type (optional)
-   The partition type stored in the MBR partition table entry. The
-   default value is '0x83' (Linux Default partition). Any valid one
+   The partition type stored in the MBR or GPT partition table entry.
+
+   For MBR the default value is '0x83' (Linux Default partition). Any valid one
    byte hexadecimal value may be specified here.
+
+   For GPT the default value is '8300' (Linux Default partition). Any valid two
+   byte hexadecimal value may be specified here. Due to ``sgdisk`` leading '0x'
+   should not be used.
 
 Example:
 
@@ -350,12 +364,28 @@ Example:
         - name: data2
           size: 100%
 
+  - partitioning:
+      base: gpt_image
+      label: gpt
+      partitions:
+        - name: ESP
+          type: EF00
+          size: 16MiB
+        - name: data1
+          size: 1GiB
+        - name: lvmdata
+          type: 8E00
+          size: 100%
+
 On the `image0` two partitions are created.  The size of the first is
 1GiB, the second uses the remaining free space.  On the `data_image`
-three partitions are created: all are about 1/3 of the disk size.
+three partitions are created: all are about 1/3 of the disk size. On
+the `gpt_image` three partitions are created: 16MiB one for EFI
+bootloader, 1GiB Linux filesystem one and rest of disk will be used
+for LVM partition.
 
-Module: Lvm
-···········
+Module: LVM
+...........
 
 This module generates volumes on existing block devices. This means that it is
 possible to take any previous created partition, and create volumes information

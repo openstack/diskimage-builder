@@ -9,6 +9,8 @@ sudo apt-get install -y --force-yes \
         bzip2 \
         debootstrap \
         docker.io \
+        dosfstools \
+        gdisk \
         inetutils-ping \
         lsb-release \
         kpartx \
@@ -22,6 +24,8 @@ sudo apt-get install -y --force-yes \
         dpkg \
         debootstrap \
         docker \
+        dosfstools \
+        gdisk \
         kpartx \
         util-linux \
         qemu-img \
@@ -30,6 +34,8 @@ sudo apt-get install -y --force-yes \
         bzip2 \
         debootstrap \
         docker \
+        dosfstools \
+        gdisk \
         kpartx \
         util-linux \
         python-pyliblzma \
@@ -40,6 +46,8 @@ sudo apt-get install -y --force-yes \
         app-emulation/qemu \
         dev-python/pyyaml \
         sys-block/parted \
+        sys-apps/gptfdisk \
         sys-fs/multipath-tools \
+        sys-fs/dosfstools \
         qemu-img \
         yum-utils
