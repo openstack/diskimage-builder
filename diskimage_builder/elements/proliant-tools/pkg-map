@@ -5,6 +5,9 @@
         },
         "redhat": {
             "python-dev": "python2-devel"
+        },
+        "suse": {
+            "python-dev": "python-devel"
         }
     },
     "default": {
