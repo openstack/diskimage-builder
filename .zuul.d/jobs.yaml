@@ -49,9 +49,6 @@
             irrelevant-files:
               - ^.*\.rst$
               - ^doc/.*$
-    check-tripleo:
-      jobs:
-        - tripleo-ci-centos-7-ovb-ha-oooq
 
     gate:
       jobs:
