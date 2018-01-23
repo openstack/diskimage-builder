@@ -2,7 +2,7 @@ tgt:
 curl:
 # dmidecode does not exist for ppc* arches so we use lshw
 dmidecode:
-    not-arch: ppc64,ppc64el
+    not-arch: ppc64,ppc64el,ppc64le
 lshw:
 ipmitool:
 qemu-utils:
