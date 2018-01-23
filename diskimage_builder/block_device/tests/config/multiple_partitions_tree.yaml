@@ -11,6 +11,7 @@
           size: 55%
           mkfs:
             type: xfs
+            uuid: root-uuid-1234
             mount:
               mount_point: /
               fstab:
@@ -20,6 +21,7 @@
           size: 40%
           mkfs:
             type: xfs
+            uuid: var-uuid-1234
             mount:
               mount_point: /var
               fstab:
@@ -28,7 +30,8 @@
         - name: var_log
           size: 5%
           mkfs:
-            type: xfs
+            type: vfat
+            label: varlog
             mount:
               mount_point: /var/log
               fstab:

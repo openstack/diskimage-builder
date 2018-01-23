@@ -21,6 +21,7 @@
     base: root
     name: mkfs_root
     type: xfs
+    uuid: root-uuid-1234
 
 - mount:
     base: mkfs_root
@@ -37,6 +38,7 @@
     base: var
     name: mkfs_var
     type: xfs
+    uuid: var-uuid-1234
 
 - mount:
     base: mkfs_var
@@ -52,7 +54,8 @@
 - mkfs:
     base: var_log
     name: mkfs_var_log
-    type: xfs
+    type: vfat
+    label: varlog
 
 - mount:
     base: mkfs_var_log
