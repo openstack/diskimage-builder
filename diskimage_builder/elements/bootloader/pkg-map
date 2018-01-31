@@ -3,16 +3,19 @@
     "gentoo": {
       "dkms_package": "",
       "extlinux": "syslinux",
-      "grub-pc": "grub"
+      "grub-pc": "grub",
+      "grub-efi": "grub"
     },
     "suse": {
       "dkms_package": "",
       "extlinux": "syslinux",
-      "grub-pc": "grub2"
+      "grub-pc": "grub2",
+      "grub-efi": "grub2"
     },
     "redhat": {
       "extlinux": "syslinux-extlinux",
       "grub-pc": "grub2-tools grub2",
+      "grub-efi": "grub2-tools grub2-efi",
       "grub-ppc64": "grub2-tools grub2"
     }
   },
@@ -20,6 +23,8 @@
     "dkms_package": "dkms",
     "extlinux": "extlinux",
     "grub-pc": "grub-pc",
+    "grub-efi-amd64": "grub-efi",
+    "grub-efi-arm64": "grub-efi-arm64",
     "grub-ppc64": "grub-ieee1275"
   }
 }

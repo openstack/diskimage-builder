@@ -55,13 +55,21 @@ function install_grub2 {
     # Check for offline installation of grub
     if [ -f "/tmp/grub/install" ] ; then
         source /tmp/grub/install
-    # Right now we can't use pkg-map to branch by arch, so tag an architecture
-    # specific virtual package so we can install the rigth thing based on
-    # distribution.
+
+    # Right now we can't use pkg-map to branch by arch, so tag an
+    # architecture specific virtual package so we can install the
+    # rigth thing based on distribution.
     elif [[ "$ARCH" =~ "ppc" ]]; then
         install-packages -m bootloader grub-ppc64
-    else
+    elif [[ "${DIB_BLOCK_DEVICE}" == "mbr" ||
+                "${DIB_BLOCK_DEVICE}" == "gpt" ]]; then
         install-packages -m bootloader grub-pc
+    elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
+        install-packages -m bootloader grub-efi-$ARCH
+    else
+        echo "Failure: I'm not sure what bootloader to install"
+        echo "Ensure you have included a block-device-* element"
+        exit 1
     fi
 
     # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
@@ -127,7 +135,27 @@ function install_grub2 {
         # that a dev/loopXpN node will work fine.
         $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
     else
-        $GRUBNAME --modules="biosdisk part_msdos" $GRUB_OPTS $BOOT_DEV
+        # This set of modules is sufficient for all installs (mbr/gpt/efi)
+        modules="part_msdos part_gpt lvm"
+        extra_options=""
+        if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
+            modules="$modules biosdisk"
+        elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
+            # This tells the EFI install to put the EFI binaries into
+            # the generic /BOOT directory and avoids trying to update
+            # nvram settings.
+            extra_options="--removable"
+            # We need to manually set the target if it's different to
+            # the host.  Setup for EFI
+            case $ARCH in
+                "x86_64"|"amd64")
+                    GRUB_OPTS="--target=x86_64-efi"
+                    ;;
+                # At this point, we don't need to override the target
+                # for any other architectures.
+            esac
+        fi
+        $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
     fi
 
     # This might be better factored out into a per-distro 'install-bootblock'
@@ -144,7 +172,7 @@ function install_grub2 {
     echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
     echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
     echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
-    echo 'GRUB_GFXPAYLOAD_LINUX=text' >>/etc/default/grub
+    echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
 
     # Serial console on Power is hvc0
     if [[ "powerpc ppc64 ppc64le" =~ "$ARCH" ]]; then
