@@ -68,6 +68,10 @@ class TestElementDeps(testtools.TestCase):
                           [],
                           ['virtual'])
         _populate_element(self.element_dir,
+                          'also_provides_virtual',
+                          [],
+                          ['virtual'])
+        _populate_element(self.element_dir,
                           'requires_virtual',
                           ['virtual'],
                           ['operating-system'])
@@ -167,6 +171,14 @@ class TestElementDeps(testtools.TestCase):
         self.assertItemsEqual(
                 [self._e('requires_new_virtual'),
                  self._e('provides_new_virtual')], result)
+
+    def test_elements_provide_same(self):
+        msg = "virtual: already provided by \['provides_virtual'\]"
+        self.assertRaisesRegexp(element_dependencies.AlreadyProvidedException,
+                                msg,
+                                element_dependencies.get_elements,
+                                ['provides_virtual', 'also_provides_virtual'],
+                                self.element_dirs)
 
     def test_no_os_element(self):
         self.assertRaises(element_dependencies.MissingOSException,
