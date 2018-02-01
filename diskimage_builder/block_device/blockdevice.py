@@ -172,13 +172,20 @@ class BlockDevice(object):
     trap - EXIT
     """
 
-    def _merge_into_config(self):
-        """Merge old (default) config into new
+    def _merge_rootfs_params(self):
+        """Merge rootfs related parameters into configuration
 
-        There is the need to be compatible using some old environment
-        variables.  This is done in the way, that if there is no
-        explicit value given, these values are inserted into the current
-        configuration.
+        To maintain compatability with some old block-device
+        environment variables from before we had a specific
+        block-device config, disk-image-create provides a "parameters"
+        file that translates the old bash-environment variables into a
+        YAML based configuration file (``self.params``).
+
+        Here we merge the values in this parameters file that relate
+        to the root file-system into the final configuration.  We look
+        for the ``mkfs_root`` node in the new config, and pull the
+        relevant settings from the parameters into it.
+
         """
         for entry in self.config:
             for k, v in entry.items():
@@ -198,7 +205,18 @@ class BlockDevice(object):
                         if self.params['root-label'] is not None:
                             v['label'] = self.params['root-label']
                         else:
-                            v['label'] = "cloudimg-rootfs"
+                            # The default label is "cloudimg-rootfs"
+                            # for historical reasons (upstream
+                            # images/EC2 defaults/cloud-init etc).  We
+                            # want to remain backwards compatible, but
+                            # unfortunately that's too long for XFS so
+                            # we've decided on 'img-rootfs' in that
+                            # case.  Note there's separate checks if
+                            # the label is specified explicitly.
+                            if v.get('type') == 'xfs':
+                                v['label'] = 'img-rootfs'
+                            else:
+                                v['label'] = 'cloudimg-rootfs'
 
     def __init__(self, params):
         """Create BlockDevice object
@@ -241,7 +259,7 @@ class BlockDevice(object):
         logger.debug("Config before merge [%s]", self.config)
         self.config = config_tree_to_graph(self.config)
         logger.debug("Config before merge [%s]", self.config)
-        self._merge_into_config()
+        self._merge_rootfs_params()
         logger.debug("Final config [%s]", self.config)
         # Write the final config
         with open(self.config_json_file_name, "wt") as fd:
@@ -282,18 +300,21 @@ class BlockDevice(object):
         :param symbol: the symbol to get
         """
         logger.info("Getting value for [%s]", symbol)
+
         if symbol == "root-label":
             root_mount = self._config_get_mount("/")
             root_fs = self._config_get_mkfs(root_mount['base'])
             logger.debug("root-label [%s]", root_fs['label'])
             print("%s" % root_fs['label'])
             return 0
+
         if symbol == "root-fstype":
             root_mount = self._config_get_mount("/")
             root_fs = self._config_get_mkfs(root_mount['base'])
             logger.debug("root-fstype [%s]", root_fs['type'])
             print("%s" % root_fs['type'])
             return 0
+
         if symbol == 'mount-points':
             mount_points = self._config_get_all_mount_points()
             # we return the mountpoints joined by a pipe, because it is not
