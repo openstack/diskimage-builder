@@ -15,6 +15,9 @@ $IPADIR/imagebuild/common/generate_upper_constraints.sh $IPADIR/upper-constraint
 # create the virtual environment
 virtualenv $IPADIR/venv
 
+# pip might be an older version which does not support the -c option, therefore upgrade first
+$IPADIR/venv/bin/pip install pip --upgrade
+
 # install IPA inside the virtual environment
 $IPADIR/venv/bin/pip install -c $IPADIR/upper-constraints.txt $IPADIR
 

@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    This fixes bug 1744403 where 60-ironic-agent-install fails to run
+    when DIB_INSTALLTYPE_ironic_agent=source is set.  pip installs
+    constraints with the -c argument and this argument is a relatively
+    newer addion.  The currently installed pip may not support that
+    option and must be upgraded before proceeding.
