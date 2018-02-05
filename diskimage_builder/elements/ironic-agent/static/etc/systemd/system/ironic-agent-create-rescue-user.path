@@ -1,0 +1,8 @@
+[Unit]
+Description=Ironic user rescue - notify path existence
+
+[Path]
+PathExists=/etc/ipa-rescue-config/ipa-rescue-password
+
+[Install]
+WantedBy=multi-user.target
