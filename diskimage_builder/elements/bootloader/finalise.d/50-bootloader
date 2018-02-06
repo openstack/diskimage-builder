@@ -9,296 +9,241 @@ fi
 set -eu
 set -o pipefail
 
-BOOT_DEV=$IMAGE_BLOCK_DEVICE
+if [ ${DIB_EXTLINUX:-0} != "0" ]; then
+    echo "DIB_EXTLINUX no longer supported"
+    exit 1
+fi
 
+# Some distros have pre-installed grub in some other way, and want to
+# skip this.
+if [[ -f "/tmp/grub/install" ]]; then
+    exit 0
+fi
+
+BOOT_DEV=$IMAGE_BLOCK_DEVICE
 # All available devices, handy for some bootloaders...
 declare -A DEVICES
 eval DEVICES=( $IMAGE_BLOCK_DEVICES )
 
-function install_extlinux {
-    install-packages -m bootloader extlinux
+# Right now we can't use pkg-map to branch by arch, so tag an
+# architecture specific virtual package so we can install the
+# rigth thing based on distribution.
+if [[ "$ARCH" =~ "ppc" ]]; then
+    install-packages -m bootloader grub-ppc64
+elif [[ "${DIB_BLOCK_DEVICE}" == "mbr" ||
+            "${DIB_BLOCK_DEVICE}" == "gpt" ]]; then
+    install-packages -m bootloader grub-pc
+elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
+    install-packages -e -m bootloader grub-efi-$ARCH
+    install-packages -m bootloader grub-efi grub-efi-$ARCH
+else
+    echo "Failure: I'm not sure what bootloader to install"
+    echo "Ensure you have included a block-device-* element"
+    exit 1
+fi
 
-    echo "Installing Extlinux..."
+GRUBNAME=$(type -p grub-install) || echo "trying grub2-install"
+if [ -z "$GRUBNAME" ]; then
+    GRUBNAME=$(type -p grub2-install)
+fi
 
-    # Find and install mbr.bin
-    for MBR in /usr/share/syslinux/mbr.bin /usr/lib/syslinux/mbr.bin \
-        /usr/lib/extlinux/mbr.bin /usr/lib/EXTLINUX/mbr.bin ; do
-        if [ -f $MBR ]; then
-            break
-        fi
-    done
-    if [ ! -f $MBR ]; then
-        echo "mbr.bin (from EXT/SYSLINUX) not found."
-        exit 1
-    fi
+if type grub2-mkconfig >/dev/null; then
+    GRUB_MKCONFIG="grub2-mkconfig"
+else
+    GRUB_MKCONFIG="grub-mkconfig"
+fi
 
-    dd if=$MBR of=$BOOT_DEV
+echo "Installing GRUB2..."
 
-    # Find any pre-created extlinux install directory
-    for EXTDIR in /boot/extlinux /boot/syslinux ; do
-        if [ -d $EXTDIR ] ; then
-            break
-        fi
-    done
-    if [ ! -d $EXTDIR ] ; then
-        # No install directory found so default to /boot/syslinux
-        EXTDIR=/boot/syslinux
-        mkdir -p $EXTDIR
-    fi
+# When using EFI image-based builds, particularly rhel element
+# based on RHEL>=8.2 .qcow2, we might have /boot/grub2/grubenv
+# as a dangling symlink to /boot/efi because we have extracted
+# it from the root fs, but we didn't populate the separate EFI
+# boot partition from the image.  grub2-install calls rename()
+# on this file, so if it's a dangling symlink it errors.  Just
+# remove it if it exists.
+if [[ -L /boot/grub2/grubenv ]]; then
+    rm -f /boot/grub2/grubenv
+fi
 
-    # Finally install extlinux
-    extlinux --install $EXTDIR
-}
-
-function install_grub2 {
-
-    # Check for offline installation of grub
-    if [ -f "/tmp/grub/install" ] ; then
-        source /tmp/grub/install
-
-    # Right now we can't use pkg-map to branch by arch, so tag an
-    # architecture specific virtual package so we can install the
-    # rigth thing based on distribution.
-    elif [[ "$ARCH" =~ "ppc" ]]; then
-        install-packages -m bootloader grub-ppc64
-    elif [[ "${DIB_BLOCK_DEVICE}" == "mbr" ||
-                "${DIB_BLOCK_DEVICE}" == "gpt" ]]; then
-        install-packages -m bootloader grub-pc
-    elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
-        install-packages -e -m bootloader grub-efi-$ARCH
-        install-packages -m bootloader grub-efi grub-efi-$ARCH
-    else
-        echo "Failure: I'm not sure what bootloader to install"
-        echo "Ensure you have included a block-device-* element"
-        exit 1
-    fi
-
-    # XXX: grub-probe on the nbd0/loop0 device returns nothing - workaround, manually
-    # specify modules. https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1073731
-    GRUBNAME=$(type -p grub-install) || echo "trying grub2-install"
-    if [ -z "$GRUBNAME" ]; then
-        GRUBNAME=$(type -p grub2-install)
-    fi
-
-    if type grub2-mkconfig >/dev/null; then
-        GRUB_MKCONFIG="grub2-mkconfig"
-    else
-        GRUB_MKCONFIG="grub-mkconfig"
-    fi
-
-    # If no GRUB2 is found, fallback to extlinux
-    if [ -z "$GRUBNAME" ] || [ $($GRUBNAME --version | grep "0.97" | wc -l) -ne 0 ]; then
-        echo "No GRUB2 found. Fallback to Extlinux..."
-        install_extlinux
-        exit 0
-    fi
-
-    echo "Installing GRUB2..."
-
-    # When using EFI image-based builds, particularly rhel element
-    # based on RHEL>=8.2 .qcow2, we might have /boot/grub2/grubenv
-    # as a dangling symlink to /boot/efi because we have extracted
-    # it from the root fs, but we didn't populate the separate EFI
-    # boot partition from the image.  grub2-install calls rename()
-    # on this file, so if it's a dangling symlink it errors.  Just
-    # remove it if it exists.
-    if [[ -L /boot/grub2/grubenv ]]; then
-        rm -f /boot/grub2/grubenv
-    fi
-
-    # We need --force so grub does not fail due to being installed on the
-    # root partition of a block device.
-    GRUB_OPTS=${GRUB_OPTS:-"--force"}
-    # XXX: This is buggy:
-    # - --target=i386-pc is invalid for non-i386/amd64 architectures
-    # - and for UEFI too.
-    #    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-    if [[ ! $GRUB_OPTS == *--target* ]] && [[ $($GRUBNAME --version) =~ ' 2.' ]]; then
-        # /sys/ comes from the host machine. If the host machine is using EFI
-        # but the image being built doesn't have EFI boot-images installed we
-        # should set the --target to use a BIOS-based boot-image.
-        #
-        # * --target tells grub what's the target platform
-        # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
-        # * i386-pc is used for BIOS-based machines
-        # http://www.gnu.org/software/grub/manual/grub.html#Installation
-        #
-        if [ -d /sys/firmware/efi ]; then
-            if [ ! -d /usr/lib/grub/*-efi ]; then
-                case $ARCH in
-                    "x86_64"|"amd64")
-                        GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-                        ;;
-                    "i386")
-                        target=i386-pc
-                        if [ -e /proc/device-tree ]; then
-                            for x in /proc/device-tree/*; do
-                                if [ -e "$x" ]; then
-                                    target="i386-ieee1275"
-                                fi
-                            done
-                        fi
-                        GRUB_OPTS="$GRUB_OPTS --target=$target"
-                        ;;
-                esac
-            fi
-        fi
-    fi
-
-    if [[ "$ARCH" =~ "ppc" ]] ; then
-        # For PPC (64-Bit regardless of Endian-ness), we use the "boot"
-        # partition as the one to point grub-install to, not the loopback
-        # device.  ppc has a dedicated PReP boot partition.
-        # For grub2 < 2.02~beta3 this needs to be a /dev/mapper/... node after
-        # that a dev/loopXpN node will work fine.
-        $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
-    else
-        # This set of modules is sufficient for all installs (mbr/gpt/efi)
-        modules="part_msdos part_gpt lvm"
-        if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
-            $GRUBNAME --modules="$modules biosdisk" $GRUB_OPTS $BOOT_DEV
-        elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
-            # We need to manually set the target if it's different to
-            # the host.  Setup for EFI
+# We need --force so grub does not fail due to being installed on the
+# root partition of a block device.
+GRUB_OPTS=${GRUB_OPTS:-"--force"}
+# XXX: This is buggy:
+# - --target=i386-pc is invalid for non-i386/amd64 architectures
+# - and for UEFI too.
+#    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+if [[ ! $GRUB_OPTS == *--target* ]] && [[ $($GRUBNAME --version) =~ ' 2.' ]]; then
+    # /sys/ comes from the host machine. If the host machine is using EFI
+    # but the image being built doesn't have EFI boot-images installed we
+    # should set the --target to use a BIOS-based boot-image.
+    #
+    # * --target tells grub what's the target platform
+    # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
+    # * i386-pc is used for BIOS-based machines
+    # http://www.gnu.org/software/grub/manual/grub.html#Installation
+    #
+    if [ -d /sys/firmware/efi ]; then
+        if [ ! -d /usr/lib/grub/*-efi ]; then
             case $ARCH in
                 "x86_64"|"amd64")
-                    # This call installs grub for BIOS compatability
-                    # which makes portable EFI/BIOS images.
-                    $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
-                    # Set the x86_64 specific efi target for the generic
-                    # installation below.
-                    GRUB_OPTS="--target=x86_64-efi"
+                    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
                     ;;
-                # At this point, we don't need to override the target
-                # for any other architectures.
+                "i386")
+                    target=i386-pc
+                    if [ -e /proc/device-tree ]; then
+                        for x in /proc/device-tree/*; do
+                            if [ -e "$x" ]; then
+                                target="i386-ieee1275"
+                            fi
+                        done
+                    fi
+                    GRUB_OPTS="$GRUB_OPTS --target=$target"
+                    ;;
             esac
-            # If we don't have a distro specific dir with presigned efi targets
-            # we install a generic one.
-            if [ ! -d /boot/efi/$EFI_BOOT_DIR ]; then
-                echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
-                # This tells the EFI install to put the EFI binaries into
-                # the generic /BOOT directory and avoids trying to update
-                # nvram settings.
-                extra_options="--removable"
-                $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
-            fi
         fi
     fi
-
-    # This might be better factored out into a per-distro 'install-bootblock'
-    # helper.
-    if [ -d /boot/grub2 ]; then
-        GRUB_CFG=/boot/grub2/grub.cfg
-    elif [ -d /boot/grub ]; then
-        GRUB_CFG=/boot/grub/grub.cfg
-    fi
-
-    # Override the root device to the default label, and disable uuid
-    # lookup.
-    echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
-    echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
-    echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
-    echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
-    echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
-
-    # NOTE(ianw) : 2021-05-11
-    # On Fedora there has been a switch to BLS
-    #  https://fedoraproject.org/wiki/Changes/BootLoaderSpecByDefault
-    # which means that kernel-install will have created entries in
-    #  /boot/loader/entries/...
-    # and, as the wiki page says
-    #
-    #   The main issue appears to be that a number of places document
-    #   a way to pass kernel options that is no longer working with
-    #   BLS, i.e. edit /etc/default/grub before running
-    #   grub2-mkconfig.
-    #
-    # i.e. exactly what we're doing above to override the root device
-    # in particular.  Override grub2 to use it's old config format and
-    # remove any BLS entries the kernel install made.
-    #
-    # I imagine at some point we will reworking things in a more
-    # general sense to support BLS if that's what everything is
-    # switching to.
-    #
-    if [[ ${DISTRO_NAME} = fedora ]]; then
-        echo 'GRUB_ENABLE_BLSCFG=false' >> /etc/default/grub
-        rm -rf /boot/loader/
-    fi
-
-    if [[ -n "${DIB_BOOTLOADER_SERIAL_CONSOLE}" ]]; then
-        SERIAL_CONSOLE="${DIB_BOOTLOADER_SERIAL_CONSOLE}"
-    elif [[ "powerpc ppc64 ppc64le" =~ "$ARCH" ]]; then
-        # Serial console on Power is hvc0
-        SERIAL_CONSOLE="hvc0"
-    elif [[ "arm64" =~ "$ARCH" ]]; then
-        SERIAL_CONSOLE="ttyAMA0,115200"
-    else
-        SERIAL_CONSOLE="ttyS0,115200"
-    fi
-
-    GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=${SERIAL_CONSOLE} no_timer_check"
-
-    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
-    echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
-
-    # os-prober leaks /dev/sda into config file in dual-boot host
-    # Disable grub-os-prober to avoid the issue  while running
-    # grub-mkconfig
-    # Setting a flag to track whether the entry is already there in grub config
-    PROBER_DISABLED=
-    if ! grep -qe "^\s*GRUB_DISABLE_OS_PROBER=true" /etc/default/grub; then
-        PROBER_DISABLED=true
-        echo 'GRUB_DISABLE_OS_PROBER=true' >> /etc/default/grub
-    fi
-
-    # GRUB_MKCONFIG call needs to happen after we configure
-    # /etc/default/grub above. Without this we can set inappropriate
-    # root device labels and then images don't boot.
-    #
-    # This produces a legacy config which both bios and uefi can boot
-    # Later we copy the final config to an efi specific location to
-    # support uefi specific functionality like secure boot.
-    $GRUB_MKCONFIG -o $GRUB_CFG
-
-    # Remove the fix to disable os_prober
-    if [ -n "$PROBER_DISABLED" ]; then
-        sed -i '$d' /etc/default/grub
-    fi
-
-    # grub-mkconfig generates a config with the device in it,
-    # This shouldn't be needed, but old code has bugs
-    DIB_RELEASE=${DIB_RELEASE:-}
-    if [ "$DIB_RELEASE" = 'wheezy' ]; then
-        sed -i "s%search --no.*%%" $GRUB_CFG
-        sed -i "s%set root=.*%set root=(hd0,1)%" $GRUB_CFG
-    fi
-
-    # Fix efi specific instructions in grub config file
-    if [ -d /sys/firmware/efi ]; then
-        sed -i 's%\(initrd\|linux\)efi /boot%\1 /boot%g' $GRUB_CFG
-    fi
-
-    # when using efi, and having linux16/initrd16, it needs to be replaced
-    # by linuxefi/initrdefi. When building images on a non-efi system,
-    # the 16 suffix is added to linux/initrd entries, but we need it to be
-    # linuxefi/initrdefi for the image to boot under efi
-    if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
-        sed -i 's%\(linux\|initrd\)16 /boot%\1efi /boot%g' $GRUB_CFG
-
-        # Finally copy the grub.cfg to the EFI specific dir to support
-        # functionality like secure boot. We make a copy because
-        # /boot and /boot/efi may be different partitions and uefi looks
-        # for a specific partition UUID preventing symlinks from working.
-        if [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
-            cp $GRUB_CFG /boot/efi/$EFI_BOOT_DIR/grub.cfg
-        fi
-    fi
-}
-
-DIB_EXTLINUX=${DIB_EXTLINUX:-0}
-if [ "$DIB_EXTLINUX" != "0" ]; then
-    install_extlinux
-else
-    install_grub2
 fi
+
+if [[ "$ARCH" =~ "ppc" ]] ; then
+    # For PPC (64-Bit regardless of Endian-ness), we use the "boot"
+    # partition as the one to point grub-install to, not the loopback
+    # device.  ppc has a dedicated PReP boot partition.
+    # For grub2 < 2.02~beta3 this needs to be a /dev/mapper/... node after
+    # that a dev/loopXpN node will work fine.
+    $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
+else
+    # This set of modules is sufficient for all installs (mbr/gpt/efi)
+    modules="part_msdos part_gpt lvm"
+    if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
+        $GRUBNAME --modules="$modules biosdisk" $GRUB_OPTS $BOOT_DEV
+    elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
+        # We need to manually set the target if it's different to
+        # the host.  Setup for EFI
+        case $ARCH in
+            "x86_64"|"amd64")
+                # This call installs grub for BIOS compatability
+                # which makes portable EFI/BIOS images.
+                $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
+                # Set the x86_64 specific efi target for the generic
+                # installation below.
+                GRUB_OPTS="--target=x86_64-efi"
+                ;;
+            # At this point, we don't need to override the target
+            # for any other architectures.
+        esac
+        # If we don't have a distro specific dir with presigned efi targets
+        # we install a generic one.
+        if [ ! -d /boot/efi/$EFI_BOOT_DIR ]; then
+            echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
+            # This tells the EFI install to put the EFI binaries into
+            # the generic /BOOT directory and avoids trying to update
+            # nvram settings.
+            extra_options="--removable"
+            $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
+        fi
+    fi
+fi
+
+# This might be better factored out into a per-distro 'install-bootblock'
+# helper.
+if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+elif [ -d /boot/grub ]; then
+    GRUB_CFG=/boot/grub/grub.cfg
+fi
+
+# Override the root device to the default label, and disable uuid
+# lookup.
+echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
+echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
+echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
+echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
+echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
+
+# NOTE(ianw) : 2021-05-11
+# On Fedora there has been a switch to BLS
+#  https://fedoraproject.org/wiki/Changes/BootLoaderSpecByDefault
+# which means that kernel-install will have created entries in
+#  /boot/loader/entries/...
+# and, as the wiki page says
+#
+#   The main issue appears to be that a number of places document
+#   a way to pass kernel options that is no longer working with
+#   BLS, i.e. edit /etc/default/grub before running
+#   grub2-mkconfig.
+#
+# i.e. exactly what we're doing above to override the root device
+# in particular.  Override grub2 to use it's old config format and
+# remove any BLS entries the kernel install made.
+#
+# I imagine at some point we will reworking things in a more
+# general sense to support BLS if that's what everything is
+# switching to.
+#
+if [[ ${DISTRO_NAME} = fedora ]]; then
+    echo 'GRUB_ENABLE_BLSCFG=false' >> /etc/default/grub
+    rm -rf /boot/loader/
+fi
+
+if [[ -n "${DIB_BOOTLOADER_SERIAL_CONSOLE}" ]]; then
+    SERIAL_CONSOLE="${DIB_BOOTLOADER_SERIAL_CONSOLE}"
+elif [[ "powerpc ppc64 ppc64le" =~ "$ARCH" ]]; then
+    # Serial console on Power is hvc0
+    SERIAL_CONSOLE="hvc0"
+elif [[ "arm64" =~ "$ARCH" ]]; then
+    SERIAL_CONSOLE="ttyAMA0,115200"
+else
+    SERIAL_CONSOLE="ttyS0,115200"
+fi
+
+GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=${SERIAL_CONSOLE} no_timer_check"
+
+echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
+echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
+
+# os-prober leaks /dev/sda into config file in dual-boot host
+# Disable grub-os-prober to avoid the issue  while running
+# grub-mkconfig
+# Setting a flag to track whether the entry is already there in grub config
+PROBER_DISABLED=
+if ! grep -qe "^\s*GRUB_DISABLE_OS_PROBER=true" /etc/default/grub; then
+    PROBER_DISABLED=true
+    echo 'GRUB_DISABLE_OS_PROBER=true' >> /etc/default/grub
+fi
+
+# GRUB_MKCONFIG call needs to happen after we configure
+# /etc/default/grub above. Without this we can set inappropriate
+# root device labels and then images don't boot.
+#
+# This produces a legacy config which both bios and uefi can boot
+# Later we copy the final config to an efi specific location to
+# support uefi specific functionality like secure boot.
+$GRUB_MKCONFIG -o $GRUB_CFG
+
+# Remove the fix to disable os_prober
+if [ -n "$PROBER_DISABLED" ]; then
+    sed -i '$d' /etc/default/grub
+fi
+
+# Fix efi specific instructions in grub config file
+if [ -d /sys/firmware/efi ]; then
+    sed -i 's%\(initrd\|linux\)efi /boot%\1 /boot%g' $GRUB_CFG
+fi
+
+# when using efi, and having linux16/initrd16, it needs to be replaced
+# by linuxefi/initrdefi. When building images on a non-efi system,
+# the 16 suffix is added to linux/initrd entries, but we need it to be
+# linuxefi/initrdefi for the image to boot under efi
+if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
+    sed -i 's%\(linux\|initrd\)16 /boot%\1efi /boot%g' $GRUB_CFG
+
+    # Finally copy the grub.cfg to the EFI specific dir to support
+    # functionality like secure boot. We make a copy because
+    # /boot and /boot/efi may be different partitions and uefi looks
+    # for a specific partition UUID preventing symlinks from working.
+    if [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
+        cp $GRUB_CFG /boot/efi/$EFI_BOOT_DIR/grub.cfg
+    fi
+fi
+
