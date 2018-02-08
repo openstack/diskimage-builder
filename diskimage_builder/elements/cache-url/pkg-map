@@ -1,0 +1,7 @@
+{
+    "distro": {
+        "gentoo": {
+            "curl": "net-misc/curl"
+        }
+    }
+}
