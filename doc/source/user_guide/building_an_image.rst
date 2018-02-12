@@ -434,7 +434,7 @@ options
 
 Example:
 
-.. code-block: yaml
+.. code-block:: yaml
 
     - lvm:
         name: lvm
