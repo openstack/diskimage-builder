@@ -26,8 +26,8 @@ Notes:
 * Other profiles can be used by exporting GENTOO_PROFILE with a valid profile.
   A list of valid profiles follows:
 
-    default/linux/amd64/13.0
-    default/linux/amd64/13.0/no-multilib
+    default/linux/amd64/17.0
+    default/linux/amd64/17.0/no-multilib
     hardened/linux/amd64
     hardened/linux/amd64/no-multilib
 
