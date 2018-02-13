@@ -218,7 +218,7 @@ if [ "$IS_RAMDISK" == "1" ]; then
   source $_LIB/ramdisk-functions
 fi
 
-echo "diskimage-builder version $(show_version)"
+echo "${SCRIPTNAME} version $(show_version)"
 
 # If no elements are specified theres no way we can succeed
 if [ -z "$*" ]; then
