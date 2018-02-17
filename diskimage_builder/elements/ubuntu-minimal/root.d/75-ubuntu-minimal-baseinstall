@@ -41,13 +41,25 @@ $apt_get update
 $apt_get clean
 $apt_get dist-upgrade -y
 
-$apt_get install -y busybox sudo
+to_install=""
+
+# pre-bionic (18.04) brought this in via debootstrap, but init
+# dependencies have narrowed in the container world, so now we add it
+# explicitly here so it's brought in early.
+if [ $DIB_RELEASE != "trusty" ] && [ $DIB_RELEASE != "xenial" ]; then
+    to_install+="systemd-sysv "
+fi
+
+# default required
+to_install+="busybox sudo " # dib-lint: safe_sudo
 
 if [ "$DIB_PYTHON_VERSION" == "2" ]; then
-    $apt_get install -y python
+    to_install+="python "
 elif [ "$DIB_PYTHON_VERSION" == "3" ]; then
-    $apt_get install -y python3
+    to_install+="python3 "
 else
     echo "ERROR: DIB_PYTHON_VERSION is '$DIB_PYTHON_VERSION' but needs to be 2 or 3"
     exit 1
 fi
+
+$apt_get install -y $to_install
