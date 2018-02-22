@@ -1,2 +1,9 @@
 linux-image-generic:
+  not-arch: arm64
+# TODO(ianw): this is Xenial specific, for now.  This kernel works
+# much better, however, including better support for cdrom's for
+# config-drive.  We'll need to filter this further for future
+# releases; maybe add a $DIB_RELEASE filter too?
+linux-generic-hwe-16.04:
+  arch: arm64
 initramfs-tools:

@@ -177,6 +177,8 @@ function install_grub2 {
     # Serial console on Power is hvc0
     if [[ "powerpc ppc64 ppc64le" =~ "$ARCH" ]]; then
         SERIAL_CONSOLE="hvc0"
+    elif [[ "arm64" =~ "$ARCH" ]]; then
+        SERIAL_CONSOLE="ttyAMA0,115200"
     else
         SERIAL_CONSOLE="ttyS0,115200"
     fi
