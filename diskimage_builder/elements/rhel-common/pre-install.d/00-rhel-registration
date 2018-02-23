@@ -11,6 +11,7 @@ opts=
 attach_opts=
 repos="repos --enable rhel-7-server-rpms"
 satellite_repo="rhel-7-server-rh-common-rpms"
+REG_SAT_CERT=${REG_SAT_CERT:-"katello-ca-consumer-latest.noarch.rpm"}
 
 if [ -n "${REG_AUTO_ATTACH:-}" ]; then
     opts="$opts --auto-attach"
@@ -107,7 +108,7 @@ case "${REG_METHOD:-}" in
         user_repos=$repos
         repos="$repos --enable ${satellite_repo}"
         echo "Installing satellite dependencies"
-        rpm -Uvh "$REG_SAT_URL/pub/katello-ca-consumer-latest.noarch.rpm" || true
+        rpm -Uvh "$REG_SAT_URL/pub/$REG_SAT_CERT" || true
         echo "Registering with options: $sanitized_opts"
         subscription-manager register $opts
         echo "Disabling all previous repos"
