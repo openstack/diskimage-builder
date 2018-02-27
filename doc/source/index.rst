@@ -20,14 +20,14 @@ Code
 
 Release notes for the latest and previous versions are available at:
 
- * `http://docs.openstack.org/releasenotes/diskimage-builder/
-   <http://docs.openstack.org/releasenotes/diskimage-builder/>`__
+* `http://docs.openstack.org/releasenotes/diskimage-builder/
+  <http://docs.openstack.org/releasenotes/diskimage-builder/>`__
 
 
 The code is available at:
 
- * `https://git.openstack.org/cgit/openstack/diskimage-builder/
-   <https://git.openstack.org/cgit/openstack/diskimage-builder/>`__
+* `https://git.openstack.org/cgit/openstack/diskimage-builder/
+  <https://git.openstack.org/cgit/openstack/diskimage-builder/>`__
 
 
 Issues
@@ -35,7 +35,7 @@ Issues
 
 Issues are tracked on launchpad at:
 
- * `<https://bugs.launchpad.net/diskimage-builder/+bugs>`__
+* `<https://bugs.launchpad.net/diskimage-builder/+bugs>`__
 
 
 Communication
