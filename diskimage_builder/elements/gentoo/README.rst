@@ -28,8 +28,8 @@ Notes:
 
     default/linux/amd64/17.0
     default/linux/amd64/17.0/no-multilib
-    hardened/linux/amd64
-    hardened/linux/amd64/no-multilib
+    default/linux/amd64/17.0/hardened
+    default/linux/amd64/17.0/no-multilib/hardened
 
 * You can set the GENTOO_PORTAGE_CLEANUP environment variable to true (or
   anything other than False) to clean up portage from the system and get the
