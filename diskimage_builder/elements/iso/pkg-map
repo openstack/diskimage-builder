@@ -13,7 +13,7 @@
       "isolinux": ""
     },
     "redhat":{
-      "syslinux": "",
+      "syslinux": "syslinux",
       "syslinux-common": "",
       "isolinux": ""
     }
