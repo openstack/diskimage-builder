@@ -97,8 +97,8 @@ function inspect_interface() {
         echo "Device has generated MAC, skipping."
     else
         local has_link
-        local tries
-        for ((tries = 0; tries < 20; tries++)); do
+        local tries=DIB_DHCP_TIMEOUT
+        for ((; tries > 0; tries--)); do
             # Need to set the link up on each iteration
             ip link set dev $interface up &>/dev/null
             has_link=$(get_if_link $interface)
