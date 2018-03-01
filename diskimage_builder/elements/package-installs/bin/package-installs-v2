@@ -18,6 +18,7 @@ from __future__ import print_function
 
 import argparse
 import json
+import locale
 import os
 import subprocess
 import sys
@@ -29,19 +30,20 @@ from collections import defaultdict
 #  if follow is set, output will be echoed to stdout
 def process_output(cmdline, follow=False):
     proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            universal_newlines=True)
+                            stderr=subprocess.STDOUT)
     if follow:
         print("Running command: %s" % cmdline)
         out = ""
         with proc.stdout:
-            for line in iter(proc.stdout.readline, ''):
+            for line in iter(proc.stdout.readline, b''):
+                line = line.decode(encoding=locale.getpreferredencoding(False),
+                                   errors='backslashreplace')
                 out += line
                 print("> %s" % line, end="")
         proc.wait()
         print("returncode: %d" % proc.returncode)
     else:
-        out = proc.communicate()[0]
+        out = proc.communicate()[0].decode(errors='backslashreplace')
 
     if proc.returncode:
         e = subprocess.CalledProcessError(proc.returncode, cmdline)
