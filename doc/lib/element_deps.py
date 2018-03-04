@@ -33,7 +33,7 @@ def make_dep_list(title, deps):
     lines = []
     lines.append(title)
     lines.append("+" * len(title))
-    for dep in deps:
+    for dep in sorted(deps):
         lines.append("* :doc:`../%s/README`" % dep)
     lines.append('')  # careful to end with a blank line
     return lines
