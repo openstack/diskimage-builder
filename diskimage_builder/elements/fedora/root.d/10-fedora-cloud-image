@@ -24,8 +24,18 @@ if [ -n "$DIB_LOCAL_IMAGE" ]; then
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
 else
     # note default DIB_RELEASE set in environment setup
-    #  Not sure if ${ARCH} is defined for anything but x86_64 here
-    DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+    case ${ARCH} in
+    x86_64)
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+        ;;
+    aarch64|ppc64|ppc64le)
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://dl.fedoraproject.org/pub/fedora-secondary/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+        ;;
+    *)
+        echo "Error: unknown ARCH: ${ARCH}"
+        exit 1
+        ;;
+    esac
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-Fedora-Cloud-Base-$DIB_RELEASE-$DIB_FEDORA_SUBRELEASE.$ARCH.qcow2}
     BASE_IMAGE_TAR=Fedora-Cloud-Base-$DIB_RELEASE-$DIB_FEDORA_SUBRELEASE.$ARCH.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
