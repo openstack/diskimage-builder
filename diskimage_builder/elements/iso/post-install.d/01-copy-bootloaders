@@ -10,28 +10,28 @@ set -o pipefail
 TMP_BOOTLOADER_DIR=/tmp/bootloader_files
 mkdir -p $TMP_BOOTLOADER_DIR
 
-if [ $DISTRO_NAME = "fedora" ]; then
-    GRUB_FILE="/boot/efi/EFI/fedora/grubx64.efi"
-else
-    GRUB_FILE="/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed"
-fi
-
-if [ $DISTRO_NAME = "fedora" ]; then
-    SHIM_FILE="/boot/efi/EFI/fedora/shim.efi"
-else
-    SHIM_FILE="/usr/lib/shim/shim.efi.signed"
-fi
-
 #fedora
 if [ $DISTRO_NAME = "fedora" ]; then
+    GRUB_FILE="/boot/efi/EFI/fedora/grubx64.efi"
+    SHIM_FILE="/boot/efi/EFI/fedora/shim.efi"
     SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
     LDLINUX_FILE="/usr/share/syslinux/ldlinux.c32"
 #debian
 elif [ $DISTRO_NAME = "debian" ]; then
+    GRUB_FILE="/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed"
+    SHIM_FILE="/usr/lib/shim/shim.efi.signed"
     SYSLINUX_FILE="/usr/lib/ISOLINUX/isolinux.bin"
     LDLINUX_FILE="/usr/lib/syslinux/modules/bios/ldlinux.c32"
+#rhel7
+elif [ $DISTRO_NAME = "rhel7" ]; then
+    GRUB_FILE="/boot/efi/EFI/redhat/grubx64.efi"
+    SHIM_FILE="/boot/efi/EFI/redhat/shim.efi"
+    SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
+    LDLINUX_FILE="/usr/share/syslinux/ldlinux.c32"
 #ubuntu
 else
+    GRUB_FILE="/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed"
+    SHIM_FILE="/usr/lib/shim/shim.efi.signed"
     SYSLINUX_FILE="/usr/lib/syslinux/isolinux.bin"
     LDLINUX_FILE="/usr/lib/syslinux/ldlinux.c32"
 fi
