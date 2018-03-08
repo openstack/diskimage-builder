@@ -210,6 +210,10 @@ Heat metadata can be used to configure the rhel-common element.
             # system with the Red Hat Customer Portal.  Use "satellite" to
             # register a system with Red Hat Satellite 6.  Use "disable" to
             # skip the registration process.
+        satellite_cert:
+            # Defines the ssl certificate to be installed when using "satellite"
+            # as register mechanism. Default values of this is
+            # "katello-ca-consumer-latest.noarch.rpm".
 
 Configuration Registration Examples
 ------------------------------------
