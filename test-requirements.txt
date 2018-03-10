@@ -11,7 +11,7 @@ testrepository>=0.0.18 # Apache-2.0/BSD
 testtools>=2.2.0 # MIT
 
 # Doc requirements
-sphinx!=1.6.6,>=1.6.2 # BSD
+sphinx!=1.6.6,<1.7.0,>=1.6.2 # BSD
 openstackdocstheme>=1.18.1 # Apache-2.0
 
 # releasenotes
