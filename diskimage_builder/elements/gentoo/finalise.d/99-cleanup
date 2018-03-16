@@ -41,7 +41,7 @@ if [[ "${GENTOO_PORTAGE_CLEANUP}" != "False" ]]; then
         done
     fi
     # remove portage files
-    rm -Rf /usr/portage/* /var/cache/portage/distfiles
+    rm -Rf /usr/portage/* /usr/portage/.git /var/cache/portage/distfiles
 fi
 
 # shrink a bit
