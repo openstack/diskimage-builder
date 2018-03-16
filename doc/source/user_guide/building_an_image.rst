@@ -67,53 +67,23 @@ on.
 
 There are currently two defaults:
 
-* When using the `vm` element a MBR based partition layout is created
-  with exactly one partition that fills up the whole disk and used as
-  root device.
-* When not using the `vm` element a plain filesystem image, without
+* When using the ``vm`` element, an element that provides
+  ``block-device`` should be included.  Available ``block-device-*``
+  elements cover the common case of a single partition that fills up
+  the whole disk and used as root device.  Currently there are MBR,
+  GPT and EFI versions.  For example, to use a GPT disk you could
+  build with ::
+
+    disk-image-create -o output.qcow vm block-device-gpt ubuntu-minimal
+
+* When not using the ``vm`` element a plain filesystem image, without
   any partitioning, is created.
 
-The user can overwrite the default handling by setting the environment
+If you wish to customise the top-level ``block-device-default.yaml``
+file from one of the ``block-device-*`` elements, set the environment
 variable `DIB_BLOCK_DEVICE_CONFIG`.  This variable must hold YAML
 structured configuration data or be a ``file://`` URL reference to a
 on-disk configuration file.
-
-The default when using the `vm` element is:
-
-.. code-block:: yaml
-
-    DIB_BLOCK_DEVICE_CONFIG='
-      - local_loop:
-          name: image0
-
-      - partitioning:
-          base: image0
-          label: mbr
-          partitions:
-            - name: root
-              flags: [ boot, primary ]
-              size: 100%
-              mkfs:
-                mount:
-                  mount_point: /
-                  fstab:
-                    options: "defaults"
-                    fsck-passno: 1'
-
-The default when not using the `vm` element is:
-
-.. code-block:: yaml
-
-    DIB_BLOCK_DEVICE_CONFIG='
-      - local_loop:
-          name: image0
-          mkfs:
-            name: mkfs_root
-            mount:
-              mount_point: /
-              fstab:
-                options: "defaults"
-                fsck-passno: 1'
 
 There are a lot of different options for the different levels.  The
 following sections describe each level in detail.

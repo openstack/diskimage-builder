@@ -1,0 +1,30 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    label: gpt
+    partitions:
+      - name: ESP
+        type: 'EF00'
+        size: 8MiB
+        mkfs:
+          type: vfat
+          mount:
+            mount_point: /boot/efi
+            fstab:
+              options: "defaults"
+              fsck-passno: 1
+      - name: BSP
+        type: 'EF02'
+        size: 8MiB
+      - name: root
+        type: '8300'
+        size: 100%
+        mkfs:
+          type: ext4
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1

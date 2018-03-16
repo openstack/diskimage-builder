@@ -1,0 +1,32 @@
+# Default GPT block device setup for PPC
+# --------------------------------------
+#
+# Details (extracted from [1])
+#
+# Power Firmware (OFW) scans chosen (nvram value boot-device) device,
+# for either PReP* partition or vfat.
+#
+# PReP is raw and small (8M max) partition which caries only stage1
+# binary.
+#
+# [1] https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/W51a7ffcf4dfd_4b40_9d82_446ebc23c550/page/PowerLinux%20Boot%20howto
+
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    label: gpt
+    partitions:
+      - name: boot
+        type: '0x4100'
+        size: 8MiB
+      - name: root
+        size: 100%
+        mkfs:
+          type: ext4
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1
