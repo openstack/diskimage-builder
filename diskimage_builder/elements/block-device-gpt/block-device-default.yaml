@@ -1,0 +1,22 @@
+# Default single partition loopback using a GPT based partition table
+
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    label: gpt
+    partitions:
+      - name: BSP
+        type: 'EF02'
+        size: 8MiB
+      - name: root
+        flags: [ boot ]
+        size: 100%
+        mkfs:
+          type: ext4
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1

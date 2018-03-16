@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    GPT support is added to the bootloader; see documentation for
+    configuration examples.  This should be considered a technology
+    preview; there may be minor behaviour modifications as we enable
+    UEFI and support across more architectures.
