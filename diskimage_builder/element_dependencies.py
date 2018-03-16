@@ -151,9 +151,14 @@ def _expand_element_dependencies(user_elements, all_elements):
 
         element_deps = element_obj.depends
         element_provides = element_obj.provides
-        # save which elements provide another element for potential
-        # error message
+        # Check that we are not providing an element which has already
+        # been provided by someone else, and additionally save which
+        # elements provide another element
         for provide in element_provides:
+            if provide in provided:
+                raise AlreadyProvidedException(
+                    "%s: already provided by %s" %
+                    (provide, provided_by[provide]))
             provided_by[provide].append(element)
         provided.update(element_provides)
         check_queue.extend(element_deps - (final_elements | provided))
