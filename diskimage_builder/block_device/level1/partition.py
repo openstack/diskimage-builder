@@ -56,7 +56,7 @@ class PartitionNode(NodeBase):
         if self.partitioning.label == 'gpt':
             self.ptype = str(config['type']) if 'type' in config else '8300'
         elif self.partitioning.label == 'mbr':
-            self.ptype = int(config['type'], 16) if 'type' in config else 83
+            self.ptype = int(config['type'], 16) if 'type' in config else 0x83
 
     def get_flags(self):
         return self.flags
