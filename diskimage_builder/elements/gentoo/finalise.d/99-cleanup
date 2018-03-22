@@ -55,3 +55,8 @@ if [[ -a /usr/sbin/grub2-install ]]; then
 fi
 
 unfix_shm
+
+# systemd id
+if [[ "${GENTOO_PROFILE}" == *"systemd"* ]]; then
+    cp /dev/null /etc/machine-id
+fi
