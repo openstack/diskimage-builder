@@ -1,0 +1,7 @@
+{
+  "family": {
+    "gentoo": {
+      "sudo": "app-admin/sudo"
+    }
+  }
+}
