@@ -51,12 +51,16 @@ elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/hardened" ]]; then
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/no-multilib/hardened" ]]; then
     FILENAME_BASE='gentoo-stage4-hardened-nomultilib'
     SIGNED_SOURCE_SUFFIX='hardened+minimal-nomultilib'
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/systemd" ]]; then
+    FILENAME_BASE='gentoo-stage4-systemd'
+    SIGNED_SOURCE_SUFFIX='systemd'
 else
     echo 'invalid profile, please select from the following profiles'
     echo 'default/linux/amd64/17.0'
     echo 'default/linux/amd64/17.0/no-multilib'
     echo 'default/linux/amd64/17.0/hardened'
     echo 'default/linux/amd64/17.0/no-multilib/hardened'
+    echo 'default/linux/amd64/17.0/systemd'
     exit 1
 fi
 
