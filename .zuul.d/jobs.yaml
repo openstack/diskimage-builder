@@ -1,4 +1,6 @@
 - project:
+    templates:
+      - tripleo-buildimage-jobs
     check:
       jobs:
         - dib-dsvm-functests-python2-ubuntu-trusty:
@@ -62,6 +64,7 @@
             irrelevant-files:
               - ^.*\.rst$
               - ^doc/.*$
+        - tripleo-buildimage-overcloud-full-centos-7
 
 - job:
     name: dib-dsvm-functests-python2-centos-7
