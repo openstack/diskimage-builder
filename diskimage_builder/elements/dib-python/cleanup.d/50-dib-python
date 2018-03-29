@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Remove dib-python wrapper.  Nothing else should be running in chroot
+# and required this any more.
+
+sudo unlink $TARGET_ROOT/usr/local/bin/dib-python # dib-lint: safe_sudo
