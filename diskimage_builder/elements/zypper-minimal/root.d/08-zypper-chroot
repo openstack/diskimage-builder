@@ -111,10 +111,13 @@ echo -e "# This file intentionally left blank\n" | \
     sudo tee $TARGET_ROOT/etc/resolv.conf
 
 # set the most reliable UTF-8 locale
-echo -e 'LANG="en_US.UTF-8"' | \
+default_lang="C.UTF-8"
+sudo sed -i -e "s,^RC_LANG=.*,RC_LANG=\"$default_lang\"," \
+    $TARGET_ROOT/etc/sysconfig/language
+echo -e "LANG=\"$default_lang\""  | \
 sudo tee $TARGET_ROOT/etc/locale.conf
 # default to UTC
-sudo chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
+sudo chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/Etc/UTC \
     /etc/localtime
 
 # RPM doesn't know whether files have been changed since install
