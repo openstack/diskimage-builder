@@ -437,11 +437,13 @@ function block_device_create_config_file {
     if [[ ${DIB_BLOCK_DEVICE_CONFIG:-} == file://* ]]; then
         cp $(echo ${DIB_BLOCK_DEVICE_CONFIG} | cut -c 8-) ${config_yaml}
         echo "Using file-based block-device config: ${DIB_BLOCK_DEVICE_CONFIG}"
+        $xtrace
         return
     fi
     if [ -n "${DIB_BLOCK_DEVICE_CONFIG:-}" ]; then
         printf "%s" "${DIB_BLOCK_DEVICE_CONFIG}" >${config_yaml}
         echo "User specified block-device config from DIB_BLOCK_DEVICE_CONFIG"
+        $xtrace
         return
     fi
 
@@ -463,12 +465,14 @@ function block_device_create_config_file {
         if [ -e ${cfg} ]; then
             cp ${cfg} ${config_yaml}
             echo "Using block-device config: ${cfg}"
+            $xtrace
             return
         else
             cfg=${image_elements[$i]}/block-device-default.yaml
             if [ -e ${cfg} ]; then
                 cp ${cfg} ${config_yaml}
                 echo "Using block-device config: ${cfg}"
+                $xtrace
                 return
             fi
         fi
