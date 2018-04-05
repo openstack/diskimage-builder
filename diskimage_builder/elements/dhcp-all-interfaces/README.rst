@@ -24,6 +24,7 @@ Environment Variables
 DIB_DHCP_TIMEOUT
   :Required: No
   :Default: 30
-  :Description: Amount of time in seconds that the systemd service will
-   wait to get an address. Should be increased in networks such as Infiniband.
+  :Description: Amount of time in seconds that the systemd service(or dhclient)
+   will wait to get an address. Should be increased in networks such as
+   Infiniband.
   :Example: DIB_DHCP_TIMEOUT=300
