@@ -48,6 +48,7 @@
             irrelevant-files:
               - ^.*\.rst$
               - ^doc/.*$
+        - openstack-tox-lower-constraints
 
     gate:
       jobs:
@@ -65,6 +66,7 @@
               - ^.*\.rst$
               - ^doc/.*$
         - tripleo-buildimage-overcloud-full-centos-7
+        - openstack-tox-lower-constraints
 
 - job:
     name: dib-dsvm-functests-python2-centos-7
