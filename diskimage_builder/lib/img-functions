@@ -93,6 +93,13 @@ function run_d_in_target () {
 
 function finalise_base () {
     TARGET_ROOT=$TMP_MOUNT_PATH run_d cleanup
+
+    # Finalise resolv.conf
+    #
+    # NOTE(ianw): the /etc/resolv.conf.ORIG file is an
+    # external interface; elements might put a resolv.conf they
+    # want in the final image into this file.
+    #
     # In create_base() we replaced/created the initial resolv.conf
     # inside the image with a copy of the "outside" version so that
     # resolving during the build will work.
@@ -106,13 +113,14 @@ function finalise_base () {
         # so remove the old saved file
         sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
     else
-        # Remove the resolv.conf we created above
+        # Remove the resolv.conf we created and put the original (or
+        # perhaps modified) version back.
         sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
-        # Move the original back
-        if [ -L $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] ; then
+        if [ -e $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ]; then
             sudo mv $TMP_MOUNT_PATH/etc/resolv.conf.ORIG $TMP_MOUNT_PATH/etc/resolv.conf
         fi
     fi
+
     # Cleanup /tmp in the guest, so there is less cruft left there
     unmount_dir $TMP_MOUNT_PATH/tmp
     find $TMP_MOUNT_PATH/tmp -maxdepth 1 -mindepth 1 | xargs sudo rm -rf --one-file-system

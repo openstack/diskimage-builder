@@ -646,6 +646,29 @@ If tmpfs is not used, you will need enough room in /tmp to store two
 uncompressed cloud images. If tmpfs is used, you would still need /tmp space
 for one uncompressed cloud image and about 20% of that image for working files.
 
+Nameservers
+-----------
+
+To ensure elements can access the network, ``disk-image-create``
+replaces the ``/etc/resolv.conf`` within the chroot with a copy of the
+host's file early in the image creation process.
+
+The final ``/etc/resolv.conf`` can be controlled in a number of ways.
+If, during the build, the ``/etc/resolv.conf`` file within the chroot
+is replaced with a symlink, this will be retained in the final image
+[1]_.  If the file is marked immutable, it will also not be touched.
+
+.. [1] This somewhat odd case was added for installation of the
+       ``resolvconf`` package, which replaces ``/etc/resolv.conf``
+       with a symlink to it's version.  Depending on its contents, and
+       what comes after the installation in the build, this mostly
+       works.
+
+If you would like specific contents within the final
+``/etc/resolv.conf`` you can place them into
+``/etc/resolv.conf.ORIG`` during the build.  As one of the final
+steps, this file will be ``mv`` to ``/etc/resolv.conf``.
+
 
 Chosing an Architecture
 -----------------------

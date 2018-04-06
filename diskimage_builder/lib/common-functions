@@ -338,8 +338,11 @@ function create_base () {
     fi
 
     # Configure Image
-    # Setup resolv.conf so we can chroot to install some packages
-    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
+
+    # Save resolv.conf as created by the initial install.  Note the
+    # .ORIG file is an exported interface -- it may be modified and we
+    # will copy it back in during finalisation of the image.
+    if [[ -e $TMP_MOUNT_PATH/etc/resolv.conf ]]; then
         sudo mv $TMP_MOUNT_PATH/etc/resolv.conf $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
     fi
 
