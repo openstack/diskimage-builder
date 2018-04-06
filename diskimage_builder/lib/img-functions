@@ -116,7 +116,9 @@ function finalise_base () {
         # Remove the resolv.conf we created and put the original (or
         # perhaps modified) version back.
         sudo rm -f $TMP_MOUNT_PATH/etc/resolv.conf
-        if [ -e $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ]; then
+        # Note that we use -L and -f to test here as test (and bash [[)
+        # return false with -e if the link target does not exist.
+        if [ -L $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf.ORIG ] ; then
             sudo mv $TMP_MOUNT_PATH/etc/resolv.conf.ORIG $TMP_MOUNT_PATH/etc/resolv.conf
         fi
     fi

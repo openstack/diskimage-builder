@@ -342,7 +342,9 @@ function create_base () {
     # Save resolv.conf as created by the initial install.  Note the
     # .ORIG file is an exported interface -- it may be modified and we
     # will copy it back in during finalisation of the image.
-    if [[ -e $TMP_MOUNT_PATH/etc/resolv.conf ]]; then
+    # Note that we use -L and -f to test here as test (and bash [[)
+    # return false with -e if the link target does not exist.
+    if [ -L $TMP_MOUNT_PATH/etc/resolv.conf ] || [ -f $TMP_MOUNT_PATH/etc/resolv.conf ] ; then
         sudo mv $TMP_MOUNT_PATH/etc/resolv.conf $TMP_MOUNT_PATH/etc/resolv.conf.ORIG
     fi
 
