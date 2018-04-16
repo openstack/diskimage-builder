@@ -25,7 +25,8 @@ else
             ;;
         *)
             echo "$DISTRO_NAME is not supported"
-            exit 1
+            # Not really a failure; we just don't do anything
+            exit 0
             ;;
     esac
     PKG_NAME=$(wget -q $URL -O - |grep -oE "(href=\"epel-release-$RELEASE-[0-9,.].*)" | cut -d'"' -f2)

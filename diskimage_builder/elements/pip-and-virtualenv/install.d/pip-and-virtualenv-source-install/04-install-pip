@@ -8,12 +8,31 @@ set -o pipefail
 
 if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
 
+    # Default packages
     _do_py3=0
-    packages="python-virtualenv python-pip python-setuptools"
-    if [[ $DISTRO_NAME =~ (fedora) ]]; then
-        _do_py3=1
-        packages+=" python3-virtualenv python3-pip python3-setuptools"
-    fi
+    _extra_repo=''
+    case "$DISTRO_NAME" in
+        centos*|rhel7)
+            # note python2-pip in epel
+            _extra_repo="--enablerepo=epel"
+            packages="python-virtualenv python2-pip python-setuptools"
+            ;;
+        fedora)
+            _do_py3=1
+            packages="python2-virtualenv python2-pip python2-setuptools"
+            packages+=" python3-virtualenv python3-pip python3-setuptools"
+            ;;
+        opensuse)
+            case "$DIB_RELEASE" in
+                42*)
+                    packages="python-virtualenv python-pip python-setuptools"
+                    ;;
+                tumbleweed)
+                    # XXX: python3?
+                    packages="python2-virtualenv python2-pip python2-setuptools"
+                    ;;
+            esac
+    esac
 
     # force things to happen so our assumptions hold
     pip_args="-U --force-reinstall"
@@ -30,36 +49,49 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     if [[ $DISTRO_NAME = opensuse ]]; then
         zypper -n install $packages
     else
-        ${YUM:-yum} install -y $packages
+        ${YUM:-yum} ${_extra_repo} install -y $packages
     fi
+
+    # pip10 (unlike earlier versions) will not uninstall distutils
+    # installed packages (note this is only a subset of packages that
+    # don't use setuptools for various reasons).  We give it a little
+    # help by clearing out the files from the packages we are about to
+    # re-install so pip doesn't think anything is installed.  See:
+    # https://github.com/pypa/pip/issues/4805
+    for pkg in $packages; do
+        rpm -ql $pkg | xargs rm -rf
+    done
 
     # install the latest python2 pip; this overwrites packaged pip
     python /tmp/get-pip.py ${pip_args}
 
-    # pip and setuptools are closely related; we want to ensure the
-    # latest for sanity.  Because distro packages don't include enough
-    # info in the egg for pip to be certain it has fully uninstalled
-    # the old package, for safety we clear it out by hand (this seems
-    # to have been a problem with very old to new updates,
-    # e.g. centos6 to current-era, but less so for smaller jumps).
-    # There is a bit of chicken-and-egg problem with pip in that it
-    # requires setuptools for some operations, such as wheel creation.
-    # But just installing setuptools shouldn't require setuptools
-    # itself, so we are safe for this small section.
-    rm -rf /usr/lib/python2.7/site-packages/setuptools*
+    # Install latest setuptools; there is a slight chicken-egg issue in
+    # that pip requires setuptools for some operations like building a
+    # wheel.  But this simple install should be fine.
     pip install ${pip_args} setuptools
 
     if [[ $_do_py3 -eq 1 ]]; then
         # Repeat above for python3
+
+        # python2 on fedora always installs into /usr/bin.  Move pip2
+        # binary out, as we want "pip" in the final image to be
+        # python2 for historical reasons.
+        mv /usr/bin/pip /usr/bin/pip2
+
         # You would think that installing python3 bits first, then
         # python2 would work -- alas get-pip.py doesn't seem to leave
         # python3 alone:
         #  https://github.com/pypa/pip/issues/4435
         python3 /tmp/get-pip.py ${pip_args}
-        rm -rf /usr/lib/python3.?/site-packages/setuptools*
         pip3 install ${pip_args} setuptools
-        # reclaim /usr/bin/pip back to pip2
+
+        # on < 27, this installed pip3 to /usr/bin/pip.  On >=27 it's
+        # /usr/local/bin/pip.  reclaim /usr/bin/pip back to pip2 and
+        # remove the /usr/local/bin/pip (i.e. python3 version) if it
+        # exists, so that "pip" calls pip2 always.  if we want pip3 we
+        # call it explicitly.
         ln -sf /usr/bin/pip2 /usr/bin/pip
+        rm -f /usr/local/bin/pip
     fi
 
     # now install latest virtualenv.  it vendors stuff it needs so
@@ -67,14 +99,27 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
 
     # python[2|3]-virtualenv package has installed versioned scripts
     # (/usr/bin/virtualenv-[2|3]) but upstream does not!  (see [2]).
-    # For consistency, clear them out and then reinstall so we're just
-    # left with python2's version
-    # [2] http://pkgs.fedoraproject.org/cgit/rpms/python-virtualenv.git/tree/python-virtualenv.spec#n116)
-    rm /usr/bin/virtualenv*
+    # For consistency, reinstall so we're just left with python2's
+    # version.  Note this is a rather moot point, the usual way we get
+    # a python3 environment is to call "virtualenv -p python3 foo" and
+    # that works to create a python3 virtualenv, even if using
+    # python2's version.  Thus we probably don't *really* need to
+    # "pip3 install virtualenv".  What we don't want is "virtualenv
+    # foo" creating a python3 virtualenv by default, because that
+    # confuses a lot of legacy code.
+    #
+    #[2] http://pkgs.fedoraproject.org/cgit/rpms/python-virtualenv.git/tree/python-virtualenv.spec#n116)
+    pip install ${pip_args} virtualenv
+    mv /usr/bin/virtualenv /usr/bin/virtualenv2
     if [[ $_do_py3 -eq 1 ]]; then
         pip3 install ${pip_args} virtualenv
     fi
-    pip install ${pip_args} virtualenv
+
+    # Reclaim virtualenv to virtualenv2; similar to above, on fedora
+    # >27 the pip3 version has gone into /usr/local/bin; remove it so
+    # only /usr/bin/virtualenv exists
+    ln -sf /usr/bin/virtualenv2 /usr/bin/virtualenv
+    rm -f /usr/local/bin/virtualenv
 
     # at this point, we should have the latest
     # pip/setuptools/virtualenv packages for python2 & 3, and

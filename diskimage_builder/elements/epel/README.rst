@@ -5,7 +5,7 @@ epel
 This element installs the Extra Packages for Enterprise Linux (EPEL)
 repository GPG key as well as configuration for yum.
 
-Note this element only works with platforms that have EPEL support
+Note this element is only useful with platforms that have EPEL support
 such as CentOS and RHEL
 
 DIB_EPEL_MIRROR:
