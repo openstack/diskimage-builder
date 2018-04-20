@@ -1,6 +1,9 @@
 - hosts: all
   name: Autoconverted job legacy-dib-dsvm-functests-python3-opensuse-423 from old
     job gate-dib-dsvm-functests-python3-opensuse-423-nv
+  roles:
+    - bindep
+
   tasks:
 
     - name: Ensure legacy workspace directory
@@ -19,16 +22,6 @@
             git://git.openstack.org \
             openstack/diskimage-builder \
             openstack/requirements
-        executable: /bin/bash
-        chdir: '{{ ansible_user_dir }}/workspace'
-      environment: '{{ zuul | zuul_legacy_vars }}'
-
-    - shell:
-        cmd: |
-          set -e
-          set -x
-          cd ~/openstack/diskimage-builder
-          /usr/local/jenkins/slave_scripts/install-distro-packages.sh
         executable: /bin/bash
         chdir: '{{ ansible_user_dir }}/workspace'
       environment: '{{ zuul | zuul_legacy_vars }}'
