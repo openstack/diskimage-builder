@@ -15,7 +15,14 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
         centos*|rhel7)
             # note python2-pip in epel
             _extra_repo="--enablerepo=epel"
-            packages="python-virtualenv python2-pip python-setuptools"
+            packages="python-virtualenv python2-pip"
+            if [[ "$(rpm -q --qf '[%{obsoletes}\n]' python2-setuptools)" == "python-setuptools" ]]; then
+                # If OpenStack release is installed, then python-setuptools is
+                # obsoleted by python2-setuptools
+                packages+=" python2-setuptools"
+            else
+                packages+=" python-setuptools"
+            fi
             ;;
         fedora)
             _do_py3=1
