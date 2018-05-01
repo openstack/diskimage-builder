@@ -33,3 +33,5 @@ for KEY in ${KEY_DIRECTORY}/*; do
 
     apt-key add ${KEY}
 done
+
+apt-get -y update
