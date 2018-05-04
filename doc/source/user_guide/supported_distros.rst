@@ -5,7 +5,7 @@ Distributions which are supported as a build host:
 
 - Centos 6, 7
 - Debian 8 ("jessie")
-- Fedora 26, 27
+- Fedora 27, 28
 - RHEL 6, 7
 - Ubuntu 14.04 ("trusty")
 - Gentoo
@@ -16,7 +16,7 @@ Distributions which are supported as a target for an image:
 
 - Centos 6, 7
 - Debian 8 ("jessie")
-- Fedora 26, 27
+- Fedora 27, 28
 - RHEL 6, 7
 - Ubuntu 12.04 ("precise"), 14.04 ("trusty")
 - Gentoo

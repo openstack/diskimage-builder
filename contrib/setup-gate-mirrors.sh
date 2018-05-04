@@ -42,7 +42,7 @@ cat <<EOF > $FEDORA_MIN_DIR/dib-mirror-fedora-updates.repo
 [updates]
 name=Fedora \$releasever - \$basearch - Updates
 failovermethod=priority
-baseurl=$NODEPOOL_FEDORA_MIRROR/updates/\$releasever/\$basearch/
+baseurl=$NODEPOOL_FEDORA_MIRROR/updates/\$releasever/Everything/\$basearch/
 enabled=1
 gpgcheck=0
 metadata_expire=6h
