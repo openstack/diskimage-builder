@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# TODO(johnsom) Fix this when https://github.com/pypa/pip/issues/4685 is
+#               available.
+if [ "${DIB_DISABLE_PIP_CLEANUP:-0}" != "1" ]; then
+    rm -rf ~/.cache/pip
+fi
