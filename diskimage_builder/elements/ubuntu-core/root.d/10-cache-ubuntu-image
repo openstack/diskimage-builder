@@ -23,6 +23,7 @@ release_numbers[wily]=15.10
 release_numbers[xenial]=16.04
 release_numbers[yakkety]=16.10
 release_numbers[zesty]=17.04
+release_numbers[bionic]=18.04
 
 numeric_release=${release_numbers[$DIB_RELEASE]}
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cdimage.ubuntu.com/ubuntu-core/releases/$numeric_release/release}

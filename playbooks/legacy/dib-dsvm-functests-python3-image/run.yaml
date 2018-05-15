@@ -67,8 +67,8 @@
             opensuse/build-succeeds \
             opensuse/opensuse423-build-succeeds \
             fedora/build-succeeds \
-            ubuntu/trusty-build-succeeds \
-            ubuntu/xenial-build-succeeds
+            ubuntu/xenial-build-succeeds \
+            ubuntu/bionic-build-succeeds
 
           set +u
           deactivate

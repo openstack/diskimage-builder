@@ -14,7 +14,11 @@ shopt -s extglob
 
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud-images.ubuntu.com}
 DIB_RELEASE=${DIB_RELEASE:-trusty}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
+if [ $DIB_RELEASE != "trusty" ] && [ $DIB_RELEASE != "xenial" ]; then
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH.squashfs}
+else
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH-root.tar.gz}
+fi
 SHA256SUMS=${SHA256SUMS:-https://${DIB_CLOUD_IMAGES##http?(s)://}/$DIB_RELEASE/current/SHA256SUMS}
 CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 CACHED_FILE_LOCK=$DIB_LOCKFILES/$BASE_IMAGE_FILE.lock
@@ -47,7 +51,11 @@ function get_ubuntu_tarball() {
     fi
     # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
     # image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
-    sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+    if [ $DIB_RELEASE != "trusty" ] && [ $DIB_RELEASE != "xenial" ]; then
+        sudo unsquashfs -f -d $TARGET_ROOT $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+    else
+        sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+    fi
 }
 
 (
