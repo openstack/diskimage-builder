@@ -1,3 +1,0 @@
-apt-xapian-index:
-    phase: pre-install.d
-    uninstall: True
