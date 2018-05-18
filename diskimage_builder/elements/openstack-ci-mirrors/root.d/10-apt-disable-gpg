@@ -32,6 +32,7 @@ if [ -d ${APT_DIR} ]; then
     FILE=${APT_DIR}/99unauthenticated
     sudo dd of=${FILE} <<EOF
 APT::Get::AllowUnauthenticated "true";
+Acquire::AllowInsecureRepositories "true";
 EOF
     sudo chmod 0644 ${FILE}
 fi
