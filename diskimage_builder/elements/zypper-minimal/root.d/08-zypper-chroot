@@ -51,7 +51,7 @@ case ${DIB_RELEASE} in
         ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/${DIB_RELEASE}/repo/oss/"
         ;;
     # New Leap releases
-    42*)
+    42*|15*)
         ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
         ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
         ;;
