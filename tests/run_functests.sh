@@ -52,6 +52,9 @@ DEFAULT_SKIP_TESTS=(
 
     # This job is a bit unreliable, even if we get mirroring
     debian-minimal/testing-build-succeeds
+
+    # Replaced by bionic
+    ubuntu-minimal/trusty-build-succeeds
 )
 
 # The default output formats (specified to disk-image-create's "-t"
