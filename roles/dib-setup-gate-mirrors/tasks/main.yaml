@@ -1,0 +1,42 @@
+- name: Set repo path
+  set_fact:
+    dib_gate_mirror_repos: "{{ ansible_user_dir }}/dib-mirror"
+
+- debug: msg="zuul site mirror {{ zuul_site_mirror_fqdn }}"
+- debug: msg="mirror_fqdn {{ mirror_fqdn }}"
+
+- name: Create centos-minimal directory
+  file:
+    path: "{{ dib_gate_mirror_repos }}/centos-minimal/yum.repos.d"
+    state: directory
+    mode: 0775
+    recurse: yes
+
+- name: Install centos-minimal repo files
+  template:
+    dest: "{{ dib_gate_mirror_repos }}/centos-minimal/yum.repos.d/dib-mirror-{{ item }}"
+    mode: 0644
+    src: "centos-minimal/{{ item }}.j2"
+  with_items:
+    - base.repo
+    - updates.repo
+    - extras.repo
+
+- name: Create fedora-minimal directories
+  file:
+    path: "{{ dib_gate_mirror_repos }}/fedora-minimal/{{ item }}/yum.repos.d"
+    state: directory
+    mode: 0775
+    recurse: yes
+  with_items:
+    - default
+    - '28'
+
+- name: Install fedora-minimal repo files
+  template:
+    dest: "{{ dib_gate_mirror_repos }}/fedora-minimal/{{ item[0] }}/yum.repos.d/dib-mirror-{{ item[1] }}"
+    mode: 0644
+    src: "fedora-minimal/{{ item[0] }}/{{ item[1] }}.j2"
+  with_nested:
+    - [ 'default', '28' ]
+    - [ 'fedora.repo', 'fedora-updates.repo' ]

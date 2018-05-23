@@ -1,0 +1,10 @@
+[updates]
+name=Fedora $releasever - $basearch - Updates
+failovermethod=priority
+baseurl=http://{{ mirror_fqdn }}/fedora/updates/$releasever/Everything/$basearch/
+enabled=1
+gpgcheck=0
+metadata_expire=6h
+skip_if_unavailable=False
+deltarpm=False
+deltarpm_percentage=0

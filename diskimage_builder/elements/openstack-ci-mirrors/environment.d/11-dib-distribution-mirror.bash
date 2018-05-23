@@ -44,12 +44,16 @@ export DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE=1
 
 # These repo files are pre-created for the fedora/centos-minimal jobs
 # in the gate.  Not relevant inside the chroot.
-if [[ -d ${WORKSPACE:-/not/a/path/}/dib-mirror ]]; then
+if [[ -d ${DIB_OS_CI_YUM_REPOS:-/not/a/path/} ]]; then
 
     if [[ "${DISTRO_NAME}" == "fedora" ]]; then
-        export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${WORKSPACE}/dib-mirror/fedora-minimal/yum.repos.d
+        if [[ -d ${DIB_OS_CI_YUM_REPOS}/fedora-minimal/${DIB_RELEASE} ]]; then
+            export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/fedora-minimal/${DIB_RELEASE}/yum.repos.d
+        else
+            export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/fedora-minimal/default/yum.repos.d
+        fi
     elif [[ "${DISTRO_NAME}" == "centos" ]]; then
-        export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${WORKSPACE}/dib-mirror/centos-minimal/yum.repos.d
+        export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/centos-minimal/yum.repos.d
     fi
 
 fi

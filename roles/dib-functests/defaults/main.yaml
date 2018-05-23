@@ -1,0 +1,8 @@
+---
+dib_python: python3
+dib_virtualenv: "{{ ansible_user_dir }}/dib-venv"
+dib_functests: []
+# This is a bit of hack; it allows us to template out jobs where the
+# base tests are defined in dib_functests, but then add a few extra
+# tests to run in this variable for a specific test.
+dib_functests_extra: []

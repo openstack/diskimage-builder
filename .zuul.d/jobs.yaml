@@ -3,130 +3,226 @@
       - tripleo-buildimage-jobs
     check:
       jobs:
-        - dib-dsvm-functests-python2-ubuntu-trusty:
-            branches: (master|feature/v2)
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python2-ubuntu-trusty-extras:
-            voting: false
-            branches: (master|feature/v2)
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python2-ubuntu-trusty-image:
-            voting: false
-            branches: (master|feature/v2)
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python3:
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python3-extras:
-            voting: false
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python3-image:
-            voting: false
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python2-centos-7:
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python2-centos-7-extras:
-            voting: false
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python2-centos-7-image:
-            voting: false
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
+        - dib-functests-centos7-python2
+        - dib-functests-centos7-python2-image
+        - dib-functests-centos7-python2-extras
+        - dib-functests-trusty-python2
+        - dib-functests-trusty-python2-image
+        - dib-functests-trusty-python2-extras
+        - dib-functests-xenial-python3
+        - dib-functests-xenial-python3-image
+        - dib-functests-xenial-python3-extras
+        - dib-functests-bionic-python3
+        - dib-functests-bionic-python3-image
+        - dib-functests-bionic-python3-extras
+        - tripleo-buildimage-overcloud-full-centos-7
         - openstack-tox-lower-constraints
 
     gate:
       jobs:
-        - dib-dsvm-functests-python2-ubuntu-trusty:
-            branches: (master|feature/v2)
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python3:
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-        - dib-dsvm-functests-python2-centos-7:
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
+        - dib-functests-trusty-python2
+        - dib-functests-xenial-python3
+        - dib-functests-centos7-python2
         - tripleo-buildimage-overcloud-full-centos-7
         - openstack-tox-lower-constraints
 
 - job:
-    name: dib-dsvm-functests-python2-centos-7
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7/post.yaml
+    name: dib-functests-base
+    abstract: true
+    parent: base
+    run: playbooks/dib-functests/run.yaml
+    post-run: playbooks/dib-functests/post.yaml
     timeout: 3600
-    nodeset: legacy-centos-7
     required-projects:
       - openstack/diskimage-builder
+      - openstack/requirements
+    irrelevant-files:
+      - ^.*\.rst$
+      - ^doc/.*$
 
 - job:
-    name: dib-dsvm-functests-python2-centos-7-extras
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-extras/post.yaml
-    timeout: 3600
-    nodeset: legacy-centos-7
-    required-projects:
-      - openstack/diskimage-builder
+    name: dib-functests-default
+    description: |
+      This is the base set of stable tests
+    abstract: true
+    parent: dib-functests-base
+    vars:
+      dib_functests:
+        - apt-sources/test-sources
+        - centos-minimal/build-succeeds
+        - fedora-minimal/build-succeeds
+        - ironic-agent/build-succeeds-fedora
+        - pip-and-virtualenv/source-install-fedora
+        - pip-and-virtualenv/source-install-ubuntu
+        - ubuntu-minimal/trusty-build-succeeds
+        - ubuntu-minimal/xenial-build-succeeds
+        - ubuntu-minimal/bionic-build-succeeds
 
 - job:
-    name: dib-dsvm-functests-python2-centos-7-image
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-centos-7-image/post.yaml
-    timeout: 3600
-    nodeset: legacy-centos-7
-    required-projects:
-      - openstack/diskimage-builder
+    name: dib-functests-image
+    description: |
+      This is tests that rely on downloading an upstream
+      image.  We generally do not have mirrors for these images
+      so they can be slighlty unreliable.
+    abstract: true
+    voting: false
+    parent: dib-functests-base
+    vars:
+      dib_functests:
+        - centos7/build-succeeds
+        - opensuse/build-succeeds
+        - opensuse/opensuse423-build-succeeds
+        - fedora/build-succeeds
+        - ubuntu/trusty-build-succeeds
+        - ubuntu/xenial-build-succeeds
+        - ubuntu/bionic-build-succeeds
 
 - job:
-    name: dib-dsvm-functests-python2-ubuntu-trusty
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/post.yaml
-    timeout: 3600
-    nodeset: legacy-ubuntu-trusty
-    required-projects:
-      - openstack/diskimage-builder
+    name: dib-functests-extras
+    description: |
+      These are tests which are not as widely supported as the
+      core platforms
+    abstract: true
+    voting: false
+    parent: dib-functests-base
+    vars:
+      dib_functests:
+        - gentoo/build-succeeds
+        - debian-minimal/stable-vm
+
+# Bionic / Python3 tests
+- job:
+    name: dib-functests-trusty-python2
+    description: |
+      Run the default tests on a Trusty build host with Python 2
+    parent: dib-functests-default
+    nodeset: ubuntu-trusty
+    vars:
+      dib_python: python2
 
 - job:
-    name: dib-dsvm-functests-python2-ubuntu-trusty-extras
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-extras/post.yaml
-    timeout: 3600
-    nodeset: legacy-ubuntu-trusty
-    required-projects:
-      - openstack/diskimage-builder
+    name: dib-functests-trusty-python2-image
+    description: |
+      The image tests on a Trusty build host with Python 2
+    parent: dib-functests-image
+    nodeset: ubuntu-trusty
+    vars:
+      dib_python: python2
 
 - job:
-    name: dib-dsvm-functests-python2-ubuntu-trusty-image
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty-image/post.yaml
-    timeout: 3600
-    nodeset: legacy-ubuntu-trusty
-    required-projects:
-      - openstack/diskimage-builder
+    name: dib-functests-trusty-python2-extras
+    description: |
+      The extras tests on a Trusty build host with Python 2
+    parent: dib-functests-extras
+    nodeset: ubuntu-trusty
+    vars:
+      dib_python: python2
+
+# Bionic / Python3 tests
+- job:
+    name: dib-functests-bionic-python3
+    description: |
+      Run the default tests on a Xenial build host with Python 3
+    parent: dib-functests-default
+    nodeset: ubuntu-bionic
+    voting: false
+
+- job:
+    name: dib-functests-bionic-python3-image
+    description: |
+      The image tests on a Xenial build host with Python 3
+    parent: dib-functests-image
+    nodeset: ubuntu-bionic
+    voting: false
+
+- job:
+    name: dib-functests-bionic-python3-extras
+    description: |
+      The extras tests on a Xenial build host with Python 3
+    parent: dib-functests-extras
+    nodeset: ubuntu-bionic
+    voting: false
+
+# Xenial / Python3 tests
+- job:
+    name: dib-functests-xenial-python3
+    description: |
+      Run the default tests on a Xenial build host with Python 3
+    parent: dib-functests-default
+    nodeset: ubuntu-xenial
+
+- job:
+    name: dib-functests-xenial-python3-image
+    description: |
+      The image tests on a Xenial build host with Python 3
+    parent: dib-functests-image
+    nodeset: ubuntu-xenial
+
+- job:
+    name: dib-functests-xenial-python3-extras
+    description: |
+      The extras tests on a Xenial build host with Python 3
+    parent: dib-functests-extras
+    nodeset: ubuntu-xenial
+    vars:
+      # opensuse-minimal can only build on xenial ATM, as other
+      # platforms don't have zypper
+      dib_functests_extra:
+        - opensuse-minimal/opensuse423-build-succeeds
+
+# Bionic / Python3 tests
+- job:
+    name: dib-functests-bionic-python3
+    description: |
+      Run the default tests on a Xenial build host with Python 3
+    parent: dib-functests-default
+    nodeset: ubuntu-bionic
+    voting: false
+
+- job:
+    name: dib-functests-bionic-python3-image
+    description: |
+      The image tests on a Xenial build host with Python 3
+    parent: dib-functests-image
+    nodeset: ubuntu-bionic
+    voting: false
+
+- job:
+    name: dib-functests-bionic-python3-extras
+    description: |
+      The extras tests on a Xenial build host with Python 3
+    parent: dib-functests-extras
+    nodeset: ubuntu-bionic
+    voting: false
+
+# Centos 7 / Python2 tests
+- job:
+    name: dib-functests-centos7-python2
+    description: |
+      Run the default tests on a Centos 7 build host with Python 2
+    parent: dib-functests-default
+    nodeset: centos-7
+    vars:
+      dib_python: python2
+
+- job:
+    name: dib-functests-centos7-python2-image
+    description: |
+      The image tests on a Centos 7 build host with Python 2
+    parent: dib-functests-image
+    nodeset: centos-7
+    vars:
+      dib_python: python2
+
+- job:
+    name: dib-functests-centos7-python2-extras
+    description: |
+      The extras tests on a Centos 7 build host with Python 2
+    parent: dib-functests-extras
+    nodeset: centos-7
+    vars:
+      dib_python: python2
+
 
 - job:
     name: dib-dsvm-functests-python3

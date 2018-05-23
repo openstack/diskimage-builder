@@ -12,7 +12,7 @@ source /etc/ci/mirror_info.sh
 
 # Tests should probe for this directory and then use the repos/sources
 # files inside it for the gate tests.
-BASE_DIR=$WORKSPACE/dib-mirror
+BASE_DIR=${WORKSPACE:-$(pwd)}/dib-mirror
 
 mkdir -p $BASE_DIR
 
