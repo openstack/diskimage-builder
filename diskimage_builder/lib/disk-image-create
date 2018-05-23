@@ -204,6 +204,10 @@ exec 1> >( ${DIB_PYTHON_EXEC:-python} $_LIB/outfilter.py ${_TS_FLAG} ${_QUIET_FL
 function _ps4 {
     IFS=" " called=($(caller 0))
     local f=$(readlink -f ${called[2]})
+    # As we're being run out of the python package's lib/ dir (either
+    # virtualenv or system), we can strip everything before
+    # "site-packages" to significantly shorten the line without really
+    f=${f##*site-packages/}
     printf "%-80s " "$f:${called[1]}:${called[0]}"
 }
 export -f _ps4
