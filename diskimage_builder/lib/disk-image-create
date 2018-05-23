@@ -197,6 +197,10 @@ if [[ -n "${LOGFILE}" ]]; then
     echo "Output logs going to: ${LOGFILE}"
     _LOGFILE_FLAG="-o ${LOGFILE}"
 fi
+
+# Save the existing stdout to fd3
+exec 3>&1
+
 exec 1> >( ${DIB_PYTHON_EXEC:-python} $_LIB/outfilter.py ${_TS_FLAG} ${_QUIET_FLAG} ${_LOGFILE_FLAG} ) 2>&1
 
 
@@ -549,6 +553,19 @@ fi
 
 # Remove the leftovers, i.e. the temporary image directory.
 cleanup_image_dir
+
+# Restore fd 1&2 from the outfilter.py redirect back to the original
+# saved fd.  Note small hack that we can't really wait properly for
+# outfilter.py so put in a sleep (might be possible to use coproc for
+# this...?)
+#
+# TODO(ianw): probably better to cleanup the exit handler a bit for
+# this?  We really want some helper functions that append to the exit
+# handler so we can register multiple things.
+set +o xtrace
+echo "Build completed successfully"
+exec 1>&3 2>&3
+sleep 1
 
 # All done!
 trap EXIT
