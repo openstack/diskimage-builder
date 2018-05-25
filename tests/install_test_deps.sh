@@ -5,42 +5,13 @@ set -o pipefail
 
 sudo apt-get update || true
 sudo apt-get install -y --force-yes \
-        apt-transport-https \
-        bzip2 \
-        debootstrap \
-        docker.io \
-        dosfstools \
-        gdisk \
-        inetutils-ping \
-        lsb-release \
-        kpartx \
-        python-lzma \
-        qemu-utils \
-        rpm \
-        uuid-runtime \
-        yum-utils || \
+        docker.io || \
     sudo yum -y install --enablerepo=epel \
-        bzip2 \
-        dpkg \
-        debootstrap \
-        docker \
-        dosfstools \
-        gdisk \
-        kpartx \
-        util-linux \
-        qemu-img \
-        policycoreutils-python || \
+         debootstrap \
+         dpkg \
+         docker || \
     sudo zypper -n install \
-        bzip2 \
-        debootstrap \
-        docker \
-        dosfstools \
-        gdisk \
-        kpartx \
-        util-linux \
-        python-pyliblzma \
-        yum-utils \
-        qemu-tools || \
+        docker || \
     sudo emerge \
         app-arch/bzip2 \
         app-emulation/qemu \

@@ -3,16 +3,8 @@ Installation
 
 If your distribution does not provide packages, you should install
 ``diskimage-builder`` via ``pip``, mostly likely in a ``virtualenv``
-to keep it separate.
-
-For example, to create a ``virtualenv`` and install from ``pip``
-
-::
-
-   virtualenv ~/dib-virtualenv
-   . ~/dib-virtualenv/bin/activate
-   pip install diskimage-builder
-
+to keep it separate.  For details, see the installation section in the
+:ref:`dev_install`.
 
 Once installed, you will be able to :doc:`build images
 <building_an_image>` using ``disk-image-create`` and the elements
