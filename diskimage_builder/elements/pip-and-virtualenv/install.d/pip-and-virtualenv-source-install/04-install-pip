@@ -34,7 +34,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
                 42*)
                     packages="python-virtualenv python-pip python-setuptools"
                     ;;
-                tumbleweed)
+                tumbleweed|15*)
                     # XXX: python3?
                     packages="python2-virtualenv python2-pip python2-setuptools"
                     ;;
