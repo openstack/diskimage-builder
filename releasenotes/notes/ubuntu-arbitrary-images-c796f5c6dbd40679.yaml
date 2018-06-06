@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    You would need to modify your ``DIB_CLOUD_IMAGES`` and possibly
+    ``SHA256SUMS`` variables if you were using them to build Ubuntu with
+    elements/ubuntu: ``DIB_CLOUD_IMAGES`` would need to contain URL with
+    path, and ``SHA256SUMS`` would not now neccesarily point to
+    ``$DIB_RELEASE/current/`` directory.
+
