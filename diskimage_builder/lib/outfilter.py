@@ -78,7 +78,8 @@ def main():
             if sys.version_info < (3,):
                 outfile.write(ts_line)
             else:
-                outfile.write(ts_line.encode('utf-8'))
+                outfile.write(
+                    ts_line.encode('utf-8', errors='surrogateescape'))
             outfile.flush()
 
 
