@@ -2,5 +2,5 @@
 # see https://docs.openstack.org/infra/bindep/ for additional information.
 squashfs-tools [!platform:suse]
 squashfs [platform:suse]
-zypper [!platform:redhat !platform:ubuntu-trusty]
+zypper [!platform:redhat !platform:ubuntu-trusty !platform:ubuntu-bionic]
 gnupg2 [!platform:redhat !platform:ubuntu-trusty !platform:suse]
