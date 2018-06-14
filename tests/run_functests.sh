@@ -106,6 +106,22 @@ function wait_minus_n {
     fi
 }
 
+# This takes the status and the "$logfile" argument passed to
+# disk-image-create and renames the file, so you can quickly see
+# in results which tests have failed.
+function logfile_status {
+    local status="$1"
+    local arg="$2"
+    local filename
+    if [[ -z "${arg// }" ]]; then
+        return
+    fi
+
+    filename="$(echo $arg | cut -f2 -d' ')"
+    echo "Moving ${filename} to ${filename/.log/.$status.log}"
+    mv "$filename" ${filename/.log/.$status.log}
+}
+
 # run_disk_element_test <test_element> <element> <use_tmp> <output_formats>
 #  Run a disk-image-build build of ELEMENT including any elements
 #  specified by TEST_ELEMENT.  Pass OUTPUT_FORMAT to "-t"
@@ -141,6 +157,7 @@ function run_disk_element_test() {
             if ! [ -f "$dest_dir/image.qcow2" ]; then
                 echo "Error: qcow2 build failed for element: $element, test-element: $test_element."
                 echo "No image $dest_dir/image.qcow2 found!"
+                logfile_status "FAIL" "${logfile}"
                 exit 1
             fi
         fi
@@ -149,20 +166,25 @@ function run_disk_element_test() {
         if ! [ -f "$dest_dir/image.tar" ]; then
             echo "Error: Build failed for element: $element, test-element: $test_element."
             echo "No image $dest_dir/image.tar found!"
+            logfile_status "FAIL" "${logfile}"
             exit 1
         else
             if tar -tf $dest_dir/image.tar | grep -q /tmp/dib-test-should-fail; then
                 echo "Error: Element: $element, test-element $test_element should have failed, but passed."
+                logfile_status "FAIL" "${logfile}"
                 exit 1
             else
                 echo "PASS: Element $element, test-element: $test_element"
+                logfile_status "PASS" "${logfile}"
             fi
         fi
     else
         if [ -f "${dest_dir}/dib-test-should-fail" ]; then
             echo "PASS: Element $element, test-element: $test_element"
+            logfile_status "PASS" "${logfile}"
         else
             echo "Error: Build failed for element: $element, test-element: $test_element."
+            logfile_status "FAIL" "${logfile}"
             exit 1
         fi
     fi
@@ -379,8 +401,7 @@ for test in "${TESTS_TO_RUN[@]}"; do
 
     log_argument=' '
     if [[ -n "${LOG_DIRECTORY}" ]]; then
-        mkdir -p "${LOG_DIRECTORY}/${element}"
-        log_argument="--logfile ${LOG_DIRECTORY}/${element}/${test_element}.log"
+        log_argument="--logfile ${LOG_DIRECTORY}/${element}_${test_element}.log"
     fi
 
     echo "Running $test ($element_type)"
