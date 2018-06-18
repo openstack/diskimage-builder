@@ -100,7 +100,7 @@ class TestMountOrder(tc.TestGraphGeneration):
             mock.call(['mkfs', '-t', 'xfs', '-L', 'mkfs_var',
                        '-m', 'uuid=var-uuid-1234',
                        '-q', '/dev/loopXp2/var']),
-            mock.call(['mkfs', '-t', 'vfat', '-n', 'varlog',
+            mock.call(['mkfs', '-t', 'vfat', '-n', 'VARLOG',
                        '/dev/loopXp3/var_log'])
         ]
         self.assertEqual(mock_exec_sudo_mkfs.call_count, len(cmd_sequence))

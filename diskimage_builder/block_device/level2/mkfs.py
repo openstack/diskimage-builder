@@ -58,6 +58,11 @@ class FilesystemNode(NodeBase):
         if self.label is None:
             self.label = self.name
 
+        # for fat/vfat, we use the label as an identifier for the disk
+        # so we need that the label is converted to upper case
+        if self.type in ('vfat', 'fat'):
+            self.label = self.label.upper()
+
         # ensure we don't already have a fs with this label ... they
         # all must be unique.
         if 'fs_labels' in self.state:
