@@ -74,7 +74,7 @@ def recurse_config(config, parent_base=None):
     else:
         this['name'] = values['name']
 
-    # Go through the the values dictionary.  Either this is a "plugin"
+    # Go through the values dictionary.  Either this is a "plugin"
     # key that needs to be recursed, or it is a value that is part of
     # this config entry.
     for nk, nv in values.items():
