@@ -21,11 +21,13 @@ from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
+from diskimage_builder.block_device.level0.localloop import LocalLoopNode
 from diskimage_builder.block_device.level1.lvm import LVMNode
 from diskimage_builder.block_device.level1.lvm import LVMPlugin
 from diskimage_builder.block_device.level1.lvm import LvsNode
 from diskimage_builder.block_device.level1.lvm import PvsNode
 from diskimage_builder.block_device.level1.lvm import VgsNode
+from diskimage_builder.block_device.level1.partitioning import PartitionNode
 
 logger = logging.getLogger(__name__)
 
@@ -435,3 +437,142 @@ class TestLVM(tc.TestGraphGeneration):
             ]
 
             self.assertListEqual(mock_exec_sudo.call_args_list, cmd_sequence)
+
+    def test_lvm_multiple_partitions(self):
+        # Test the command-sequence for several partitions, one containing
+        # volumes on it
+        tree = self.load_config_file('lvm_tree_multiple_partitions.yaml')
+        config = config_tree_to_graph(tree)
+
+        state = BlockDeviceState()
+
+        graph, call_order = create_graph(config, self.fake_default_config,
+                                         state)
+
+        # Fake state for the partitions on this config
+        state['blockdev'] = {}
+        state['blockdev']['image0'] = {}
+        state['blockdev']['image0']['device'] = '/dev/fake/image0'
+        state['blockdev']['image0']['image'] = 'image'
+        state['blockdev']['root'] = {}
+        state['blockdev']['root']['device'] = '/dev/fake/root'
+        state['blockdev']['ESP'] = {}
+        state['blockdev']['ESP']['device'] = '/dev/fake/ESP'
+        state['blockdev']['BSP'] = {}
+        state['blockdev']['BSP']['device'] = '/dev/fake/BSP'
+
+        #
+        # Creation test
+        #
+
+        # We mock out the following exec_sudo and other related calls
+        # calls for the layers we are testing.
+        exec_sudo_lvm = 'diskimage_builder.block_device.level1.lvm.exec_sudo'
+        exec_sudo_part = ('diskimage_builder.block_device.'
+                          'level1.partitioning.exec_sudo')
+        exec_sudo_loop = ('diskimage_builder.block_device.'
+                          'level0.localloop.exec_sudo')
+        image_create = ('diskimage_builder.block_device.level0.'
+                        'localloop.LocalLoopNode.create')
+        size_of_block = ('diskimage_builder.block_device.level1.'
+                         'partitioning.Partitioning._size_of_block_dev')
+        create_mbr = ('diskimage_builder.block_device.level1.'
+                      'partitioning.Partitioning._create_mbr')
+
+        manager = mock.MagicMock()
+        with mock.patch(exec_sudo_lvm) as mock_sudo_lvm, \
+             mock.patch(exec_sudo_part) as mock_sudo_part, \
+             mock.patch(exec_sudo_loop) as mock_sudo_loop, \
+             mock.patch(image_create) as mock_image_create, \
+             mock.patch(size_of_block) as mock_size_of_block, \
+             mock.patch(create_mbr) as mock_create_mbr:
+
+            manager.attach_mock(mock_sudo_lvm, 'sudo_lvm')
+            manager.attach_mock(mock_sudo_part, 'sudo_part')
+            manager.attach_mock(mock_sudo_loop, 'sudo_loop')
+            manager.attach_mock(mock_image_create, 'image_create')
+            manager.attach_mock(mock_size_of_block, 'size_of_block')
+            manager.attach_mock(mock_create_mbr, 'create_mbr')
+
+            for node in call_order:
+                # We're just keeping this to the partition setup and
+                # LVM creation; i.e. skipping mounting, mkfs, etc.
+                if isinstance(node, (LVMNode, PvsNode,
+                                     VgsNode, LvsNode,
+                                     LocalLoopNode, PartitionNode)):
+                    node.create()
+                else:
+                    logger.debug("Skipping node for test: %s", node)
+
+            cmd_sequence = [
+                # create the underlying block device
+                mock.call.image_create(),
+                mock.call.size_of_block('image'),
+                # write out partition table
+                mock.call.create_mbr(),
+                # now mount partitions
+                mock.call.sudo_part(['sync']),
+                mock.call.sudo_part(['kpartx', '-avs', '/dev/fake/image0']),
+                # now create lvm environment
+                mock.call.sudo_lvm(['pvcreate', '/dev/fake/root', '--force']),
+                mock.call.sudo_lvm(
+                    ['vgcreate', 'vg', '/dev/fake/root', '--force']),
+                mock.call.sudo_lvm(
+                    ['lvcreate', '--name', 'lv_root', '-l', '28%VG', 'vg']),
+                mock.call.sudo_lvm(
+                    ['lvcreate', '--name', 'lv_tmp', '-l', '4%VG', 'vg']),
+                mock.call.sudo_lvm(
+                    ['lvcreate', '--name', 'lv_var', '-l', '40%VG', 'vg']),
+                mock.call.sudo_lvm(
+                    ['lvcreate', '--name', 'lv_log', '-l', '23%VG', 'vg']),
+                mock.call.sudo_lvm(
+                    ['lvcreate', '--name', 'lv_audit', '-l', '4%VG', 'vg']),
+                mock.call.sudo_lvm(
+                    ['lvcreate', '--name', 'lv_home', '-l', '1%VG', 'vg']),
+            ]
+            manager.assert_has_calls(cmd_sequence)
+
+        #
+        # Umount/cleanup test
+        #
+        manager = mock.MagicMock()
+        with mock.patch(exec_sudo_lvm) as mock_sudo_lvm, \
+             mock.patch(exec_sudo_part) as mock_sudo_part, \
+             mock.patch(exec_sudo_loop) as mock_sudo_loop:
+
+            manager.attach_mock(mock_sudo_lvm, 'sudo_lvm')
+            manager.attach_mock(mock_sudo_part, 'sudo_part')
+            manager.attach_mock(mock_sudo_loop, 'sudo_loop')
+
+            def run_it(phase):
+                reverse_order = reversed(call_order)
+                for node in reverse_order:
+                    if isinstance(node, (LVMNode, PvsNode,
+                                         VgsNode, LvsNode,
+                                         LocalLoopNode, PartitionNode)):
+                        getattr(node, phase)()
+                    else:
+                        logger.debug("Skipping node for test: %s", node)
+
+            run_it('umount')
+            run_it('cleanup')
+
+            cmd_sequence = [
+                # deactivate LVM first
+                mock.call.sudo_lvm(['lvchange', '-an', '/dev/vg/lv_root']),
+                mock.call.sudo_lvm(['lvchange', '-an', '/dev/vg/lv_tmp']),
+                mock.call.sudo_lvm(['lvchange', '-an', '/dev/vg/lv_var']),
+                mock.call.sudo_lvm(['lvchange', '-an', '/dev/vg/lv_log']),
+                mock.call.sudo_lvm(['lvchange', '-an', '/dev/vg/lv_audit']),
+                mock.call.sudo_lvm(['lvchange', '-an', '/dev/vg/lv_home']),
+                mock.call.sudo_lvm(['vgchange', '-an', 'vg']),
+                mock.call.sudo_lvm(['udevadm', 'settle']),
+                # now remove partitions (note has to happen after lvm removal)
+                mock.call.sudo_part(['kpartx', '-d', '/dev/fake/image0']),
+                # now remove loopback device
+                mock.call.sudo_loop(['losetup', '-d', '/dev/fake/image0']),
+                # now final LVM cleanup call
+                mock.call.sudo_lvm(['pvscan', '--cache']),
+            ]
+
+            manager.assert_has_calls(cmd_sequence)

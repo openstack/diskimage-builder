@@ -42,8 +42,7 @@ class Partitioning(PluginBase):
         # Because using multiple partitions of one base is done
         # within one object, there is the need to store a flag if the
         # creation of the partitions was already done.
-        self.already_created = False
-        self.already_cleaned = False
+        self.number_of_partitions = 0
 
         # Parameter check
         if 'base' not in config:
@@ -177,10 +176,10 @@ class Partitioning(PluginBase):
         # in the graph, so for every partition we get a create() call
         # as the walk happens.  But we only need to create the
         # partition table once...
-        if self.already_created:
+        self.number_of_partitions += 1
+        if self.number_of_partitions > 1:
             logger.info("Not creating the partitions a second time.")
             return
-        self.already_created = True
 
         # the raw file on disk
         self.image_path = self.state['blockdev'][self.base]['image']
@@ -216,12 +215,13 @@ class Partitioning(PluginBase):
         return
 
     def umount(self):
-        # remove the partition mappings made for the parent
-        # block-device by create() above.  this is called from the
-        # child PartitionNode umount.  Thus every partition calls it,
-        # but we only want to do it once and our gate.
-        if not self.already_cleaned:
-            self.already_cleaned = True
+        # Remove the partition mappings made for the parent
+        # block-device by create() above.  This is called from the
+        # child PartitionNode umount.  Thus every
+        # partition calls it, but we only want to do it once when
+        # we know this is the very last partition
+        self.number_of_partitions -= 1
+        if self.number_of_partitions == 0:
             exec_sudo(["kpartx", "-d",
                        self.state['blockdev'][self.base]['device']])
 
