@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# copy all modprobe.d snippets to /etc/modprobe.d
+
+eval declare -A image_elements=($(get_image_element_array))
+
+for i in "${!image_elements[@]}"; do
+    element=$i
+    element_dir=${image_elements[$i]}
+
+    if [ -d "${element_dir}/modprobe.d/" ]; then
+        sudo cp ${element_dir}/modprobe.d/*.conf $TMP_MOUNT_PATH/etc/modprobe.d/
+    fi
+done
