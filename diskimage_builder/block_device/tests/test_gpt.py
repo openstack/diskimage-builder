@@ -63,13 +63,12 @@ class TestGPT(tc.TestGraphGeneration):
                 node.create()
 
         # check the parted call looks right
-        parted_cmd = ('sgdisk %s '
-                      '-n 1:0:+8M -t 1:EF00 -c 1:"ESP" '
-                      '-n 2:0:+8M -t 2:EF02 -c 2:"BSP" '
-                      '-n 3:0:+1006M -t 3:8300 -c 3:"root"'
-                      % self.image_path)
+        parted_cmd = ['sgdisk', self.image_path,
+                      '-n', '1:0:+8M', '-t', '1:EF00', '-c', '1:ESP',
+                      '-n', '2:0:+8M', '-t', '2:EF02', '-c', '2:BSP',
+                      '-n', '3:0:+1006M', '-t', '3:8300', '-c', '3:Root Part']
         cmd_sequence = [
-            mock.call(parted_cmd.split(' ')),
+            mock.call(parted_cmd),
             mock.call(['sync']),
             mock.call(['kpartx', '-avs', '/dev/loopX'])
         ]
@@ -81,5 +80,5 @@ class TestGPT(tc.TestGraphGeneration):
                              {'device': '/dev/mapper/loopXp1'})
         self.assertDictEqual(state['blockdev']['BSP'],
                              {'device': '/dev/mapper/loopXp2'})
-        self.assertDictEqual(state['blockdev']['root'],
+        self.assertDictEqual(state['blockdev']['Root Part'],
                              {'device': '/dev/mapper/loopXp3'})

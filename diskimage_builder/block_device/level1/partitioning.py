@@ -136,7 +136,7 @@ class Partitioning(PluginBase):
         for p in self.partitions:
             args = {}
             args['pnum'] = pnum
-            args['name'] = '"%s"' % p.get_name()
+            args['name'] = '%s' % p.get_name()
             args['type'] = '%s' % p.get_type()
 
             # convert from a relative/string size to bytes
@@ -149,9 +149,11 @@ class Partitioning(PluginBase):
             assert size <= disk_free
             args['size'] = size // (1024 * 1024)
 
-            new_cmd = ("-n {pnum}:0:+{size}M -t {pnum}:{type} "
-                       "-c {pnum}:{name}".format(**args))
-            cmd.extend(new_cmd.strip().split(' '))
+            new_cmd = ("-n", "{pnum}:0:+{size}M".format(**args),
+                       "-t", "{pnum}:{type}".format(**args),
+                       # Careful with this one, as {name} could have spaces
+                       "-c", "{pnum}:{name}".format(**args))
+            cmd.extend(new_cmd)
 
             # Fill the state; we mount all partitions with kpartx
             # below once we're done.  So the device this partition

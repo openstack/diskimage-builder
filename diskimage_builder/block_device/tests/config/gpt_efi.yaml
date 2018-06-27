@@ -20,7 +20,9 @@
       - name: BSP
         type: 'EF02'
         size: 8MiB
-      - name: root
+        # spaces are probably a bad idea for max compatability, but
+        # we're deliberatly testing it here.
+      - name: Root Part
         type: '8300'
         size: 100%
         mkfs:
