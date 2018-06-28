@@ -224,6 +224,14 @@ function install_grub2 {
     if [ -d /sys/firmware/efi ]; then
         sed -i 's%\(initrd\|linux\)efi /boot%\1 /boot%g' $GRUB_CFG
     fi
+
+    # when using efi, and having linux16/initrd16, it needs to be replaced
+    # by linuxefi/initrdefi. When building images on a non-efi system,
+    # the 16 suffix is added to linux/initrd entries, but we need it to be
+    # linuxefi/initrdefi for the image to boot under efi
+    if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
+        sed -i 's%\(linux\|initrd\)16 /boot%\1efi /boot%g' $GRUB_CFG
+    fi
 }
 
 DIB_EXTLINUX=${DIB_EXTLINUX:-0}
