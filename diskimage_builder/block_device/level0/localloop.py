@@ -14,12 +14,12 @@
 
 import logging
 import os
-import subprocess
 
 from diskimage_builder.block_device.exception import \
     BlockDeviceSetupException
 from diskimage_builder.block_device.plugin import NodeBase
 from diskimage_builder.block_device.plugin import PluginBase
+from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 
 
@@ -41,17 +41,11 @@ def image_delete(filename):
 def loopdev_attach(filename):
     logger.info("loopdev attach")
     logger.debug("Calling [sudo losetup --show -f %s]", filename)
-    subp = subprocess.Popen(["sudo", "losetup", "--show", "-f",
-                             filename], stdout=subprocess.PIPE)
-    rval = subp.wait()
-    if rval == 0:
-        # [:-1]: Cut of the newline
-        block_device = subp.stdout.read()[:-1].decode("utf-8")
-        logger.info("New block device [%s]", block_device)
-        return block_device
-    else:
-        logger.error("losetup failed")
-        raise BlockDeviceSetupException("losetup failed")
+    block_device = exec_sudo(["losetup", "--show", "-f", filename])
+    # [:-1]: Cut of the newline
+    block_device = block_device[:-1]
+    logger.info("New block device [%s]", block_device)
+    return block_device
 
 
 def loopdev_detach(loopdev):
@@ -59,19 +53,16 @@ def loopdev_detach(loopdev):
     # loopback dev may be tied up a bit by udev events triggered
     # by partition events
     for try_cnt in range(10, 1, -1):
-        logger.debug("Calling [sudo losetup -d %s]", loopdev)
-        subp = subprocess.Popen(["sudo", "losetup", "-d",
-                                 loopdev])
-        rval = subp.wait()
-        if rval == 0:
-            logger.info("Successfully detached [%s]", loopdev)
-            return 0
-        else:
-            logger.error("loopdev detach failed")
+        try:
+            exec_sudo(["losetup", "-d", loopdev])
+            return
+        except BlockDeviceSetupException as e:
             # Do not raise an error - maybe other cleanup methods
             # can at least do some more work.
+            logger.error("loopdev detach failed (%s)", e.returncode)
+
     logger.debug("Gave up trying to detach [%s]", loopdev)
-    return rval
+    return 1
 
 
 class LocalLoopNode(NodeBase):
