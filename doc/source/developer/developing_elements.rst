@@ -109,7 +109,7 @@ The phases are:
   Runs after ``pre-install.d`` in the chroot. This is a good place to
   install packages, chain into configuration management tools or do other image
   specific operations.
-  
+
   * runs: **in chroot**
 
 ``post-install.d``
