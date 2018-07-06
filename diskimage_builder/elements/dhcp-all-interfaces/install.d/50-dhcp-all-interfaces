@@ -17,9 +17,9 @@ fi
 if [ -f /etc/dhcp/dhclient.conf ] ; then
     # Set the dhclient timeout configurations to match DIB_DHCP_TIMEOUT,
     if grep -o "^timeout " /etc/dhcp/dhclient.conf ; then
-        sed -i -e "s/^timeout .*/# \"timeout\" Value set by dhcp-all-interfaces\ntimeout ${DIB_DHCP_TIMEOUT:-30}/" /etc/dhcp/dhclient.conf
+        sed -i -e "s/^timeout .*/# \"timeout\" Value set by dhcp-all-interfaces\ntimeout ${DIB_DHCP_TIMEOUT:-30};/" /etc/dhcp/dhclient.conf
     else
-        echo -e "# \"timeout\" Value set by dhcp-all-interfaces\ntimeout ${DIB_DHCP_TIMEOUT:-30}" >> /etc/dhcp/dhclient.conf
+        echo -e "# \"timeout\" Value set by dhcp-all-interfaces\ntimeout ${DIB_DHCP_TIMEOUT:-30};" >> /etc/dhcp/dhclient.conf
     fi
 fi
 
