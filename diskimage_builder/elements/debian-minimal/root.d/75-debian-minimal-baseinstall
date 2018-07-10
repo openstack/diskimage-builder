@@ -24,6 +24,11 @@ fi
 set -eu
 set -o pipefail
 
+# NOTE(SamYaple): Add the keyring deboostrap used if specified
+if [ -n "${DIB_APT_KEYRING:-${DIB_DEBIAN_KEYRING:-}}" ]; then
+    cat $DIB_APT_KEYRING | sudo chroot $TARGET_ROOT /usr/bin/apt-key add -
+fi
+
 # Writes the apt sources files.
 # The description is passed in via line coded elements.
 # (The approach using associative arrays for configuration faild,
