@@ -97,6 +97,9 @@ The phases are:
   * inputs: ``$TMP_HOOKS_PATH``
   * outputs: None
 
+  Contents placed under ``$TMP_HOOKS_PATH`` will be available at
+  ``/tmp/in_target.d`` inside the chroot.
+
 ``pre-install.d``
   Run code in the chroot before customisation or packages are installed. A good
   place to add apt repositories.
