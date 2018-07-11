@@ -1,0 +1,10 @@
+---
+features:
+  - Add new modprobe element. This element will replace
+    modprobe-blacklist element. It wil still have the
+    blacklist functionality, but it also adds the feature
+    of passing a complete file with settings to the
+    modprobe.d directory. Adding this functionality, that
+    will allow elements that depends on this module, to
+    just copy the specified files to the final directory.
+
