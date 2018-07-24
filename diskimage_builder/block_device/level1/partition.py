@@ -84,5 +84,8 @@ class PartitionNode(NodeBase):
     def create(self):
         self.partitioning.create()
 
+    def umount(self):
+        self.partitioning.umount()
+
     def cleanup(self):
         self.partitioning.cleanup()

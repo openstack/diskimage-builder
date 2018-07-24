@@ -215,13 +215,15 @@ class Partitioning(PluginBase):
 
         return
 
-    def cleanup(self):
+    def umount(self):
         # remove the partition mappings made for the parent
         # block-device by create() above.  this is called from the
-        # child PartitionNode umount/delete/cleanup.  Thus every
-        # partition calls it, but we only want to do it once and our
-        # gate.
+        # child PartitionNode umount.  Thus every partition calls it,
+        # but we only want to do it once and our gate.
         if not self.already_cleaned:
             self.already_cleaned = True
             exec_sudo(["kpartx", "-d",
                        self.state['blockdev'][self.base]['device']])
+
+    def cleanup(self):
+        pass
