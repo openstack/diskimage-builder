@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Configure grub. Note that the various conditionals here are to handle
+# different distributions gracefully.
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+BOOT_DEV=$IMAGE_BLOCK_DEVICE
+
+# All available devices, handy for some bootloaders...
+declare -A DEVICES
+eval DEVICES=( $IMAGE_BLOCK_DEVICES )
+
+# This might be better factored out into a per-distro 'install-bootblock'
+# helper.
+if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+elif [ -d /boot/grub ]; then
+    GRUB_CFG=/boot/grub/grub.cfg
+fi
+
+if type grub2-mkconfig >/dev/null; then
+    GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
+else
+    GRUB_MKCONFIG="grub-mkconfig -o $GRUB_CFG"
+fi
+
+# Retrieve root filesystem mount point to check if it is LVM based
+ROOTFS=$(awk '$2=="/"{print}' /proc/mounts)
+# Standard filesystems are mounted as /dev/mapper/loop* within DIB
+# so we need to exclude this case
+if echo "$ROOTFS" | grep -qv '/dev/mapper/loop'; then
+    # LVM based filesystems are mounted as /dev/mapper/<VG_name>-<LV-NAME> within DIB
+    if echo "$ROOTFS" | grep -q '/dev/mapper/'; then
+        # Check if initramfs-tools are installed
+        if [ ! -d /etc/initramfs-tools ]; then
+            echo "You must have initramfs-tools installed for LVM based root filesystem to work properly"
+            exit 1
+        fi
+        # Check if system supports LVM
+        if ! type pvs >/dev/null 2>&1; then
+            echo "You must have lvm2 package installed for LVM based root filesystem to work properly"
+            exit 1
+        fi
+        # Check for appropriate filesystem support (for fsck)
+        FSTYPE=$(echo $ROOTFS | awk '{print $3}')
+        if ! type fsck.$FSTYPE >/dev/null 2>&1; then
+            echo "You must have utility package for $FSTYPE filesystem installed for LVM based root filesystem to work properly (fsck.$FSTYPE is missing)"
+            exit 1
+        fi
+        # Change the current GRUB_DEVICE from LABEL=(cloud)img-rootfs to /dev/mapper/...
+        sed -i -e "s?^GRUB_DEVICE=.*?GRUB_DEVICE=$(echo $ROOTFS | awk '{print $1}')?" /etc/default/grub
+        # This is required for LVM2 driver to be included in the
+        # ramdisk of the image.
+        echo "lvm2" >> /etc/initramfs-tools/modules
+        # We need to regenerated the init ramdisk at this point
+        update-initramfs -u -v
+    fi
+fi
+
+$GRUB_MKCONFIG

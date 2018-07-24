@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ 'ubuntu' != $DISTRO_NAME ]; then
+    echo "Only ubuntu is supported for LVM support. The DISTRO is set to $DISTRO_NAME"
+    exit 1
+fi
+
+if [ 'xenial' != $DIB_RELEASE ]; then
+    echo "Only xenial is supported for LVM support. The DIB_RELEASE is set to $DIB_RELEASE"
+    exit 1
+fi
