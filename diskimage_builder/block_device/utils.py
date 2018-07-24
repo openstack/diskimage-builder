@@ -12,9 +12,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import locale
 import logging
 import re
 import subprocess
+
+from diskimage_builder.block_device.exception import \
+    BlockDeviceSetupException
 
 logger = logging.getLogger(__name__)
 
@@ -95,10 +99,16 @@ def exec_sudo(cmd):
     at debug levels.
 
     Arguments:
-    :param cmd: str command list; for Popen()
-    :return: nothing
-    :raises: subprocess.CalledProcessError if return code != 0
 
+    :param cmd: str command list; for Popen()
+    :return: the stdout+stderror of the called command
+    :raises BlockDeviceSetupException: if return code != 0.
+
+    Exception values similar to ``subprocess.CalledProcessError``
+
+    * ``returncode`` : returncode of child
+    * ``cmd`` : the command run
+    * ``output`` : stdout+stderr output
     """
     assert isinstance(cmd, list)
     sudo_cmd = ["sudo"]
@@ -116,10 +126,20 @@ def exec_sudo(cmd):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
 
-    for line in iter(proc.stdout.readline, b""):
-        logger.debug("exec_sudo: %s", line.rstrip())
-
+    out = ""
+    with proc.stdout:
+        for line in iter(proc.stdout.readline, b''):
+            line = line.decode(encoding=locale.getpreferredencoding(False),
+                               errors='backslashreplace')
+            out += line
+            logger.debug("exec_sudo: %s", line.rstrip())
     proc.wait()
-    if proc.returncode != 0:
-        raise subprocess.CalledProcessError(proc.returncode,
-                                            ' '.join(sudo_cmd))
+
+    if proc.returncode:
+        e = BlockDeviceSetupException("exec_sudo failed")
+        e.returncode = proc.returncode
+        e.cmd = ' '.join(sudo_cmd)
+        e.output = out
+        raise e
+
+    return out

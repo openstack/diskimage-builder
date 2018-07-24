@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import subprocess
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
@@ -313,8 +312,8 @@ class LVMUmountNode(NodeBase):
     def umount(self):
         try:
             exec_sudo(['pvscan', '--cache'])
-        except subprocess.CalledProcessError as cpe:
-            logger.debug("pvscan call result [%s]", cpe)
+        except BlockDeviceSetupException as e:
+            logger.info("pvscan call failed [%s]", e.returncode)
 
     def get_edges(self):
         # This node depends on all physical device(s), which is
