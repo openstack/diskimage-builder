@@ -288,40 +288,20 @@ class LVMNode(NodeBase):
 
         exec_sudo(['udevadm', 'settle'])
 
-
-class LVMUmountNode(NodeBase):
-    def __init__(self, name, state, pvs):
-        """Umount Node for LVM
-
-        Information about the PV, VG and LV is typically
-        cached in lvmetad. Even after removing PV device and
-        partitions this data is not automatically updated
-        which leads to a couple of problems.
-        the 'pvscan --cache' scans the available disks
-        and updates the cache.
-        This must be called after the umount of the
-        containing block device is done.
-        """
-        super(LVMUmountNode, self).__init__(name, state)
-        self.pvs = pvs
-
-    def create(self):
-        # This class is used for cleanup only
-        pass
-
-    def umount(self):
+    def cleanup(self):
+        # Information about the PV, VG and LV is typically
+        # cached in lvmetad. Even after removing PV device and
+        # partitions this data is not automatically updated
+        # which leads to a couple of problems.
+        # the 'pvscan --cache' scans the available disks
+        # and updates the cache.
+        # This is in cleanup because it must be called after the
+        # umount of the containing block device is done, (which should
+        # all be done in umount phase).
         try:
             exec_sudo(['pvscan', '--cache'])
         except BlockDeviceSetupException as e:
             logger.info("pvscan call failed [%s]", e.returncode)
-
-    def get_edges(self):
-        # This node depends on all physical device(s), which is
-        # recorded in the "base" argument of the PV nodes.
-        edge_to = set()
-        for pv in self.pvs:
-            edge_to.add(pv.base)
-        return ([], edge_to)
 
 
 class LVMPlugin(PluginBase):
@@ -411,12 +391,10 @@ class LVMPlugin(PluginBase):
         # create the "driver" node
         self.lvm_node = LVMNode(config['name'], state,
                                 self.pvs, self.lvs, self.vgs)
-        self.lvm_umount_node = LVMUmountNode(
-            config['name'] + "-UMOUNT", state, self.pvs)
 
     def get_nodes(self):
         # the nodes for insertion into the graph are all of the pvs,
-        # vgs and lvs nodes we have created above, the root node and
+        # vgs and lvs nodes we have created above and the root node and
         # the cleanup node.
         return self.pvs + self.vgs + self.lvs \
-            + [self.lvm_node, self.lvm_umount_node]
+            + [self.lvm_node]
