@@ -1,7 +1,7 @@
 Installation
 ============
 
-If your distribution does not proivde packages, you should install
+If your distribution does not provide packages, you should install
 ``diskimage-builder`` via ``pip``, mostly likely in a ``virtualenv``
 to keep it separate.
 
