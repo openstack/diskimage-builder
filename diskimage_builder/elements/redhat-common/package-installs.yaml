@@ -6,6 +6,7 @@ traceroute:
 which:
 gettext:
     phase: pre-install.d
+ca-certificates:
 
 # selinux-targeted policy and related tools
 selinux-policy:
