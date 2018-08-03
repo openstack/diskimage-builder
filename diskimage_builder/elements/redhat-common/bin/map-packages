@@ -61,6 +61,7 @@ package_map = {
     'mysql-client-5.5': 'mariadb',
     'mysql-server-5.5': 'mariadb-server',
     'nagios-plugins-basic': 'nagios-plugins-all',
+    'netcat-openbsd': 'nmap-ncat',
     'nfs-common': 'nfs-utils',
     'nfs-kernel-server': 'nfs-utils',
     'open-iscsi': 'iscsi-initiator-utils',
