@@ -8,7 +8,15 @@ set -o pipefail
 
 # get the directories in order
 mkdir -p /etc/portage/profile
-mkdir -p /etc/portage/package.keywords
+if [ -f /etc/portage/package.keywords ]; then
+    mv /etc/portage/package.keywords /etc/portage/package.keywords.bak
+    mkdir -p /etc/portage/package.keywords
+    mv /etc/portage/package.keywords.bak /etc/portage/package.keywords/prebuilt-1
+else
+    mkdir -p /etc/portage/package.keywords
+fi
+[ -d /etc/portage/package.accept_keywords ] && mv /etc/portage/package.accept_keywords/* /etc/portage/package.keywords/ && rmdir /etc/portage/package.accept_keywords
+[ -f /etc/portage/package.accept_keywords ] && mv /etc/portage/package.accept_keywords /etc/portage/package.keywords/prebuilt-2
 mkdir -p /etc/portage/package.mask
 mkdir -p /etc/portage/package.unmask
 mkdir -p /etc/portage/package.use

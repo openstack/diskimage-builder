@@ -24,18 +24,19 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
     # redistribution, so we have to use a version of openssl that works around
     # it (using fedora's patchset) and also use a version of cryptography that
     # depends on that version of openssl.
-    echo '=dev-python/cryptography-2.1.3 ~amd64' >> /etc/portage/package.keywords/layman
-    echo '=dev-libs/openssl-1.1.0g-r1 ~amd64' >> /etc/portage/package.keywords/layman
-    echo '=dev-libs/openssl-1.1.0g-r1' >> /etc/portage/package.unmask/layman
+    echo '=dev-python/cryptography-2.1.4-r2 ~amd64' >> /etc/portage/package.keywords/layman
+    echo '=dev-libs/openssl-1.0.2o-r6 ~amd64' >> /etc/portage/package.keywords/layman
     emerge -q --oneshot --jobs=2 openssl openssh
     # install layman
-    USE="-build" emerge --deep -q --jobs=2 layman
+    USE="-build" emerge --deep -q --jobs=2 --ignore-built-slot-operator-deps=y layman
     # sync the initial overlay list
     layman -S
-    # enable the various overlays
+    # enable the various overlays, ignore failures (overlay my already be enabled)
+    set +e
     for OVERLAY in ${GENTOO_OVERLAYS}; do
         layman -a "${OVERLAY}"
     done
+    set -e
 
     unfix_shm
 fi
