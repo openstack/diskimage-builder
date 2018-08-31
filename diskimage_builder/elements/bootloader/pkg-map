@@ -17,6 +17,7 @@
       "grub-pc": "grub2-tools grub2",
       "grub-efi-amd64": "grub2-tools grub2-efi grub2-efi-modules",
       "grub-efi-arm64": "grub2-tools grub2-efi grub2-efi-modules",
+      "grub-efi-aarch64": "grub2-tools grub2-efi grub2-efi-modules",
       "grub-efi": "grub2-tools grub2-efi",
       "grub-ppc64": "grub2-tools grub2"
     }
