@@ -99,16 +99,6 @@
       - openstack/diskimage-builder
 
 - job:
-    name: dib-dsvm-functests-python2-opensuse-423
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/post.yaml
-    timeout: 3600
-    nodeset: opensuse-423
-    required-projects:
-      - openstack/diskimage-builder
-
-- job:
     name: dib-dsvm-functests-python2-ubuntu-trusty
     parent: legacy-dsvm-base
     run: playbooks/legacy/dib-dsvm-functests-python2-ubuntu-trusty/run.yaml
@@ -164,14 +154,3 @@
     timeout: 3600
     required-projects:
       - openstack/diskimage-builder
-
-- job:
-    name: dib-dsvm-functests-python3-opensuse-423
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/post.yaml
-    timeout: 3600
-    nodeset: opensuse-423
-    required-projects:
-      - openstack/diskimage-builder
-
