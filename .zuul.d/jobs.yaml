@@ -104,7 +104,7 @@
     run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/run.yaml
     post-run: playbooks/legacy/dib-dsvm-functests-python2-opensuse-423/post.yaml
     timeout: 3600
-    nodeset: legacy-opensuse-423
+    nodeset: opensuse-423
     required-projects:
       - openstack/diskimage-builder
 
@@ -171,7 +171,7 @@
     run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/run.yaml
     post-run: playbooks/legacy/dib-dsvm-functests-python3-opensuse-423/post.yaml
     timeout: 3600
-    nodeset: legacy-opensuse-423
+    nodeset: opensuse-423
     required-projects:
       - openstack/diskimage-builder
 
