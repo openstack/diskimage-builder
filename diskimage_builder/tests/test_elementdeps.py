@@ -174,11 +174,11 @@ class TestElementDeps(testtools.TestCase):
 
     def test_elements_provide_same(self):
         msg = "virtual: already provided by \['provides_virtual'\]"
-        self.assertRaisesRegexp(element_dependencies.AlreadyProvidedException,
-                                msg,
-                                element_dependencies.get_elements,
-                                ['provides_virtual', 'also_provides_virtual'],
-                                self.element_dirs)
+        self.assertRaisesRegex(element_dependencies.AlreadyProvidedException,
+                               msg,
+                               element_dependencies.get_elements,
+                               ['provides_virtual', 'also_provides_virtual'],
+                               self.element_dirs)
 
     def test_no_os_element(self):
         self.assertRaises(element_dependencies.MissingOSException,
