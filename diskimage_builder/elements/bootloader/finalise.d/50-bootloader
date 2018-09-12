@@ -185,9 +185,8 @@ function install_grub2 {
 
     GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=${SERIAL_CONSOLE} no_timer_check"
 
-    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT}\"" >>/etc/default/grub
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
     echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
-    sed -i -e "s/\(^GRUB_CMDLINE_LINUX.*\)\"$/\1 ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"/" /etc/default/grub
 
     if type grub2-mkconfig >/dev/null; then
         GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"

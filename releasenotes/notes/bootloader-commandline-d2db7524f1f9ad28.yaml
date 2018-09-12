@@ -1,0 +1,7 @@
+---
+other:
+  - It has been clarified that the ``DIB_BOOTLOADER_DEFAULT_CMDLINE``
+    variable appends its values to grubs
+    ``GRUB_CMDLINE_LINUX_DEFAULT``, which is used during all normal
+    boots but not rescue boots; as opposed to applying to
+    ``GRUB_CMDLINE_LINUX``
