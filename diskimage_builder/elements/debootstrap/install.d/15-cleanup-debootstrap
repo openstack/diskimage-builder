@@ -22,4 +22,3 @@ set -eu
 set -o pipefail
 
 install -d -m 0755 -o root -g root /etc/sudoers.d
-echo 'blacklist pcspkr' > /etc/modprobe.d/blacklist.conf

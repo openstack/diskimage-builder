@@ -1,2 +1,4 @@
 dpkg
+modprobe
 pkg-map
+
