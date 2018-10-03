@@ -14,8 +14,10 @@ if [ -f /usr/bin/systemctl -o -f /bin/systemctl ]; then
 elif [[ -f /sbin/initctl ]]; then
     echo "upstart"
 elif [[ -f /etc/gentoo-release ]]; then
-    if [[ "${GENTOO_PROFILE}" =~ systemd ]]; then
-        echo "systemd"
+    if [[ -z GENTOO_PROFILE ]]; then
+        if [[ "${GENTOO_PROFILE}" =~ systemd ]]; then
+            echo "systemd"
+        fi
     else
         echo "openrc"
     fi
