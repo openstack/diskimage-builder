@@ -19,13 +19,11 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
         emerge-webrsync -q
     fi
 
-    # layman requires cryptography, which needs ecc crypto functions.
-    # binaries providing those functions have questionable legality for
-    # redistribution, so we have to use a version of openssl that works around
-    # it (using fedora's patchset) and also use a version of cryptography that
-    # depends on that version of openssl.
-    echo '=dev-python/cryptography-2.1.4-r2 ~amd64' >> /etc/portage/package.keywords/layman
-    echo '=dev-libs/openssl-1.0.2o-r6 ~amd64' >> /etc/portage/package.keywords/layman
+    # upstream has problems with supporting other libcs still
+    if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then
+        echo '>=sys-block/open-iscsi-2.0.875' >> /etc/portage/package.mask/open-iscsi
+        echo '=sys-block/open-iscsi-2.0.874-r2' >> /etc/portage/package.keywords/open-iscsi
+    fi
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot openssl openssh
     # install layman
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --deep --ignore-built-slot-operator-deps=y layman
