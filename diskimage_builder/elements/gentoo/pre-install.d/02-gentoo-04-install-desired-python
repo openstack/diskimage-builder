@@ -18,16 +18,8 @@ if [[ ! -f /usr/portage/profiles ]]; then
     emerge-webrsync -q
 fi
 
-# python-3.6 and python-3.5 are masked and considered unstable for some reason
 echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
-if [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]]; then
-    echo -e "-python_targets_python3_6\n-python_single_target_python3_6" >> /etc/portage/profile/use.stable.mask
-    echo 'dev-lang/python:3.6 ~amd64' >> /etc/portage/package.keywords/python
-    echo '~dev-python/setuptools-36.0.1 ~amd64' >> /etc/portage/package.keywords/python
-    echo '~dev-python/pyxattr-0.6.0 ~amd64' >> /etc/portage/package.keywords/python
-    echo '~sys-apps/kmod-24 ~amd64' >> /etc/portage/package.keywords/python
-    [[ ! -e /usr/lib64/libpython3.6m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.6
-fi
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]] && [[ ! -e /usr/lib64/libpython3.6m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.6
 [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_5"* ]] && [[ ! -e /usr/lib64/libpython3.5m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.5
 [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_4"* ]] && [[ ! -e /usr/lib64/libpython3.4m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.4
 [[ "${GENTOO_PYTHON_TARGETS}" == *"python2_7"* ]] && [[ ! -e /usr/lib64/libpython2.7.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:2.7
