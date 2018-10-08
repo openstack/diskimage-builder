@@ -35,12 +35,12 @@ function show_options {
 function install_gentoo_packages {
     RUN_ONCE_SHM='1'
     if mountpoint -q /dev/shm; then
-        emerge $@
+        emerge ${GENTOO_EMERGE_DEFAULT_OPTS} $@
     elif [[ -k /dev/shm ]]; then
-        emerge $@
+        emerge ${GENTOO_EMERGE_DEFAULT_OPTS} $@
     else
         fix_shm
-        emerge $@
+        emerge ${GENTOO_EMERGE_DEFAULT_OPTS} $@
         unfix_shm
     fi
 }
@@ -58,9 +58,9 @@ while true; do
             if [[ ! -f /usr/portage/profiles ]]; then
                 emerge-webrsync -q
             fi
-            install_gentoo_packages -uDNv --with-bdeps=y --complete-graph=y --jobs=2 @world
+            install_gentoo_packages --update --deep --newuse --complete-graph=y @world
             install_gentoo_packages --verbose=n --depclean
-            install_gentoo_packages -v --usepkg=n @preserved-rebuild
+            install_gentoo_packages --usepkg=n @preserved-rebuild
             etc-update --automode -5
             eselect news read new
             exit 0;

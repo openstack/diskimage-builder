@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [[ ${DIB_DEBUG_TRACE:-0} -gt 0 ]]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[[ -n "${TMP_MOUNT_PATH}" ]]
+
+sudo umount -f "${TMP_MOUNT_PATH}"/usr/portage/distfiles
+sudo umount -f "${TMP_MOUNT_PATH}"/usr/portage/packages
+sudo umount -f "${TMP_MOUNT_PATH}"/usr/portage
+
+sudo rm -Rf "${TMP_MOUNT_PATH}"/root/.ccache/* "${TMP_MOUNT_PATH}"/usr/src/* "${TMP_MOUNT_PATH}"/var/cache/edb/dep/* "${TMP_MOUNT_PATH}"/var/cache/genkernel/* "${TMP_MOUNT_PATH}"/var/empty/* "${TMP_MOUNT_PATH}"/var/state/* "${TMP_MOUNT_PATH}"/var/tmp/*
+sudo rm -Rf "${TMP_MOUNT_PATH}"/etc/*- "${TMP_MOUNT_PATH}"/etc/*.old "${TMP_MOUNT_PATH}"/etc/ssh/ssh_host_* "${TMP_MOUNT_PATH}"/root/.*history "${TMP_MOUNT_PATH}"/root/.lesshst "${TMP_MOUNT_PATH}"/root/.ssh/known_hosts "${TMP_MOUNT_PATH}"/root/.viminfo "${TMP_MOUNT_PATH}"/usr/share/genkernel "${TMP_MOUNT_PATH}"/usr/lib64/python*/site-packages/gentoolkit/test/eclean/testdistfiles.tar.gz
+if [[ "${GENTOO_PORTAGE_CLEANUP}" != "False" ]]; then
+    # remove portage files
+    sudo rm -Rf "${TMP_MOUNT_PATH}"/usr/portage/* "${TMP_MOUNT_PATH}"/usr/portage/.git "${TMP_MOUNT_PATH}"/var/cache/portage/distfiles
+fi
+
+# shrink a bit
+for i in $(sudo -- find "${TMP_MOUNT_PATH}"/var/log -type f); do sudo -- sh -c "echo > $i"; done
+sudo find "${TMP_MOUNT_PATH}"/usr/share/man/ -mindepth 1  -maxdepth 1 -path "${TMP_MOUNT_PATH}/usr/share/man/man*" -prune -o -exec rm -rf {} \;
+
+# make it so we don't have to reinstall grub
+if [[ -a ${TMP_MOUNT_PATH}/usr/sbin/grub2-install ]]; then
+    sudo mkdir -p "${TMP_MOUNT_PATH}"/tmp/grub
+    sudo touch "${TMP_MOUNT_PATH}"/tmp/grub/install
+fi
+
+# systemd id
+if [[ "${GENTOO_PROFILE}" == *"systemd"* ]]; then
+    sudo cp /dev/null "${TMP_MOUNT_PATH}"/etc/machine-id
+fi
