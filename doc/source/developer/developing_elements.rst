@@ -116,11 +116,11 @@ The phases are:
 ``post-install.d``
   Run code in the chroot. This is a good place to perform tasks you want to
   handle after the OS/application install but before the first boot of the
-  image.  Some examples of use would be:
+  image.  Some examples of use would be
 
-    Run ``chkconfig`` to disable unneeded services
-
-    Clean the cache left by the package manager to reduce the size of the image.
+    * Run ``chkconfig`` to disable unneeded services
+    * Clean the cache left by the package manager to reduce the size
+      of the image.
 
   * runs: **in chroot**
 
@@ -154,7 +154,7 @@ The phases are:
   settings to use the image build environment HTTP proxy are removed here in
   the dpkg element.
 
-  * runs: outside chroot
+  * runs: **outside chroot**
   * inputs:
 
     * ``$ARCH=i386|amd64|armhf|arm64``
