@@ -137,6 +137,16 @@ The phases are:
 
   * outputs: ``$IMAGE_BLOCK_DEVICE={path}``
 
+``pre-finalise.d``
+
+  Final tuning of the root filesystem, outside the chroot.  Filesystem
+  content has been copied into the final file system which is rooted
+  at ``$TMP_BUILD_DIR/mnt``.  You might do things like re-mount a
+  cache directory that was used during the build in this phase (with
+  subsequent unmount in ``cleanup.d``).
+
+  * runs: **outside chroot**
+
 ``finalise.d``
   Perform final tuning of the root filesystem. Runs in a chroot after the root
   filesystem content has been copied into the mounted filesystem: this is an
