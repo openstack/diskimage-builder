@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    A ``pre-finalise`` stage is added that runs outside the chroot and
+    before the ``finalise`` stage.  For example, this may be useful
+    for mounting external resources that are used inside the chroot
+    during the ``finalise`` stage, but do not need to be distributed
+    in the final image such as build-time caches.

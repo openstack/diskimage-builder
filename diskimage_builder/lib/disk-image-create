@@ -486,6 +486,7 @@ sudo cp -ra ${TMP_BUILD_DIR}/built/* $TMP_BUILD_DIR/mnt
 sudo rm -fr ${TMP_BUILD_DIR}/built/*
 
 mount_proc_dev_sys
+run_d pre-finalise
 run_d_in_target finalise
 finalise_base
 
