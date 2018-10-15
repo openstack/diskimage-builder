@@ -27,8 +27,12 @@ if [ -f /etc/ci/mirror_info.sh ]; then
 
 fi
 
-# This is repo files pre-created for the fedora/centos-minimal jobs in
-# the gate
+# Infra doesn't mirror non-free repos, so instruct to ignore these
+export DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE="(universe|multiverse)"
+export DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE=1
+
+# These repo files are pre-created for the fedora/centos-minimal jobs
+# in the gate.  Not relevant inside the chroot.
 if [[ -d ${WORKSPACE:-/not/a/path/}/dib-mirror ]]; then
 
     if [[ "${DISTRO_NAME}" == "fedora" ]]; then
