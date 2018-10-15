@@ -39,19 +39,16 @@ trap cleanup EXIT
 ZYPPER_TARGET_OPTS="--non-interactive --gpg-auto-import-keys --root $TARGET_ROOT"
 ZYPPER_INSTALL_OPTS="--no-recommends"
 
-DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-http://download.opensuse.org}
+DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-https://download.opensuse.org}
 
 case ${DIB_RELEASE} in
-    # We are using "=>" as the assignment symbol since "@" "=" etc could be used in the URI itself.
-    # Remember, we can't export an array in bash so we use a string instead.
-    # Repo format: {name}=>{uri}
-    # Old openSUSE releases
-    13*)
-        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/${DIB_RELEASE}/ "
-        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/${DIB_RELEASE}/repo/oss/"
+    # Old Leap releases
+    42*)
+        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
+        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
         ;;
     # New Leap releases
-    42*|15*)
+    15*)
         ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
         ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
         ;;

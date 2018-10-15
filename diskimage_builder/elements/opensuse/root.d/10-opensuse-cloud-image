@@ -20,22 +20,24 @@ fi
 
 # Set some image defaults
 case ${DIB_RELEASE} in
-    # Old openSUSE releases
-    13*)
-        OPENSUSE_IMAGE_BASEDIR=openSUSE
-        OPENSUSE_IMAGE_FILE=openSUSE-${DIB_RELEASE}-OS
-        ;;
-    # New Leap releases
+    # Old Leap releases
     42*)
         OPENSUSE_IMAGE_BASEDIR=Leap
         OPENSUSE_IMAGE_FILE=openSUSE-Leap-${DIB_RELEASE}-OpenStack
+        OPENSUSE_IMAGE_EXT=tbz
+        ;;
+    # New Leap releases
+    15*)
+        OPENSUSE_IMAGE_BASEDIR=Leap
+        OPENSUSE_IMAGE_FILE=openSUSE-Leap-${DIB_RELEASE}-OpenStack
+        OPENSUSE_IMAGE_EXT=tar.xz
         ;;
     # We handle unknown cases in environment.d/10-opensuse-distro-name.bash
 esac
 # NOTE(toabctl): if something changes here on the buildservice side, please
 # first ask in #opensuse-cloud on freenode before you change the format here!
-DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://download.opensuse.org/repositories/Cloud:/Images:/${OPENSUSE_IMAGE_BASEDIR}_${DIB_RELEASE}/images/}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-${OPENSUSE_IMAGE_FILE}-rootfs.${ARCH}.tbz}
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.opensuse.org/repositories/Cloud:/Images:/${OPENSUSE_IMAGE_BASEDIR}_${DIB_RELEASE}/images/}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-${OPENSUSE_IMAGE_FILE}-rootfs.${ARCH}.${OPENSUSE_IMAGE_EXT}}
 SHA256SUMS_FILE=${SHA256SUMS_FILE:-${BASE_IMAGE_FILE}.sha256}
 
 CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
@@ -59,4 +61,4 @@ fi
 
 # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
 # image tarball and host OS)
-sudo tar -C $TARGET_ROOT --numeric-owner -xjf $CACHED_FILE
+sudo tar -C $TARGET_ROOT --numeric-owner -xf $CACHED_FILE

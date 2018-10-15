@@ -1,0 +1,11 @@
+---
+deprecations:
+  - |
+    Support in opensuse and opensuse-minimal for openSUSE 13.*  has been removed
+    as these are end of life.
+
+upgrade:
+  - |
+    The opensuse and opensuse-minimal element are now defaulting to build 15.0.
+    Building for 42.2 and 42.3 is still supported, however requires setting
+    DIB_RELEASE to '42.3' resp. '42.2' explicitly.
