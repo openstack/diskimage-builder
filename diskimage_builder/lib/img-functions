@@ -67,19 +67,20 @@ function run_d_in_target () {
     # mount it into the target and then execute run-parts in a chroot
     if [ -d ${TMP_HOOKS_PATH}/$1.d ] ; then
       sudo mkdir $TMP_MOUNT_PATH/tmp/in_target.d
+      # Copy dib-run-parts to be visible inside chroot.  Note we leave
+      # this here because in the future we might like to use a
+      # different in-chroot runner that doesn't rely on the chroot
+      # having bash/glibc/etc (containers, micro-images, etc).
+      sudo cp ${DIB_RUN_PARTS} ${TMP_HOOKS_PATH}
+      # Note that bind mounting R/O is a two step process, and it
+      # wasn't until later util-linux that "bind,ro" worked as a
+      # single step, see
+      #  https://git.kernel.org/cgit/utils/util-linux/util-linux.git/commit/?id=9ac77b8a78452eab0612523d27fee52159f5016a
       sudo mount --bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
-      # Copy in dib-run-parts to run inside chroot.  Note, in the
-      # future, we might like to use a diffrent dib-run-parts for
-      # running inside the chroot that doesn't rely on bash.  For now
-      # they're the same.  Note also this gets cleaned up with the dir
-      # delete below.
-      sudo cp ${DIB_RUN_PARTS} ${TMP_MOUNT_PATH}/tmp/in_target.d
       sudo mount -o remount,ro,bind ${TMP_HOOKS_PATH} $TMP_MOUNT_PATH/tmp/in_target.d
       check_break before-$1 run_in_target bash
       [ -z "$break_outside_target" ] && in_target_arg="run_in_target" || in_target_arg=
       trap "check_break after-error $in_target_arg ${break_cmd:-bash}" ERR
-      # NOTE: this is the dib-run-parts copied into the chroot by the
-      # dib-run-parts element.
       run_in_target /tmp/in_target.d/dib-run-parts /tmp/in_target.d/$1.d
       trap - ERR
       check_break after-$1 run_in_target bash

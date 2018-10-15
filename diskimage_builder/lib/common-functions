@@ -14,9 +14,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-# This is the "internal" version of dib-run-parts.  Note the currently
-# this is copied by the dib-run-parts element into the chroot.  If you
-# modify this, be aware that it needs to run in both contexts.
+# This is the "internal" verison of dib-run-parts.  If you modify
+# this, be aware that it needs to run both inside and outside the
+# chroot environment, so it needs to be very generic.
 DIB_RUN_PARTS=${_LIB}/dib-run-parts
 
 function tmpfs_check() {
