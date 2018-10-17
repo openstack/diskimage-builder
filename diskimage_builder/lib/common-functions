@@ -92,6 +92,10 @@ function copy_hooks_not_overwrite () {
 }
 
 function generate_hooks () {
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
     local dir
     local file
 
@@ -103,6 +107,8 @@ function generate_hooks () {
         local element=$i
         local element_dir=${image_elements[$i]}
 
+        echo "Copying hooks for ${element}"
+
         for dir in $(find $element_dir \
                           -follow -mindepth 1 -maxdepth 1 \
                           -type d -not -name tests); do
@@ -113,6 +119,8 @@ function generate_hooks () {
             cp -t $TMP_HOOKS_PATH -a $file
         done
     done
+
+    $xtrace
 }
 
 # Call the supplied break-in routine if the named point is listed in the break
