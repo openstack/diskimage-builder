@@ -26,9 +26,9 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
     # depends on that version of openssl.
     echo '=dev-python/cryptography-2.1.4-r2 ~amd64' >> /etc/portage/package.keywords/layman
     echo '=dev-libs/openssl-1.0.2o-r6 ~amd64' >> /etc/portage/package.keywords/layman
-    emerge -q --oneshot --jobs=2 openssl openssh
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot openssl openssh
     # install layman
-    USE="-build" emerge --deep -q --jobs=2 --ignore-built-slot-operator-deps=y layman
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --deep --ignore-built-slot-operator-deps=y layman
     # sync the initial overlay list
     layman -S
     # enable the various overlays, ignore failures (overlay my already be enabled)

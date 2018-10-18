@@ -26,11 +26,11 @@ if [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]]; then
     echo '~dev-python/setuptools-36.0.1 ~amd64' >> /etc/portage/package.keywords/python
     echo '~dev-python/pyxattr-0.6.0 ~amd64' >> /etc/portage/package.keywords/python
     echo '~sys-apps/kmod-24 ~amd64' >> /etc/portage/package.keywords/python
-    [[ ! -e /usr/lib64/libpython3.6m.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:3.6
+    [[ ! -e /usr/lib64/libpython3.6m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.6
 fi
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_5"* ]] && [[ ! -e /usr/lib64/libpython3.5m.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:3.5
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_4"* ]] && [[ ! -e /usr/lib64/libpython3.4m.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:3.4
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python2_7"* ]] && [[ ! -e /usr/lib64/libpython2.7.so ]] && USE="-build" emerge -1q --jobs=2 dev-lang/python:2.7
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_5"* ]] && [[ ! -e /usr/lib64/libpython3.5m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.5
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_4"* ]] && [[ ! -e /usr/lib64/libpython3.4m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.4
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python2_7"* ]] && [[ ! -e /usr/lib64/libpython2.7.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:2.7
 # disable python in git if we have to, it only supports python-2.7
 if [[ "${GENTOO_PYTHON_TARGETS}" != *"python2_7"* ]]; then
     echo 'dev-vcs/git -python' >> /etc/portage/package.use/git
@@ -39,9 +39,9 @@ fi
 # this is done one by one with nodeps because it can sometimes have dependency loops
 PYTHON_PACKAGES="dev-python/six dev-python/packaging dev-python/pyparsing dev-python/appdirs dev-python/setuptools dev-python/certifi"
 for PACKAGE in ${PYTHON_PACKAGES}; do
-    USE="-build" emerge -q --oneshot --jobs=2 --with-bdeps=y --update --newuse --deep --nodeps "${PACKAGE}"
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --nodeps "${PACKAGE}"
 done
-USE="-build" emerge -q --oneshot --jobs=2 --with-bdeps=y --update --newuse --deep --complete-graph=y sys-apps/portage dev-python/pyxattr
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --complete-graph=y sys-apps/portage dev-python/pyxattr
 # set the active python version
 eselect python set ${GENTOO_PYTHON_ACTIVE_VERSION}
 # allow these uninstalls to fail as they may not be installed to begin with
@@ -53,12 +53,12 @@ set +e
 set -e
 
 # make world consistant
-USE="-build" emerge -q --complete-graph=y --jobs=2 --update --newuse --deep --with-bdeps=y @world
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world
 # rebuild packages that might need it
-USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
 # remove unneeded packages
-USE="-build" emerge --verbose=n --depclean
+emerge --verbose=n --depclean
 # rebuild packages that might have somehow depended on the unneeded packages
-USE="-build" emerge -q --jobs=2 --usepkg=n @preserved-rebuild
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
 
 unfix_shm

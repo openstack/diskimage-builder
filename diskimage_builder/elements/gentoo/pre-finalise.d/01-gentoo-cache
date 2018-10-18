@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+GENTOO_PORTAGE_DISTFILES_DIR="${DIB_IMAGE_CACHE}/gentoo/distfiles"
+GENTOO_PORTAGE_PACKAGE_DIR="${DIB_IMAGE_CACHE}/gentoo/packages/${GENTOO_PROFILE}"
+GENTOO_PORTAGE_DIR="${DIB_IMAGE_CACHE}/gentoo/portage"
+
+sudo mount --bind "${GENTOO_PORTAGE_DIR}" "${TMP_MOUNT_PATH}"/usr/portage
+mkdir -p "${TMP_MOUNT_PATH}"/usr/portage/distfiles
+sudo mount --bind "${GENTOO_PORTAGE_DISTFILES_DIR}" "${TMP_MOUNT_PATH}"/usr/portage/distfiles
+mkdir -p "${TMP_MOUNT_PATH}"/usr/portage/packages
+sudo mount --bind "${GENTOO_PORTAGE_PACKAGE_DIR}" "${TMP_MOUNT_PATH}"/usr/portage/packages

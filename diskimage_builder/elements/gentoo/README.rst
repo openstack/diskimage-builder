@@ -30,12 +30,13 @@ Notes:
     default/linux/amd64/17.0/no-multilib
     default/linux/amd64/17.0/hardened
     default/linux/amd64/17.0/no-multilib/hardened
+    default/linux/amd64/17.0/systemd
 
-* You can set the GENTOO_PORTAGE_CLEANUP environment variable to False to
-  prevent cleaning up portage repositories (including overlays).  This makes
-  the image bigger.
+* You can set the `GENTOO_PORTAGE_CLEANUP` environment variable to False to
+  disable the clean up of portage repositories (including overlays).  This
+  will make the image bigger if caching is also disabled.
 
-* Gentoo supports many diferent versions of python, in order to select one
+* Gentoo supports many different versions of python, in order to select one
   you may use the `GENTOO_PYTHON_TARGETS` environment variable to select
   the versions of python you want on your image.  The format of this variable
   is a string as follows `"python2_7 python3_5"`.
@@ -48,3 +49,10 @@ Notes:
 * You can enable overlays using the `GENTOO_OVERLAYS` variable.  In it you
   should put a space separated list of overlays.  The overlays must be in the
   official overlay list and must be git based.
+
+* `GENTOO_EMERGE_ENV` is a bash array containing default environment
+  variables for package install, you can override it with another bash array.
+
+* `GENTOO_EMERGE_DEFAULT_OPTS` can be set to control the default options
+  passed to emerge for all package actions, this includes operations like
+  depclean and preserved-rebuild.
