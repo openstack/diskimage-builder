@@ -12,7 +12,7 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
 while IFS= read line
 do
-    if [[ "$line" =~ "${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-}" ]]; then
+    if [[ "$line" =~ ${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-} ]]; then
         # append line unmodified
         echo "$line" | tee --append /etc/apt/sources.list.new
     else
