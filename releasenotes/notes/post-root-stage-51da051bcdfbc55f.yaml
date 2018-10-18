@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    A ``post-root`` stage is added that runs outside the chroot and
+    before the image size calculation.  For example, this may be useful
+    for running things that copy much data into the image and need to be
+    outside of the chroot and after install stages which run inside the chroot.

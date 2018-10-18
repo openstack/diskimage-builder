@@ -69,7 +69,9 @@ The phases are:
 #. ``pre-install.d``
 #. ``install.d``
 #. ``post-install.d``
+#. ``post-root.d``
 #. ``block-device.d``
+#. ``pre-finalise.d``
 #. ``finalise.d``
 #. ``cleanup.d``
 
@@ -123,6 +125,13 @@ The phases are:
       of the image.
 
   * runs: **in chroot**
+
+``post-root.d``
+  Run code outside the chroot. This is a good place to perform tasks that
+  cannot run inside the chroot and must run after installing things. The
+  root filesystem content is rooted at ``$TMP_BUILD_DIR/mnt``.
+
+  * runs: **outside chroot**
 
 ``block-device.d``
   Customise the block device that the image will be made on (for example to
