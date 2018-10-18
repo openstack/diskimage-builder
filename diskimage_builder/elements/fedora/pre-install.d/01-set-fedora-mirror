@@ -10,6 +10,14 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
 [ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
 
+if [[ ${DIB_RELEASE} -gt 27 ]]; then
+    # urgh, the repo is wrong in the "baseurl" line, see
+    #  https://pagure.io/fedora/repos/issue/70
+    for FILE in /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates-testing.repo; do
+        sed -i "s|/os/||" $FILE
+    done
+fi
+
 for FILE in /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates-testing.repo; do
     sudo sed -e "s|^#baseurl=http://download.fedoraproject.org/pub/fedora/linux|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^metalink/d" -i $FILE
 done

@@ -26,10 +26,18 @@ else
     # note default DIB_RELEASE set in environment setup
     case ${ARCH} in
     x86_64)
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+        if [[ ${DIB_RELEASE} -ge 28 ]]; then
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/Cloud/${ARCH}/images}
+        else
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+        fi
         ;;
     aarch64|ppc64|ppc64le)
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://dl.fedoraproject.org/pub/fedora-secondary/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+        if [[ ${DIB_RELEASE} -ge 28 ]]; then
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://dl.fedoraproject.org/pub/fedora-secondary/releases/${DIB_RELEASE}/Cloud/${ARCH}/images}
+        else
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://dl.fedoraproject.org/pub/fedora-secondary/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+        fi
         ;;
     *)
         echo "Error: unknown ARCH: ${ARCH}"
