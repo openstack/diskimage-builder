@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+if [ ${DIB_DEBUG_TRACE:-1} -gt 1 ]; then
     set -x
 fi
 set -eu
@@ -16,6 +16,7 @@ for i in "${!image_elements[@]}"; do
 
     pkg_map="${element_dir}/pkg-map"
     if [ -f "${pkg_map}" ]; then
+        echo "Copying pkg-map for ${element}"
         sudo cp "${pkg_map}" "$TMP_MOUNT_PATH/usr/share/pkg-map/$element"
     fi
 done
