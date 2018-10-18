@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# On infra nodes, make a copy of the mirror_info.sh script inside the
+# chroot for elements running in chroot like EPEL that want to
+# reference it.
+mirror_info=/etc/ci/mirror_info.sh
+
+if [ -f $mirror_info ]; then
+    cp /etc/ci/mirror_info.sh $TMP_HOOKS_PATH/mirror_info.sh
+fi
+
