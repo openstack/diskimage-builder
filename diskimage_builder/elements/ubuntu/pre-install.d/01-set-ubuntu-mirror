@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+if [ ${DIB_DEBUG_TRACE:-0} -gt 1 ]; then
     set -x
 fi
 set -eu
@@ -10,5 +10,21 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
 [ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
 
-sudo sed -ie "s&http://\(archive\|security\).ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&" \
-    /etc/apt/sources.list
+while IFS= read line
+do
+    if [[ "$line" =~ "${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-}" ]]; then
+        # append line unmodified
+        echo "$line" | tee --append /etc/apt/sources.list.new
+    else
+        echo "$line" | \
+            sed -e "s&http://\(archive\|security\).ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&" | \
+            tee --append /etc/apt/sources.list.new
+    fi
+done < /etc/apt/sources.list
+
+if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE:-}" ]]; then
+    echo "APT::Get::AllowUnauthenticated \"true\";" | tee /etc/apt/apt.conf.d/95allow-unauthenticated
+    echo "Acquire::AllowInsecureRepositories \"true\";" | tee -a /etc/apt/apt.conf.d/95allow-unauthenticated
+fi
+
+mv /etc/apt/sources.list.new /etc/apt/sources.list
