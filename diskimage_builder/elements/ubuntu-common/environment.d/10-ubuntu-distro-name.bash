@@ -1,4 +1,4 @@
-export DISTRO_NAME=ubuntu
+export DISTRO_NAME=${DISTRO_NAME:-ubuntu}
 export DIB_RELEASE=${DIB_RELEASE:-xenial}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main,universe}
 
