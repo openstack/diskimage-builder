@@ -1,5 +1,5 @@
 export DISTRO_NAME=${DISTRO_NAME:-ubuntu}
-export DIB_RELEASE=${DIB_RELEASE:-xenial}
+export DIB_RELEASE=${DIB_RELEASE:-bionic}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main,universe}
 
 # There are two default distro mirrors depending on architecture
