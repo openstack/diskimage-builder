@@ -41,4 +41,5 @@ DIB_EPEL_MIRROR=${DIB_EPEL_MIRROR:-}
 [ -n "$DIB_EPEL_MIRROR" ] || exit 0
 
 # Set the EPEL mirror to use
-sed -e "s|^#baseurl=http://download.fedoraproject.org/pub/epel|baseurl=$DIB_EPEL_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/epel.repo
+sed -e "s|^#baseurl=http://download.fedoraproject.org/pub/epel|baseurl=$DIB_EPEL_MIRROR|;/^mirrorlist=/d;/^metalink=/d" -i /etc/yum.repos.d/epel.repo
+
