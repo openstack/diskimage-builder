@@ -345,6 +345,7 @@ run_d_in_target pre-install
 run_d_in_target install
 do_extra_package_install
 run_d_in_target post-install
+run_d post-root
 # ensure we do not have a lost+found directory in the root folder
 # that could cause copy to fail (it will be created again later
 # when creating the file system, if it needs such directory)
