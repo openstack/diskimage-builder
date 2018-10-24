@@ -59,7 +59,7 @@ function show_options () {
     echo "    -x -- turn on tracing (use -x -x for very detailed tracing)."
     echo "    -u -- uncompressed; do not compress the image - larger but faster"
     echo "    -c -- clear environment before starting work"
-    echo "    --logfile -- save run output to given logfile"
+    echo "    --logfile -- save run output to given logfile (implies DIB_QUIET=1)"
     echo "    --checksum -- generate MD5 and SHA256 checksum files for the created image"
     echo "    --image-size size -- image size in GB for the created image"
     echo "    --image-cache directory -- location for cached images(default ~/.cache/image-create)"
@@ -94,7 +94,7 @@ function show_options () {
     echo
     echo "  * ELEMENTS_PATH: specify external locations for the elements.  As for \$PATH"
     echo "  * DIB_NO_TIMESTAMP: no timestamp prefix on output.  Useful if capturing output"
-    echo "  * DIB_QUIET: do not output log output to stdout.  See --logfile"
+    echo "  * DIB_QUIET: 1=do not output log output to stdout; 0=always ouptut to stdout.  See --logfile"
     echo
     echo "NOTE: At least one distribution root element must be specified."
     echo
@@ -187,6 +187,12 @@ fi
 _TS_FLAG=""
 if [[ "${DIB_NO_TIMESTAMP:-0}" -eq 1 ]]; then
     _TS_FLAG="--no-timestamp"
+fi
+# A logfile with *no* DIB_QUIET specified implies we just want output
+# to the logfile.  Explicitly setting DIB_QUIET=0 will overide this
+# and log both.
+if [[ -n "${LOGFILE}" && -z "${DIB_QUIET}" ]]; then
+    DIB_QUIET=1
 fi
 _QUIET_FLAG="-v"
 if [[ "${DIB_QUIET:-0}" -eq 1 ]]; then
