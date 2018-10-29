@@ -1,0 +1,10 @@
+[fedora]
+name=Fedora $releasever - $basearch
+failovermethod=priority
+baseurl=http://{{ mirror_fqdn }}/fedora/releases/$releasever/Everything/$basearch/os/
+enabled=1
+metadata_expire=7d
+gpgcheck=0
+skip_if_unavailable=False
+deltarpm=False
+deltarpm_percentage=0

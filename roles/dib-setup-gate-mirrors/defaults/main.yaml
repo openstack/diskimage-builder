@@ -1,0 +1,1 @@
+mirror_fqdn: "{{ zuul_site_mirror_fqdn|default(omit) }}"

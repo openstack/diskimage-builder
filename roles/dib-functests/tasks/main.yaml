@@ -1,0 +1,49 @@
+- name: Install dib extra dependencies
+  command: ./install_test_deps.sh
+  args:
+    chdir: "{{ zuul.project.src_dir }}/tests"
+  become: yes
+
+- name: Setup mounted space
+  file:
+    path: '/opt/dib_cache'
+    state: directory
+    mode: ugo+rw
+  become: yes
+
+- name: Define upper_constraints
+  set_fact:
+    upper_constraints: "{{ ansible_user_dir }}/{{ zuul.projects['git.openstack.org/openstack/requirements'].src_dir }}/upper-constraints.txt"
+
+- name: Take ourselves out of uppper constraints
+  lineinfile:
+    path: "{{ upper_constraints }}"
+    state: absent
+    regexp: '^diskimage-builder'
+
+- name: Install diskimage-builder
+  pip:
+    name: "file://{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+    virtualenv: "{{ dib_virtualenv }}"
+    virtualenv_python: "{{ dib_python }}"
+    extra_args: "-c {{ upper_constraints }}"
+
+- name: Setup log output
+  file:
+    path: "{{ ansible_user_dir }}/logs"
+    state: directory
+    mode: ugo+rw
+
+- name: Run dib functional tests
+  shell:
+    cmd: |
+      source {{ dib_virtualenv }}/bin/activate
+      {{ zuul.project.src_dir }}/tests/run_functests.sh \
+        -L {{ ansible_user_dir }}/logs {{ dib_functests | join(' ') }} \
+        {{ dib_functests_extra | join(' ') }}
+  args:
+    executable: /bin/bash
+  environment:
+    DIB_NO_TMPFS: 1
+    TMPDIR: /opt/dib_cache
+    DIB_OS_CI_YUM_REPOS: "{{ dib_gate_mirror_repos|default(omit) }}"

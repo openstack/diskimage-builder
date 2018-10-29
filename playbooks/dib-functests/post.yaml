@@ -1,0 +1,13 @@
+- hosts: all
+  tasks:
+
+    - name: Check logs directory exists
+      stat: path='{{ ansible_user_dir }}/logs/'
+      register: check_path
+
+    - name: Copy log files from {{ ansible_user_dir }} on node
+      synchronize:
+        src: '{{ ansible_user_dir }}/logs/'
+        dest: '{{ zuul.executor.log_root }}/logs'
+        mode: pull
+      when: check_path.stat.exists == true
