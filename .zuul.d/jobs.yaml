@@ -12,9 +12,11 @@
         - dib-functests-xenial-python3
         - dib-functests-xenial-python3-image
         - dib-functests-xenial-python3-extras
+        - dib-functests-xenial-python3-containers
         - dib-functests-bionic-python3
         - dib-functests-bionic-python3-image
         - dib-functests-bionic-python3-extras
+        - dib-functests-bionic-python3-containers
         - tripleo-buildimage-overcloud-full-centos-7
         - openstack-tox-lower-constraints
 
@@ -90,6 +92,19 @@
         - gentoo/build-succeeds
         - debian-minimal/stable-vm
 
+- job:
+    name: dib-functests-containers
+    description: |
+      These are tests for elements focused on containers or other
+      small deployments
+    abstract: true
+    voting: false
+    parent: dib-functests-base
+    vars:
+      dib_functests:
+        - ubuntu-systemd-container/bionic-build-succeeds
+        - ubuntu-systemd-container/xenial-build-succeeds
+
 # Trusty / Python 2 tests
 - job:
     name: dib-functests-trusty-python2
@@ -143,6 +158,14 @@
     nodeset: ubuntu-bionic
     voting: false
 
+- job:
+    name: dib-functests-bionic-python3-containers
+    description: |
+      The containers tests on a Bionic build host with Python 3
+    parent: dib-functests-containers
+    nodeset: ubuntu-bionic
+    voting: false
+
 # Xenial / Python3 tests
 - job:
     name: dib-functests-xenial-python3
@@ -169,6 +192,14 @@
       # platforms don't have zypper
       dib_functests_extra:
         - opensuse-minimal/opensuse423-build-succeeds
+
+- job:
+    name: dib-functests-xenial-python3-containers
+    description: |
+      The containers tests on a Xenial build host with Python 3
+    parent: dib-functests-containers
+    nodeset: ubuntu-xenial
+    voting: false
 
 # Centos 7 / Python2 tests
 - job:
