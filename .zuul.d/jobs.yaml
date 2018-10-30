@@ -90,7 +90,7 @@
         - gentoo/build-succeeds
         - debian-minimal/stable-vm
 
-# Bionic / Python3 tests
+# Trusty / Python 2 tests
 - job:
     name: dib-functests-trusty-python2
     description: |
@@ -122,7 +122,7 @@
 - job:
     name: dib-functests-bionic-python3
     description: |
-      Run the default tests on a Xenial build host with Python 3
+      Run the default tests on a Bionic build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-bionic
     voting: false
@@ -130,7 +130,7 @@
 - job:
     name: dib-functests-bionic-python3-image
     description: |
-      The image tests on a Xenial build host with Python 3
+      The image tests on a Bionic build host with Python 3
     parent: dib-functests-image
     nodeset: ubuntu-bionic
     voting: false
@@ -138,7 +138,7 @@
 - job:
     name: dib-functests-bionic-python3-extras
     description: |
-      The extras tests on a Xenial build host with Python 3
+      The extras tests on a Bionic build host with Python 3
     parent: dib-functests-extras
     nodeset: ubuntu-bionic
     voting: false
@@ -170,31 +170,6 @@
       dib_functests_extra:
         - opensuse-minimal/opensuse423-build-succeeds
 
-# Bionic / Python3 tests
-- job:
-    name: dib-functests-bionic-python3
-    description: |
-      Run the default tests on a Xenial build host with Python 3
-    parent: dib-functests-default
-    nodeset: ubuntu-bionic
-    voting: false
-
-- job:
-    name: dib-functests-bionic-python3-image
-    description: |
-      The image tests on a Xenial build host with Python 3
-    parent: dib-functests-image
-    nodeset: ubuntu-bionic
-    voting: false
-
-- job:
-    name: dib-functests-bionic-python3-extras
-    description: |
-      The extras tests on a Xenial build host with Python 3
-    parent: dib-functests-extras
-    nodeset: ubuntu-bionic
-    voting: false
-
 # Centos 7 / Python2 tests
 - job:
     name: dib-functests-centos7-python2
@@ -222,31 +197,3 @@
     nodeset: centos-7
     vars:
       dib_python: python2
-
-
-- job:
-    name: dib-dsvm-functests-python3
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python3/post.yaml
-    timeout: 3600
-    required-projects:
-      - openstack/diskimage-builder
-
-- job:
-    name: dib-dsvm-functests-python3-extras
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3-extras/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python3-extras/post.yaml
-    timeout: 3600
-    required-projects:
-      - openstack/diskimage-builder
-
-- job:
-    name: dib-dsvm-functests-python3-image
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/dib-dsvm-functests-python3-image/run.yaml
-    post-run: playbooks/legacy/dib-dsvm-functests-python3-image/post.yaml
-    timeout: 3600
-    required-projects:
-      - openstack/diskimage-builder
