@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Setting ``--logfile`` will now imply ``DIB_QUIET=1`` (i.e. logs will
+    not appear on stdout).  You can override this with an explicit
+    ``DIB_QUIET=0`` if you want stdout and file logging.
