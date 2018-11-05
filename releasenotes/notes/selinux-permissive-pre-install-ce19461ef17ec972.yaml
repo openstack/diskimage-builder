@@ -1,0 +1,7 @@
+---
+other:
+  - |
+    Setting values with the ``selinux-permissive`` element has been
+    moved from ``install.d`` to ``pre-install.d`` phase to avoid
+    selinux related packages being installed before the settings are
+    applied.
