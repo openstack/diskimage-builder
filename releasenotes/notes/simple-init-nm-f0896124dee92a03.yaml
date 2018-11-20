@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The `simple-init` element can now use NetworkManager instead of
+    legacy scripts on Red Hat platforms.
