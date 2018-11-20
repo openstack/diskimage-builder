@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The `package-installs` element now supports skipping installation
+    of packages based on an environment variable specified in the
+    config file.  See the `package-installs` element documentation for
+    full details.
