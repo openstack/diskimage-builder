@@ -52,7 +52,7 @@ class BlockDeviceCmd(object):
 
         parser = argparse.ArgumentParser(description="DIB Block Device helper")
         parser.add_argument('--params', required=False,
-                            help="YAML file containing parameters for"
+                            help="YAML file containing parameters for "
                             "block-device handling.  Default is "
                             "DIB_BLOCK_DEVICE_PARAMS_YAML")
 
@@ -66,7 +66,7 @@ class BlockDeviceCmd(object):
         cmd_init.set_defaults(func=self.cmd_init)
 
         cmd_getval = subparsers.add_parser('getval',
-                                           help='Retrieve information about'
+                                           help='Retrieve information about '
                                            'internal state')
         cmd_getval.set_defaults(func=self.cmd_getval)
         cmd_getval.add_argument('symbol', help='symbol to print')
@@ -76,7 +76,7 @@ class BlockDeviceCmd(object):
         cmd_create.set_defaults(func=self.cmd_create)
 
         cmd_umount = subparsers.add_parser('umount',
-                                           help='Unmount blockdevice and'
+                                           help='Unmount blockdevice and '
                                            'cleanup resources')
         cmd_umount.set_defaults(func=self.cmd_umount)
 
