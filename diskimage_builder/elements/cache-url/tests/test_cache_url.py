@@ -27,15 +27,15 @@ class TestCacheUrl(base.ScriptTestBase):
         source = 'http://fake/url'
         # Write fake data to the target file and return success
         self._stub_script('curl', 'echo "test" > ${3:7:100}\necho 200')
-        self._run_command(['elements/cache-url/bin/cache-url',
-                           source,
-                           target])
+        self._run_command(
+            ['diskimage_builder/elements/cache-url/bin/cache-url',
+             source, target])
         self.assertTrue(os.path.exists(target))
         modification_time = os.path.getmtime(target)
         # Make sure that the timestamp would change if the file does
         time.sleep(1)
         self._stub_script('curl', 'echo "304"')
-        self._run_command(['elements/cache-url/bin/cache-url',
-                           source,
-                           target])
+        self._run_command(
+            ['diskimage_builder/elements/cache-url/bin/cache-url',
+             source, target])
         self.assertEqual(modification_time, os.path.getmtime(target))
