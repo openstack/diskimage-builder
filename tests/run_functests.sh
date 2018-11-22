@@ -122,7 +122,7 @@ function logfile_status {
     mv "$filename" ${filename/.log/.$status.log}
 }
 
-# run_disk_element_test <test_element> <element> <use_tmp> <output_formats>
+# run_disk_element_test <test_element> <element> <use_tmp> <output_format> <logfile>
 #  Run a disk-image-build build of ELEMENT including any elements
 #  specified by TEST_ELEMENT.  Pass OUTPUT_FORMAT to "-t"
 function run_disk_element_test() {
@@ -198,28 +198,42 @@ function run_disk_element_test() {
     fi
 }
 
-# run_ramdisk_element_test <test_element> <element>
+# run_ramdisk_element_test <test_element> <element> <use_tmp> <output_formats>
 #  Run a disk-image-builder default build of ELEMENT including any
 #  elements specified by TEST_ELEMENT
 function run_ramdisk_element_test() {
     local test_element=$1
     local element=$2
+    local dont_use_tmp=$3
+    local output_format="$4" # ignored here
+    local logfile="$5"
     local dest_dir=$(mktemp -d)
 
+    local use_tmp_flag=""
+    if [ "${dont_use_tmp}" = "yes" ]; then
+        use_tmp_flag="--no-tmpfs"
+    fi
+
     if ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -x -o $dest_dir/image $element $test_element \
+        $DIB_CMD -x -o ${dest_dir}/image \
+                       ${logfile} \
+                       ${use_tmp_flag} \
+                       ${element} ${test_element} 2>&1 \
             | log_with_prefix "${element}/${test_element}"; then
         # TODO(dtantsur): test also kernel presence once we sort out its naming
         # problem (vmlinuz vs kernel)
         if ! [ -f "$dest_dir/image.initramfs" ]; then
             echo "Error: Build failed for element: $element, test-element: $test_element."
             echo "No image $dest_dir/image.initramfs found!"
+            logfile_status "FAIL" "${logfile}"
             exit 1
         else
             echo "PASS: Element $element, test-element: $test_element"
+            logfile_status "PASS" "${logfile}"
         fi
     else
         echo "Error: Build failed for element: $element, test-element: $test_element."
+        logfile_status "FAIL" "${logfile}"
         exit 1
     fi
 }
