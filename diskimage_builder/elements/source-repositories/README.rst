@@ -153,7 +153,7 @@ The base url for all git repositories can be set by use of:
     ``DIB_GITREPOBASE``
 
 So setting ``DIB_GITREPOBASE=https://github.com/`` when the repo location is
-set to http://git.openstack.org/openstack/nova.git will result in use of the
+set to https://git.openstack.org/openstack/nova.git will result in use of the
 https://github.com/openstack/nova.git repository instead.
 
 Disable external fetches
