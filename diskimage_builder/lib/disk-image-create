@@ -84,7 +84,7 @@ function show_options () {
     echo "    --docker-target -- specify the repo and tag to use if the output type is docker. Defaults to the value of output imagename"
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    -n skip the default inclusion of the 'base' element"
-        echo "    -p package[,p2...] [-p p3] -- extra packages to install in the image.  Runs once, after 'install.d' phase.  Can be specified mulitple times"
+        echo "    -p package[,p2...] [-p p3] -- extra packages to install in the image.  Runs once, after 'install.d' phase.  Can be specified multiple times"
     fi
     echo "    -h|--help -- display this help and exit"
     echo "    --version -- display version and exit"
