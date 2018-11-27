@@ -17,7 +17,8 @@
         - dib-functests-bionic-python3-image
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
-        - tripleo-buildimage-overcloud-full-centos-7
+        - tripleo-buildimage-overcloud-full-centos-7:
+            voting: false
         - openstack-tox-lower-constraints
 
     gate:
@@ -25,7 +26,8 @@
         - dib-functests-trusty-python2
         - dib-functests-xenial-python3
         - dib-functests-centos7-python2
-        - tripleo-buildimage-overcloud-full-centos-7
+        - tripleo-buildimage-overcloud-full-centos-7:
+            voting: false
         - openstack-tox-lower-constraints
 
 - job:
