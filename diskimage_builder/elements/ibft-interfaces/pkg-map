@@ -1,0 +1,13 @@
+{
+  "family": {
+    "redhat": {
+      "iscsi_package": "iscsi-initiator-utils"
+    },
+    "gentoo": {
+      "iscsi_package": "sys-block/open-iscsi"
+    }
+  },
+  "default": {
+    "iscsi_package": "open-iscsi"
+  }
+}

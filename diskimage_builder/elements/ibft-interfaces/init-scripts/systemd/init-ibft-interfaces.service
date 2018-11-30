@@ -1,0 +1,14 @@
+[Unit]
+Description=Initialize iBFT network interfaces
+After=network.target
+Before=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/sbin/init-ibft-interfaces.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
