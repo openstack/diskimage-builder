@@ -1,5 +1,6 @@
 - project:
     templates:
+      - openstack-lower-constraints-jobs
       - tripleo-buildimage-jobs
     check:
       jobs:
@@ -17,14 +18,11 @@
         - dib-functests-bionic-python3-image
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
-        - openstack-tox-lower-constraints
-
     gate:
       jobs:
         - dib-functests-trusty-python2
         - dib-functests-xenial-python3
         - dib-functests-centos7-python2
-        - openstack-tox-lower-constraints
 
 - job:
     name: dib-functests-base
