@@ -56,9 +56,3 @@ Table of Contents
    developer/index
    elements
    specs/README
-
-.. # just link this on the dev page
-.. toctree::
-   :hidden:
-
-   api/autoindex
