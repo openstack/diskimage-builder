@@ -28,9 +28,10 @@
     state: directory
     mode: 0775
     recurse: yes
+  # sometimes Fedora moves things and we need different versions; keep
+  # the loops for future use.
   with_items:
     - default
-    - '28'
 
 - name: Install fedora-minimal repo files
   template:
@@ -38,5 +39,5 @@
     mode: 0644
     src: "fedora-minimal/{{ item[0] }}/{{ item[1] }}.j2"
   with_nested:
-    - [ 'default', '28' ]
+    - [ 'default' ]
     - [ 'fedora.repo', 'fedora-updates.repo' ]
