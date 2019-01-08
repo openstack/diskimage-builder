@@ -51,7 +51,7 @@ else
     # Have to --include=busybox because initramfs needs it
 
     if [ $(dpkg --print-architecture) != ${ARCH} ]; then
-        # Target architecture diffrent from host architecture:
+        # Target architecture different from host architecture:
         # there is the need to call 'qemu-debootstrap'.
         DEBOOTSTRAP_QEMU="qemu-"
     fi
