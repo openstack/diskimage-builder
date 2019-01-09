@@ -13,9 +13,11 @@ case "$DIB_INIT_SYSTEM" in
         ;;
     systemd)
         if [[ ${DISTRO_NAME} =~ (centos|rhel7|fedora) ]]; then
-            # NOTE(pabelanger): Glean requires network.service for
-            # these platforms.
-            systemctl enable network.service
+            if [[ ${DIB_SIMPLE_INIT_NETWORKMANAGER} != 1 ]]; then
+                # NOTE(pabelanger): Glean requires network.service for
+                # these platforms when not using networkmanager
+                systemctl enable network.service
+            fi
         elif [[ ${DISTRO_NAME} =~ (opensuse) ]]; then
             # on suse, this is named wicked.service, but it's the same
             # as network.service.

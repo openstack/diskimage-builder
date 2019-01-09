@@ -5,7 +5,8 @@
     },
     "debian": {
       "dhcp-client": "isc-dhcp-client",
-      "ifupdown": "ifupdown"
+      "ifupdown": "ifupdown",
+      "NetworkManager": "network-manager"
     },
     "gentoo": {
       "dhcp-client": "net-misc/dhcp",
@@ -16,8 +17,16 @@
       "dhcp-client": "dhcp-client"
     }
   },
+  "release": {
+    "fedora": {
+      "29": {
+        "network-scripts": "network-scripts"
+      }
+    }
+  },
   "default": {
     "dhcp-client": "isc-dhcp-client",
-    "ifupdown": ""
+    "ifupdown": "",
+    "network-scripts": ""
   }
 }
