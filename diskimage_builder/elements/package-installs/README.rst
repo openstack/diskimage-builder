@@ -30,6 +30,10 @@ example ``package-installs.yaml``
     dib_python_version: 2
   python3-dev:
     dib_python_version: 3
+  package-a:
+    when: DIB_USE_PACKAGE_A = 1
+  package-b:
+    when: DIB_USE_PACKAGE_A != 1
 
 example package-installs.json
 
@@ -61,6 +65,26 @@ install for.  The ``not-arch`` is a comma-separated list of
 architectures the package should be excluded from.  Either ``arch`` or
 ``not-arch`` can be given for one package - not both.  See
 documentation about the ARCH variable for more information.
+
+The ``when`` property is a simple ``=`` or ``!=`` match on a value in
+an environment variable.  If the given environment variable matches
+the operation and value, the package is installed.  If the variable is
+not available in the environment, an exception is raised (thus
+defaults will likely need to be provided in ``environment.d`` files or
+similar for flags used here).  For example, to install an extra
+package when a feature is enabled::
+
+  package:
+    when: DIB_FEATURE_FLAG=1
+
+To install ``package`` when ``DIB_FEATURE_FLAG=0`` but
+``other_package`` when ``DIB_FEATURE_FLAG=1`` (i.e. toggle between two
+packages), you can use something like::
+
+  package:
+    when: DIB_FEATURE_FLAG=0
+  other_package:
+    when: DIB_FEATURE_FLAG!=0
 
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or
 post-install.d directories called package-installs-<element-name> will cause

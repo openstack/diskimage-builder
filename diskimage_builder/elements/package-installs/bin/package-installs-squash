@@ -20,6 +20,7 @@ import functools
 import json
 import logging
 import os
+import re
 import sys
 import yaml
 
@@ -60,11 +61,54 @@ def _valid_for_arch(pkg_name, arch, not_arch):
     return not _is_arch_in_list(not_arch)
 
 
-def collect_data(data, filename, element_name):
-    try:
-        objs = json.load(open(filename))
-    except ValueError:
-        objs = yaml.safe_load(open(filename))
+def _when(statement):
+    '''evaulate a when: statement
+
+    Evaluate statements of the form
+
+     when: ENVIRONMENT_VARIABLE[!]=value
+
+    Returns True if the package should be installed, False otherwise
+
+    If the ENVIRONMENT_VARIABLE is unset, raises an error
+
+    '''
+    # No statement means install
+    if statement is None:
+        return True
+
+    # FOO =  BAR
+    # var op val
+    match = re.match(
+        r"(?P<var>[\w]+)(\s*)(?P<op>=|!=)(\s*)(?P<val>.*)", statement)
+    if not match:
+        print("Malformed when line: <%s>" % statement)
+        sys.exit(1)
+    match = match.groupdict()
+    var = match['var']
+    op = match['op']
+    val = match['val']
+
+    if var not in os.environ:
+        raise RuntimeError("The variable <%s> is not set" % var)
+
+    logger.debug("when eval %s%s%s against <%s>" %
+                 (var, op, val, os.environ[var]))
+
+    if op == '=':
+        if val == os.environ[var]:
+            return True
+    elif op == '!=':
+        if val != os.environ[var]:
+            return True
+    else:
+        print("Malformed when op: %s" % op)
+        sys.exit(1)
+
+    return False
+
+
+def collect_data(data, objs, element_name):
     for pkg_name, params in objs.items():
         if not params:
             params = {}
@@ -84,6 +128,12 @@ def collect_data(data, filename, element_name):
         dib_py_version_env = os.environ.get('DIB_PYTHON_VERSION', '')
         valid_dib_python_version = (dib_py_version == '' or
                                     dib_py_version == dib_py_version_env)
+
+        # True means install, false skip
+        if _when(params.get('when', None)) is False:
+            logger.debug("Skipped due to when: %s/%s" %
+                         (element_name, pkg_name))
+            continue
 
         if valid_installtype and valid_arch and valid_dib_python_version:
             data[phase][install].append((pkg_name, element_name))
@@ -126,7 +176,12 @@ def main():
             if not os.path.exists(target_file):
                 continue
             logger.info("Squashing install file: %s" % target_file)
-            final_dict = collect_data(final_dict, target_file, element_name)
+            try:
+                objs = json.load(open(target_file))
+            except ValueError:
+                objs = yaml.safe_load(open(target_file))
+
+            final_dict = collect_data(final_dict, objs, element_name)
 
     logger.debug("final_dict -> %s" % final_dict)
 
