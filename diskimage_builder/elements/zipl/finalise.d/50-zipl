@@ -34,7 +34,7 @@ cat > /lib/s390-tools/zipl_helper.loop  <<EOF
 # device.
 #
 # It's not required if
-# * zipl is executed in in a running VM.
+# * zipl is executed in a running VM.
 # * DIB is configured to create partitions (e.g. with the "vm"
 #   element).
 #
