@@ -339,6 +339,10 @@ function arg_to_elements() {
 
 function create_base () {
     mkdir $TMP_BUILD_DIR/mnt
+    # Make sure the / inside the chroot is owned by root
+    # If it is not owned by root, some Ubuntu bionic packages will fail
+    # path validation at install time.
+    sudo chown root.root $TMP_BUILD_DIR/mnt
     export TMP_MOUNT_PATH=$TMP_BUILD_DIR/mnt
     # Copy data in to the root.
     TARGET_ROOT=$TMP_MOUNT_PATH run_d root
