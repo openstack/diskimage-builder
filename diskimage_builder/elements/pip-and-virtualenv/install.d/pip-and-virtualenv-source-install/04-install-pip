@@ -59,15 +59,28 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
         ${YUM:-yum} ${_extra_repo} install -y $packages
     fi
 
-    # pip10 (unlike earlier versions) will not uninstall distutils
-    # installed packages (note this is only a subset of packages that
-    # don't use setuptools for various reasons).  We give it a little
-    # help by clearing out the files from the packages we are about to
-    # re-install so pip doesn't think anything is installed.  See:
-    # https://github.com/pypa/pip/issues/4805
-    for pkg in $packages; do
-        rpm -ql $pkg | xargs rm -rf
-    done
+    # pip10 onwards (unlike earlier versions) will not uninstall
+    # packages installed by distutils (note this is only a subset of
+    # packages that don't use setuptools for various reasons; the
+    # problem is essentially they do not include a manifest of files
+    # in the package to delete, so pip was just guessing).  We give it
+    # a little help by clearing out the files from the packages we are
+    # about to re-install so pip doesn't think anything is installed.
+    # See: https://github.com/pypa/pip/issues/4805
+    #
+    # This is only necessary on CentOS -- for complicated reasons of
+    # course.  On Fedora, the Python2 virtualenv packages are *not*
+    # distutils based and pip overwrites them correctly.  For python3,
+    # pip has changed to not overwrite system packages (a long
+    # standing difference between Debuntu and Fedora), but a number of
+    # tools run with "python3 -Es" to isolate themselves to the
+    # package installed versions.  So we definitely don't want to
+    # clear the packaged versions out in that case.
+    if [[ $DISTRO_NAME == "centos" ]]; then
+        for pkg in $packages; do
+            rpm -ql $pkg | xargs rm -rf
+        done
+    fi
 
     # install the latest python2 pip; this overwrites packaged pip
     python /tmp/get-pip.py ${pip_args}
@@ -99,6 +112,20 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
         # call it explicitly.
         ln -sf /usr/bin/pip2 /usr/bin/pip
         rm -f /usr/local/bin/pip
+
+        # So on Fedora, there are now supposed to be two versions of
+        # python3 setuptools installed; the one installed by pip in
+        # /usr/local and the one installed by the system
+        # python3-setuptools rpm package in /usr/local.  The idea is
+        # that packaged python tools use the "system" python (with -Es
+        # flag) and are isolated from pip installs ... except there is
+        # an issue where pip clears out the RPM version files before
+        # installing it's isolated version:
+        #   https://bugzilla.redhat.com/show_bug.cgi?id=1550368
+        #
+        # Thus we need to *reinstall* the RPM version now, so those
+        # files come back and system tools continue to work
+        dnf reinstall -y python3-setuptools
     fi
 
     # now install latest virtualenv.  it vendors stuff it needs so
