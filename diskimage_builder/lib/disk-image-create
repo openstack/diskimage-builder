@@ -70,6 +70,7 @@ function show_options () {
     echo "       Making this value unnecessarily large will consume extra disk space "
     echo "       on the root partition with extra file system inodes."
     echo "    --min-tmpfs size -- minimum size in GB needed in tmpfs to build the image"
+    echo "    --mkfs-journal-size -- filesystem journal size in MB to pass to mkfs."
     echo "    --mkfs-options -- option flags to be passed directly to mkfs."
     echo "       Options should be passed as a single string value."
     echo "    --no-tmpfs -- do not use tmpfs to speed image build"
@@ -149,6 +150,7 @@ while true ; do
         --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
+        --mkfs-journal-size) export DIB_JOURNAL_SIZE=$2; shift 2;;
         --mkfs-options) MKFS_OPTS=$2; shift 2;;
         --min-tmpfs) export DIB_MIN_TMPFS=$2; shift 2;;
         --no-tmpfs) shift; export DIB_NO_TMPFS=1;;
@@ -417,15 +419,21 @@ fi
 
 rm -f ${du_output}
 
+if [ -n "$DIB_JOURNAL_SIZE" ]; then
+    journal_size="$DIB_JOURNAL_SIZE"
+else
+    journal_size=64
+fi
+
 if [ "$DIB_ROOT_FSTYPE" = "ext4" ] ; then
   # Very conservative to handle images being resized a lot
   # We set journal size to 64M so our journal is large enough when we
   # perform an FS resize.
-  MKFS_OPTS="-i 4096 -J size=64 $MKFS_OPTS"
+  MKFS_OPTS="-i 4096 -J size=$journal_size $MKFS_OPTS"
   # Grow the image size to account for the journal, only if the user
   # has not asked for a specific size.
   if [ -z "$DIB_IMAGE_SIZE" ]; then
-    du_size=$(( $du_size + 65536 ))
+    du_size=$(( $du_size + ($journal_size * 1024) ))
   fi
 fi
 
