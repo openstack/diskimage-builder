@@ -278,6 +278,14 @@ _base_packages="systemd passwd findutils sudo util-linux-ng "
 #  https://bugzilla.redhat.com/show_bug.cgi?id=1398505
 _base_packages+="systemd-udev "
 
+# F29 moved to dbus-broker as the default, but dbus-daemon is
+# still available.  Explicitly pull it in; note we have an
+# install.d script to enable the service explicitly it as this
+# seems required.
+if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -ge 29 ]]; then
+    _base_packages+="dbus-broker"
+fi
+
 # bootstrap the environment within the chroot; bring in new
 # metadata with an update and install some base packages we need.
 sudo -E chroot $TARGET_ROOT ${YUM} -y update
