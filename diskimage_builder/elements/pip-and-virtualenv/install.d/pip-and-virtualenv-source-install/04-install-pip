@@ -76,7 +76,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     # tools run with "python3 -Es" to isolate themselves to the
     # package installed versions.  So we definitely don't want to
     # clear the packaged versions out in that case.
-    if [[ $DISTRO_NAME == "centos" ]]; then
+    if [[ $DISTRO_NAME =~ (centos|centos7|rhel7) ]]; then
         for pkg in $packages; do
             rpm -ql $pkg | xargs rm -rf
         done
