@@ -8,4 +8,6 @@ fi
 set -eu
 set -o pipefail
 
-install-packages -u
+if [ ${DIB_AVOID_PACKAGES_UPDATE} -eq 0 ]; then
+    install-packages -u
+fi

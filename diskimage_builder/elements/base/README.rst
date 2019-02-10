@@ -20,6 +20,14 @@ customize cloud-init's management of `/etc/hosts`:
    preserve diskimage-builder's current default behavior in the
    future, set the variable to "localhost" explicitly.)
 
+The 'DIB_AVOID_PACKAGES_UPDATE' environment variable can be used to
+avoid updating all packages, useful when wanting to avoid release
+update.
+
+ * 'DIB_AVOID_PACKAGES_UPDATE' default is '0', all packages will be updated.
+
+ * set 'DIB_AVOID_PACKAGES_UPDATE' to '1' to avoid updating all packages.
+
 Notes:
 
  * If you are getting warnings during the build about your locale
