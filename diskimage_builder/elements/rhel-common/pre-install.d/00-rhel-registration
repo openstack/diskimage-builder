@@ -102,6 +102,9 @@ case "${REG_METHOD:-}" in
         subscription-manager repos --disable=\*
         echo "Enabling repos: $repos"
         subscription-manager $repos
+        if [ -n "${REG_RELEASE:-}" ]; then
+            subscription-manager release --set=${REG_RELEASE}
+        fi
         ;;
     satellite)
         # Save an unmodified copy of the repo list for logging
