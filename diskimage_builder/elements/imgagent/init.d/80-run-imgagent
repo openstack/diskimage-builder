@@ -1,0 +1,31 @@
+if [ -z "$IMAGE_NAME" ]; then
+    err_msg "image name is not defined"
+    troubleshoot
+fi
+
+if [ -z "$IMG_DEVICE" ]; then
+    err_msg "target block disk is not defined"
+    troubleshoot
+fi
+
+if [ -z "$MINIO_SERVER" ]; then
+    err_msg "minio server is not defined"
+    troubleshoot
+fi
+
+if [ -z "$MINIO_ACCESS_ID" ]; then
+    err_msg "minio access id is not defined"
+    troubleshoot
+fi
+
+if [ -z "$MINIO_SECRET_ACCESS_KEY" ]; then
+    err_msg "minio secret access key is not defined"
+    troubleshoot
+fi
+
+echo "start imgagent --device $IMG_DEVICE --minio-server $MINIO_SERVER --minio-access-id $MINIO_ACCESS_ID --minio-secret-access-key $MINIO_SECRET_ACCESS_KEY import $IMAGE_NAME"
+imgagent --device $IMG_DEVICE --minio-server $MINIO_SERVER --minio-access-id $MINIO_ACCESS_ID --minio-secret-access-key $MINIO_SECRET_ACCESS_KEY import $IMAGE_NAME
+if [ $? -ne 0 ]; then
+    err_msg "Failed to import disk image"
+    troubleshoot
+fi

@@ -35,7 +35,7 @@ if [ -z "$_LIB" ]; then
     exit 1
 fi
 
-_BASE_ELEMENT_DIR=$(${DIB_PYTHON_EXEC:-python} -c '
+export _BASE_ELEMENT_DIR=$(${DIB_PYTHON_EXEC:-python} -c '
 import diskimage_builder.paths
 diskimage_builder.paths.show_path("elements")')
 

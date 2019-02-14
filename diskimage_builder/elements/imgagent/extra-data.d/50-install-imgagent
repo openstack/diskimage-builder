@@ -1,0 +1,3 @@
+IMG_AGENT=`which imgagent`
+echo "imgagent @ $IMG_AGENT"
+sudo cp $IMG_AGENT $TMP_MOUNT_PATH/bin
