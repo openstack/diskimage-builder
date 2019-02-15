@@ -102,11 +102,14 @@ class FilesystemNode(NodeBase):
         return (edge_from, edge_to)
 
     def create(self):
-        cmd = ["mkfs"]
-
-        cmd.extend(['-t', self.type])
-        if self.opts:
+        if self.type in ('swap'):
+          cmd = ["mkswap"]
+	else:
+          cmd = ["mkfs"]
+          cmd.extend(['-t', self.type])
+          if self.opts:
             cmd.extend(self.opts)
+
 
         if self.type in ('vfat', 'fat'):
             cmd.extend(["-n", self.label])

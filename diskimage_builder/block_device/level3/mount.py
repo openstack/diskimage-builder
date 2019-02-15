@@ -80,9 +80,11 @@ class MountPointNode(NodeBase):
             # Need to sudo this because of permissions in the new
             # file system tree.
             exec_sudo(['mkdir', '-p', mount_point])
-        logger.info("Mounting [%s] to [%s]", self.name, mount_point)
-        exec_sudo(["mount", self.state['filesys'][self.base]['device'],
-                   mount_point])
+        if (self.state['filesys'][self.base]['fstype'] == 'swap'):
+          exec_sudo(["swapon", self.state['filesys'][self.base]['device']])
+        else:
+          exec_sudo(["mount", self.state['filesys'][self.base]['device'],
+                     mount_point])
 
         if 'mount' not in self.state:
             self.state['mount'] = {}
@@ -106,10 +108,13 @@ class MountPointNode(NodeBase):
         # this behaviour.
         # https://lists.gnu.org/archive/html/qemu-devel/2014-03/msg02978.html
         exec_sudo(["sync"])
-        if self.state['filesys'][self.base]['fstype'] != 'vfat':
+        if self.state['filesys'][self.base]['fstype'] not in ('vfat', 'swap'):
             exec_sudo(["fstrim", "--verbose",
                        self.state['mount'][self.mount_point]['path']])
-        exec_sudo(["umount", self.state['mount'][self.mount_point]['path']])
+        if (self.state['filesys'][self.base]['fstype'] == 'swap'):
+          exec_sudo(["swapoff", self.state['filesys'][self.base]['device']])
+        else:
+          exec_sudo(["umount", self.state['mount'][self.mount_point]['path']])
 
     def delete(self):
         self.umount()
