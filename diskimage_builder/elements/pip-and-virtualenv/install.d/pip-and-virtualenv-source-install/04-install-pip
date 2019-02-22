@@ -11,6 +11,8 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     # Default packages
     _do_py3=0
     _extra_repo=''
+    # see notes below on this var...
+    _clear_old_files=0
     case "$DISTRO_NAME" in
         centos*|rhel7)
             # note python2-pip in epel
@@ -23,6 +25,8 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
             else
                 packages+=" python-setuptools"
             fi
+            # see notes below
+            _clear_old_files=1
             ;;
         fedora)
             _do_py3=1
@@ -33,6 +37,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
             case "$DIB_RELEASE" in
                 42*)
                     packages="python-virtualenv python-pip python-setuptools"
+                    _clear_old_files=1
                     ;;
                 tumbleweed|15*)
                     # XXX: python3?
@@ -68,15 +73,15 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel7) ]]; then
     # about to re-install so pip doesn't think anything is installed.
     # See: https://github.com/pypa/pip/issues/4805
     #
-    # This is only necessary on CentOS -- for complicated reasons of
-    # course.  On Fedora, the Python2 virtualenv packages are *not*
-    # distutils based and pip overwrites them correctly.  For python3,
-    # pip has changed to not overwrite system packages (a long
-    # standing difference between Debuntu and Fedora), but a number of
-    # tools run with "python3 -Es" to isolate themselves to the
-    # package installed versions.  So we definitely don't want to
+    # This is only necessary on old CentOS and suse -- for complicated
+    # reasons of course.  On Fedora, the Python2 virtualenv packages
+    # are *not* distutils based and pip overwrites them correctly.
+    # For python3, pip has changed to not overwrite system packages (a
+    # long standing difference between Debuntu and Fedora), but a
+    # number of tools run with "python3 -Es" to isolate themselves to
+    # the package installed versions.  So we definitely don't want to
     # clear the packaged versions out in that case.
-    if [[ $DISTRO_NAME =~ (centos|centos7|rhel7) ]]; then
+    if [[ ${_clear_old_files} == 1 ]]; then
         for pkg in $packages; do
             rpm -ql $pkg | xargs rm -rf
         done
