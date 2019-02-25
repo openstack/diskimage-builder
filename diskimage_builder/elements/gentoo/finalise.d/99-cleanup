@@ -17,7 +17,7 @@ fi
 # sync if needed
 [[ ! -e /usr/portage/profiles ]] && emerge-webrsync
 
-# make world consistant
+# make world consistent
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world
 # rebuild packages that might need it
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
