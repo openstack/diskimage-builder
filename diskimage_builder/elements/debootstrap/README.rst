@@ -63,6 +63,14 @@ For further information about ``DIB_DEBIAN_DEBOOTSTRAP_SCRIPT`` ,
 ``DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`` and ``DIB_DEBOOTSTRAP_EXTRA_ARGS``
 please consult "README.rst" of the debootstrap element.
 
+----------
+Networking
+----------
+
+By default ``/etc/network/interfaces.d/eth[0|1]`` files will be
+created and enabled with DHCP networking.  If you do not wish this to
+be done, set ``DIB_APT_MINIMAL_CREATE_INTERFACES`` to ``0``.
+
 -------------------
 Note on ARM systems
 -------------------
