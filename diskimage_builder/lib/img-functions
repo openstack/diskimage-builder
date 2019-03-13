@@ -39,8 +39,8 @@ function trap_cleanup() {
 }
 
 function cleanup () {
-    dib-block-device umount
     unmount_image
+    dib-block-device umount
     cleanup_build_dir
     cleanup_image_dir
 }
