@@ -45,7 +45,7 @@ fi
 # for whatever policy is in the host kernel.  We will run under
 # "runcon" to specifically allow this
 _runcon=""
-if [[ -d /sys/fs/selinux ]]; then
+if [[ -d /sys/fs/selinux ]] && selinuxenabled; then
     sudo semanage permissive -a setfiles_mac_t
     _runcon="runcon -t setfiles_mac_t -- "
 fi
