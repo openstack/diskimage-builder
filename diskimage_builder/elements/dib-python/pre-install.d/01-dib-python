@@ -6,7 +6,15 @@ fi
 set -eu
 set -o pipefail
 
-python_path=$(command -v python${DIB_PYTHON_VERSION})
+if [[ ${DISTRO_NAME} == "rhel" && ${DIB_RELEASE} == 8 ]]; then
+    # RHEL8 has a system python, separate from the user python.  What
+    # a good idea, abstracting the python binary for system scripts!
+    # :)  Use it for dib-python.
+    python_path=/usr/libexec/platform-python
+else
+    python_path=$(command -v python${DIB_PYTHON_VERSION})
+fi
+
 if [ -z "$python_path" ]; then
     echo "Could not find python${DIB_PYTHON_VERSION} executable."
     exit 1

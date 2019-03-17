@@ -83,7 +83,12 @@ function extract_image() {
             mkdir $WORKING/mnt
             if [ "xfs" = "$(sudo blkid -o value -s TYPE /dev/mapper/$ROOT_LOOPDEV)" ]; then
                 # mount xfs with nouuid, just in case that uuid is already mounted
-                MOUNTOPTS="-o nouuid"
+                # use ro to avoid/workaround xfs uuid issues on older
+                # kernels with newer rhel images which seem to set
+                # flags to generate unique uuid's:
+                #  xfs superblock has incompatible features (0x4)
+                # we don't need to worry about this, we just want the data
+                MOUNTOPTS="-o nouuid,ro"
             else
                 MOUNTOPTS=""
             fi
