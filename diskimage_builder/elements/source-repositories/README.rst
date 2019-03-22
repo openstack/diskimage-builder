@@ -86,7 +86,7 @@ source from git and pbr from a tarball would be:
 
 *Element file: elements/custom-element/source-repository-ironic*::
 
-    ironic git /usr/local/ironic git://git.openstack.org/openstack/ironic.git
+    ironic git /usr/local/ironic https://git.openstack.org/openstack/ironic.git
 
 *File : elements/custom-element/source-repository-pbr*::
 
