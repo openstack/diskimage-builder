@@ -36,6 +36,13 @@ no_proxy=${no_proxy:-}
 
 DEBOOTSTRAP_QEMU=""
 
+_debootstrap_version=$(debootstrap --version)
+# could be like "debootstrap 1.0.114~bpo16.04+1"
+_debootstrap_version=${_debootstrap_version:16:3}
+if [[ "${DIB_RELEASE}" == "buster" && "${_debootstrap_version}" -lt 105 ]]; then
+    die "Unable to build buster with this debootstrap; see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=901977"
+fi
+
 if [ -n "$DIB_OFFLINE" -o -n "${DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE:-}" ] && [ -f $DEBOOTSTRAP_TARBALL ] ; then
     echo $DEBOOTSTRAP_TARBALL found in cache. Using.
     sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DEBOOTSTRAP_TARBALL
