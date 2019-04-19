@@ -3,6 +3,10 @@ openssh-server
 ==============
 This element ensures that openssh server is installed and enabled during boot.
 
+To disable hardening of sshd configuration, you have to set
+``DIB_OPENSSH_SERVER_HARDENING`` to 0. This option will configure KexAlgorithms,
+Ciphers and MAC following good pratices on
+https://infosec.mozilla.org/guidelines/openssh
 
 Note
 ----

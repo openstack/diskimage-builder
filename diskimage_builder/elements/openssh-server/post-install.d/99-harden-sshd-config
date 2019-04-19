@@ -1,0 +1,30 @@
+#!/bin/bash
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ ${DIB_OPENSSH_SERVER_HARDENING:-1} -eq 1 ]; then
+    macs="MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com"
+    ciphers="Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+    kexalgorithms="KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
+
+    if ! grep -qE "^MACs" /etc/ssh/sshd_config; then
+        sed -i "/# Ciphers and keying/a $macs" /etc/ssh/sshd_config
+    elif ! grep -qE "$macs" /etc/ssh/sshd_config; then
+        sed -i "s/^MACs.*/$macs/" /etc/ssh/sshd_config
+    fi
+
+    if ! grep -qE "^Ciphers" /etc/ssh/sshd_config; then
+        sed -i "/# Ciphers and keying/a $ciphers" /etc/ssh/sshd_config
+    elif ! grep -qE "$ciphers" /etc/ssh/sshd_config; then
+        sed -i "s/^Ciphers.*/$ciphers/" /etc/ssh/sshd_config
+    fi
+
+    if ! grep -qE "^KexAlgorithms" /etc/ssh/sshd_config; then
+        sed -i "/# Ciphers and keying/a $kexalgorithms" /etc/ssh/sshd_config
+    elif ! grep -qE "$kexalgorithms" /etc/ssh/sshd_config; then
+        sed -i "s/^KexAlgorithms.*/$kexalgorithms/" /etc/ssh/sshd_config
+    fi
+fi
