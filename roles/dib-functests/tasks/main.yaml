@@ -13,7 +13,7 @@
 
 - name: Define upper_constraints
   set_fact:
-    upper_constraints: "{{ ansible_user_dir }}/{{ zuul.projects['git.openstack.org/openstack/requirements'].src_dir }}/upper-constraints.txt"
+    upper_constraints: "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/requirements'].src_dir }}/upper-constraints.txt"
 
 - name: Take ourselves out of uppper constraints
   lineinfile:
