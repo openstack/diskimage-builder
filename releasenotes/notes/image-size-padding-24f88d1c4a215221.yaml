@@ -1,0 +1,4 @@
+---
+features:
+  - The ``--image-extra-size`` option is provided to override the default
+    60% padding growth of the image size with a fixed gigabyte value.
