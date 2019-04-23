@@ -35,7 +35,7 @@ export DIB\_PYPI\_MIRROR\_URL\_1=http://site/pypi/
 export DIB\_PYPI\_MIRROR\_URL\_2=file:///tmp/pypi
 export DIB\_PIP\_RETRIES=0
 
-[devpi-server](https://git.openstack.org/cgit/openstack-infra/pypi-mirro://pypi.python.org/pypi/devpi-server)
+[devpi-server](https://pypi.python.org/pypi/devpi-server)
 can be useful in making a partial PyPI mirror suitable for building images. For
 instance:
 
