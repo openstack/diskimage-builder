@@ -13,15 +13,15 @@ your own elements for even further customization.
 
 ``diskimage-builder`` is used extensively by the `TripleO project
 <https://wiki.openstack.org/wiki/TripleO>`__ and within `OpenStack
-Infrastructure <http://docs.openstack.org/infra/system-config/>`__.
+Infrastructure <https://docs.openstack.org/infra/system-config/>`__.
 
 Code
 ----
 
 Release notes for the latest and previous versions are available at:
 
-* `http://docs.openstack.org/releasenotes/diskimage-builder/
-  <http://docs.openstack.org/releasenotes/diskimage-builder/>`__
+* `https://docs.openstack.org/releasenotes/diskimage-builder/
+  <https://docs.openstack.org/releasenotes/diskimage-builder/>`__
 
 
 The code is available at:
