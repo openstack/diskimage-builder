@@ -26,8 +26,8 @@ Release notes for the latest and previous versions are available at:
 
 The code is available at:
 
-* `https://git.openstack.org/cgit/openstack/diskimage-builder/
-  <https://git.openstack.org/cgit/openstack/diskimage-builder/>`__
+* `https://opendev.org/openstack/diskimage-builder/
+  <https://opendev.org/openstack/diskimage-builder/>`__
 
 
 Issues
