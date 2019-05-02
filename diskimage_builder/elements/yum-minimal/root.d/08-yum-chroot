@@ -73,7 +73,11 @@ function _install_repos {
     # (see above) so ...
     packages="basesystem filesystem setup "
 
-    packages+="${DISTRO_NAME}-release "
+    if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 29 ]]; then
+        packages+="${DISTRO_NAME}-release-common "
+    else
+        packages+="${DISTRO_NAME}-release "
+    fi
 
     # Starting in F21 this was split into a separate package
     if [[ ${DISTRO_NAME} == 'fedora' ]]; then
