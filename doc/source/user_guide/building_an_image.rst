@@ -617,13 +617,18 @@ more complicated block-device layouts with multiple partitions, you
 may need to take into account the special behaviour described below.
 
 The ``local_loop`` module will take it's default size from the
-following argument.
+following arguments:
 
 ``--image-size``
    The size of loopback device which the image will be generated in,
    in gigabytes.  If this is left unset, the size will be calculated
    from the on-disk size of the image and then scaled up by a fixed
    60% factor.  Can also set ``DIB_IMAGE_SIZE``.
+
+``--image-extra-size``
+   Extra space to add when automatically calculating image size, in
+   gigabytes.  This overrides the default 60% scale up as described
+   above for ``--image-size``.  Can also set ``DIB_IMAGE_EXTRA_SIZE``.
 
 The special node named ``mkfs_root`` is affected by the following;
 this reflects that the standard layout has only a single root

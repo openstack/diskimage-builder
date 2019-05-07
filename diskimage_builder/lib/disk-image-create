@@ -62,6 +62,7 @@ function show_options () {
     echo "    --logfile -- save run output to given logfile (implies DIB_QUIET=1)"
     echo "    --checksum -- generate MD5 and SHA256 checksum files for the created image"
     echo "    --image-size size -- image size in GB for the created image"
+    echo "    --image-extra-size size -- extra image size in GB for the created image"
     echo "    --image-cache directory -- location for cached images(default ~/.cache/image-create)"
     echo "    --max-online-resize size -- max number of filesystem blocks to support when resizing."
     echo "       Useful if you want a really large root partition when the image is deployed."
@@ -148,6 +149,7 @@ while true ; do
         -p) IFS="," read -a _INSTALL_PACKAGES <<< "$2"; export INSTALL_PACKAGES=( ${INSTALL_PACKAGES[@]} ${_INSTALL_PACKAGES[@]} ) ; shift 2 ;;
         --checksum) shift; export DIB_CHECKSUM=1;;
         --image-size) export DIB_IMAGE_SIZE=$2; shift 2;;
+        --image-extra-size) export DIB_IMAGE_EXTRA_SIZE=$2; shift 2;;
         --image-cache) export DIB_IMAGE_CACHE=$2; shift 2;;
         --max-online-resize) export MAX_ONLINE_RESIZE=$2; shift 2;;
         --mkfs-journal-size) export DIB_JOURNAL_SIZE=$2; shift 2;;
@@ -378,8 +380,15 @@ else
     echo "Calculating image size (this may take a minute)..."
     sudo du -a -c -x ${TMP_BUILD_DIR}/built > ${du_output}
     # the last line is the total size from "-c".
-    # scale this by 0.6 to create a slightly bigger image
-    du_size=$(tail -n1 ${du_output} | cut -f1 | awk '{print int($1 / 0.6)}')
+    if [ -n "$DIB_IMAGE_EXTRA_SIZE" ]; then
+        # add DIB_IMAGE_EXTRA_SIZE to create a bigger image as requested
+        du_extra_size=$(echo "$DIB_IMAGE_EXTRA_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
+        du_size_tmp=$(tail -n1 ${du_output} | cut -f1)
+        du_size=$(echo "$du_size_tmp $du_extra_size" | awk '{print int($1 + $2)}')
+    else
+        # scale this by 0.6 to create a slightly bigger image
+        du_size=$(tail -n1 ${du_output} | cut -f1 | awk '{print int($1 / 0.6)}')
+    fi
     $xtrace
 fi
 
