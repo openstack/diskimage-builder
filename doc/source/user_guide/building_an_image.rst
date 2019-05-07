@@ -660,6 +660,13 @@ configuration:
    default can be overridden by passing ``'-i 16384'`` as a
    ``--mkfs-options`` argument.
 
+``--mkfs-journal-size``
+   Only valid for ``FS_TYPE==ext4``.  This value set the filesystem
+   journal size in MB; overriding the default of 64MiB.  Note the
+   image size will be grown to fit the journal, unless
+   ``DIB_IMAGE_SIZE`` is explicitly set.  Can also set
+   ``DIB_JOURNAL_SIZE``.
+
 ``--max-online-resize``
    Only valid for ``FS_TYPE==ext4``; this value sets the maximum
    filesystem blocks when resizing.  Can also set

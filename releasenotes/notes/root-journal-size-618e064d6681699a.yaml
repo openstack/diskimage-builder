@@ -1,0 +1,4 @@
+---
+features:
+  - The ``--mkfs-journal-size`` option is added to override the default
+    journal size for basic ext4 root partitions.
