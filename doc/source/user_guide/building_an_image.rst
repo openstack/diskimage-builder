@@ -606,27 +606,69 @@ Example:
        dump-freq: 2
 
 
-Filesystem Caveat
------------------
+Legacy global filesystem configuration
+--------------------------------------
 
-By default, disk-image-create uses a 4k byte-to-inode ratio when
-creating the filesystem in the image. This allows large 'whole-system'
-images to utilize several TB disks without exhausting inodes. In
-contrast, when creating images intended for tenant instances, this
-ratio consumes more disk space than an end-user would expect (e.g. a
-50GB root disk has 47GB avail.). If the image is intended to run
-within a tens to hundrededs of gigabyte disk, setting the
-byte-to-inode ratio to the ext4 default of 16k will allow for more
-usable space on the instance. The default can be overridden by passing
-``--mkfs-options`` like this::
+The ``disk-image-create`` tool has a number of historic global
+disk-related command-line options which are maintained for backwards
+compatibility.  These options are merged as necessary by the
+block-device layer into the active configuration.  If you are using
+more complicated block-device layouts with multiple partitions, you
+may need to take into account the special behaviour described below.
 
-    disk-image-create --mkfs-options '-i 16384' <distro> vm
+The ``local_loop`` module will take it's default size from the
+following argument.
 
-You can also select a different filesystem by setting the ``FS_TYPE``
-environment variable.
+``--image-size``
+   The size of loopback device which the image will be generated in,
+   in gigabytes.  If this is left unset, the size will be calculated
+   from the on-disk size of the image and then scaled up by a fixed
+   60% factor.  Can also set ``DIB_IMAGE_SIZE``.
 
-Note ``--mkfs-options`` are options passed to the mfks *driver*,
-rather than ``mkfs`` itself (i.e. after the initial `-t` argument).
+The special node named ``mkfs_root`` is affected by the following;
+this reflects that the standard layout has only a single root
+partition so the options are, in effect, global for the default
+configuration.  Note that if you are using multiple partitions,
+settings such as ``--mkfs-options`` will *not* apply to other
+partitions.
+
+The file-system type for the ``mkfs_root`` node is set by the
+``FS_TYPE`` environment variable, and defaults to ``ext4``.  ``xfs``
+should also work.  There is no command-line argument for this.
+
+The following options also affect the ``mkfs_root`` node
+configuration:
+
+``--mkfs-options``
+   Options passed to mkfs when making the root partition.  For
+   ``ext4`` partitions, this by default sets a 4k byte-to-inode ratio
+   (see below) and a default journal size of 64MiB.  Note
+   ``--mkfs-options`` are options passed to the mfks *driver*
+   (i.e. ``mkfs.ext4``) rather than ``mkfs`` itself (i.e. arguments
+   come after the initial ``mkfs -t <fstype>`` argument).  You also
+   need to be careful with quoting.  Can also set ``MKFS_OPTS``.
+
+   By default, ``disk-image-create`` uses a 4k byte-to-inode ratio
+   when creating the filesystem in the image. This allows large
+   'whole-system' images to utilize several TB disks without
+   exhausting inodes. In contrast, when creating images intended for
+   tenant instances, this ratio consumes more disk space than an
+   end-user would expect (e.g. a 50GB root disk has 47GB available).
+   If the image is intended to run within a tens to hundrededs of
+   gigabyte disk, setting the byte-to-inode ratio to the ext4 default
+   of 16k will allow for more usable space on the instance. The
+   default can be overridden by passing ``'-i 16384'`` as a
+   ``--mkfs-options`` argument.
+
+``--max-online-resize``
+   Only valid for ``FS_TYPE==ext4``; this value sets the maximum
+   filesystem blocks when resizing.  Can also set
+   ``MAX_ONLINE_RESIZE``.
+
+``--root-label``
+   The file-system label specified when creating the root file system.
+   Defaults to ``cloudimg-rootfs`` for ``ext4`` and ``img-rootfs`` for
+   ``xfs``.  Can also set ``ROOT_LABEL``.
 
 Speedups
 --------
