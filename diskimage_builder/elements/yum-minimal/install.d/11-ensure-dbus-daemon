@@ -21,12 +21,8 @@ fi
 set -eu
 set -o pipefail
 
-# Ensure that dbus-broker is enabled; it seems that because of the
-# transition between dbus-daemon and dbus-broker (see
-# https://pagure.io/fesco/issue/1853) the .spec files could possibly
-# not enable this (likely related to ordering or something we do in
-# the non-standardish chroot building) and a 2019 system with no dbus
-# is very unhappy (networkmanager fails, etc).
-if [[ ${DISTRO_NAME} == 'fedora' && ${DIB_RELEASE} -ge 29 ]]; then
-    systemctl --no-reload enable dbus-broker.service
+# Ensure that dbus-daemon is enabled; fedora 30 and above has switched to
+# dbus-broker.
+if [[ ${DISTRO_NAME} == 'fedora' && ${DIB_RELEASE} -le 29 ]]; then
+    systemctl --no-reload enable dbus-daemon.service
 fi
