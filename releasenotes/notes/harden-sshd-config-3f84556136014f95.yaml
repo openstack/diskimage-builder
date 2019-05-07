@@ -1,0 +1,7 @@
+---
+security:
+  - a new post-install script was added in openssh-server element to ensure
+    KexAlgorithms, Ciphers and MACs for sshd_config will be configured following
+    good pratices on https://infosec.mozilla.org/guidelines/openssh. This option
+    is activated by default, users can set DIB_OPENSSH_SERVER_HARDENING to 0 to
+    disable this sshd configuration
