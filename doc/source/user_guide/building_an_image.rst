@@ -627,7 +627,7 @@ following arguments:
 
 ``--image-extra-size``
    Extra space to add when automatically calculating image size, in
-   gigabytes.  This overrides the default 60% scale up as described
+   megabytes.  This overrides the default 60% scale up as described
    above for ``--image-size``.  Can also set ``DIB_IMAGE_EXTRA_SIZE``.
 
 The special node named ``mkfs_root`` is affected by the following;

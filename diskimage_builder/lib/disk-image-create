@@ -381,8 +381,8 @@ else
     sudo du -a -c -x ${TMP_BUILD_DIR}/built > ${du_output}
     # the last line is the total size from "-c".
     if [ -n "$DIB_IMAGE_EXTRA_SIZE" ]; then
-        # add DIB_IMAGE_EXTRA_SIZE to create a bigger image as requested
-        du_extra_size=$(echo "$DIB_IMAGE_EXTRA_SIZE" | awk '{printf("%d\n",$1 * 1024 *1024)}')
+        # add DIB_IMAGE_EXTRA_SIZE megabytes to create a bigger image as requested
+        du_extra_size=$(echo "$DIB_IMAGE_EXTRA_SIZE" | awk '{printf("%d\n",$1 * 1024)}')
         du_size_tmp=$(tail -n1 ${du_output} | cut -f1)
         du_size=$(echo "$du_size_tmp $du_extra_size" | awk '{print int($1 + $2)}')
     else
