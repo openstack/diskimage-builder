@@ -3,8 +3,8 @@
 # such we need to install them during the pre-install.d phase so they are
 # available as early as possible. See
 # - https://bugzilla.suse.com/show_bug.cgi?id=1046990
-# - https://review.openstack.org/#/c/478648/
-# - https://review.openstack.org/#/c/478650/
+# - https://review.opendev.org/#/c/478648/
+# - https://review.opendev.org/#/c/478650/
 # for discussions about this issue.
 python-xml:
   phase: pre-install.d

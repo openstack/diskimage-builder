@@ -1,4 +1,4 @@
-..
+e.
  This work is licensed under a Creative Commons Attribution 3.0 Unported
  License.
 
@@ -201,20 +201,20 @@ References
 ==========
 
 [1] Refactor: block-device handling (partitioning)
-    https://review.openstack.org/322671
+    https://review.opendev.org/322671
 
 [2] Add specs dir
-    https://review.openstack.org/336109
+    https://review.opendev.org/336109
 
 [3] Old implementation using parted-lib
-    https://review.openstack.org/#/c/322671/1..7/elements/block-device/pylib/block-device/level1/Partitioning.py
+    https://review.opendev.org/#/c/322671/1..7/elements/block-device/pylib/block-device/level1/Partitioning.py
 
 [4] ERROR: embedding is not possible, but this is required
     for cross-disk install
     http://lists.openstack.org/pipermail/openstack-dev/2016-June/097789.html
 
 [5] Refactor: block-device handling (local loop)
-    https://review.openstack.org/319591
+    https://review.opendev.org/319591
 
 [6] Proper alignment of partitions on an Advanced Format HDD using Parted
     http://askubuntu.com/questions/201164/proper-alignment-of-partitions-on-an-advanced-format-hdd-using-parted
@@ -225,4 +225,4 @@ References
     http://h20564.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c03479326&DocLang=en&docLocale=en_US&jumpid=reg_r11944_uken_c-001_title_r0001
 
 [8] Spec for changing the block device handling
-    https://review.openstack.org/336946
+    https://review.opendev.org/336946

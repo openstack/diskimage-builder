@@ -86,7 +86,7 @@ source from git and pbr from a tarball would be:
 
 *Element file: elements/custom-element/source-repository-ironic*::
 
-    ironic git /usr/local/ironic https://git.openstack.org/openstack/ironic.git
+    ironic git /usr/local/ironic https://opendev.org/openstack/ironic.git
 
 *File : elements/custom-element/source-repository-pbr*::
 
@@ -138,7 +138,7 @@ change 61972 at patchset 8:
 
 .. sourcecode:: sh
 
-    DIB_REPOLOCATION_nova=https://review.openstack.org/openstack/nova
+    DIB_REPOLOCATION_nova=https://review.opendev.org/openstack/nova
     DIB_REPOREF_nova=refs/changes/72/61972/8
 
 
@@ -153,7 +153,7 @@ The base url for all git repositories can be set by use of:
     ``DIB_GITREPOBASE``
 
 So setting ``DIB_GITREPOBASE=https://github.com/`` when the repo location is
-set to https://git.openstack.org/openstack/nova.git will result in use of the
+set to https://opendev.org/openstack/nova.git will result in use of the
 https://github.com/openstack/nova.git repository instead.
 
 Disable external fetches

@@ -164,12 +164,12 @@ References
 ==========
 
 [1] Implementation of Level 0: Local Loop module
-    https://review.openstack.org/319591
+    https://review.opendev.org/319591
 [2] 'Block Device Setup for Disk-Image-Builder'
     https://etherpad.openstack.org/p/C80jjsAs4x
 [3] partitioning-parted
     This was a first try to implement everything
     as an element - it shows the limitation.
-    https://review.openstack.org/313938
+    https://review.opendev.org/313938
 [4] Implementation of Level 1: partitioning module
-    https://review.openstack.org/322671
+    https://review.opendev.org/322671

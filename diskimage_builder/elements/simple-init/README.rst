@@ -48,7 +48,7 @@ for example. To do this you need to set these variables::
 
 For example to test glean change 364516 do::
 
-  git clone https://git.openstack.org/openstack-infra/glean /tmp/glean
+  git clone https://opendev.org/opendev/glean /tmp/glean
   cd /tmp/glean
   git review -d 364516
   git checkout -b my-test-ref
