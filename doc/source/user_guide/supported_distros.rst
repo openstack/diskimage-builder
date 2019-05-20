@@ -9,7 +9,7 @@ Distributions which are supported as a build host:
 - RHEL 6, 7
 - Ubuntu 14.04 ("trusty")
 - Gentoo
-- openSUSE Leap 42.2, 42.3, 15.0 and Tumbleweed
+- openSUSE Leap 42.3, 15.0, 15.1 and Tumbleweed
 
 
 Distributions which are supported as a target for an image:
@@ -20,4 +20,4 @@ Distributions which are supported as a target for an image:
 - RHEL 6, 7
 - Ubuntu 12.04 ("precise"), 14.04 ("trusty")
 - Gentoo
-- openSUSE Leap 42.2, 42.3, 15.0 and Tumbleweed (opensuse-minimal only)
+- openSUSE Leap 42.3, 15.0, 15.1 and Tumbleweed (opensuse-minimal only)

@@ -17,7 +17,9 @@ if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
     elif [ "$DISTRO_NAME" == "rhel7" ]; then
         DIB_PYTHON_VERSION=2
     elif [ "$DISTRO_NAME" == "opensuse" ]; then
-        DIB_PYTHON_VERSION=2
+        if [ "${DIB_RELEASE:0:2}" == "42" ]; then
+            DIB_PYTHON_VERSION=2
+        fi
     fi
 fi
 

@@ -69,7 +69,7 @@
       dib_functests:
         - centos7/build-succeeds
         - opensuse/build-succeeds
-        - opensuse/opensuse150-build-succeeds
+        - opensuse/opensuse151-build-succeeds
         - fedora/build-succeeds
         - ubuntu/trusty-build-succeeds
         - ubuntu/xenial-build-succeeds
@@ -187,7 +187,7 @@
       # opensuse-minimal can only build on xenial ATM, as other
       # platforms don't have zypper
       dib_functests_extra:
-        - opensuse-minimal/opensuse150-build-succeeds
+        - opensuse-minimal/opensuse151-build-succeeds
 
 - job:
     name: dib-functests-xenial-python3-containers

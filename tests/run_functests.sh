@@ -26,7 +26,7 @@ DEFAULT_SKIP_TESTS=(
     # These require "zypper" on the host which is not available on
     # all platforms
     opensuse-minimal/build-succeeds
-    opensuse-minimal/opensuse150-build-succeeds
+    opensuse-minimal/opensuse151-build-succeeds
     # non-voting; not used by infra currently
     gentoo/build-succeeds
     # Needs infra mirroring to move to voting job
@@ -38,7 +38,7 @@ DEFAULT_SKIP_TESTS=(
     # in the gate.  Keep them in a -nv job until we can figure out
     # better caching for the images
     opensuse/build-succeeds
-    opensuse/opensuse423-build-succeeds
+    opensuse/opensuse151-build-succeeds
     centos7/build-succeeds
     debian/build-succeeds
     fedora/build-succeeds
