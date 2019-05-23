@@ -66,8 +66,9 @@ fi
 
 DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage4-amd64-${SIGNED_SOURCE_SUFFIX}.txt"}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/$(curl ${DIB_CLOUD_SOURCE} -s | tail -n 1 | cut -d\  -f 1)"}
+BASE_IMAGE_FILE_SUFFIX=${BASE_IMAGE_FILE_SUFFIX:-"$(basename ${BASE_IMAGE_FILE} | cut -d. -f 2,3)"}
 SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.DIGESTS.asc}"
-CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.tar.bz2"
+CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.${BASE_IMAGE_FILE_SUFFIX}"
 CACHED_SIGNATURE_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.asc"
 
 if [ -n "${DIB_OFFLINE}" -a -f "${CACHED_FILE}" ] ; then
@@ -92,7 +93,7 @@ else
     fi
     rm -rf "${GPGDIR}"
     echo 'valid key used'
-    CACHED_SHA512SUM=$(grep -A1 -e 'SHA512' "${CACHED_SIGNATURE_FILE}" | grep -e 'tar.bz2$' | cut -d\  -f 1)
+    CACHED_SHA512SUM=$(grep -A1 -e 'SHA512' "${CACHED_SIGNATURE_FILE}" | grep -e "${BASE_IMAGE_FILE_SUFFIX}$" | cut -d\  -f 1)
     ACTUAL_SHA512SUM=$(sha512sum "${CACHED_FILE}" | cut -d\  -f 1)
     if [[ "${ACTUAL_SHA512SUM}" != "${CACHED_SHA512SUM}" ]]; then
         echo "invalid checksum on downloaded tarball: ${CACHED_FILE}"
@@ -104,4 +105,4 @@ fi
 
 # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
 # image tarball and host OS)
-sudo tar -C "${TARGET_ROOT}" --numeric-owner --xattrs -xjpf "${CACHED_FILE}"
+sudo tar -C "${TARGET_ROOT}" --numeric-owner --xattrs -xf "${CACHED_FILE}"
