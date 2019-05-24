@@ -15,7 +15,7 @@ e.g.
 
 .. code-block:: shell-session
 
-   $ git clone https://git.openstack.org/openstack/diskimage-builder
+   $ git clone https://opendev.org/openstack/diskimage-builder
    $ cd diskimage-builder
 
    $ tox -e bindep

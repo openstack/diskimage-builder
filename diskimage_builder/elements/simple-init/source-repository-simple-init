@@ -1,1 +1,1 @@
-glean git /tmp/glean.git https://git.openstack.org/openstack-infra/glean
+glean git /tmp/glean.git https://opendev.org/opendev/glean

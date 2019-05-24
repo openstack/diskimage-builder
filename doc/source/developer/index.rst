@@ -26,7 +26,7 @@ To get started developing with ``diskimage-builder``, install to a
  $ cd dib
  $ virtualenv env
  $ source env/bin/activate
- $ git clone https://git.openstack.org/openstack/diskimage-builder
+ $ git clone https://opendev.org/openstack/diskimage-builder
  $ cd diskimage-builder
  $ pip install -e .
 
