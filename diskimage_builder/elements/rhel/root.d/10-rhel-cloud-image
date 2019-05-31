@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+if [[ "amd64 x86_64" =~ "$ARCH" ]]; then
+    ARCH="x86_64"
+elif [[ "ppc64le" =~ "$ARCH" ]]; then
+    # We don't need to do anything here other than avoid the else clause
+    :
+else
+    echo 'rhel root element only supports x86_64 and ppc64le values for $ARCH'
+    exit 1
+fi
+
+DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-""}
+
+if [ -n "$DIB_LOCAL_IMAGE" ]; then
+    IMAGE_LOCATION=$DIB_LOCAL_IMAGE
+    # No need to copy a local image into the cache directory, so just specify
+    # the cached path as the original path.
+    CACHED_IMAGE=$IMAGE_LOCATION
+    BASE_IMAGE_FILE=`basename $DIB_LOCAL_IMAGE`
+    BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
+else
+    if [ -z "${BASE_IMAGE_FILE:-}" -o -z "${DIB_CLOUD_IMAGES:-}" ]; then
+        echo "No source for a base image file configured."
+        echo "See rhel element readme for details on how to obtain and use a base image."
+        exit 1
+    fi
+    DIB_RELEASE=${DIB_RELEASE:-latest}
+    BASE_IMAGE_TAR=$DIB_RELEASE-rhel-server-$ARCH-latest.tgz
+    IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
+    CACHED_IMAGE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+
+fi
+
+$TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_LOCATION $CACHED_IMAGE

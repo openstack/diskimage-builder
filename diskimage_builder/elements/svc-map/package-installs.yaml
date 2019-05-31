@@ -1,2 +1,6 @@
 PyYAML:
     phase: pre-install.d
+    dib_python_version: 2
+python3-PyYAML:
+    phase: pre-install.d
+    dib_python_version: 3

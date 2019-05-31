@@ -1,0 +1,6 @@
+---
+features:
+  - Adds a new element ``rhel`` to handle all supported RHEL releases, which
+    are currently '7' and '8'. As of now, users of diskimage-builder will
+    still be able to use the 'rhel7' element, or migrate to 'rhel' and specify
+    their respective DIB_RELEASE value.
