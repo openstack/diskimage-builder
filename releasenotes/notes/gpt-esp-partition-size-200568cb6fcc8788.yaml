@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    The size of the ESP partition when building EFI based images is increased
+    considerably from 12MiB to 550MiB, in line with modern guidelines.  The
+    existing size was often not enough to update packages.
