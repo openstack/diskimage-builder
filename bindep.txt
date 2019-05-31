@@ -11,7 +11,7 @@ sudo
 
 squashfs-tools [!platform:suse]
 squashfs [platform:suse]
-zypper [!platform:redhat !platform:ubuntu-trusty !platform:ubuntu-bionic]
+zypper [!platform:debian-stretch !platform:redhat !platform:ubuntu-trusty !platform:ubuntu-bionic]
 gnupg2 [!platform:redhat !platform:ubuntu-trusty !platform:suse]
 
 # ubuntu
