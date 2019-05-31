@@ -201,7 +201,7 @@ function get_repos_for_element(){
                     tar -C $tmpdir -xzf $CACHE_PATH
                 else
                     echo "Fetching $REPONAME tarball from $REPOLOCATION"
-                    curl $REPOLOCATION | tar -C $tmpdir -xzf -
+                    curl -f $REPOLOCATION | tar -C $tmpdir -xzf -
                 fi
 
                 sudo mkdir -p $REPO_DEST
@@ -223,7 +223,7 @@ function get_repos_for_element(){
                     sudo cp $CACHE_PATH $REPO_DEST
                 else
                     echo "Fetching $REPONAME file from $REPOLOCATION"
-                    sudo curl $REPOLOCATION -o $REPO_DEST
+                    sudo curl -f $REPOLOCATION -o $REPO_DEST
                 fi
                 ;;
             *)

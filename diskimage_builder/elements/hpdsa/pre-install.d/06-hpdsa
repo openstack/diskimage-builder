@@ -11,4 +11,4 @@ echo 'deb https://downloads.linux.hp.com/SDR/repo/ubuntu-hpdsa' $DIB_RELEASE ' m
     >> /etc/apt/sources.list.d/ubuntu-hpdsa.list
 
 # Add the key
-curl https://downloads.linux.hp.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
+curl -f -s https://downloads.linux.hp.com/SDR/hpPublicKey2048_key1.pub | apt-key add -

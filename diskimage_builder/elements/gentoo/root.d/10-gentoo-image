@@ -65,7 +65,7 @@ else
 fi
 
 DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage4-amd64-${SIGNED_SOURCE_SUFFIX}.txt"}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/$(curl ${DIB_CLOUD_SOURCE} -s | tail -n 1 | cut -d\  -f 1)"}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/$(curl ${DIB_CLOUD_SOURCE} -s -f | tail -n 1 | cut -d\  -f 1)"}
 BASE_IMAGE_FILE_SUFFIX=${BASE_IMAGE_FILE_SUFFIX:-"$(basename ${BASE_IMAGE_FILE} | cut -d. -f 2,3)"}
 SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.DIGESTS.asc}"
 CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.${BASE_IMAGE_FILE_SUFFIX}"
