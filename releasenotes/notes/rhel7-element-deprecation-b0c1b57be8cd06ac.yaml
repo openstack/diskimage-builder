@@ -1,0 +1,7 @@
+---
+deprecations:
+  - |
+   The rhel7 element is deprecated and is left only for backwards
+   compatibility. Use the `rhel` element instead. Note that you should set
+   DIB_RELEASE to 7 to indicate which release you are using. Please read the
+   notes.
