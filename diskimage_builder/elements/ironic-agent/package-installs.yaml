@@ -17,3 +17,4 @@ gdisk:
 kmod:
 psmisc:
 dosfstools:
+mdadm:
