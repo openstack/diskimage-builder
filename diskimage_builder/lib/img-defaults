@@ -17,14 +17,7 @@
 source $_LIB/common-defaults
 # options for create-baremetal-image.sh
 
-if [ "${DISTRO_NAME}" = "rhel" ] && [ "${DIB_RELEASE}" = "8" ]; then
-    # xfs is the default file-system for RHEL8
-    export DEFAULT_FS_TYPE=xfs
-else
-    export DEFAULT_FS_TYPE=ext4
-fi
-
-export FS_TYPE=${FS_TYPE:-$DEFAULT_FS_TYPE}
+export FS_TYPE=${FS_TYPE:-ext4}
 # Used to set the file extension only at this stage.
 export IMAGE_TYPE=${IMAGE_TYPE:-qcow2}
 export IMAGE_NAME=${IMAGE_NAME:-image}
