@@ -1,1 +1,0 @@
-export DIB_RELEASE=15.0

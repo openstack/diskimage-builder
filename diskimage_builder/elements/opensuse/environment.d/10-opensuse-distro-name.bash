@@ -1,5 +1,5 @@
 export DISTRO_NAME=opensuse
-export DIB_RELEASE=${DIB_RELEASE:-15.0}
+export DIB_RELEASE=${DIB_RELEASE:-15.1}
 export DIB_OPENSUSE_PATTERNS=patterns-openSUSE-base
 case ${DIB_RELEASE} in
     # Old Leap releases
