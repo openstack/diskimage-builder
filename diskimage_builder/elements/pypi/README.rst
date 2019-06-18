@@ -1,6 +1,8 @@
 ====
 pypi
 ====
+
+====================
 Inject a PyPI mirror
 ====================
 
@@ -57,5 +59,5 @@ the upstream can't be contacted.
 
 Note that this process only has the server running temporarily; see
 [Quickstart: Permanent install on
-server/laptop](http://doc.devpi.net/latest/quickstart-server.html) guide from
-the devpi developers for more information on a more permanent setup.
+server/laptop](https://devpi.net/docs/devpi/devpi/latest/+d/quickstart-server.html)
+guide from the devpi developers for more information on a more permanent setup.

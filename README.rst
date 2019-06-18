@@ -6,7 +6,7 @@ wide-range of disk images, filesystem images and ramdisk images for
 use with OpenStack.
 
 This repository has the core functionality for building such images,
-both virtual and bare metal.  Images are composed using `elements`;
+both virtual and bare metal. Images are composed using `elements`;
 while fundamental elements are provided here, individual projects have
 the flexibility to customise the image build with their own elements.
 
@@ -17,9 +17,9 @@ For example::
 will create a bootable Ubuntu Trusty based ``qcow2`` image.
 
 ``diskimage-builder`` is useful to anyone looking to produce
-customised images for deployment into clouds.  These tools are the
+customised images for deployment into clouds. These tools are the
 components of `TripleO <https://wiki.openstack.org/wiki/TripleO>`__
-that are responsible for building disk images.  They are also used
+that are responsible for building disk images. They are also used
 extensively to build images for testing OpenStack itself, particularly
 with `nodepool
 <https://docs.openstack.org/infra/system-config/nodepool.html>`__.
