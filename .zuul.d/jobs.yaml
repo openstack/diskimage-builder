@@ -198,3 +198,156 @@
     nodeset: centos-7
     vars:
       dib_python: python2
+
+- job:
+    name: dib-nodepool-functional-openstack-centos-7-src
+    description: |
+      Test building and booting a Centos 7 image with Nodepool and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    vars:
+      nodepool_extra_packages:
+        - rpm
+        - yum-utils
+      nodepool_diskimage:
+        base_element: centos-minimal
+        release: '7'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
+        env-vars:
+          DIB_SIMPLE_INIT_NETWORKMANAGER: '1'
+
+- job:
+    name: dib-nodepool-functional-openstack-fedora-29-src
+    description: |
+      Test building and booting a Fedora 29 image with Nodepool and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    vars:
+      nodepool_extra_packages:
+        - rpm
+        - yum-utils
+      nodepool_diskimage:
+        base_element: fedora-minimal
+        release: '29'
+        env-vars:
+          DIB_SIMPLE_INIT_NETWORKMANAGER: '1'
+
+- job:
+    name: dib-nodepool-functional-openstack-ubuntu-trusty-src
+    description: |
+      Test building and booting an Ubuntu trusty image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
+    vars:
+      nodepool_extra_packages:
+        - debootstrap
+      nodepool_diskimage:
+        base_element: ubuntu-minimal
+        release: 'trusty'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+
+- job:
+    name: dib-nodepool-functional-openstack-ubuntu-xenial-src
+    description: |
+      Test building and booting an Ubuntu xenial image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
+    vars:
+      nodepool_extra_packages:
+        - debootstrap
+      nodepool_diskimage:
+        base_element: ubuntu-minimal
+        release: 'xenial'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+
+- job:
+    name: dib-nodepool-functional-openstack-ubuntu-bionic-src
+    description: |
+      Test building and booting an Ubuntu bionic image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
+    vars:
+      nodepool_extra_packages:
+        - debootstrap
+      nodepool_diskimage:
+        base_element: ubuntu-minimal
+        release: 'bionic'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+
+- job:
+    name: dib-nodepool-functional-openstack-gentoo-src
+    description: |
+      Test building and booting a Gentoo image with Nodepool and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    vars:
+      nodepool_diskimage:
+        base_element: gentoo
+        release: ''
+        env-vars:
+          GENTOO_PROFILE: 'default/linux/amd64/17.0/systemd'
+
+- job:
+    name: dib-nodepool-functional-openstack-debian-stretch-src
+    description: |
+      Test building and booting a Debian stretch image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
+    vars:
+      nodepool_extra_packages:
+        - debootstrap
+      nodepool_diskimage:
+        base_element: debian-minimal
+        release: 'stretch'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
+
+- job:
+    name: dib-nodepool-functional-openstack-debian-buster-src
+    description: |
+      Test building and booting a Debian buster image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
+    vars:
+      nodepool_extra_packages:
+        - debootstrap
+      nodepool_diskimage:
+        base_element: debian-minimal
+        release: 'buster'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
+
+- job:
+    name: dib-nodepool-functional-openstack-opensuse-150-src
+    description: |
+      Test building and booting an openSUSE 15 image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    nodeset: ubuntu-xenial  # Bionic lacks zypper
+    vars:
+      nodepool_extra_packages:
+        - zypper
+        - gnupg2
+      nodepool_diskimage:
+        base_element: opensuse-minimal
+        release: '15.0'
+
+- job:
+    name: dib-nodepool-functional-openstack-opensuse-tumbleweed-src
+    description: |
+      Test building and booting an openSUSE tumbleweed image with
+      Nodepool and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    nodeset: ubuntu-xenial  # Bionic lacks zypper
+    vars:
+      nodepool_extra_packages:
+        - zypper
+        - gnupg2
+      nodepool_diskimage:
+        base_element: opensuse-minimal
+        release: 'tumbleweed'
