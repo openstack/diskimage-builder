@@ -2,19 +2,38 @@
     templates:
       - openstack-cover-jobs
       - check-requirements
+      - openstack-lower-constraints-jobs
       - openstack-python-jobs
       - openstack-python35-jobs
       - release-notes-jobs
+      - tripleo-buildimage-jobs
     check:
       jobs:
         - openstack-tox-pylint
         - nodepool-functional-py35-redhat-src
         - nodepool-functional-py35-ubuntu-src
+        - dib-functests-centos7-python2
+        - dib-functests-centos7-python2-image
+        - dib-functests-centos7-python2-extras
+        - dib-functests-trusty-python2
+        - dib-functests-trusty-python2-image
+        - dib-functests-trusty-python2-extras
+        - dib-functests-xenial-python3
+        - dib-functests-xenial-python3-image
+        - dib-functests-xenial-python3-extras
+        - dib-functests-xenial-python3-containers
+        - dib-functests-bionic-python3
+        - dib-functests-bionic-python3-image
+        - dib-functests-bionic-python3-extras
+        - dib-functests-bionic-python3-containers
     gate:
       jobs:
         - openstack-tox-pylint
         - nodepool-functional-py35-redhat-src
         - nodepool-functional-py35-ubuntu-src
+        - dib-functests-trusty-python2
+        - dib-functests-xenial-python3
+        - dib-functests-centos7-python2
     experimental:
       jobs:
         - nodepool-functional-py35-gentoo-src
