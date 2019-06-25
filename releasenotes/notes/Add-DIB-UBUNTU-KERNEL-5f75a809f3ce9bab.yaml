@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Added an environment variable, DIB_UBUNTU_KERNEL, that allows you to
+    specify the kernel meta package to install in the image.
+    It currently supports "linux-image-generic" (The default),
+    "linux-image-kvm", and "linux-image-virtual".
