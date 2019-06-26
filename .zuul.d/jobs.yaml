@@ -1,29 +1,3 @@
-- project:
-    templates:
-      - openstack-lower-constraints-jobs
-      - tripleo-buildimage-jobs
-    check:
-      jobs:
-        - dib-functests-centos7-python2
-        - dib-functests-centos7-python2-image
-        - dib-functests-centos7-python2-extras
-        - dib-functests-trusty-python2
-        - dib-functests-trusty-python2-image
-        - dib-functests-trusty-python2-extras
-        - dib-functests-xenial-python3
-        - dib-functests-xenial-python3-image
-        - dib-functests-xenial-python3-extras
-        - dib-functests-xenial-python3-containers
-        - dib-functests-bionic-python3
-        - dib-functests-bionic-python3-image
-        - dib-functests-bionic-python3-extras
-        - dib-functests-bionic-python3-containers
-    gate:
-      jobs:
-        - dib-functests-trusty-python2
-        - dib-functests-xenial-python3
-        - dib-functests-centos7-python2
-
 - job:
     name: dib-functests-base
     abstract: true
