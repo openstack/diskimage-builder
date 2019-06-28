@@ -69,7 +69,14 @@ Networking
 
 By default ``/etc/network/interfaces.d/eth[0|1]`` files will be
 created and enabled with DHCP networking.  If you do not wish this to
-be done, set ``DIB_APT_MINIMAL_CREATE_INTERFACES`` to ``0``.
+be done, set ``DIB_APT_MINIMAL_CREATE_INTERFACES`` to ``0``.  If you
+need different interface names than ``eth[0|1]`` set
+``DIB_NETWORK_INTERFACE_NAMES`` to a space separated list of network
+interface names like:
+
+.. code-block:: bash
+
+   export DIB_NETWORK_INTERFACE_NAMES="ens3 ens4"
 
 -------------------
 Note on ARM systems
