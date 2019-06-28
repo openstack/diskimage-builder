@@ -325,7 +325,7 @@
 - job:
     name: dib-nodepool-functional-openstack-opensuse-150-src
     description: |
-      Test building and booting an openSUSE 15 image with Nodepool
+      Test building and booting an openSUSE 15.0 image with Nodepool
       and OpenStack
     parent: nodepool-functional-openstack-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
@@ -336,6 +336,23 @@
       nodepool_diskimage:
         base_element: opensuse-minimal
         release: '15.0'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/opensuse"
+
+- job:
+    name: dib-nodepool-functional-openstack-opensuse-151-src
+    description: |
+      Test building and booting an openSUSE 15.1 image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-src-base
+    nodeset: ubuntu-xenial  # Bionic lacks zypper
+    vars:
+      nodepool_extra_packages:
+        - zypper
+        - gnupg2
+      nodepool_diskimage:
+        base_element: opensuse-minimal
+        release: '15.1'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/opensuse"
 
 - job:
     name: dib-nodepool-functional-openstack-opensuse-tumbleweed-src

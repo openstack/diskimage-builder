@@ -14,7 +14,8 @@
       "net-tools": "sys-apps/net-tools"
     },
     "suse": {
-      "dhcp-client": "dhcp-client"
+      "dhcp-client": "dhcp-client",
+      "network-scripts": "wicked-service"
     }
   },
   "release": {
