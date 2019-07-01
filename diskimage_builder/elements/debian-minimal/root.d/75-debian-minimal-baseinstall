@@ -70,6 +70,8 @@ to_install+="systemd-sysv "
 
 # default required
 to_install+="busybox sudo "
+# required for dpkg element to be able to add apt keys
+to_install+="gnupg2 "
 
 if [ "$DIB_PYTHON_VERSION" == "2" ]; then
     to_install+="python "
