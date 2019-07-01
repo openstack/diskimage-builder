@@ -16,9 +16,7 @@ updates:deb ${DIB_DISTRIBUTION_MIRROR} ${DIB_RELEASE}-updates ${DIB_DEBIAN_COMPO
 security:deb http://security.debian.org/ ${DIB_RELEASE}/updates ${DIB_DEBIAN_COMPONENTS_WS}
 "
 
-# NOTE(ianw): 2019-04 -- remove buster from here when released and it
-# has security/backports.
-if [ "${DIB_RELEASE}" = "testing" -o "${DIB_RELEASE}" = "unstable" -o "${DIB_RELEASE}" = "buster" ]; then
+if [ "${DIB_RELEASE}" = "testing" -o "${DIB_RELEASE}" = "unstable" ]; then
     DIB_APT_SOURCES_CONF_DEFAULT="default:deb ${DIB_DISTRIBUTION_MIRROR} ${DIB_RELEASE} ${DIB_DEBIAN_COMPONENTS_WS}"
 fi
 
