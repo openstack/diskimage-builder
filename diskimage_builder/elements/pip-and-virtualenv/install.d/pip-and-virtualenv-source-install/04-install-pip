@@ -34,15 +34,16 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
             packages+=" python3-virtualenv python3-pip python3-setuptools"
             ;;
         rhel)
-            _clear_old_files=1
             case "$DIB_RELEASE" in
                 8)
                     _do_py3=1
+                    _clear_old_files=0
                     packages=" python3-virtualenv python3-pip python3-setuptools"
                     ;;
                 7)
                     # note python2-pip in epel
                     _extra_repo="--enablerepo=epel"
+                    _clear_old_files=1
                     packages="python-virtualenv python2-pip"
                     if [[ "$(rpm -q --qf '[%{obsoletes}\n]' python2-setuptools)" == "python-setuptools" ]]; then
                         packages+=" python2-setuptools"
