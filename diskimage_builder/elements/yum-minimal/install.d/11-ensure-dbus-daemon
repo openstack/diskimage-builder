@@ -23,6 +23,6 @@ set -o pipefail
 
 # Ensure that dbus-daemon is enabled; fedora 30 and above has switched to
 # dbus-broker.
-if [[ ${DISTRO_NAME} == 'fedora' && ${DIB_RELEASE} -le 29 ]]; then
+if [[ ${DISTRO_NAME} == 'fedora' && ${DIB_RELEASE} -eq 29 ]]; then
     systemctl --no-reload enable dbus-daemon.service
 fi
