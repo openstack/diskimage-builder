@@ -1,4 +1,15 @@
 {
+  "release": {
+    "rhel": {
+      "8": {
+        "tgt": "targetcli",
+        "curl": "curl",
+        "ironic-python-agent": "openstack-ironic-python-agent",
+        "qemu-utils": "qemu-img",
+        "python-dev": "python3-devel"
+      }
+    }
+  },
   "family": {
     "redhat": {
       "tgt": "scsi-target-utils",
