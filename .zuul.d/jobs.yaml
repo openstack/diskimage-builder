@@ -263,6 +263,22 @@
         mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
 
 - job:
+    name: dib-nodepool-functional-openstack-ubuntu-bionic
+    description: |
+      Test building and booting an Ubuntu bionic image with Nodepool
+      and OpenStack
+    parent: nodepool-functional-openstack-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
+    vars:
+      nodepool_extra_packages:
+        - debootstrap
+      nodepool_diskimage:
+        base_element: ubuntu-minimal
+        release: 'bionic'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+
+- job:
     name: dib-nodepool-functional-openstack-ubuntu-bionic-src
     description: |
       Test building and booting an Ubuntu bionic image with Nodepool

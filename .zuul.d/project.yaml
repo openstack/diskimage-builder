@@ -16,6 +16,7 @@
         - dib-nodepool-functional-openstack-opensuse-151-src
         - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
+        - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-functests-centos7-python2
         - dib-functests-centos7-python2-image
@@ -40,6 +41,7 @@
         - dib-nodepool-functional-openstack-opensuse-151-src
         - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
+        - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-functests-trusty-python2
         - dib-functests-xenial-python3
