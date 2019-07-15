@@ -9,7 +9,7 @@ export GENTOO_EMERGE_DEFAULT_OPTS=${GENTOO_EMERGE_DEFAULT_OPTS:-"--binpkg-respec
 
 # set the default bash array if GENTOO_EMERGE_ENV is not defined as an array
 if ! declare -p GENTOO_EMERGE_ENV  2> /dev/null | grep -q '^declare \-a'; then
-    export GENTOO_EMERGE_ENV=('USE="-build"' 'FEATURES="binpkg-multi-instance buildpkg parallel-fetch parallel-install"')
+    export GENTOO_EMERGE_ENV=('USE="-build"' 'FEATURES="binpkg-multi-instance buildpkg parallel-fetch parallel-install"' 'EMERGE_DEFAULT_OPTS="--autounmask=n"')
 fi
 # itterate over the array, exporting each 'line'
 for (( i=0; i<${#GENTOO_EMERGE_ENV[@]}; i++ )); do
