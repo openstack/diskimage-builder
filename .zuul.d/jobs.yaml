@@ -199,11 +199,22 @@
     vars:
       dib_python: python2
 
+# Build and boot functional tests
+
+- job:
+    name: dib-nodepool-functional-src-base
+    description: |
+      Base job for DIB functional tests, which build and boot a node under
+      nodepool
+    parent: nodepool-functional-openstack-src-base
+    vars:
+      nodepool_debug: true
+
 - job:
     name: dib-nodepool-functional-openstack-centos-7-src
     description: |
       Test building and booting a Centos 7 image with Nodepool and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     vars:
       nodepool_extra_packages:
         - rpm
@@ -219,7 +230,7 @@
     name: dib-nodepool-functional-openstack-fedora-29-src
     description: |
       Test building and booting a Fedora 29 image with Nodepool and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     vars:
       nodepool_extra_packages:
         - rpm
@@ -235,7 +246,7 @@
     description: |
       Test building and booting an Ubuntu trusty image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
@@ -251,7 +262,7 @@
     description: |
       Test building and booting an Ubuntu xenial image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
@@ -266,11 +277,12 @@
     name: dib-nodepool-functional-openstack-ubuntu-bionic
     description: |
       Test building and booting an Ubuntu bionic image with Nodepool
-      and OpenStack
+      and OpenStack (using released libraries)
     parent: nodepool-functional-openstack-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
+      nodepool_debug: true
       nodepool_extra_packages:
         - debootstrap
       nodepool_diskimage:
@@ -283,7 +295,7 @@
     description: |
       Test building and booting an Ubuntu bionic image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
@@ -298,7 +310,7 @@
     name: dib-nodepool-functional-openstack-gentoo-src
     description: |
       Test building and booting a Gentoo image with Nodepool and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     vars:
       nodepool_diskimage:
         base_element: gentoo
@@ -311,7 +323,7 @@
     description: |
       Test building and booting a Debian stretch image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
@@ -327,7 +339,7 @@
     description: |
       Test building and booting a Debian buster image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
@@ -343,7 +355,7 @@
     description: |
       Test building and booting an openSUSE 15.0 image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
       nodepool_extra_packages:
@@ -359,7 +371,7 @@
     description: |
       Test building and booting an openSUSE 15.1 image with Nodepool
       and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
       nodepool_extra_packages:
@@ -375,7 +387,7 @@
     description: |
       Test building and booting an openSUSE tumbleweed image with
       Nodepool and OpenStack
-    parent: nodepool-functional-openstack-src-base
+    parent: dib-nodepool-functional-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
       nodepool_extra_packages:
