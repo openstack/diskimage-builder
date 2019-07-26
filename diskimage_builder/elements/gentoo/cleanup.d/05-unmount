@@ -8,15 +8,15 @@ set -o pipefail
 
 [[ -n "${TMP_MOUNT_PATH}" ]]
 
-sudo umount -f "${TMP_MOUNT_PATH}"/usr/portage/distfiles
-sudo umount -f "${TMP_MOUNT_PATH}"/usr/portage/packages
-sudo umount -f "${TMP_MOUNT_PATH}"/usr/portage
+sudo umount -f "${TMP_MOUNT_PATH}${DISTDIR}"
+sudo umount -f "${TMP_MOUNT_PATH}${PKGDIR}"
+sudo umount -f "${TMP_MOUNT_PATH}${PORTDIR}"
 
 sudo rm -Rf "${TMP_MOUNT_PATH}"/root/.ccache/* "${TMP_MOUNT_PATH}"/usr/src/* "${TMP_MOUNT_PATH}"/var/cache/edb/dep/* "${TMP_MOUNT_PATH}"/var/cache/genkernel/* "${TMP_MOUNT_PATH}"/var/empty/* "${TMP_MOUNT_PATH}"/var/state/* "${TMP_MOUNT_PATH}"/var/tmp/*
 sudo rm -Rf "${TMP_MOUNT_PATH}"/etc/*- "${TMP_MOUNT_PATH}"/etc/*.old "${TMP_MOUNT_PATH}"/etc/ssh/ssh_host_* "${TMP_MOUNT_PATH}"/root/.*history "${TMP_MOUNT_PATH}"/root/.lesshst "${TMP_MOUNT_PATH}"/root/.ssh/known_hosts "${TMP_MOUNT_PATH}"/root/.viminfo "${TMP_MOUNT_PATH}"/usr/share/genkernel "${TMP_MOUNT_PATH}"/usr/lib64/python*/site-packages/gentoolkit/test/eclean/testdistfiles.tar.gz
 if [[ "${GENTOO_PORTAGE_CLEANUP}" != "False" ]]; then
     # remove portage files
-    sudo rm -Rf "${TMP_MOUNT_PATH}"/usr/portage/* "${TMP_MOUNT_PATH}"/usr/portage/.git "${TMP_MOUNT_PATH}"/var/cache/portage/distfiles
+    sudo rm -Rf "${TMP_MOUNT_PATH}${PORTDIR}"/* "${TMP_MOUNT_PATH}${PORTDIR}"/.git "${TMP_MOUNT_PATH}"/var/cache/portage/distfiles "${TMP_MOUNT_PATH}"/usr/portage/*
 fi
 
 # shrink a bit

@@ -15,7 +15,7 @@ else
 fi
 
 # sync if needed
-[[ ! -e /usr/portage/profiles ]] && emerge-webrsync
+[[ ! -e ${PORTDIR}/profiles ]] && emerge-webrsync
 
 # make world consistent
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world
@@ -47,3 +47,6 @@ unfix_shm
 
 # remove within the chroot since /var/run is a symlink
 rm -Rf /var/run/* /run/*
+
+# after updating, set profile to where PORTDIR actually is (varies by profile)
+ln -sf ../.."$(env -u PORTDIR portageq get_repo_path / gentoo)/profiles/${GENTOO_PROFILE}" /etc/portage/make.profile
