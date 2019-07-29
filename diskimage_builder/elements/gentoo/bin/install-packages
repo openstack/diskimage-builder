@@ -30,9 +30,8 @@ if ! declare -p GENTOO_EMERGE_ENV  2> /dev/null | grep -q '^declare \-a'; then
     GENTOO_EMERGE_ENV+=("DISTDIR=\"/tmp/portage-distdir\"")
     GENTOO_EMERGE_ENV+=("PORTDIR=\"/tmp/portage-portdir\"")
     export GENTOO_EMERGE_ENV
-    #export GENTOO_EMERGE_ENV=('USE="-build"' 'FEATURES="binpkg-multi-instance buildpkg parallel-fetch parallel-install"')
 fi
-# itterate over the array, exporting each 'line'
+# iterate over the array, exporting each 'line'
 for (( i=0; i<${#GENTOO_EMERGE_ENV[@]}; i++ )); do
     eval export "${GENTOO_EMERGE_ENV[i]}"
 done
