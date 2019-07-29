@@ -15,7 +15,7 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
         fix_shm
     fi
 
-    if [[ ! -f /usr/portage/profiles ]]; then
+    if [[ ! -f ${PORTDIR}/profiles ]]; then
         emerge-webrsync -q
     fi
 

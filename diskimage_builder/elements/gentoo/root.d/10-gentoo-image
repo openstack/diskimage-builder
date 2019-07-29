@@ -38,17 +38,17 @@ fi
 # default/linux/amd64/13.0/no-multilib
 # hardened/linux/amd64
 # hardened/linux/amd64/no-multilib
-GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/17.0'}
-if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0" ]]; then
+GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/17.1'}
+if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1" ]]; then
     FILENAME_BASE='gentoo-stage4'
     SIGNED_SOURCE_SUFFIX='minimal'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/no-multilib" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib" ]]; then
     FILENAME_BASE='gentoo-stage4-nomultilib'
     SIGNED_SOURCE_SUFFIX='minimal-nomultilib'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/hardened" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/hardened" ]]; then
     FILENAME_BASE='gentoo-stage4-hardened'
     SIGNED_SOURCE_SUFFIX='hardened+minimal'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/no-multilib/hardened" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]]; then
     FILENAME_BASE='gentoo-stage4-hardened-nomultilib'
     SIGNED_SOURCE_SUFFIX='hardened+minimal-nomultilib'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/systemd" ]]; then
@@ -56,10 +56,10 @@ elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/systemd" ]]; then
     SIGNED_SOURCE_SUFFIX='systemd'
 else
     echo 'invalid profile, please select from the following profiles'
-    echo 'default/linux/amd64/17.0'
-    echo 'default/linux/amd64/17.0/no-multilib'
-    echo 'default/linux/amd64/17.0/hardened'
-    echo 'default/linux/amd64/17.0/no-multilib/hardened'
+    echo 'default/linux/amd64/17.1'
+    echo 'default/linux/amd64/17.1/no-multilib'
+    echo 'default/linux/amd64/17.1/hardened'
+    echo 'default/linux/amd64/17.1/no-multilib/hardened'
     echo 'default/linux/amd64/17.0/systemd'
     exit 1
 fi
