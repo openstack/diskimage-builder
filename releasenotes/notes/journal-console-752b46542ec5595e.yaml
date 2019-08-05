@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The ``journal-to-console`` element is added to allow forwarding
+    systemd output to the host console.  This is useful for debugging
+    early boot issues.
