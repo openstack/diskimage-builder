@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ${DIB_DEBUG_TRACE:-0} -gt 1 ]; then
+if [[ ${DIB_DEBUG_TRACE:-0} -gt 1 ]]; then
     set -x
 fi
 set -eu
@@ -8,11 +8,11 @@ set -o pipefail
 
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
-[ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
+[[ -n "$DIB_DISTRIBUTION_MIRROR" ]] || exit 0
 
 while IFS= read line
 do
-    if [[ "$line" =~ ${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-} ]]; then
+    if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-}" && "$line" =~ ${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-} ]]; then
         # append line unmodified
         echo "$line" | tee --append /etc/apt/sources.list.new
     else
