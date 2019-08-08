@@ -26,7 +26,7 @@ import datetime
 import re
 import sys
 
-IGNORE_LINES = re.compile('(set \+o|xtrace)')
+IGNORE_LINES = re.compile(r'(set \+o|xtrace)')
 
 
 def get_options():
