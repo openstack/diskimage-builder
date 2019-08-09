@@ -7,3 +7,7 @@ initscripts:
 man-pages:
 lsb_release:
 redhat-rpm-config:
+linux-firmware:
+    uninstall: true
+linux-firmware-whence:
+    uninstall: true
