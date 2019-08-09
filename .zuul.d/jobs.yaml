@@ -26,7 +26,6 @@
         # Fedora paused until dnf segfaults resolved:
         #  https://bugzilla.redhat.com/show_bug.cgi?id=1758737
         #  https://bugzilla.redhat.com/show_bug.cgi?id=1761282
-        # - fedora-minimal/build-succeeds
         # - ironic-agent/build-succeeds-fedora
         # - pip-and-virtualenv/source-install-fedora
         - pip-and-virtualenv/source-install-ubuntu

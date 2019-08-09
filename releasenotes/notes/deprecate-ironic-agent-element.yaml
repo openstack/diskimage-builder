@@ -1,0 +1,6 @@
+---
+deprecations:
+
+  - The "ironic-agent" element can now be found at
+    ironic-python-agent-builder to build the ramdisk.
+    This element is deprecated from diskimage-builder.
