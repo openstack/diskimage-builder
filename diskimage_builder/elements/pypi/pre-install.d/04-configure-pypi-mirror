@@ -57,8 +57,10 @@ def main():
         output.write('trusted-host =  %s\n' % (urlparse(indices[0]).hostname,))
         if retries is not None:
             output.write('retries = %s\n' % retries)
-        for index in indices[1:]:
-            output.write('extra-index-url = %s\n' % (index,))
+        if len(indices) > 1:
+            output.write('extra-index-url =\n')
+            for index in indices[1:]:
+                output.write('    %s\n' % (index,))
     with open(home + '/.pydistutils.cfg', 'wt') as output:
         output.write('[easy_install]\n')
         output.write('index_url = %s\n' % (easy_index,))
