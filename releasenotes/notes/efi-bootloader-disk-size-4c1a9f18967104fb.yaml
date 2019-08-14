@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    When using the ``block-device-efi`` element to create an EFI based
+    system (most notably, with ARM64), the final disk size is now
+    expanded for the 512MiB system EFI partition introduced with 2.24.0

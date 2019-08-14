@@ -446,6 +446,18 @@ if [ "$DIB_ROOT_FSTYPE" = "ext4" ] ; then
   fi
 fi
 
+# EFI system partitions default to be quite large at 512mb for maximum
+# compatability (see notes in
+# 7fd52ba84180b4e749ccf4c9db8c49eafff46ea8) .  We need to increase the
+# total size to account for this, or we run out of space creating the
+# final image.  See if we have included the block-device-efi element,
+# which implies we have a large EFI partition, and then pad the final
+# image size.
+if [[ ${IMAGE_ELEMENT} =~ "block-device-efi" ]]; then
+    echo "Expanding disk for EFI partition"
+    du_size=$(( $du_size + (525 * 1024) ))
+fi
+
 # Rounding down size so that is is a multiple of 64, works around a bug in
 # qemu-img that may occur when compressing raw images that aren't a multiple
 # of 64k. https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1180021
