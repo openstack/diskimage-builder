@@ -70,9 +70,38 @@ for MOUNTPOINT in "${SPLIT_MOUNTS[@]}"; do
             echo "*** SELinux enabled and kauditd not found, suggesting auditing support is disabled in the host kernel. setfiles will fail without this, please enable and rebuild"
             exit 1
         fi
-        sudo ${_runcon} chroot ${TARGET_ROOT} \
-            /usr/sbin/setfiles -F ${_dash_m} \
-            /etc/selinux/targeted/contexts/files/file_contexts ${MOUNTPOINT}
+
+        if [[ ${MOUNTPOINT} == "/" ]]; then
+            # If you don't label /dev, /proc and /sys (the actual,
+            # on-disk directory in the image) correctly, it will have
+            # bad effects when things like systemd try to do things
+            # like make network or process namespaces.  This generally
+            # leads to obscure and hard-to-debug failures; [1] has
+            # plenty of examples.
+            #
+            # But right now, /{dev,proc,sys} are mounted!  With the
+            # extant block-device code, we do not have a point to
+            # break in when these are unmounted, but before we've
+            # unmounted everything.  So we do a hack; for the root
+            # directory, we bind mount the target so we see the
+            # underlying directories, and then run setfiles on that.
+            #
+            # XXX: we might be able to uncondtionally do this for all
+            #      mountpoints?  leaving well enough alone for now...
+            #
+            # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1663040
+            TMP_BIND_MOUNT=$(mktemp -d)
+            sudo mount --bind ${TARGET_ROOT} ${TMP_BIND_MOUNT}
+            sudo ${_runcon} chroot ${TMP_BIND_MOUNT} \
+                /usr/sbin/setfiles -F ${_dash_m} \
+                /etc/selinux/targeted/contexts/files/file_contexts /
+            sudo umount ${TMP_BIND_MOUNT}
+            sudo rmdir ${TMP_BIND_MOUNT}
+        else
+            sudo ${_runcon} chroot ${TARGET_ROOT} \
+                /usr/sbin/setfiles -F ${_dash_m} \
+                /etc/selinux/targeted/contexts/files/file_contexts ${MOUNTPOINT}
+        fi
     fi
 done
 
