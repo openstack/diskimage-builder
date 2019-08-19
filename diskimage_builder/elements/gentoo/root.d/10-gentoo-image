@@ -51,7 +51,7 @@ elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/hardened" ]]; then
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]]; then
     FILENAME_BASE='gentoo-stage4-hardened-nomultilib'
     SIGNED_SOURCE_SUFFIX='hardened+minimal-nomultilib'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/systemd" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd" ]]; then
     FILENAME_BASE='gentoo-stage4-systemd'
     SIGNED_SOURCE_SUFFIX='systemd'
 else
@@ -60,7 +60,7 @@ else
     echo 'default/linux/amd64/17.1/no-multilib'
     echo 'default/linux/amd64/17.1/hardened'
     echo 'default/linux/amd64/17.1/no-multilib/hardened'
-    echo 'default/linux/amd64/17.0/systemd'
+    echo 'default/linux/amd64/17.1/systemd'
     exit 1
 fi
 
