@@ -48,5 +48,6 @@ if [[ ${DIB_SIMPLE_INIT_NETWORKMANAGER} != 0 ]]; then
     # Debian has a many year old long bug report detailing this behavior with
     # the most interesting comment being at the end:
     # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=755202#331
-    echo 'net.ipv6.conf.default.router_solicitation_delay=15' >> /etc/sysctl.conf
+    DIB_SIMPLE_INIT_NETWORKMANAGER_IPV6_DELAY=${DIB_SIMPLE_INIT_NETWORKMANAGER_IPV6_DELAY:-30}
+    echo "net.ipv6.conf.default.router_solicitation_delay=${DIB_SIMPLE_INIT_NETWORKMANAGER_IPV6_DELAY}" >> /etc/sysctl.conf
 fi

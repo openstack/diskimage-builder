@@ -1,0 +1,11 @@
+---
+fixes:
+  - |
+    The ``DIB_SIMPLE_INIT_NETWORKMANAGER_IPV6_DELAY`` variable is
+    added for the ``simple-init`` element to set the
+    ``net.ipv6.conf.default.router_solicition_delay`` sysctl setting
+    (it defaults to 30s).  If you are seeing an extra "blank"
+    interface in ``nmcli con show`` it is likely that NM has not
+    correctly configured itself in the presence of an interface
+    already configured with IPV6 by the kernel.  Increasing this value
+    may help work-around the problem.
