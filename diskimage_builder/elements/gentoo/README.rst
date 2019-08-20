@@ -26,11 +26,11 @@ Notes:
 * Other profiles can be used by exporting GENTOO_PROFILE with a valid profile.
   A list of valid profiles follows:
 
-    default/linux/amd64/17.0
-    default/linux/amd64/17.0/no-multilib
-    default/linux/amd64/17.0/hardened
-    default/linux/amd64/17.0/no-multilib/hardened
-    default/linux/amd64/17.0/systemd
+    default/linux/amd64/17.1
+    default/linux/amd64/17.1/no-multilib
+    default/linux/amd64/17.1/hardened
+    default/linux/amd64/17.1/no-multilib/hardened
+    default/linux/amd64/17.1/systemd
 
 * You can set the `GENTOO_PORTAGE_CLEANUP` environment variable to False to
   disable the clean up of portage repositories (including overlays).  This
