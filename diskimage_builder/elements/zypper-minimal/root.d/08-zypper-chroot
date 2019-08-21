@@ -101,6 +101,11 @@ sudo zypper ${ZYPPER_TARGET_OPTS} install \
     ${DIB_OPENSUSE_PATTERNS} ${ZYPPER_INSTALL_SYSTEM_PYTHON} \
     zypper sudo ca-certificates-mozilla
 
+# Remove the installed symlink, otherwise we wipe the resolv.conf
+# outside the target_root (as the link is not relative)
+# outside target_root
+test -L $TARGET_ROOT/etc/resolv.conf && sudo rm -f $TARGET_ROOT/etc/resolv.conf
+
 # Put in a dummy /etc/resolv.conf over the temporary one we used
 # to bootstrap.  systemd has a bug/feature [1] that it will assume
 # you want systemd-networkd as the network manager and create a
