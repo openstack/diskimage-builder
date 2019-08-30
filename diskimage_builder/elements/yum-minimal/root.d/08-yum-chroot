@@ -128,6 +128,10 @@ function _install_repos {
             $TARGET_ROOT/etc/yum.repos.d/
     fi
 
+    if [[ -n ${DIB_YUM_MINIMAL_EXTRA_REPOS:-} ]]; then
+        sudo cp ${DIB_YUM_MINIMAL_EXTRA_REPOS}/* \
+            $TARGET_ROOT/etc/yum.repos.d/
+    fi
 }
 
 # _install_pkg_manager packages...

@@ -18,3 +18,7 @@ If you wish to build from specific mirrors, set
 files to use during bootstrap and build.  The repo files should be
 named with a prefix ``dib-mirror-`` and will be removed from the final
 image.
+
+If you wish to include extra repositories, set ``DIB_YUM_MINIMAL_EXTRA_REPOS``
+to a directory with the ``.repo`` files. The repo files will not be removed
+from the final image.
