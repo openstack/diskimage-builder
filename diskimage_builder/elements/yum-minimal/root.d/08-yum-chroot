@@ -74,7 +74,7 @@ function _install_repos {
     packages="basesystem filesystem setup "
 
     if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 29 ]]; then
-        packages+="${DISTRO_NAME}-release-common "
+        packages+="fedora-release-cloud fedora-release-common "
     else
         packages+="${DISTRO_NAME}-release "
     fi
