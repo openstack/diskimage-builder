@@ -22,6 +22,9 @@
     "fedora": {
       "29": {
         "network-scripts": "network-scripts"
+      },
+      "30": {
+        "network-scripts": "network-scripts"
       }
     }
   },

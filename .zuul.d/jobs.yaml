@@ -242,6 +242,21 @@
           DIB_SIMPLE_INIT_NETWORKMANAGER: '1'
 
 - job:
+    name: dib-nodepool-functional-openstack-fedora-30-src
+    description: |
+      Test building and booting a Fedora 30 image with Nodepool and OpenStack
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_extra_packages:
+        - rpm
+        - yum-utils
+      nodepool_diskimage:
+        base_element: fedora-minimal
+        release: '30'
+        env-vars:
+          DIB_SIMPLE_INIT_NETWORKMANAGER: '1'
+
+- job:
     name: dib-nodepool-functional-openstack-ubuntu-trusty-src
     description: |
       Test building and booting an Ubuntu trusty image with Nodepool
