@@ -13,8 +13,7 @@
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
-        - dib-nodepool-functional-openstack-opensuse-150-src
-        - dib-nodepool-functional-openstack-opensuse-151-src
+        - dib-nodepool-functional-openstack-opensuse-15-src
         - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic
@@ -38,8 +37,7 @@
         - openstack-tox-pylint
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-fedora-29-src
-        - dib-nodepool-functional-openstack-opensuse-150-src
-        - dib-nodepool-functional-openstack-opensuse-151-src
+        - dib-nodepool-functional-openstack-opensuse-15-src
         - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic

@@ -43,7 +43,7 @@
       dib_functests:
         - centos7/build-succeeds
         - opensuse/build-succeeds
-        - opensuse/opensuse151-build-succeeds
+        - opensuse/opensuse15-build-succeeds
         - fedora/build-succeeds
         - ubuntu/trusty-build-succeeds
         - ubuntu/xenial-build-succeeds
@@ -161,7 +161,7 @@
       # opensuse-minimal can only build on xenial ATM, as other
       # platforms don't have zypper
       dib_functests_extra:
-        - opensuse-minimal/opensuse151-build-succeeds
+        - opensuse-minimal/opensuse15-build-succeeds
 
 - job:
     name: dib-functests-xenial-python3-containers
@@ -382,9 +382,9 @@
         mirror: "http://{{ zuul_site_mirror_fqdn }}/opensuse"
 
 - job:
-    name: dib-nodepool-functional-openstack-opensuse-151-src
+    name: dib-nodepool-functional-openstack-opensuse-15-src
     description: |
-      Test building and booting an openSUSE 15.1 image with Nodepool
+      Test building and booting an openSUSE 15.x image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
