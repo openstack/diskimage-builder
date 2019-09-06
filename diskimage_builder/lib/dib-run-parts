@@ -105,6 +105,17 @@ if [ "$show_list" == "1" ] ; then
     exit 0
 fi
 
+if [ ${DIB_DEBUG_TRACE} -gt 0 ]; then
+    non_exec=$(find $target_dir -maxdepth 1 -xtype f \! -executable -printf '%f\n')
+    if [ ! -z "$non_exec" ]; then
+        output "Ignoring non-executable files: $non_exec"
+    fi
+    bad_filename=$(find $target_dir -maxdepth 1 -xtype f -executable -printf '%f\n' | grep -v -E "$allowed_regex" || echo "")
+    if [ ! -z "$bad_filename" ]; then
+        output "Ignoring non-conforming filenames: $bad_filename"
+    fi
+fi
+
 PROFILE_DIR=$(mktemp -d --tmpdir profiledir.XXXXXX)
 
 # note, run this in a sub-shell so we don't pollute our
