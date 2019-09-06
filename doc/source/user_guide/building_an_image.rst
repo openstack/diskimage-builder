@@ -57,6 +57,9 @@ formats are:
  * docker
  * raw
 
+When building a tgz image, note that the `DIB_GZIP_BIN` environment variable
+can be used to set the path of the gzip executable.
+
 Disk Image Layout
 -----------------
 

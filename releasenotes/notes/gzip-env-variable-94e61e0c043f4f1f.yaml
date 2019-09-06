@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The `DIB_GZIP_BIN` environment variable enables builders to change the
+    path to `gzip`, such as when an alternate gzip is to be used (ie. pigz).
