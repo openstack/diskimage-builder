@@ -17,7 +17,7 @@
       "grub_bios_arm64": "grub-efi-arm64-bin"
     },
     "redhat":{
-      "signed_grub_efi": "efibootmgr grub2-efi-modules grub2-efi",
+      "signed_grub_efi": "efibootmgr grub2-efi-x64-modules grub2-efi-x64",
       "signed_shim_efi": "shim",
       "grub_bios": "grub2"
     },
