@@ -1,0 +1,11 @@
+---
+fixes:
+  - |
+    The sysprep element has been fixed to truncate ``/var/lib/dpkg/machine-id``
+    (``/etc/machine-id`` was already being truncated). This ensures a
+    machine-id is not packaged in the image and systemd will be forced to
+    generate a new one upon first boot.
+  - |
+    The sysprep element is added as a dependency to the ``debootstrap`` element to
+    ensure that it runs on all Debian builds, including debian-minimal based
+    images.

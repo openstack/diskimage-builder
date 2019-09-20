@@ -9,3 +9,7 @@ set -o pipefail
 if [ -e /etc/machine-id ]; then
     > /etc/machine-id
 fi
+
+if [ -e /var/lib/dbus/machine-id ]; then
+    > /var/lib/dbus/machine-id
+fi
