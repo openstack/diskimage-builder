@@ -1,0 +1,8 @@
+---
+features:
+  - Added CentOS 8 support.
+deprecations:
+  - |
+    The ``centos7`` element is deprecated and is left only for backward
+    compatibility. Use the ``centos`` element instead. Note that you should set
+    ``DIB_RELEASE`` to ``7`` when using the ``centos`` element.

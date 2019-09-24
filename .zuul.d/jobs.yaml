@@ -42,6 +42,7 @@
     vars:
       dib_functests:
         - centos7/build-succeeds
+        - centos/8-build-succeeds
         - opensuse/build-succeeds
         - opensuse/opensuse15-build-succeeds
         - fedora/build-succeeds
