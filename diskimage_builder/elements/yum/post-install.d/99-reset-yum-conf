@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [[ $DISTRO_NAME == "fedora" && $DIB_RELEASE -ge 22 ]]; then
+if [[ ${YUM} == "dnf" ]]; then
     cfg=/etc/dnf/dnf.conf
     cachedir=/var/cache/dnf
 else
