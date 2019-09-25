@@ -253,12 +253,25 @@ sudo mount --bind $YUM_CACHE $TMP_MOUNT_PATH/tmp/yum
 
 _install_repos
 
-# install dnf for >= f22
-if [ $DIB_RELEASE -ge 22 ]; then
-    # Fedora 27 has a "curl-minimal" package that will get pulled in as a
-    # rpm dependency.  This causes problems later if/when "curl" gets
-    # installed.  To avoid this, just install the full curl first up.
-    _install_pkg_manager dnf dnf-plugins-core yum curl
+# Install package manager
+
+# We are somewhat fighting against the "yum" version on the host to
+# get things installed correctly.  Fedora 27 onwards has a
+# "curl-minimal" package that will get pulled in by default for the
+# initial install (ianw: I think because the yum doesn't understand
+# weak dependencies correctly).  This causes problems later if/when
+# "curl" gets installed (you need to add --allowerasing to let dnf get
+# rid of the old package).  To avoid this, just install the full curl
+# and first up.  On Centos, it's different again and we need to
+# specify libcurl as well, or the minimal libcurl packages come in
+# causing similar problems.  *But* -- we can't also do that on Fedora
+# it seems, as it seems like as part of the Fedora modular updates
+# (https://docs.fedoraproject.org/en-US/modularity/) we can pick up
+# seemingly mismatched libraries.
+if [[ ${DISTRO_NAME} == 'fedora' ]]; then
+    _install_pkg_manager dnf dnf-plugins-core curl
+elif [[ ${DISTRO_NAME} == centos && $DIB_RELEASE -ge 8 ]]; then
+    _install_pkg_manager dnf dnf-plugins-core curl libcurl
 else
     _install_pkg_manager yum
 fi
