@@ -16,7 +16,11 @@ case "$DIB_INIT_SYSTEM" in
             if [[ ${DIB_SIMPLE_INIT_NETWORKMANAGER} != 1 ]]; then
                 # NOTE(pabelanger): Glean requires network.service for
                 # these platforms when not using networkmanager
-                systemctl enable network.service
+                if [[ ${DIB_RELEASE} -lt 8 ]]; then
+                    # Not available on Centos 8
+                    # NOTE(ianw) we should evaluate if Fedora needs this
+                    systemctl enable network.service
+                fi
             fi
         elif [[ ${DISTRO_NAME} =~ (opensuse) ]]; then
             # on suse, this is named wicked.service, but it's the same
