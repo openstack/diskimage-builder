@@ -183,28 +183,15 @@ function _install_pkg_manager {
         local _lang_pack=""
         local _extra_pkgs=""
 
-        if [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -le 23 ]; then
-            # _install_langs is a rpm macro that limits the translation
-            # files, etc installed by packages.  For Fedora 23 [1], the
-            # glibc-common package will obey this to only install the
-            # listed locales, keeping things much smaller (we still have
-            # to clean up locales manually on centos7).  We install just
-            # en_US because people often ssh in with that locale, but
-            # leave out everything else.  Note that yum has an option to
-            # set this from the command-line [2], but the yum in trusty we
-            # are using is too old to have it.  So we set it directly in
-            # the macros file
-            #
-            # [1] http://pkgs.fedoraproject.org/cgit/rpms/glibc.git/commit/glibc.spec?h=f23&id=91764bd9ec690d4b8a886c0a3a104aac12d340d2
-            # [2] http://yum.baseurl.org/gitweb?p=yum.git;a=commit;h=26128173b362474456e8f0642073ecb0322ed031
-            echo "%_install_langs C:en_US:en_US.UTF-8" >> $HOME/.rpmmacros
-        elif [ $DISTRO_NAME = "fedora" -a $DIB_RELEASE -ge 24 ]; then
-            # glibc on F24 has split locales into "langpack" packages.
-            # Yum doesn't understand the weak-dependencies glibc now
-            # uses to get the minimal-langpack and chooses a
-            # random(ish) one that satisfies the locale dependency
-            # (rhbz#1349258).  Work-around this by explicitly requring
-            # the minimal and english (for en_US.UTF-8) pack.
+        if [[ $DISTRO_NAME == "fedora" ]] || \
+            [[ $DISTRO_NAME == "centos" && $DIB_RELEASE -ge 8 ]]; then
+            # glibc from F24 onwards has split locales into "langpack"
+            # packages.  Host yum doesn't understand the
+            # weak-dependencies glibc now uses to get the
+            # minimal-langpack and chooses a random(ish) one that
+            # satisfies the locale dependency (rhbz#1349258).
+            # Work-around this by explicitly requring the minimal and
+            # english (for en_US.UTF-8) pack.
             _lang_pack="glibc-minimal-langpack glibc-langpack-en"
         fi
 

@@ -23,9 +23,9 @@ set -o pipefail
 
 # effectively: febootstrap-minimize --keep-zoneinfo --keep-rpmdb --keep-services "$target"
 
-# This is only required on CentOS ... see notes in
+# This is only required on CentOS7 ... see notes in
 # root.d/08-yum-chroot about %_install_langs
-if [[ $DISTRO_NAME != "fedora" ]]; then
+if [[ $DISTRO_NAME == "centos" && $DIB_RELEASE == "7" ]]; then
 
     # Stripping *all* locales is a bad idea.  For now, we take the
     # suggestion in [1] for reducing this
