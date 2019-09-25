@@ -49,8 +49,8 @@ deltarpm=False
 deltarpm_percentage=0
 EOF
 
-# Centos Minimal
-CENTOS_MIN_DIR=$BASE_DIR/centos-minimal/yum.repos.d
+# Centos 7 Minimal
+CENTOS_MIN_DIR=$BASE_DIR/centos-minimal/yum.repos.d/7
 mkdir -p $CENTOS_MIN_DIR
 
 cat <<EOF > $CENTOS_MIN_DIR/dib-mirror-base.repo
@@ -75,5 +75,33 @@ name=CentOS-\$releasever - Extras
 baseurl=$NODEPOOL_CENTOS_MIRROR/\$releasever/extras/\$basearch/
 gpgcheck=0
 EOF
+
+# Centos 8 Minimal
+CENTOS_MIN_DIR=$BASE_DIR/centos-minimal/yum.repos.d/8
+mkdir -p $CENTOS_MIN_DIR
+
+cat <<EOF > $CENTOS_MIN_DIR/dib-mirror-base.repo
+[base]
+name=CentOS-\$releasever - Base
+baseurl=$NODEPOOL_CENTOS_MIRROR/\$releasever/BaseOS/\$basearch/os/
+gpgcheck=0
+EOF
+
+cat <<EOF > $CENTOS_MIN_DIR/dib-mirror-appstream.repo
+[base]
+name=CentOS-\$releasever - AppStream
+baseurl=$NODEPOOL_CENTOS_MIRROR/\$releasever/AppStream/\$basearch/os/
+gpgcheck=0
+EOF
+
+
+cat <<EOF > $CENTOS_MIN_DIR/dib-mirror-extras.repo
+#additional packages that may be useful
+[extras]
+name=CentOS-\$releasever - Extras
+baseurl=$NODEPOOL_CENTOS_MIRROR/\$releasever/extras/\$basearch/os/
+gpgcheck=0
+EOF
+
 
 ## apt sources (todo)

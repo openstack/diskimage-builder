@@ -1,0 +1,5 @@
+[centos-base]
+name=CentOS-$releasever - Base
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=baseos
+gpgcheck=0
+

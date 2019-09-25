@@ -1,7 +1,7 @@
 ==============
 centos-minimal
 ==============
-Create a minimal image based on CentOS 7.
+Create a minimal image based on CentOS
 
 Use of this element will require 'yum' and 'yum-utils' to be installed on
 Ubuntu and Debian. Nothing additional is needed on Fedora or CentOS.

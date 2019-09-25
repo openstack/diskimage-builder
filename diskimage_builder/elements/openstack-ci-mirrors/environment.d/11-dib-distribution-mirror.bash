@@ -53,7 +53,7 @@ if [[ -d ${DIB_OS_CI_YUM_REPOS:-/not/a/path/} ]]; then
             export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/fedora-minimal/default/yum.repos.d
         fi
     elif [[ "${DISTRO_NAME}" == "centos" ]]; then
-        export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/centos-minimal/yum.repos.d
+        export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/centos-minimal/${DIB_RELEASE}/yum.repos.d
     fi
 
 fi

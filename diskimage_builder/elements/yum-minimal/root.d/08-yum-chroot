@@ -95,7 +95,15 @@ function _install_repos {
     # routines.  In the gate, environment.d files for the funtional
     # tests will set DIB_YUM_MINIMAL_BOOTSTRAP_REPOS -- this contains
     # mirrors correct for the region setup by contrib/setup-gate-mirrors.sh
-    local repo=${DIB_YUM_MINIMAL_BOOTSTRAP_REPOS:-${TMP_HOOKS_PATH}/yum.repos.d}
+    local repo=${DIB_YUM_MINIMAL_BOOTSTRAP_REPOS:-}
+    if [[ -z ${repo} ]]; then
+        # take in preference more specific subdirs
+        if [[ -d ${TMP_HOOKS_PATH}/yum.repos.d/${DIB_RELEASE} ]]; then
+            repo=${TMP_HOOKS_PATH}/yum.repos.d/${DIB_RELEASE}
+        else
+            repo=${TMP_HOOKS_PATH}/yum.repos.d
+        fi
+    fi
 
     # yumdownloader puts repo xml files and such into a directory
     # ${TMPDIR}/yum-$USER-random.  Since we don't need this once the
