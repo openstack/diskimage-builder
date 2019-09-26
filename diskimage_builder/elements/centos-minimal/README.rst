@@ -6,6 +6,9 @@ Create a minimal image based on CentOS
 Use of this element will require 'yum' and 'yum-utils' to be installed on
 Ubuntu and Debian. Nothing additional is needed on Fedora or CentOS.
 
+By default this builds CentOS 7 images.  Set ``DIB_RELEASE`` to ``7``
+or ``8`` to explicitly select the release.
+
 For CentOS 7, by default, ``DIB_YUM_MINIMAL_CREATE_INTERFACES`` is set
 to enable the creation of
 ``/etc/sysconfig/network-scripts/ifcfg-eth[0|1]`` scripts to enable

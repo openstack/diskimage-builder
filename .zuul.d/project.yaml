@@ -11,6 +11,7 @@
       jobs:
         - openstack-tox-pylint
         - dib-nodepool-functional-openstack-centos-7-src
+        - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
         - dib-nodepool-functional-openstack-opensuse-15-src
@@ -36,6 +37,7 @@
       jobs:
         - openstack-tox-pylint
         - dib-nodepool-functional-openstack-centos-7-src
+        - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
         - dib-nodepool-functional-openstack-opensuse-15-src

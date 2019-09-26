@@ -21,7 +21,8 @@
     vars:
       dib_functests:
         - apt-sources/test-sources
-        - centos-minimal/build-succeeds
+        - centos-minimal/7-build-succeeds
+        - centos-minimal/8-build-succeeds
         - fedora-minimal/build-succeeds
         - ironic-agent/build-succeeds-fedora
         - pip-and-virtualenv/source-install-fedora
@@ -222,6 +223,20 @@
       nodepool_diskimage:
         base_element: centos-minimal
         release: '7'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
+
+- job:
+    name: dib-nodepool-functional-openstack-centos-8-src
+    description: |
+      Test building and booting a Centos 8 image with Nodepool and OpenStack
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_extra_packages:
+        - rpm
+        - yum-utils
+      nodepool_diskimage:
+        base_element: centos-minimal
+        release: '8'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
