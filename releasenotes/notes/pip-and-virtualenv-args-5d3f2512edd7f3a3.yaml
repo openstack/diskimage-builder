@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    The ``pip-and-virtualenv`` element has added variables ``DIB_PYTHON_PIP``
+    and ``DIB_PYTHON_VIRTUALENV`` to make it more straight forward for other
+    elements to install packages or create virtualenv environment
+deprecations:
+  - |
+    Source install for ``pip-and-virtualenv`` is deprecated for RHEL
+    8/CentOS 8

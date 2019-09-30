@@ -4,10 +4,6 @@ pip-and-virtualenv
 
 This element installs pip and virtualenv in the image.
 
-.. note:: This element setups and Python 2 and Python 3 environment.
-          This means it will bring in python2 packages, so isn't
-          appropriate if you want a python3 only environment.
-
 Package install
 ===============
 
@@ -16,10 +12,12 @@ from distribution packages.  In this case, ``pip`` and ``virtualenv``
 will be installed *only* for the python version identified by
 ``dib-python`` (i.e. the default python for the platform).
 
-Distribution packages have worked out name-spacing such that only
+Namespacing of the tools will be up to your distribution.  Some
+distribution packages have worked out name-spacing such that only
 python2 or python3 owns common scripts like ``/usr/bin/pip`` (on most
 platforms, ``pip`` refers to python2 pip, and ``pip3`` refers to
-python3 pip, although some may choose the reverse).
+python3 pip, although some may choose the reverse).  Other platforms
+have avoided making a decision and require explicit version suffixes.
 
 To install pip and virtualenv from package::
 
@@ -28,12 +26,28 @@ To install pip and virtualenv from package::
 Source install
 ==============
 
-Source install is the default.  If the source installtype is used,
-``pip`` and ``virtualenv`` are installed from the latest upstream
-releases.
+.. note:: For source installs this element setups and Python 2 and
+          Python 3 environments.  This means it will bring in python2
+          packages, so isn't appropriate if you want a python3 only
+          environment.
 
-Source installs from these tools are not name-spaced.  It is
-inconsistent across platforms if the first or last install gets to own
+.. note:: Source install is considered deprecated for several reasons.
+          Because it makes for a hetrogenous environment between
+          distro packaged tools and upstream it means the final images
+          create bespoke environments that make standarised testing
+          difficult.  The tricks used around holding packages to
+          overwrite them cause difficulty for users of images.  This
+          also brings in Python 2 unconditonally, something not wanted
+          on modern Python 3 only distributions.
+
+Source install is the default on most platforms for historical
+purposes.  The current exception(s) are RHEL8 and CentOS 8.
+
+If the source installtype is used, ``pip`` and ``virtualenv`` are
+installed from the latest upstream releases.
+
+Source installs from upstream releases are not name-spaced.  It is
+inconsistent across platforms if the first or last install will own
 common scripts like ``/usr/bin/pip`` and ``virtualenv``.
 
 To avoid inconsistency, we firstly install the packaged python 2
@@ -54,8 +68,25 @@ The system will be left in the following state:
 Source install is supported on limited platforms.  See the code, but
 this includes Ubuntu and RedHat platforms.
 
-Using the tools
-===============
+Environment Variables
+=====================
+
+To simplify the common-case of "install a package" or "create a
+virtualenv" with the default system Python, the following variables
+are exported by this element:
+
+* ``DIB_PYTHON_PIP``
+* ``DIB_PYTHON_VIRTUALENV``
+
+This will create/install using the ``dib-python`` version for the
+platform (i.e. python2 for older distros, python3 for modern distros).
+Note that on Python 3 platforms it will use the inbuilt ``venv``
+(rather than the ``virtualenv`` package -- if you absolutely need
+features only ``virtualenv`` provides you should call it directly in
+your element; see below).
+
+Explicit use of the tools
+=========================
 
 Due to the essentially unsolvable problem of "who owns the script", it
 is recommended to *not* call ``pip`` or ``virtualenv`` directly.  You
