@@ -21,8 +21,4 @@ fi
 set -eu
 set -o pipefail
 
-if [ "$DIB_PYTHON_VERSION" == "3" ]; then
-    pip3 install glean
-else
-    pip install glean
-fi
+$DIB_PYTHON_PIP install glean
