@@ -28,7 +28,6 @@ mkdir -p $FEDORA_MIN_DIR
 cat <<EOF > $FEDORA_MIN_DIR/dib-mirror-fedora.repo
 [fedora]
 name=Fedora \$releasever - \$basearch
-failovermethod=priority
 baseurl=$NODEPOOL_FEDORA_MIRROR/releases/\$releasever/Everything/\$basearch/os/
 enabled=1
 metadata_expire=7d
@@ -41,7 +40,6 @@ EOF
 cat <<EOF > $FEDORA_MIN_DIR/dib-mirror-fedora-updates.repo
 [updates]
 name=Fedora \$releasever - \$basearch - Updates
-failovermethod=priority
 baseurl=$NODEPOOL_FEDORA_MIRROR/updates/\$releasever/Everything/\$basearch/
 enabled=1
 gpgcheck=0
