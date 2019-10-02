@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    A new variable ``DIB_DEBIAN_SECURITY_MIRROR`` is added to override
+    the path to the security repositories.  Previously this was
+    hard-coded to the upstream repositories, which could get out of
+    sync with mirrors specified with ``DIB_DISTRIBUTION_MIRROR``.

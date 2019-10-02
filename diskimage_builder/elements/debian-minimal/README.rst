@@ -12,4 +12,11 @@ be created, the variable ``DIB_RELEASE`` can be set appropriately.
 
 Note that this element installs ``systemd-sysv`` as the init system
 
+The element obeys the ``DIB_DISTRIBUTION_MIRROR`` argument for
+mirroring (see ``debootsrap`` element documentation).  However, the
+security repositories are separate for Debian, so we can not assume
+they exist at ``DIB_DISTRIBUTION_MIRROR``.  If you do not wish to use
+the upstream repository (from ``security.debian.org``) override it
+with ``DIB_DEBIAN_SECURITY_MIRROR``.
+
 .. element_deps::
