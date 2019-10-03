@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The ``simple-init`` element will now default to using NetworkManager
+    for CentOS and Fedora platforms.  For CentOS 8 and Fedora, the
+    ``DIB_SIMPLE_INIT_NETWORKMANAGER=0`` option is no longer supported.

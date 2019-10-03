@@ -12,7 +12,7 @@ case "$DIB_INIT_SYSTEM" in
         exit 0
         ;;
     systemd)
-        if [[ ${DISTRO_NAME} =~ (centos|rhel7|fedora) ]]; then
+        if [[ ${DISTRO_NAME} == centos && ${DIB_RELEASE} -eq 7 ]]; then
             if [[ ${DIB_SIMPLE_INIT_NETWORKMANAGER} != 1 ]]; then
                 # NOTE(pabelanger): Glean requires network.service for
                 # these platforms when not using networkmanager
@@ -22,6 +22,10 @@ case "$DIB_INIT_SYSTEM" in
             # on suse, this is named wicked.service, but it's the same
             # as network.service.
             systemctl enable wicked.service
+        else
+            # NOTE(ianw): it might be better to whitelist platforms in
+            # the future, but for now assume it will "just work"
+            continue
         fi
         ;;
     openrc)
