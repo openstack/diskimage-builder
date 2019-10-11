@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    The ``DIB_SIMPLE_INIT_NETWORKMANAGER_IPV6_DELAY`` variable is removed as
+    it turned out that increasing this delay increased the odds that
+    NetworkManager would fail to configure IPv6 on an interface. Instead,
+    glean has been updated to not up interfaces and relies on NetworkManager
+    to do this. This results in reliable IPv4 and IPv6 config.
