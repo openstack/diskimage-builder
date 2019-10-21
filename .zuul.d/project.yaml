@@ -12,9 +12,9 @@
         - openstack-tox-pylint
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-8-src
-        - dib-nodepool-functional-openstack-fedora-29-src
-        - dib-nodepool-functional-openstack-fedora-30-src:
-            voting: false
+        # See note in jobs.yaml about pausing these
+        # - dib-nodepool-functional-openstack-fedora-29-src
+        # - dib-nodepool-functional-openstack-fedora-30-src
         - dib-nodepool-functional-openstack-opensuse-15-src
         - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
