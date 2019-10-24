@@ -66,7 +66,7 @@ fi
 IFS='|' read -ra SPLIT_MOUNTS <<< "$DIB_MOUNTPOINTS"
 for MOUNTPOINT in "${SPLIT_MOUNTS[@]}"; do
     if [ "${MOUNTPOINT}" != "/tmp/in_target.d" ] && [ "${MOUNTPOINT}" != "/dev" ] && [ "${MOUNTPOINT}" != "/boot/efi" ]; then
-        if ! [ -z ${_runcon} ] && ! pgrep kauditd >/dev/null; then
+        if ! [ -z "${_runcon}" ] && ! pgrep kauditd >/dev/null; then
             echo "*** SELinux enabled and kauditd not found, suggesting auditing support is disabled in the host kernel. setfiles will fail without this, please enable and rebuild"
             exit 1
         fi
