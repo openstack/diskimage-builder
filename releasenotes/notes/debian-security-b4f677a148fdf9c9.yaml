@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    A new variable ``DIB_DEBIAN_SECURITY_SUBPATH`` is added to
+    override the suite subpath of security repositories.  Previously
+    this was hard-coded to the upstream repository layout, which may
+    not always match the mirror's layout.

@@ -17,6 +17,8 @@ mirroring (see ``debootsrap`` element documentation).  However, the
 security repositories are separate for Debian, so we can not assume
 they exist at ``DIB_DISTRIBUTION_MIRROR``.  If you do not wish to use
 the upstream repository (from ``security.debian.org``) override it
-with ``DIB_DEBIAN_SECURITY_MIRROR``.
+with ``DIB_DEBIAN_SECURITY_MIRROR``. The security suite name's subpath
+can also be overridden to something other than ``/updates`` with the
+``DIB_DEBIAN_SECURITY_SUBPATH`` variable.
 
 .. element_deps::
