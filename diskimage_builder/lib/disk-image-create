@@ -100,10 +100,6 @@ function show_options () {
     echo
     echo "NOTE: At least one distribution root element must be specified."
     echo
-    echo "NOTE: If using the VHD output format you need to have a patched version of vhd-util installed for the image"
-    echo "      to be bootable. The patch is available here: https://github.com/emonty/vhd-util/blob/master/debian/patches/citrix"
-    echo "      and a PPA with the patched tool is available here: https://launchpad.net/~openstack-ci-core/+archive/ubuntu/vhd-util"
-    echo
     echo "Examples:"
     if [ "$IS_RAMDISK" == "0" ]; then
         echo "    ${SCRIPTNAME} -a amd64 -o ubuntu-amd64 vm ubuntu"
@@ -269,8 +265,8 @@ for X in ${!IMAGE_TYPES[@]}; do
             IMAGE_TYPES+=('tar')
             ;;
         vhd)
-            if ! type vhd-util > /dev/null 2>&1; then
-                echo "vhd output format specified but no vhd-util executable found."
+            if ! type qemu-img > /dev/null 2>&1; then
+                echo "vhd output format specified but no qemu-img executable found."
                 exit 1
             fi
             ;;

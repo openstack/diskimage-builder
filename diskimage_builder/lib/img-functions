@@ -147,12 +147,7 @@ function compress_and_save_image () {
         $DIB_GZIP_BIN -9 < $IMAGE_NAME.tar > $1-new
         rm $IMAGE_NAME.tar
     elif [ "$IMAGE_TYPE" == "vhd" ]; then
-        cp $TMP_IMAGE_PATH $1-intermediate
-        vhd-util convert -s 0 -t 1 -i $1-intermediate -o $1-intermediate
-        vhd-util convert -s 1 -t 2 -i $1-intermediate -o $1-new
-        # The previous command creates a .bak file
-        rm $1-intermediate.bak
-        OUT_IMAGE_PATH=$1-new
+        qemu-img convert $TMP_IMAGE_PATH -O vpc -o subformat=dynamic $1-new
     else
         echo "Converting image using qemu-img convert"
         qemu-img convert ${COMPRESS_IMAGE:+-c} -f raw -O $IMAGE_TYPE $EXTRA_OPTIONS $TMP_IMAGE_PATH $1-new
