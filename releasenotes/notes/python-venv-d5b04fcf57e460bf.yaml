@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    The ``pip-and-virtualenv`` element also installs ``python3-venv``
+    on Python-3 Debian-like distributions to ensure
+    ``$DIB_PYTHON_VIRTUALENV`` works as expected.

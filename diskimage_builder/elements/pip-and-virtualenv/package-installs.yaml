@@ -31,3 +31,6 @@ python-dev:
 python3-dev:
   installtype: source
   dib_python_version: 3
+# Separate package on debubuntu
+python3-venv:
+  dib_python_version: 3

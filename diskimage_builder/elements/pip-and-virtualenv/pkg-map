@@ -7,6 +7,9 @@
     }
   },
   "family": {
+    "debian": {
+      "python3-venv": "python3-venv"
+    },
     "gentoo": {
       "python-pip": "dev-python/pip",
       "python3-pip": "dev-python/pip",
@@ -28,6 +31,7 @@
   },
   "default": {
     "python-xml": "",
-    "python3": ""
+    "python3": "",
+    "python3-venv": ""
   }
 }
