@@ -1,6 +1,0 @@
----
-upgrade:
-  - |
-    Generation of VHD (VPC/Microsoft Virtual PC/Rackspace) images is
-    now done via qemu-img, rather than the externally patched
-    ``vhdutil`` package which is no longer maintained.
