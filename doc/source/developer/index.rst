@@ -11,6 +11,7 @@ Developer Guide
    developing_elements
    dib_lint
    stable_interfaces
+   vhd_creation
 
 This documentation explains how to get started with creating your own
 disk-image-builder elements as well as some high level concepts for element
