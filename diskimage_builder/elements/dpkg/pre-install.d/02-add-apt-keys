@@ -26,7 +26,7 @@ if [ ! -d "${KEY_DIRECTORY}" ]; then
 fi
 
 for KEY in ${KEY_DIRECTORY}/*; do
-    if ! file -b "${KEY}" | grep -q 'PGP public key block'; then
+    if ! file -b "${KEY}" | grep -qE '(PGP public key block|GPG key public ring)'; then
         echo "Skipping ${KEY}, not a valid GPG public key"
         continue
     fi
