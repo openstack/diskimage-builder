@@ -8,6 +8,8 @@ dosfstools
 gdisk
 kpartx
 sudo
+curl
+git
 
 squashfs-tools [!platform:suse]
 squashfs [platform:suse]
@@ -24,6 +26,7 @@ rpm [platform:dpkg]
 uuid-runtime [platform:dpkg]
 yum-utils [platform:dpkg]
 debootstrap [platform:dpkg]
+procps [platform:dpkg]
 
 # centos/fedora
 qemu-img [platform:redhat]
@@ -32,9 +35,11 @@ policycoreutils-python-utils [platform:fedora]
 # NOTE(cgoncalves): setuptools is required by python3-setools (a dependency of
 # policycoreutils-python) but is not in its RPM dependency list in Fedora 28.
 python3-setuptools [platform:fedora]
+procps-ng [platform:redhat]
 
 # suse
 python-pyliblzma [platform:suse]
 yum-utils [platform:suse]
 qemu-tools [platform:suse]
 debootstrap [platform:suse]
+procps [platform:suse]
