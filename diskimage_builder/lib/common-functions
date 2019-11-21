@@ -66,9 +66,17 @@ function finish_image () {
 
     mv $OUT_IMAGE_PATH $1
     if [ "$DIB_CHECKSUM" == "1" ]; then
-      # NOTE(pabelanger): Read image into memory once and generate both checksum
-      # files.
-      md5sum $1 > $1.md5 & sha256sum $1 > $1.sha256 & wait
+
+      # NOTE(pabelanger): Read image into memory once and generate
+      # both checksum files.
+      # NOTE(ianw): we've seen issues with this waiting for
+      # our outfilter.py wrapper when containerised (probably due to
+      # no tty).  Waiting for just these processes is a bit of hacky
+      # workaround ...
+      declare -a wait_for
+      md5sum $1 > $1.md5 & wait_for+=($!)
+      sha256sum $1 > $1.sha256 & wait_for+=($!)
+      wait "${wait_for[@]}"
     fi
     echo "Image file $1 created..."
 }
