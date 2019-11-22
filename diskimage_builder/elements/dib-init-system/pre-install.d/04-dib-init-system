@@ -6,4 +6,16 @@ fi
 set -eu
 set -o pipefail
 
-install -m 0755 -o root -g root $(dirname $0)/../dib-init-system /usr/bin/
+FILE=/usr/local/bin/dib-init-system
+
+# This is a dummy script that simply echos the output of
+# ${DIB_INIT_SYSTEM}.  This script used to try and guess the init
+# system, but that doesn't work.  This script is deprecated.
+
+cat > ${FILE} <<EOF
+#!/bin/bash
+echo ${DIB_INIT_SYSTEM}
+EOF
+
+chown root:root ${FILE}
+chmod 775 ${FILE}

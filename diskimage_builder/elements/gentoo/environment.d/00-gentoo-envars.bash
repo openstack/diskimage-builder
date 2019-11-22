@@ -21,3 +21,5 @@ fi
 for (( i=0; i<${#GENTOO_EMERGE_ENV[@]}; i++ )); do
     eval export "${GENTOO_EMERGE_ENV[i]}"
 done
+
+export DIB_INIT_SYSTEM=systemd
