@@ -14,6 +14,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import glob
 import logging
 import os
 import re
@@ -52,8 +53,10 @@ def main():
         # second, compose the list of modules to boot
         modules_to_boot.append(dracut_object.get('name', None))
 
-    # regenerate dracut with the list of installed modules
-    if len(modules_to_boot) > 0:
+    conf_overrides = glob.glob('/etc/dracut.conf.d/*.conf')
+
+    # regenerate dracut with the list of installed modules and conf overrides
+    if modules_to_boot or conf_overrides:
         cmdline = ["select-boot-kernel-initrd"]
         logging.debug("Calling: %s" % cmdline)
         subp = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
@@ -67,10 +70,12 @@ def main():
         kernel_search = re.match("vmlinuz-(.*)", kernel_set[0])
         kernel_version = "%s" % kernel_search.groups(1)
         ramdisk_path = "/boot/%s" % kernel_set[1].strip()
-        modules_to_boot = ' ' .join(modules_to_boot)
 
-        cmdline = ['dracut', '--force', '--add', modules_to_boot,
-                   '-f', ramdisk_path, kernel_version]
+        cmdline = ['dracut', '--force']
+        if modules_to_boot:
+            modules_to_boot = ' ' .join(modules_to_boot)
+            cmdline += ['--add', modules_to_boot]
+        cmdline += ['-f', ramdisk_path, kernel_version]
         logging.debug("Calling: %s" % cmdline)
         subp = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
         out, err = subp.communicate()

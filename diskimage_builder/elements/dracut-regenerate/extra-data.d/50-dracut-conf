@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 1 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ ! -d $TMP_MOUNT_PATH/etc/dracut.conf.d ]; then
+    sudo mkdir -p $TMP_MOUNT_PATH/etc/dracut.conf.d
+fi
+
+eval declare -A image_elements=($(get_image_element_array))
+
+for i in "${!image_elements[@]}"; do
+    element=$i
+    element_dir=${image_elements[$i]}
+
+    if [ -d "${element_dir}/dracut.conf.d/" ]; then
+        echo "Copying dracut config from ${element_dir}"
+        sudo cp ${element_dir}/dracut.conf.d/*.conf $TMP_MOUNT_PATH/etc/dracut.conf.d/
+    fi
+done

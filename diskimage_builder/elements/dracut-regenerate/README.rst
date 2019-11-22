@@ -16,3 +16,7 @@ a yaml blob with the following format::
       - <package4>
 
 By default, this element will bring lvm and crypt modules.
+
+Also adds the ability to copy specific files into /etc/dracut.conf.d directory
+to allow any dracut settings to be configured. To achieve that the files to be
+copied need to be placed inside an specific dracut.d directory of the element.
