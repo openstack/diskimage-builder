@@ -8,8 +8,7 @@ Inject a PyPI mirror
 
 Use a custom PyPI mirror to build images. The default is to bind mount one from
 ~/.cache/image-create/pypi/mirror into the build environment as mirror URL
-file:///tmp/pypi. The element temporarily overwrites /root/.pip.conf
-and .pydistutils.cfg to use it.
+file:///tmp/pypi. The element temporarily overwrites /root/.pip.conf to use it.
 
 When online, the official pypi.python.org pypi index is supplied as an
 extra-url, so uncached dependencies will still be available. When offline, only
@@ -21,9 +20,7 @@ DIB\_NO\_PYPI\_PIP to any non-empty value.
 To use an arbitrary mirror set DIB\_PYPI\_MIRROR\_URL=http[s]://somevalue/
 
 Additional mirrors can be added by exporting DIB\_PYPI\_MIRROR\_URL\_1=... etc.
-Only the one mirror can be used by easy-install, but since wheels need to be in
-the first mirror to be used, the last listed mirror is used as the pydistutils
-index. NB: The sort order for these variables is a simple string sort - if you
+NB: The sort order for these variables is a simple string sort - if you
 have more than 9 additional mirrors, some care will be needed.
 
 You can also set the number of retries that occur on failure by setting the
