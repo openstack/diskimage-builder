@@ -47,15 +47,54 @@ function get_if_type() {
 
 function enable_interface() {
     local interface=$1
+    local ipv6_init=$2
+    local ipv6_AdvManagedFlag=$3
+    local ipv6_AdvOtherConfigFlag=$4
 
     serialize_me
     if [ "$CONF_TYPE" == "eni" ]; then
         printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
+        if [ "$ipv6_init" == "True" ]; then
+            # Make DUID-UUID Type 4 (RFC 6355)
+            echo "default-duid \"\\x00\\x04$(sed 's/.\{2\}/\\x&/g' < /etc/machine-id)\";" >"/var/lib/dhclient/dhclient6--$interface.lease"
+            if [ $ipv6_AdvManagedFlag == "Yes" ]; then
+                # IPv6 DHCPv6 Stateful address configuration
+                printf "iface $interface inet6 dhcp\n\n" >>$ENI_FILE
+                echo "DHCPv6 Stateful Configured."
+            elif [ $ipv6_AdvOtherConfigFlag == "Yes" ]; then
+                # IPv6 DHCPv6 Stateless address configursation
+                printf "iface $interface inet6 auto\n\tdhcp 1\n\n" >>$ENI_FILE
+                echo "DHCPv6 Stateless Configured."
+            else
+                # IPv6 Autoconfiguration (SLAAC)
+                printf "iface $interface inet6 auto\tdhcp 0\n\n" >>$ENI_FILE
+                echo "IPv6 SLAAC Configured"
+            fi
+        fi
+        printf "\n" >>$ENI_FILE
     elif [ "$CONF_TYPE" == "rhel-netscripts" ]; then
         if [ "$(get_if_type $interface)" == "32" ]; then
             printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"InfiniBand\"\nCONNECTED_MODE=\"no\"\nDEFROUTE=\"yes\"\nPEERDNS=\"yes\"\nPEERROUTES=\"yes\"\nIPV4_FAILURE_FATAL=\"yes\"\nIPV6INIT=\"no\"" >"${SCRIPTS_PATH}ifcfg-$interface"
         else
-            printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"" >"${SCRIPTS_PATH}ifcfg-$interface"
+            printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"\n" >"${SCRIPTS_PATH}ifcfg-$interface"
+            if [ "$ipv6_init" == "True" ]; then
+                # Make DUID-UUID Type 4 (RFC 6355)
+                echo "default-duid \"\\x00\\x04$(sed 's/.\{2\}/\\x&/g' < /etc/machine-id)\";" >"/var/lib/dhclient/dhclient6--$interface.lease"
+                printf "IPV6INIT=\"yes\"\n" >>"${SCRIPTS_PATH}ifcfg-$interface"
+                if [ $ipv6_AdvManagedFlag == "Yes" ]; then
+                    # IPv6 DHCPv6 Stateful address configuration
+                    printf "IPV6_FORCE_ACCEPT_RA=\"yes\"\nDHCPV6C=\"yes\"\n" >>"${SCRIPTS_PATH}ifcfg-$interface"
+                    echo "DHCPv6 Stateful Configured"
+                elif [ $ipv6_AdvOtherConfigFlag == "Yes" ]; then
+                    # IPv6 DHCPv6 Stateless address configursation
+                    printf "IPV6_AUTOCONF=\"yes\"\nDHCPV6C=\"yes\"\nDHCPV6C_OPTIONS=\"-S\"\n" >>"${SCRIPTS_PATH}ifcfg-$interface"
+                    echo "DHCPv6 Stateless Configured"
+                else
+                    # IPv6 Autoconfiguration (SLAAC)
+                    printf "IPV6_AUTOCONF=\"yes\"\n" >>"${SCRIPTS_PATH}ifcfg-$interface"
+                    echo "IPv6 SLAAC Configured"
+                fi
+            fi
     fi
     elif [ "$CONF_TYPE" == "suse-netscripts" ]; then
         printf "BOOTPROTO=\"dhcp\"\nSTARTMODE=\"auto\"" >"${SCRIPTS_PATH}ifcfg-$interface"
@@ -106,7 +145,37 @@ function inspect_interface() {
             sleep 1
         done
         if [ "$has_link" == "1" ]; then
-            enable_interface "$interface"
+            local ipv6_init=False
+            local ipv6_AdvManagedFlag=No
+            local ipv6_AdvOtherConfigFlag=No
+            if type rdisc6 &>/dev/null; then
+                # We have rdisc6, let's try to configure IPv6 autoconfig/dhcpv6
+                tries=DIB_DHCP_TIMEOUT
+                for ((; tries > 0; tries--)); do
+                    # Need to retry this, link-local-address required for
+                    # Neighbor Discovery, DHCPv6 etc.
+                    set +e # Do not exit on error, capture rdisc6 error codes.
+                    RA=$(rdisc6 --retry 3 --single "$interface" 2>/dev/null)
+                    local return_code=$?
+                    set -e # Re-enable exit on error.
+                    if [ $return_code -eq 0 ]; then
+                        ipv6_init=True
+                        ipv6_AdvManagedFlag=$(echo "$RA" | grep "Stateful address conf." | awk -F: '{ print $2 }')
+                        ipv6_AdvOtherConfigFlag=$(echo "$RA" | grep "Stateful other conf." | awk -F: '{ print $2 }')
+                    elif [ $return_code -eq 1 ]; then
+                        sleep 1
+                    elif [ $return_code -eq 2 ]; then
+                        # If rdisc6 does not receive any response after the
+                        # specified number of attempts waiting for wait_ms
+                        # (1000ms by default) milliseconds each time, it will
+                        # exit with code 2.
+                        break
+                    fi
+                done
+            else
+                echo "rdisc6 not available, skipping IPv6 configuration."
+            fi
+            enable_interface "$interface" "$ipv6_init" "$ipv6_AdvManagedFlag" "$ipv6_AdvOtherConfigFlag"
         else
             echo "No link detected, skipping"
         fi

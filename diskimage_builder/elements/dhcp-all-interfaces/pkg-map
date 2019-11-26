@@ -1,20 +1,24 @@
 {
   "family": {
     "redhat": {
-      "dhcp-client": "dhclient"
+      "dhcp-client": "dhclient",
+      "ndisc6": "ndisc6"
     },
     "gentoo": {
-      "dhcp-client": "net-misc/dhcpcd"
+      "dhcp-client": "net-misc/dhcpcd",
+      "ndisc6": "net-misc/ndisc6"
     },
     "suse": {
       "dhcp-client": "dhcp-client"
     },
     "debian": {
-      "ifupdown": "ifupdown"
+      "ifupdown": "ifupdown",
+      "ndisc6": "ndisc6"
     }
   },
   "default": {
     "dhcp-client": "isc-dhcp-client",
-    "ifupdown": ""
+    "ifupdown": "",
+    "ndisc6": ""
   }
 }

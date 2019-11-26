@@ -21,6 +21,9 @@ if [ -f /etc/dhcp/dhclient.conf ] ; then
     else
         echo -e "# \"timeout\" Value set by dhcp-all-interfaces\ntimeout ${DIB_DHCP_TIMEOUT:-30};" >> /etc/dhcp/dhclient.conf
     fi
+    if grep -o "^retry " /etc/dhcp/dhclient.conf ; then
+        sed -i -e '/^retry/s/^/# \"retry\" Value commented by dhcp-all-interfaces\n# /g' /etc/dhcp/dhclient.conf
+    fi
 fi
 
 if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
@@ -34,7 +37,7 @@ if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
 elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/dhcp-interface@.service /usr/lib/systemd/system/dhcp-interface@.service
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/dhcp-all-interfaces-udev.rules /etc/udev/rules.d/99-dhcp-all-interfaces.rules
-    sed -i "s/TimeoutStartSec=DIB_DHCP_TIMEOUT/TimeoutStartSec=${DIB_DHCP_TIMEOUT:-30}s/" /usr/lib/systemd/system/dhcp-interface@.service
+    sed -i "s/TimeoutStartSec=DIB_DHCP_TIMEOUT/TimeoutStartSec=$(( ${DIB_DHCP_TIMEOUT:-30} * 2 ))s/" /usr/lib/systemd/system/dhcp-interface@.service
 elif [ "$DIB_INIT_SYSTEM" == "sysv" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.init /etc/init.d/dhcp-all-interfaces
     update-rc.d dhcp-all-interfaces defaults
