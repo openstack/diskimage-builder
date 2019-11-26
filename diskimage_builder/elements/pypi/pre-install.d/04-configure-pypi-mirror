@@ -41,7 +41,6 @@ def main():
         indices = ['file:///tmp/pypi']
         print('WARNING: You are using the pypi element but no pypi mirror is '
               'defined via the PYPI_MIRROR_URL env variable')
-    easy_index = indices[-1]
     use_pypi_python_org = True
     if os.environ.get('DIB_OFFLINE'):
         use_pypi_python_org = False
@@ -61,10 +60,6 @@ def main():
             output.write('extra-index-url =\n')
             for index in indices[1:]:
                 output.write('    %s\n' % (index,))
-    with open(home + '/.pydistutils.cfg', 'wt') as output:
-        output.write('[easy_install]\n')
-        output.write('index_url = %s\n' % (easy_index,))
-        output.write('allow_hosts = %s\n' % (urlparse(easy_index).netloc,))
 
 
 def backup_configs(home):

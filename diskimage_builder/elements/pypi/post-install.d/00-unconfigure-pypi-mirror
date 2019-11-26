@@ -11,10 +11,3 @@ if [ -e ~/.pip/pip.conf.orig ]; then
 else
     rm ~/.pip/pip.conf
 fi
-
-
-if [ -e ~/.pydistutils.cfg.orig ]; then
-    mv ~/.pydistutils.cfg{.orig,}
-else
-    rm ~/.pydistutils.cfg
-fi
