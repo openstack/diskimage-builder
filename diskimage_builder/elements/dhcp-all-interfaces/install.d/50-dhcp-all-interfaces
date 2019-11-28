@@ -8,6 +8,17 @@ set -o pipefail
 
 SCRIPTDIR=$(dirname $0)
 
+# TODO(hjensas): Once ndisc6 package is available in EPEL8 drop this, and add the package back in pkg-map.
+# See: https://bugzilla.redhat.com/show_bug.cgi?id=1779134
+if [ -e "/etc/redhat-release" ]; then
+    if type dnf &>/dev/null; then
+        dnf -v -y install ndisc6 || true
+    else
+        yum -v -y install ndisc6 || true
+    fi
+fi
+
+
 # this script is not needed on Gentoo.
 if [ "$DISTRO_NAME" != "gentoo" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.sh /usr/local/sbin/dhcp-all-interfaces.sh

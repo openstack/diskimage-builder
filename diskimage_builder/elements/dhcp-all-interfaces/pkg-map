@@ -2,7 +2,7 @@
   "family": {
     "redhat": {
       "dhcp-client": "dhclient",
-      "ndisc6": "ndisc6"
+      "ndisc6": ""
     },
     "gentoo": {
       "dhcp-client": "net-misc/dhcpcd",
