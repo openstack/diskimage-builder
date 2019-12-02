@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    The ``dhcp-all-interfaces`` element could not configure network interfaces
+    properly when ``rdisc6`` is present on the system
