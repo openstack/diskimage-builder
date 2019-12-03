@@ -12,4 +12,4 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
 # Only set the mirror for the Base, Extras and Updates repositories
 # The others arn't enabled and do not exist on all mirrors
-sed -e "s|^#baseurl=http://mirror.centos.org/centos|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
+sed -e "s|^#baseurl=http[s]*://mirror.centos.org/centos|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
