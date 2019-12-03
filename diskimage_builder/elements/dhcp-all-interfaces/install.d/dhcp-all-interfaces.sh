@@ -162,6 +162,7 @@ function inspect_interface() {
                         ipv6_init=True
                         ipv6_AdvManagedFlag=$(echo "$RA" | grep "Stateful address conf." | awk -F: '{ print $2 }')
                         ipv6_AdvOtherConfigFlag=$(echo "$RA" | grep "Stateful other conf." | awk -F: '{ print $2 }')
+                        break
                     elif [ $return_code -eq 1 ]; then
                         sleep 1
                     elif [ $return_code -eq 2 ]; then
