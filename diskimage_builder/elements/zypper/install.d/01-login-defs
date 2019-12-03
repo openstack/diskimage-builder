@@ -6,4 +6,9 @@ fi
 set -eu
 set -o pipefail
 
-sed -i -e "s,^USERGROUPS_ENAB.*$,USERGROUPS_ENAB yes," /etc/login.defs
+if [[ ${DIB_RELEASE} == tumbleweed ]] ; then
+    login_defs=/usr/etc/login.defs
+else
+    login_defs=/etc/login.defs
+fi
+sed -i -e "s,^USERGROUPS_ENAB.*$,USERGROUPS_ENAB yes," $login_defs
