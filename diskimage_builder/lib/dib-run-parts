@@ -105,6 +105,7 @@ if [ "$show_list" == "1" ] ; then
     exit 0
 fi
 
+DIB_DEBUG_TRACE=${DIB_DEBUG_TRACE:-0}
 if [ ${DIB_DEBUG_TRACE} -gt 0 ]; then
     non_exec=$(find $target_dir -maxdepth 1 -xtype f \! -executable -printf '%f\n')
     if [ ! -z "$non_exec" ]; then
