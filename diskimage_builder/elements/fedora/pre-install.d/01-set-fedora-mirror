@@ -19,5 +19,5 @@ if [[ ${DIB_RELEASE} -gt 27 ]]; then
 fi
 
 for FILE in /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates-testing.repo; do
-    sudo sed -e "s|^#baseurl=http://download.fedoraproject.org/pub/fedora/linux|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^metalink/d" -i $FILE
+    sudo sed -e "s|^#baseurl=http[s]*://download.fedoraproject.org/pub/fedora/linux|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^metalink/d" -i $FILE
 done
