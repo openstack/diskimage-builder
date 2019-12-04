@@ -41,25 +41,29 @@ ZYPPER_INSTALL_SYSTEM_PYTHON="python3"
 
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-https://download.opensuse.org}
 
-case ${DIB_RELEASE} in
-    # Old Leap releases
-    42*)
-        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
-        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
-        ZYPPER_INSTALL_SYSTEM_PYTHON="python"
-        ;;
-    # New Leap releases
-    15*)
-        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
-        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
-        ;;
-    # Tumbleweed
-    tumbleweed)
-        ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/${DIB_RELEASE}/ "
-        ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/${DIB_RELEASE}/repo/oss/"
-        ;;
-    *) echo "Unsupported openSUSE release: ${DIB_RELEASE}"; exit 1 ;;
-esac
+ZYPPER_REPOS=${DIB_ZYPPER_REPOS:-''}
+
+if [ -z "${ZYPPER_REPOS}" ] ; then
+    case ${DIB_RELEASE} in
+        # Old Leap releases
+        42*)
+            ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
+            ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
+            ZYPPER_INSTALL_SYSTEM_PYTHON="python"
+            ;;
+        # New Leap releases
+        15*)
+            ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/leap/${DIB_RELEASE}/oss/ "
+            ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/distribution/leap/${DIB_RELEASE}/repo/oss/"
+            ;;
+        # Tumbleweed
+        tumbleweed)
+            ZYPPER_REPOS="update=>${DIB_DISTRIBUTION_MIRROR}/update/${DIB_RELEASE}/ "
+            ZYPPER_REPOS+="oss=>${DIB_DISTRIBUTION_MIRROR}/${DIB_RELEASE}/repo/oss/"
+            ;;
+        *) echo "Unsupported openSUSE release: ${DIB_RELEASE}"; exit 1 ;;
+    esac
+fi
 
 for repo in ${ZYPPER_REPOS}; do
     refresh_repo=""
