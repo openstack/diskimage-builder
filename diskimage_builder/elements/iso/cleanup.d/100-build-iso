@@ -33,7 +33,7 @@ function build_efiboot_img() {
         cp $TMP_BOOTLOADER_DIR/shim.efi $TMP_BUILD_DIR/bootx64.efi
         cp $TMP_BOOTLOADER_DIR/grubx64.efi $TMP_BUILD_DIR/grubx64.efi
     else
-        cp $TMP_BOOTLOADER_DIR/shim.efi.signed $TMP_BUILD_DIR/bootx64.efi
+        cp $TMP_BOOTLOADER_DIR/shimx64.efi.signed $TMP_BUILD_DIR/bootx64.efi
         cp $TMP_BOOTLOADER_DIR/grubx64.efi.signed $TMP_BUILD_DIR/grubx64.efi
     fi
 
@@ -61,7 +61,8 @@ function build_iso() {
 
     SCRIPTNAME=$(basename $0)
     SCRIPTDIR=$(dirname $0)
-    MKISOFS="/usr/bin/mkisofs"
+    # MKISOFS="/usr/bin/mkisofs"
+    MKISOFS="/usr/bin/genisoimage"
     if [ $DISTRO_NAME = "fedora" ]; then
         EFI_BOOT_DIR="EFI/fedora"
         EXTRA_KERNEL_PARAMS="usbcore.autosuspend=-1"
@@ -139,7 +140,6 @@ END_CONFIG
     $MKISOFS -r -V "VMEDIA_BOOT_ISO" -cache-inodes -J -l \
     -b isolinux/isolinux.bin  -no-emul-boot \
     -boot-load-size 4 -boot-info-table \
-    -eltorito-alt-boot -e isolinux/efiboot.img \
     -no-emul-boot -o $OUTPUT_FILENAME $TMP_IMAGE_DIR
 
 }
