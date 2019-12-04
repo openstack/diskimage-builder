@@ -175,6 +175,14 @@ export DIB_DEBUG_TRACE
 export DIB_IMAGE_CACHE=${DIB_IMAGE_CACHE:-~/.cache/image-create}
 mkdir -p $DIB_IMAGE_CACHE
 
+# Setup a symbolic link to the correct python exec so that element
+# scripts running outside the chroot using "#!/usr/bin/env python" get
+# the right python version.
+export DIB_ORIGINAL_PATH=$PATH
+export DIB_PYTHON_EXEC_TMP=$(mktemp -d -t --tmpdir=$HOME .DIB_PYTHON_TMP.XXXXXXXX)
+ln -s "$DIB_PYTHON_EXEC" "$DIB_PYTHON_EXEC_TMP/python"
+export PATH=$DIB_PYTHON_EXEC_TMP:$DIB_ORIGINAL_PATH
+
 # We have a couple of critical sections (touching parts of the host
 # system or download images to common cache) that we use flock around.
 # Use this directory for lockfiles.
@@ -591,6 +599,7 @@ fi
 
 # Remove the leftovers, i.e. the temporary image directory.
 cleanup_image_dir
+cleanup_temp_python_exec
 
 # Restore fd 1&2 from the outfilter.py redirect back to the original
 # saved fd.  Note small hack that we can't really wait properly for
