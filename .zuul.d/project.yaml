@@ -14,8 +14,7 @@
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
-        - dib-nodepool-functional-openstack-opensuse-15-src
-        - dib-nodepool-functional-openstack-ubuntu-trusty-src
+#        - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
@@ -40,8 +39,7 @@
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
-        - dib-nodepool-functional-openstack-opensuse-15-src
-        - dib-nodepool-functional-openstack-ubuntu-trusty-src
+#        - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
@@ -53,6 +51,12 @@
         - dib-nodepool-functional-openstack-gentoo-src
         - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-nodepool-functional-openstack-debian-buster-src
+        # NOTE(ianw): 2019-12-10 : this can not build on bionic due to
+        # no zypper; but devstack has dropped Xenial support so can't
+        # build there either.  Because devstack install in pre, it
+        # causes multiple retries in zuul, so can't be non-voting.
+        # Paused until we figure out what to do.
+        - dib-nodepool-functional-openstack-opensuse-15-src
         - dib-nodepool-functional-openstack-opensuse-tumbleweed-src
         - octavia-v1-dsvm-scenario
         - octavia-v1-dsvm-py3x-scenario

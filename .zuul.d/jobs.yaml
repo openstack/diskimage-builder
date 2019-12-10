@@ -271,7 +271,6 @@
       and OpenStack
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
       nodepool_extra_packages:
         - debootstrap
@@ -287,7 +286,6 @@
       and OpenStack
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
       nodepool_extra_packages:
         - debootstrap
@@ -303,7 +301,6 @@
       and OpenStack (using released libraries)
     parent: nodepool-functional-openstack-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
       nodepool_debug: true
       nodepool_extra_packages:
@@ -320,7 +317,6 @@
       and OpenStack
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
       nodepool_extra_packages:
         - debootstrap
@@ -348,7 +344,6 @@
       and OpenStack
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
       nodepool_extra_packages:
         - debootstrap
@@ -364,7 +359,6 @@
       and OpenStack
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    nodeset: ubuntu-xenial  # Backported debootstrap only available for xenial
     vars:
       nodepool_extra_packages:
         - debootstrap
