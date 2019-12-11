@@ -30,11 +30,8 @@ procps [platform:dpkg]
 
 # centos/fedora
 qemu-img [platform:redhat]
-policycoreutils-python [platform:redhat]
-policycoreutils-python-utils [platform:fedora]
-# NOTE(cgoncalves): setuptools is required by python3-setools (a dependency of
-# policycoreutils-python) but is not in its RPM dependency list in Fedora 28.
-python3-setuptools [platform:fedora]
+policycoreutils-python [platform:rhel-7 platform:centos-7]
+policycoreutils-python-utils [platform:fedora platform:rhel-8 platform:centos-8]
 procps-ng [platform:redhat]
 
 # suse
