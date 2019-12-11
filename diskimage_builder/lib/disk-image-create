@@ -440,6 +440,24 @@ if [ "$DIB_ROOT_FSTYPE" = "ext4" ] ; then
   # We set journal size to 64M so our journal is large enough when we
   # perform an FS resize.
   MKFS_OPTS="-i 4096 -J size=$journal_size $MKFS_OPTS"
+
+  # NOTE(ianw) 2019-12-11 : this is a terrible hack ... if building on
+  # >=Bionic hosts, mkfs sets "metadata_csum" for ext4 filesystems,
+  # which makes broken Trusty images as that era fsck doesn't
+  # understand this flag.  The image will stop in early boot
+  # complaining:
+  #
+  #  Serious errors were found while checking the disk drive for /.
+  #
+  # We do not really have any suitable hook points where one of the
+  # ubuntu elements or block-device-* could set this override flag for
+  # just Trusty.  We probably should, but desire to implement more
+  # code to support the out-of-date trusty at this point is
+  # non-existant.  So hack in disabling this here.
+  if [[ ${DIB_RELEASE} == "trusty" ]]; then
+      MKFS_OPTS="-O ^metadata_csum $MKFS_OPTS"
+  fi
+
   # Grow the image size to account for the journal, only if the user
   # has not asked for a specific size.
   if [ -z "$DIB_IMAGE_SIZE" ]; then
