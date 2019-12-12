@@ -4,7 +4,7 @@ ironic-agent
 warning::
  This element is deprecated and copied to
  ironic-python-agent-builder and can be found at:
- https://opendev.org/openstack/ironic-python-agent-builder/dib/
+ https://opendev.org/openstack/ironic-python-agent-builder/src/branch/master/dib/ironic-python-agent-ramdisk
  The ramdisk can be build from the ironic-python-agent-builder and
  the "ironic-element" in diskimage-builder is deprecated.
 
