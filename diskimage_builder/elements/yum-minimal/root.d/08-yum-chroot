@@ -119,6 +119,7 @@ function _install_repos {
     TMPDIR=${temp_tmp} yumdownloader --verbose \
         --releasever=$DIB_RELEASE \
         --setopt=reposdir=$repo \
+        --setopt=cachedir=$temp_tmp \
         --destdir=$WORKING \
         ${packages} && rc=$? || rc=$?
     rm -rf ${temp_tmp}
