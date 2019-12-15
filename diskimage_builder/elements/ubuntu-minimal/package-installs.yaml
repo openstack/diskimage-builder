@@ -7,6 +7,9 @@ linux-image-kvm:
 linux-image-virtual:
   not-arch: arm64
   when: DIB_UBUNTU_KERNEL = linux-image-virtual
+linux-generic-hwe-18.04:
+  not-arch: arm64
+  when: DIB_UBUNTU_KERNEL = linux-image-hwe
 # TODO(ianw): this is Xenial specific, for now.  This kernel works
 # much better, however, including better support for cdrom's for
 # config-drive.  We'll need to filter this further for future
