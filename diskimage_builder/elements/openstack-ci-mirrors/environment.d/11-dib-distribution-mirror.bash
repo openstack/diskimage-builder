@@ -21,7 +21,11 @@ $_xtrace
 # note 11- is after 10- which is where DISTRO_NAME is set usually
 
 if [[ "${DISTRO_NAME}" == "ubuntu" ]]; then
-    export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_UBUNTU_MIRROR
+    if [[ "${ARCH}" == "arm64" ]]; then
+        export DIB_DISTRIBUTION_MIRROR=${NODEPOOL_UBUNTU_PORTS_MIRROR}
+    elif [[ "${ARCH}" == "amd64" ]]; then
+        export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_UBUNTU_MIRROR
+    fi
     export DIB_DEBOOTSTRAP_EXTRA_ARGS+=" --no-check-gpg"
 elif [[ "${DISTRO_NAME}" == "debian" ]]; then
     export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_DEBIAN_MIRROR

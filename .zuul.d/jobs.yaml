@@ -75,6 +75,16 @@
         - ubuntu-systemd-container/bionic-build-succeeds
         - ubuntu-systemd-container/xenial-build-succeeds
 
+- job:
+    name: dib-functests-arm64
+    description: |
+      ARM64 build tests
+    abstract: true
+    parent: dib-functests-base
+    vars:
+      dib_functests:
+        - ubuntu-minimal/bionic-arm64-build-succeeds
+
 # Trusty / Python 2 tests
 - job:
     name: dib-functests-trusty-python2
@@ -199,8 +209,15 @@
     vars:
       dib_python: python2
 
-# Build and boot functional tests
+# ARM64 tests
+- job:
+    name: dib-functests-arm64-bionic
+    description: |
+      ARM64 image tests building on am ARM64 Bionic host
+    nodeset: ubuntu-bionic-arm64
+    parent: dib-functests-arm64
 
+# Build and boot functional tests
 - job:
     name: dib-nodepool-functional-src-base
     description: |
