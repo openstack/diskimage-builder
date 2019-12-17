@@ -14,3 +14,4 @@ selinux-policy-targeted:
 libselinux-python:
 policycoreutils:
 policycoreutils-python:
+rng-tools:
