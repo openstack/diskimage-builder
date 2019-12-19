@@ -4,5 +4,6 @@
     - ensure-pip
     - bindep
     - dib-setup-gate-mirrors
+    - ensure-podman
     - dib-functests
 

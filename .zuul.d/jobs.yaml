@@ -29,6 +29,7 @@
         - ubuntu-minimal/xenial-build-succeeds
         - ubuntu-minimal/bionic-build-succeeds
         - ubuntu-minimal/focal-build-succeeds
+        - containerfile/focal-build-succeeds
 
 - job:
     name: dib-functests-image
