@@ -22,4 +22,8 @@ for (( i=0; i<${#GENTOO_EMERGE_ENV[@]}; i++ )); do
     eval export "${GENTOO_EMERGE_ENV[i]}"
 done
 
-export DIB_INIT_SYSTEM=systemd
+if [[ "${GENTOO_PROFILE}" == *"systemd"* ]]; then
+    export DIB_INIT_SYSTEM=${DIB_INIT_SYSTEM:-'systemd'}
+else
+    export DIB_INIT_SYSTEM=${DIB_INIT_SYSTEM:-'openrc'}
+fi
