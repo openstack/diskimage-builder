@@ -28,6 +28,20 @@
         - dib-functests-bionic-python3-image
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
+        # IPA jobs that build an image without further validations.
+        # TODO(dtantsur): make the centos8 job voting once things stabilize
+        - ironic-python-agent-check-image-dib-centos8:
+            voting: false
+        # NOTE(dtantsur): this can be removed when DIB drops CentOS 7
+        # compatibility, but is useful for now since CentOS 7 is used in
+        # ironic Train CI.
+        - ironic-python-agent-check-image-dib-centos7:
+            voting: false
+        # IPA jobs that build AND validate an image via deployment (two ways).
+        - ipa-tempest-wholedisk-bios-ipmi-direct-dib-src:
+            voting: false
+        - ipa-tempest-partition-bios-ipmi-iscsi-dib-src:
+            voting: false
     check-arm64:
       jobs:
         - dib-functests-arm64-bionic
