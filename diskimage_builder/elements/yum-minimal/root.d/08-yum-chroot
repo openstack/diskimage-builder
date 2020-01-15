@@ -89,6 +89,11 @@ function _install_repos {
         packages+="fedora-gpg-keys "
     fi
 
+    # CentOS 8.1 split repositories and GPG keys out into subpackages
+    if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE} -ge 8 ]]; then
+        packages+="centos-repos centos-gpg-keys "
+    fi
+
     # By default, parent elements (fedora-minimal, centos-minimal)
     # have a yum.repos.d directory in the element with a default repo;
     # this is copied to TMP_HOOK_PATH by the usual hook-copying
