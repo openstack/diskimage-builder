@@ -85,34 +85,6 @@
       dib_functests:
         - ubuntu-minimal/bionic-arm64-build-succeeds
 
-# Trusty / Python 2 tests
-- job:
-    name: dib-functests-trusty-python2
-    description: |
-      Run the default tests on a Trusty build host with Python 2
-    parent: dib-functests-default
-    nodeset: ubuntu-trusty
-    vars:
-      dib_python: python2
-
-- job:
-    name: dib-functests-trusty-python2-image
-    description: |
-      The image tests on a Trusty build host with Python 2
-    parent: dib-functests-image
-    nodeset: ubuntu-trusty
-    vars:
-      dib_python: python2
-
-- job:
-    name: dib-functests-trusty-python2-extras
-    description: |
-      The extras tests on a Trusty build host with Python 2
-    parent: dib-functests-extras
-    nodeset: ubuntu-trusty
-    vars:
-      dib_python: python2
-
 # Bionic / Python3 tests
 - job:
     name: dib-functests-bionic-python3
@@ -280,21 +252,6 @@
       nodepool_diskimage:
         base_element: fedora-minimal
         release: '30'
-
-- job:
-    name: dib-nodepool-functional-openstack-ubuntu-trusty-src
-    description: |
-      Test building and booting an Ubuntu trusty image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    vars:
-      nodepool_extra_packages:
-        - debootstrap
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'trusty'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src

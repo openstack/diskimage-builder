@@ -14,16 +14,12 @@
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
-        - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-functests-centos7-python2
         - dib-functests-centos7-python2-image
         - dib-functests-centos7-python2-extras
-        - dib-functests-trusty-python2
-        - dib-functests-trusty-python2-image
-        - dib-functests-trusty-python2-extras
         - dib-functests-xenial-python3
         - dib-functests-xenial-python3-image
         - dib-functests-xenial-python3-extras
@@ -42,11 +38,9 @@
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-29-src
         - dib-nodepool-functional-openstack-fedora-30-src
-        - dib-nodepool-functional-openstack-ubuntu-trusty-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
-        - dib-functests-trusty-python2
         - dib-functests-xenial-python3
         - dib-functests-centos7-python2
     experimental:
