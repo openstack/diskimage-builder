@@ -11,6 +11,9 @@ if [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} == 8 ]]; then
     # a good idea, abstracting the python binary for system scripts!
     # :)  Use it for dib-python.
     python_path=/usr/libexec/platform-python
+elif [[ ${DISTRO_NAME} =~ (debian) && ${DIB_PYTHON_VERSION} == 3 ]]; then
+    apt-get install -y python3
+    python_path=$(command -v python${DIB_PYTHON_VERSION})
 else
     python_path=$(command -v python${DIB_PYTHON_VERSION})
 fi
