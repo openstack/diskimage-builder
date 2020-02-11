@@ -18,3 +18,5 @@ kmod:
 psmisc:
 dosfstools:
 mdadm:
+efibootmgr:
+efivar:
