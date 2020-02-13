@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    The `ensure-venv` module is added to ensure that `python3 -m venv`
+    is available on the host.  This can be useful if you wish to
+    install non-distribution-packaged Python software on a host during
+    build, but not mix any non-distro installation.  This works on all
+    platforms with Python 3 available.
+depreceations:
+  - |
+    The `simple-init` element now uses `ensure-venv` so is technically
+    Python 3 only.  At this stage, all supported platforms have Python
+    3 available.

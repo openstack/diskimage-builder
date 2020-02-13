@@ -1,6 +1,6 @@
 cloud-init-datasources
 dib-init-system
+ensure-venv
 install-types
-pip-and-virtualenv
 runtime-ssh-host-keys
 source-repositories
