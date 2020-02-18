@@ -23,8 +23,6 @@
         - apt-sources/test-sources
         - centos-minimal/7-build-succeeds
         - centos-minimal/8-build-succeeds
-        - fedora-minimal/build-succeeds
-        - pip-and-virtualenv/source-install-fedora
         - pip-and-virtualenv/source-install-ubuntu
         - ubuntu-minimal/trusty-build-succeeds
         - ubuntu-minimal/xenial-build-succeeds
@@ -45,7 +43,6 @@
         - centos/8-build-succeeds
         - opensuse/build-succeeds
         - opensuse/opensuse15-build-succeeds
-        - fedora/build-succeeds
         - ubuntu/trusty-build-succeeds
         - ubuntu/xenial-build-succeeds
         - ubuntu/bionic-build-succeeds
@@ -93,6 +90,11 @@
       Run the default tests on a Bionic build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-bionic
+    vars:
+      # These can only build on bionic
+      dib_functests_extra:
+        - fedora-minimal/build-succeeds
+        - pip-and-virtualenv/source-install-fedora
     voting: false
 
 - job:
@@ -101,6 +103,9 @@
       The image tests on a Bionic build host with Python 3
     parent: dib-functests-image
     nodeset: ubuntu-bionic
+    vars:
+      dib_functests_extra:
+        - fedora/build-succeeds
     voting: false
 
 - job:
@@ -240,6 +245,19 @@
       nodepool_diskimage:
         base_element: fedora-minimal
         release: '30'
+
+- job:
+    name: dib-nodepool-functional-openstack-fedora-31-src
+    description: |
+      Test building and booting a Fedora 31 image with Nodepool and OpenStack
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_extra_packages:
+        - rpm
+        - yum-utils
+      nodepool_diskimage:
+        base_element: fedora-minimal
+        release: '31'
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src
