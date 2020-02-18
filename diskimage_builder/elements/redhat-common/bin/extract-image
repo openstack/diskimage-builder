@@ -93,7 +93,7 @@ function extract_image() {
                 MOUNTOPTS=""
             fi
 
-            sudo mount $MOUNTOPTS /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt
+            sudo mount $MOUNTOPTS /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt #fails if source image from which I create another custom one has LVM layout implemented, please see the DEBUG output in the description of this commit 
             EACTION="sudo umount -f $WORKING/mnt ; $EACTION"
             trap "$EACTION" EXIT
 
