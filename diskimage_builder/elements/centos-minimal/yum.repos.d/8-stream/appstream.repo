@@ -1,0 +1,5 @@
+[Stream-AppStream]
+name=CentOS-Stream - AppStream
+mirrorlist=http://mirrorlist.centos.org/?release=8-stream&arch=$basearch&repo=AppStream
+gpgcheck=0
+

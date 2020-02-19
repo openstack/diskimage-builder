@@ -90,8 +90,11 @@ function _install_repos {
     fi
 
     # CentOS 8.1 split repositories and GPG keys out into subpackages
-    if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE} -ge 8 ]]; then
+    if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE} > "7" ]]; then
         packages+="centos-repos centos-gpg-keys "
+        if [[ "$DIB_RELEASE" =~ (stream) ]]; then
+            packages+="centos-release-stream "
+        fi
     fi
 
     # By default, parent elements (fedora-minimal, centos-minimal)
@@ -117,7 +120,7 @@ function _install_repos {
     local temp_tmp
     temp_tmp=$(mktemp -d)
     TMPDIR=${temp_tmp} yumdownloader --verbose \
-        --releasever=$DIB_RELEASE \
+        --releasever=${DIB_RELEASE/-*/} \
         --setopt=reposdir=$repo \
         --setopt=cachedir=$temp_tmp \
         --destdir=$WORKING \
@@ -190,7 +193,7 @@ function _install_pkg_manager {
         local _extra_pkgs=""
 
         if [[ $DISTRO_NAME == "fedora" ]] || \
-            [[ $DISTRO_NAME == "centos" && $DIB_RELEASE -ge 8 ]]; then
+            [[ $DISTRO_NAME == "centos" && $DIB_RELEASE > "7" ]]; then
             # glibc from F24 onwards has split locales into "langpack"
             # packages.  Host yum doesn't understand the
             # weak-dependencies glibc now uses to get the
@@ -209,13 +212,24 @@ function _install_pkg_manager {
         # Really all we can do is pre-install the right thing
         _extra_pkgs+="coreutils "
 
+        # Legacy yum reads vars from directory /etc/yum/vars and, unlike dnf,
+        # does not provide setopt=varsdir. So, if $YUM is legacy yum and our
+        # target root is dnf, symlink dnf vars.
+        if [[ ! -d $TARGET_ROOT/etc/yum/vars ]]; then
+            sudo mkdir -p $TARGET_ROOT/etc/yum
+            sudo ln -s $TARGET_ROOT/etc/dnf/vars $TARGET_ROOT/etc/yum/vars
+        fi
+
         sudo -E yum -y \
             --disableexcludes=all \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
-            --releasever=$DIB_RELEASE \
+            --releasever=${DIB_RELEASE/-*/} \
             --installroot $TARGET_ROOT \
             install $@ ${_lang_pack} ${_extra_pkgs} && rc=$? || rc=$?
+
+        # we may have symlinked yum/vars -> dnf/vars, unset if so
+        sudo unset $TARGET_ROOT/etc/yum/vars 2>/dev/null || true
 
         # Note we've modified the base system's .rpmmacros.  Ensure we
         # clean it up *always*
@@ -276,7 +290,7 @@ _install_repos
 # seemingly mismatched libraries.
 if [[ ${DISTRO_NAME} == 'fedora' ]]; then
     _install_pkg_manager dnf dnf-plugins-core curl
-elif [[ ${DISTRO_NAME} == centos && $DIB_RELEASE -ge 8 ]]; then
+elif [[ ${DISTRO_NAME} == centos && $DIB_RELEASE > "7" ]]; then
     _install_pkg_manager dnf dnf-plugins-core curl libcurl
 else
     _install_pkg_manager yum

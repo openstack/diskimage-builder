@@ -38,6 +38,12 @@ def os_family(distro):
     return family
 
 
+def os_major_release(release):
+    if release in ['8-stream']:
+        return '8'
+    return release
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Translate package name to distro specific name."
@@ -164,7 +170,8 @@ def main():
     if 'release' in package_names:
         try:
             # release is a sub-concept of distro
-            release_map = package_names['release'][args.distro][args.release]
+            release = os_major_release(args.release)
+            release_map = package_names['release'][args.distro][release]
             name_map.update(release_map)
         except KeyError:
             pass
