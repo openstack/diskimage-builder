@@ -42,7 +42,7 @@ SIZE_UNIT_SPECS = [
 
 # Basic RE to check and split floats (without exponent)
 # and a given unit specification (which must be non-numerical).
-size_unit_spec_re = re.compile("^([\d\.]*) ?([a-zA-Z0-9_]*)$")
+size_unit_spec_re = re.compile(r"^([\d\.]*) ?([a-zA-Z0-9_]*)$")
 
 
 def _split_size_unit_spec(size_unit_spec):
