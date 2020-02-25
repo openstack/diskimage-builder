@@ -18,5 +18,8 @@ kmod:
 psmisc:
 dosfstools:
 mdadm:
+# efibootmgr and efivar do not exist for ppc*
 efibootmgr:
+    not-arch: ppc64,ppc64el,ppc64le
 efivar:
+    not-arch: ppc64,ppc64el,ppc64le
