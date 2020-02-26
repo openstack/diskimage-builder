@@ -2,7 +2,16 @@
   "release": {
     "rhel": {
       "8": {
-        "tgt": "targetcli",
+        "tgt": "target-restore",
+        "curl": "curl",
+        "ironic-python-agent": "openstack-ironic-python-agent",
+        "qemu-utils": "qemu-img",
+        "python-dev": "python3-devel"
+      }
+    },
+    "centos": {
+      "8": {
+        "tgt": "target-restore",
         "curl": "curl",
         "ironic-python-agent": "openstack-ironic-python-agent",
         "qemu-utils": "qemu-img",
