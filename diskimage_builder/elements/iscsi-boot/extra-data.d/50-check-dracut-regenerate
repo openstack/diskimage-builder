@@ -8,10 +8,8 @@ set -o pipefail
 
 if [[ $DISTRO_NAME = "centos7" ]]; then
     eval declare -A image_elements=($(get_image_element_array))
-    found=0
-    for i in "${!image_elements[@]}"; do
-        [ "$i" = "dracut-regenerate" ] && found=1
-    done
-    [ "$found" = 0 ] && echo "The dracut-regenerate element is required!" && exit 1
-
+    if [[ ! "${image_elements[@]}" =~ "dracut-regenerate" ]]; then
+        echo "The dracut-regenerate element is required!"
+        exit 1
+    fi
 fi
