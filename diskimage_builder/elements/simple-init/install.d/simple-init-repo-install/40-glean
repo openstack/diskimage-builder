@@ -21,4 +21,10 @@ fi
 set -eu
 set -o pipefail
 
-$DIB_PYTHON_PIP install /tmp/glean.git
+python3 -m venv /usr/glean
+/usr/glean/bin/pip install /tmp/glean.git
+
+mkdir -p /usr/local/bin
+ln -sf /usr/glean/bin/glean /usr/local/bin/glean
+ln -sf /usr/glean/bin/glean.sh /usr/local/bin/glean.sh
+ln -sf /usr/glean/bin/glean-install /usr/local/bin/glean-install

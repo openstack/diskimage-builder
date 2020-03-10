@@ -1,0 +1,19 @@
+{
+  "family": {
+    "debian": {
+      "python3-venv": "python3-venv"
+    },
+    "gentoo": {
+      "python3-venv": "dev-lang/python"
+    },
+    "redhat": {
+      "python3-venv": "python3"
+    },
+    "suse": {
+      "python3-venv": "python3"
+    }
+  },
+  "default": {
+    "python3-venv": ""
+  }
+}
