@@ -55,8 +55,8 @@ class TestLVM(tc.TestGraphGeneration):
         bad_config = copy.deepcopy(lvm_config)
         bad_config['lvs'][0]['base'] = ['invalid_vg']
         self.assertRaisesRegex(BlockDeviceSetupException,
-                               "base:\['invalid_vg'\] in lvs does not match "
-                               "a valid vg",
+                               r"base:\['invalid_vg'\] in lvs does not match "
+                               r"a valid vg",
                                LVMPlugin, bad_config, {}, {})
 
         bad_config = copy.deepcopy(lvm_config)

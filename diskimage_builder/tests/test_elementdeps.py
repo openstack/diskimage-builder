@@ -173,7 +173,7 @@ class TestElementDeps(testtools.TestCase):
                  self._e('provides_new_virtual')], result)
 
     def test_elements_provide_same(self):
-        msg = "virtual: already provided by \['provides_virtual'\]"
+        msg = r"virtual: already provided by \['provides_virtual'\]"
         self.assertRaisesRegex(element_dependencies.AlreadyProvidedException,
                                msg,
                                element_dependencies.get_elements,

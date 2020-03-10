@@ -52,9 +52,9 @@ def recurse_config(config, parent_base=None):
 
     # We should only have one key, with multiple values, being the
     # config entries.  e.g. (this was checked by config_tree_to_graph)
-    #  mkfs:
-    #    type: ext4
-    #    label: 1234
+    # # mkfs:
+    # #  type: ext4
+    # #  label: 1234
     assert len(config.items()) == 1
     for k, v in config.items():
         key = k
@@ -248,31 +248,31 @@ def create_graph(config, default_config, state):
 #
 # To be concrete --
 #
-# partitioning:
-#   base: loop0
-#   name: mbr
-#   partitions:
-#     - name: partition1
-#       foo: bar
-#       mkfs:
-#         type: xfs
-#         mount:
-#           mount_point: /
+# # partitioning:
+# #  base: loop0
+# #  name: mbr
+# #   partitions:
+# #    - name: partition1
+# #      foo: bar
+# #      mkfs:
+# #        type: xfs
+# #        mount:
+# #          mount_point: /
 #
 # gets turned into the following graph:
 #
-# partitioning:
-#   partitions:
-#     - name: partition1
-#       base: image0
-#       foo: bar
+# # partitioning:
+# #  partitions:
+# #    - name: partition1
+# #      base: image0
+# #      foo: bar
 #
-# mkfs:
-#   base: partition1
-#   name: mkfs_partition1
-#   type: xfs
+# # mkfs:
+# #  base: partition1
+# #  name: mkfs_partition1
+# #  type: xfs
 #
-# mount:
-#   base: mkfs_partition1
-#   name: mount_mkfs_partition1
-#   mount_point: /
+# # mount:
+# #  base: mkfs_partition1
+# #  name: mount_mkfs_partition1
+# #  mount_point: /
