@@ -19,7 +19,6 @@ gnupg2 [!platform:redhat !platform:ubuntu-trusty !platform:suse]
 # ubuntu
 apt-transport-https [platform:dpkg]
 inetutils-ping [platform:dpkg]
-lsb-release [platform:dpkg]
 python-lzma [platform:dpkg]
 qemu-utils [platform:dpkg]
 rpm [platform:dpkg]
