@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eux
+set -o pipefail
+
+[ -f "/pyenv/plugins/python-build/install.sh" ]
+[ -d "/usr/local/stow" ]
+
+# dib-lint: disable=which
+which stow

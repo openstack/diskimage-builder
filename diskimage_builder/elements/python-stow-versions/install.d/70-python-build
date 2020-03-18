@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 1 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+#Install python-build
+/pyenv/plugins/python-build/install.sh
+
+DIB_PYTHON_VERSIONS=${DIB_PYTHON_VERSIONS:-"2.7,3.5,3.6,3.7,3.8,3.9"}
+DIB_VERSIONS_TO_INSTALL=${1:-$DIB_PYTHON_VERSIONS}
+
+# Get pyenv versions
+DIB_PYENV_VERSIONS=$(python-build --definitions \
+    | egrep "^\s*[2,3]\.[0-9]{1,2}\.[0-9]{1,2}$")
+
+declare -A DIB_PYTHON_VERSIONS_ARRAY
+
+for version in ${DIB_PYENV_VERSIONS}; do
+        DIB_PYTHON_VERSIONS_ARRAY[${version%.*}]+="${version##*.} "
+done
+
+if [ -n $DIB_VERSIONS_TO_INSTALL ]; then
+    readarray -t DIB_VERSIONS_ARRAY <<<\
+        "$(echo "$DIB_VERSIONS_TO_INSTALL" | tr ',' '\n')"
+fi
+
+for key in ${!DIB_PYTHON_VERSIONS_ARRAY[@]}; do
+    if ([ -n $DIB_VERSIONS_ARRAY ] && \
+            [[ " ${DIB_VERSIONS_ARRAY[@]} " =~ " ${key} " ]]) || \
+            [ -z ${DIB_VERSIONS_ARRAY} ]; then
+        DIB_LAST_VERSION=${key}.$(echo "${DIB_PYTHON_VERSIONS_ARRAY[${key}]}" \
+            | sed "s/ /\n/g" | sort -nr | head -n1)
+        python-build ${DIB_LAST_VERSION} /usr/local/stow/python-${DIB_LAST_VERSION}
+    fi
+done

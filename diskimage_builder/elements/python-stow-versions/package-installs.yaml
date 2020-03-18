@@ -1,0 +1,18 @@
+bzip-dev:
+  build-only: True
+curl:
+gcc:
+  build-only: True
+git:
+  build-only: True
+make:
+  build-only: True
+readline-dev:
+  build-only: True
+ssl-dev:
+  build-only: True
+stow:
+sqlite-dev:
+  build-only: True
+zlib-dev:
+  build-only: True
