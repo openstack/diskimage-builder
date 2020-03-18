@@ -113,9 +113,11 @@ def collect_data(data, objs, element_name):
         if not params:
             params = {}
         phase = params.get('phase', 'install.d')
-        install = "install"
+        installs = ["install"]
         if 'uninstall' in params:
-            install = "uninstall"
+            installs = ["uninstall"]
+        if 'build-only' in params:
+            installs = ["install", "uninstall"]
 
         # Filter out incorrect installtypes
         installtype = params.get('installtype', None)
@@ -136,7 +138,8 @@ def collect_data(data, objs, element_name):
             continue
 
         if valid_installtype and valid_arch and valid_dib_python_version:
-            data[phase][install].append((pkg_name, element_name))
+            for install in installs:
+                data[phase][install].append((pkg_name, element_name))
 
     return data
 

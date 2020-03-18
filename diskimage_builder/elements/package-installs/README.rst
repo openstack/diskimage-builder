@@ -30,6 +30,8 @@ example ``package-installs.yaml``
     dib_python_version: 2
   python3-dev:
     dib_python_version: 3
+  libssl-dev:
+    build-only: True
   package-a:
     when: DIB_USE_PACKAGE_A = 1
   package-b:
@@ -59,6 +61,11 @@ the following default values::
 Setting the installtype property causes the package only to be installed if
 the specified installtype would be used for the element. See the
 diskimage-builder docs for more information on installtypes.
+
+Setting ``build-only`` will cause the package to be added both to the
+list of packages to be installed and to the list of packages to be
+uninstalled. This allows expressing build-time dependencies that should
+not end up in the final image.
 
 The ``arch`` property is a comma-separated list of architectures to
 install for.  The ``not-arch`` is a comma-separated list of
