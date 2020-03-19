@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Fixed an issue where cleaning old kernels on systems runing ``dnf`` would
+    fail in case the kernel packages being removed matches the running kernel
+    of the system building the image. See Bug: `1623409
+    <https://bugs.launchpad.net/diskimage-builder/+bug/1623409>`_.
+
