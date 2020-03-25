@@ -15,9 +15,9 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 if [[ ${DIB_RELEASE} == '7' ]]; then
     sed -e "s|^#baseurl=http[s]*://mirror.centos.org/centos|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
 elif [[ ${DIB_RELEASE} == '8' ]]; then
-    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
-    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-AppStream.repo
-    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-centosplus.repo
-    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Extras.repo
-    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-PowerTools.repo
+    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/\$contentdir/|baseurl=$DIB_DISTRIBUTION_MIRROR/|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
+    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/\$contentdir/|baseurl=$DIB_DISTRIBUTION_MIRROR/|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-AppStream.repo
+    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/\$contentdir/|baseurl=$DIB_DISTRIBUTION_MIRROR/|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-centosplus.repo
+    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/\$contentdir/|baseurl=$DIB_DISTRIBUTION_MIRROR/|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Extras.repo
+    sed -e "s|^#baseurl=http[s]*://mirror.centos.org/\$contentdir/|baseurl=$DIB_DISTRIBUTION_MIRROR/|;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-PowerTools.repo
 fi
