@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 1 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+DIB_PYTHON_FILES=('/usr/local/bin/pyenv-install', \
+    '/usr/localbin/pyenv-uninstall', '/usr/local/bin/python-build', \
+    '/usr/local/share/python-build', '/pyenv')
+
+for path in ${DIB_PYTHON_FILES}; do
+    rm -rf ${DIB_PYTHON_PREFIX}/${path}
+done

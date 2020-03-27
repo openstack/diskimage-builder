@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eux
+set -o pipefail
+
+DIB_STOW_PATH="/usr/local/stow"
+
+DIB_PY_BUILD_COUNTER=0
+
+for pybuilds in $(ls -1 ${DIB_STOW_PATH} | grep "python-"); do
+    DIB_PY_BUILD_COUNTER=$((DIB_PY_BUILD_COUNTER+1))
+    py_dir_version=$(echo ${pybuilds} | cut -d "-" -f 2)
+    py_real_version=$(\
+        ${DIB_STOW_PATH}/${pybuilds}/bin/python --version | cut -d " " -f 2)
+    [[ ${py_real_version} == ${py_dir_version} ]]
+    pushd ${DIB_STOW_PATH}
+    stow ${pybuilds}
+    popd
+    py_stow_version=$(\
+        /usr/local/bin/python${py_dir_version%.*} --version | cut -d " " -f 2)
+    [[ ${py_stow_version} == ${py_dir_version} ]]
+done
+
+[ $DIB_PY_BUILD_COUNTER -eq 1 ]

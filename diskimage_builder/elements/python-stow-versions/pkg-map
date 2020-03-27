@@ -1,0 +1,51 @@
+{
+  "family": {
+    "debian": {
+      "bzip-dev": "libbz2-dev",
+      "curl": "curl",
+      "gcc": "gcc",
+      "git": "git",
+      "make": "make",
+      "readline-dev": "libreadline-dev",
+      "ssl-dev": "libssl-dev",
+      "stow": "stow",
+      "sqlite-dev": "libsqlite3-dev",
+      "zlib-dev": "zlib1g-dev"
+    },
+    "redhat": {
+      "bzip-dev": "bzip2-devel",
+      "curl": "curl",
+      "gcc": "gcc",
+      "git": "git",
+      "make": "make",
+      "readline-dev": "readline-devel",
+      "ssl-dev": "openssl-devel",
+      "stow": "stow",
+      "sqlite-dev": "sqlite-devel",
+      "zlib-dev": "zlib-devel"
+    },
+    "suse": {
+      "bzip-dev": "libbz2-devel",
+      "curl": "curl",
+      "gcc": "gcc",
+      "git": "git",
+      "make": "make",
+      "readline-dev": "readline-devel",
+      "ssl-dev": "openssl-devel",
+      "stow": "stow",
+      "sqlite-dev": "sqlite3-devel",
+      "zlib-dev": "zlib-devel"
+    }
+  },
+  "default": {
+    "bzip-dev": "",
+    "curl": "curl",
+    "gcc": "gcc",
+    "git": "git",
+    "make": "make",
+    "readline-dev": "",
+    "ssl-dev": "",
+    "sqlite-dev": "",
+    "zlib-dev": ""
+  }
+}
