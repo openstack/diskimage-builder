@@ -31,7 +31,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
         fedora)
             _do_py3=1
             packages="python2-virtualenv python2-pip python2-setuptools"
-            packages+=" python3-virtualenv python3-pip python3-setuptools"
+            packages=" python3-virtualenv python3-pip python3-setuptools"
             ;;
         rhel)
             case "$DIB_RELEASE" in

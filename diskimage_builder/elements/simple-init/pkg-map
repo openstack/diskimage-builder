@@ -25,6 +25,9 @@
       },
       "30": {
         "network-scripts": "network-scripts"
+      },
+      "31": {
+        "network-scripts": "network-scripts"
       }
     }
   },
