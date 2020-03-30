@@ -1,16 +1,13 @@
 dkms:
 ibacm:
-ibutils:
 ibverbs-utils:
 infiniband-diags:
-libibcm:
 libibcommon:
 libibmad:
 libibumad:
 libibverbs:
 libibverbs-runtime:
 libmlx4:
-libmlx4-dev:
 libmlx5:
 librdmacm:
 librdmacm-dev:
