@@ -59,9 +59,15 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
                     packages="python-virtualenv python-pip python-setuptools"
                     _clear_old_files=1
                     ;;
-                tumbleweed|15*)
+                15*)
                     # XXX: python3?
-                    packages="python2-virtualenv python2-pip python2-setuptools"
+                    packages="python-xml python"
+                    packages+=" python3-virtualenv python3-pip python3-setuptools"
+                    ;;
+                tumbleweed)
+                    ### _do_py3=1
+                    packages="python-xml python"
+                    packages+=" python3-virtualenv python3-pip python3-setuptools"
                     ;;
             esac
             ;;
