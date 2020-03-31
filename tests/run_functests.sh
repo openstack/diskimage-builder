@@ -162,22 +162,25 @@ function run_disk_element_test() {
             fi
         fi
 
-        # check inside the tar for sentinel files
-        if ! [ -f "$dest_dir/image.tar" ]; then
-            echo "Error: Build failed for element: $element, test-element: $test_element."
-            echo "No image $dest_dir/image.tar found!"
-            logfile_status "FAIL" "${logfile}"
-            exit 1
-        else
-            if tar -tf $dest_dir/image.tar | grep -q /tmp/dib-test-should-fail; then
-                echo "Error: Element: $element, test-element $test_element should have failed, but passed."
+        if [[ "tar" =~ "$output_format" ]]; then
+            # check inside the tar for sentinel files
+            if ! [ -f "$dest_dir/image.tar" ]; then
+                echo "Error: Build failed for element: $element, test-element: $test_element."
+                echo "No image $dest_dir/image.tar found!"
                 logfile_status "FAIL" "${logfile}"
                 exit 1
             else
-                echo "PASS: Element $element, test-element: $test_element"
-                logfile_status "PASS" "${logfile}"
+                if tar -tf $dest_dir/image.tar | grep -q /tmp/dib-test-should-fail; then
+                    echo "Error: Element: $element, test-element $test_element should have failed, but passed."
+                    logfile_status "FAIL" "${logfile}"
+                    exit 1
+                fi
             fi
         fi
+
+        # if we got here, the test passed
+        echo "PASS: Element $element, test-element: $test_element"
+        logfile_status "PASS" "${logfile}"
     else
         if [ -f "${dest_dir}/dib-test-should-fail" ]; then
             echo "PASS: Element $element, test-element: $test_element"
