@@ -95,7 +95,6 @@
       # These can only build on bionic
       dib_functests_extra:
         - fedora-minimal/build-succeeds
-        - pip-and-virtualenv/source-install-fedora
     voting: false
 
 - job:
