@@ -53,6 +53,7 @@
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-functests-xenial-python3
         - dib-functests-centos7-python2
+        - dib-functests-bionic-python3
         - ironic-python-agent-check-image-dib-centos8
     experimental:
       jobs:

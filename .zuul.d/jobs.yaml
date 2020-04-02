@@ -95,7 +95,6 @@
       # These can only build on bionic
       dib_functests_extra:
         - fedora-minimal/build-succeeds
-    voting: false
 
 - job:
     name: dib-functests-bionic-python3-image
