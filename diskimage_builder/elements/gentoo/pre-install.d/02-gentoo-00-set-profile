@@ -8,3 +8,12 @@ set -o pipefail
 
 # set profile symlink to the hardcoded PORDIR
 ln -sf ../.."${PORTDIR}/profiles/${GENTOO_PROFILE}" /etc/portage/make.profile
+
+# Set timezone
+echo 'UTC' > /etc/timezone
+
+# Set locale
+echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
+echo 'en_US ISO-8859-1' >> /etc/locale.gen
+locale-gen -q
+eselect locale set en_US.utf8

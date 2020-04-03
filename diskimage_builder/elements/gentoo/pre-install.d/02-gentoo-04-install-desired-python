@@ -30,6 +30,8 @@ PYTHON_PACKAGES="dev-python/six dev-python/packaging dev-python/appdirs dev-pyth
 for PACKAGE in ${PYTHON_PACKAGES}; do
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --nodeps "${PACKAGE}"
 done
+# install portage first due to bug in env vars not being passed when portage installs itself and re-inits
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot sys-apps/portage
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --complete-graph=y sys-apps/portage dev-python/pyxattr
 # set the active python version
 eselect python set ${GENTOO_PYTHON_ACTIVE_VERSION}

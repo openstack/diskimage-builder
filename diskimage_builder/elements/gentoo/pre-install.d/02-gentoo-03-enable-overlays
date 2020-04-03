@@ -21,7 +21,7 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
 
     # upstream has problems with supporting other libcs still
     if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then
-        echo '=sys-block/open-iscsi-2.0.877' >> /etc/portage/package.keywords/open-iscsi
+        echo '=sys-block/open-iscsi-2.0.877' >> /etc/portage/package.accept_keywords/open-iscsi
     fi
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot openssl openssh
     # install layman
