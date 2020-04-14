@@ -302,7 +302,11 @@ function _arg_defaults_hack() {
     done
 
     if [[ -n "${vm_seen}" && -z "${blockdev_seen}" ]]; then
-        elements="$elements block-device-mbr"
+        if [[ "arm64 aarch64" =~ $ARCH ]] ; then
+            elements="$elements block-device-efi"
+        else
+            elements="$elements block-device-mbr"
+        fi
     fi
 
     echo $elements
