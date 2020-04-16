@@ -82,6 +82,7 @@
     vars:
       dib_functests:
         - ubuntu-minimal/bionic-arm64-build-succeeds
+        - centos-minimal/8-aarch64-build-succeeds
 
 # Bionic / Python3 tests
 - job:
