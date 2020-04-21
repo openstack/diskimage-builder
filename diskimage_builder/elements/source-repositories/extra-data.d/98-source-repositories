@@ -120,7 +120,25 @@ function get_repos_for_element(){
 
                 if [ ! -e "$CACHE_PATH" ] ; then
                     echo "Caching $REPONAME from $REPOLOCATION in $CACHE_PATH"
-                    git clone -q $REPOLOCATION $CACHE_PATH.tmp
+                    attempt=1
+                    success=0
+                    max_attempts=5
+                    while [[ $success == 0 ]] && [ $attempt -le $max_attempts ]; do
+                        set +e
+                        git clone -q $REPOLOCATION $CACHE_PATH.tmp
+                        if [ $? -eq 0 ]; then
+                            success=1
+                        else
+                            echo "Attempt $attempt failed. Trying again..."
+                            rm -rf $CACHE_PATH.tmp
+                            attempt=$((attempt + 1))
+                        fi
+                        set -e
+                    done
+                    if [ $success != 1 ]; then
+                        echo "The git clone command failed after $max_attempts attempts."
+                        exit 1
+                    fi
                     mv ${CACHE_PATH}{.tmp,}
                 fi
 
@@ -139,8 +157,25 @@ function get_repos_for_element(){
                         # not permit arbitrary sha fetching from remote servers.
                         # This is a separate fetch to the prior one as the prior
                         # one will fail when REPOREF is a SHA1.
-                        git -C ${CACHE_PATH} fetch -q --prune --update-head-ok $REPOLOCATION \
-                            +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+                        attempt=1
+                        success=0
+                        max_attempts=5
+                        while [[ $success == 0 ]] && [ $attempt -le $max_attempts ]; do
+                            set +e
+                            git -C $CACHE_PATH fetch -q --prune --update-head-ok \
+                                $REPOLOCATION +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+                            if [ $? -eq 0 ]; then
+                                success=1
+                            else
+                                echo "Attempt $attempt failed. Trying again..."
+                                attempt=$((attempt + 1))
+                            fi
+                        set -e
+                        done
+                        if [ $success != 1 ]; then
+                            echo "The command failed after $max_attempts attempts."
+                            exit 1
+                        fi
                     fi
                     # Ensure that we have a reference to the revision.
                     if [ "$REPOREF" != "*" ] ; then
