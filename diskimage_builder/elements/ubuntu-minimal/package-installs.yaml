@@ -17,3 +17,4 @@ linux-generic-hwe-18.04:
 linux-generic-hwe-16.04:
   arch: arm64
 initramfs-tools:
+netbase:
