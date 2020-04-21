@@ -194,13 +194,17 @@
     nodeset: ubuntu-bionic-arm64
     parent: dib-functests-arm64
 
+#
 # Build and boot functional tests
+#
+
 - job:
     name: dib-nodepool-functional-src-base
     description: |
-      Base job for DIB functional tests, which build and boot a node under
-      nodepool
-    parent: nodepool-functional-openstack-src-base
+      Base job for DIB functional tests, which build and boot a node
+      under nodepool, using source versions of dependencies such as
+      nodepool, dib, openstacksdk and glean.
+    parent: nodepool-functional-container-openstack-siblings-base
     vars:
       nodepool_debug: true
 
@@ -210,9 +214,6 @@
       Test building and booting a Centos 7 image with Nodepool and OpenStack
     parent: dib-nodepool-functional-src-base
     vars:
-      nodepool_extra_packages:
-        - rpm
-        - yum-utils
       nodepool_diskimage:
         base_element: centos-minimal
         release: '7'
@@ -224,9 +225,6 @@
       Test building and booting a Centos 8 image with Nodepool and OpenStack
     parent: dib-nodepool-functional-src-base
     vars:
-      nodepool_extra_packages:
-        - rpm
-        - yum-utils
       nodepool_diskimage:
         base_element: centos-minimal
         release: '8'
@@ -238,9 +236,6 @@
       Test building and booting a Fedora 30 image with Nodepool and OpenStack
     parent: dib-nodepool-functional-src-base
     vars:
-      nodepool_extra_packages:
-        - rpm
-        - yum-utils
       nodepool_diskimage:
         base_element: fedora-minimal
         release: '30'
@@ -251,9 +246,6 @@
       Test building and booting a Fedora 31 image with Nodepool and OpenStack
     parent: dib-nodepool-functional-src-base
     vars:
-      nodepool_extra_packages:
-        - rpm
-        - yum-utils
       nodepool_diskimage:
         base_element: fedora-minimal
         release: '31'
@@ -266,8 +258,6 @@
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
-      nodepool_extra_packages:
-        - debootstrap
       nodepool_diskimage:
         base_element: ubuntu-minimal
         release: 'xenial'
@@ -305,8 +295,6 @@
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
-      nodepool_extra_packages:
-        - debootstrap
       nodepool_diskimage:
         base_element: ubuntu-minimal
         release: 'bionic'
@@ -336,8 +324,6 @@
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
-      nodepool_extra_packages:
-        - debootstrap
       nodepool_diskimage:
         base_element: debian-minimal
         release: 'stretch'
@@ -355,8 +341,6 @@
     parent: dib-nodepool-functional-src-base
     pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
-      nodepool_extra_packages:
-        - debootstrap
       nodepool_diskimage:
         base_element: debian-minimal
         release: 'buster'
@@ -374,9 +358,6 @@
     parent: dib-nodepool-functional-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
-      nodepool_extra_packages:
-        - zypper
-        - gnupg2
       nodepool_diskimage:
         base_element: opensuse-minimal
         release: '15.1'
@@ -390,9 +371,6 @@
     parent: dib-nodepool-functional-src-base
     nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
-      nodepool_extra_packages:
-        - zypper
-        - gnupg2
       nodepool_diskimage:
         base_element: opensuse-minimal
         release: 'tumbleweed'

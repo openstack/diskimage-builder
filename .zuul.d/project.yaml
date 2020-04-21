@@ -10,11 +10,12 @@
     check:
       jobs:
         - openstack-tox-pylint
+        - opendev-buildset-registry
+        - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-31-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
-        - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-functests-centos7-python2
         - dib-functests-centos7-python2-image
@@ -45,11 +46,12 @@
     gate:
       jobs:
         - openstack-tox-pylint
+        - opendev-buildset-registry
+        - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-fedora-31-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
-        - dib-nodepool-functional-openstack-ubuntu-bionic
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-functests-xenial-python3
         - dib-functests-centos7-python2
