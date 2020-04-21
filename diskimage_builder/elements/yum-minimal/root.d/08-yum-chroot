@@ -281,11 +281,19 @@ else
     _install_pkg_manager yum
 fi
 
+# sort of like run_in_target; but we're not in a phase where that
+# works yet.  strip unnecessary external env vars that can cause
+# problems.
+function _run_chroot {
+    local cmd="$@"
+    sudo -E chroot $TARGET_ROOT env -u TMPDIR sh -c "$cmd"
+}
+
 # we just installed yum/dnf with "outside" tools (yum/rpm) which
 # might have created /var/lib/[yum|rpm] (etc) that are slighlty
 # incompatible.  Refresh everything with the in-chroot tools
-sudo -E chroot $TARGET_ROOT rpm --rebuilddb
-sudo -E chroot $TARGET_ROOT ${YUM} clean all
+_run_chroot rpm --rebuilddb
+_run_chroot ${YUM} clean all
 
 # populate the lang reduction macro in the chroot
 echo "%_install_langs C:en_US:en_US.UTF-8" | \
@@ -301,8 +309,8 @@ _base_packages+="systemd-udev "
 
 # bootstrap the environment within the chroot; bring in new
 # metadata with an update and install some base packages we need.
-sudo -E chroot $TARGET_ROOT ${YUM} -y update
-sudo -E chroot $TARGET_ROOT ${YUM} -y \
+_run_chroot ${YUM} -y update
+_run_chroot ${YUM} -y \
     --setopt=cachedir=/tmp/yum/$ARCH/$DIB_RELEASE \
     install ${_base_packages}
 
@@ -319,7 +327,7 @@ echo -e "# This file intentionally left blank\n" | \
 echo -e 'LANG="en_US.UTF-8"' | \
     sudo tee $TARGET_ROOT/etc/locale.conf
     # default to UTC
-sudo -E chroot $TARGET_ROOT ln -sf /usr/share/zoneinfo/UTC \
+_run_chroot ln -sf /usr/share/zoneinfo/UTC \
     /etc/localtime
 
 # cleanup
