@@ -24,7 +24,6 @@
         - centos-minimal/7-build-succeeds
         - centos-minimal/8-build-succeeds
         - pip-and-virtualenv/source-install-ubuntu
-        - ubuntu-minimal/trusty-build-succeeds
         - ubuntu-minimal/xenial-build-succeeds
         - ubuntu-minimal/bionic-build-succeeds
 
@@ -43,7 +42,6 @@
         - centos/8-build-succeeds
         - opensuse/build-succeeds
         - opensuse/opensuse15-build-succeeds
-        - ubuntu/trusty-build-succeeds
         - ubuntu/xenial-build-succeeds
         - ubuntu/bionic-build-succeeds
 

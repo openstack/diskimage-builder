@@ -1,0 +1,5 @@
+---
+deprecations:
+  - Trusty testing has been removed; although we have not attempted to
+    disable support in elements, the distribution can be effectively
+    considered deprecated from this release.

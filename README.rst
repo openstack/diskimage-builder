@@ -12,7 +12,7 @@ the flexibility to customise the image build with their own elements.
 
 For example::
 
-  $ DIB_RELEASE=trusty disk-image-create -o ubuntu-trusty.qcow2 vm ubuntu
+  $ DIB_RELEASE=bionic disk-image-create -o ubuntu-bionic.qcow2 vm ubuntu
 
 will create a bootable Ubuntu Trusty based ``qcow2`` image.
 
