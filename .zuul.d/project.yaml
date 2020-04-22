@@ -17,6 +17,12 @@
         - dib-nodepool-functional-openstack-fedora-31-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
+        # NOTE(ianw): 2020-04-22 these have been out of the gate for a
+        # while; promote to voting after some stability.
+        - dib-nodepool-functional-openstack-opensuse-15-src:
+            voting: false
+        - dib-nodepool-functional-openstack-opensuse-tumbleweed-src:
+            voting: false
         - dib-functests-centos7-python2
         - dib-functests-centos7-python2-image
         - dib-functests-centos7-python2-extras
@@ -62,12 +68,5 @@
         - dib-nodepool-functional-openstack-gentoo-src
         - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-nodepool-functional-openstack-debian-buster-src
-        # NOTE(ianw): 2019-12-10 : this can not build on bionic due to
-        # no zypper; but devstack has dropped Xenial support so can't
-        # build there either.  Because devstack install in pre, it
-        # causes multiple retries in zuul, so can't be non-voting.
-        # Paused until we figure out what to do.
-        - dib-nodepool-functional-openstack-opensuse-15-src
-        - dib-nodepool-functional-openstack-opensuse-tumbleweed-src
         - octavia-v1-dsvm-scenario
         - octavia-v1-dsvm-py3x-scenario

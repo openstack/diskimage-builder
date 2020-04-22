@@ -356,7 +356,6 @@
       Test building and booting an openSUSE 15.x image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
       nodepool_diskimage:
         base_element: opensuse-minimal
@@ -369,7 +368,6 @@
       Test building and booting an openSUSE tumbleweed image with
       Nodepool and OpenStack
     parent: dib-nodepool-functional-src-base
-    nodeset: ubuntu-xenial  # Bionic lacks zypper
     vars:
       nodepool_diskimage:
         base_element: opensuse-minimal
