@@ -29,6 +29,10 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
             _clear_old_files=1
             ;;
         fedora)
+            if [[ ${DIB_RELEASE} -gt 30 ]]; then
+                echo "This element is not supported for this version of Fedora"
+                exit 1
+            fi
             _do_py3=1
             packages="python2-virtualenv python2-pip python2-setuptools"
             packages=" python3-virtualenv python3-pip python3-setuptools"
@@ -60,14 +64,17 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
                     _clear_old_files=1
                     ;;
                 15*)
-                    # XXX: python3?
-                    packages="python-xml python"
-                    packages+=" python3-virtualenv python3-pip python3-setuptools"
+                    _do_py3=1
+                    _clear_old_files=1
+                    # python*-six gets dragged in, and then is a
+                    # distutils package and won't uninstall.  put it
+                    # here so it gets cleaned.
+                    packages="python2-virtualenv python2-pip python2-setuptools python2-six"
+                    packages+=" python3-virtualenv python3-pip python3-setuptools python3-six"
                     ;;
                 tumbleweed)
-                    ### _do_py3=1
-                    packages="python-xml python"
-                    packages+=" python3-virtualenv python3-pip python3-setuptools"
+                    echo "This element is not supported for this platform"
+                    exit 1
                     ;;
             esac
             ;;
@@ -157,7 +164,9 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
         #
         # Thus we need to *reinstall* the RPM version now, so those
         # files come back and system tools continue to work
-        dnf reinstall -y python3-setuptools
+        if [[ $DISTRO_NAME != opensuse ]]; then
+            dnf reinstall -y python3-setuptools
+        fi
     fi
 
     # now install latest virtualenv.  it vendors stuff it needs so

@@ -132,6 +132,10 @@
       Run the default tests on a Xenial build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-xenial
+    vars:
+      dib_functests_extra:
+        # Only builds on xenial; should work on focal in future
+        - pip-and-virtualenv/source-install-opensuse
 
 - job:
     name: dib-functests-xenial-python3-image
