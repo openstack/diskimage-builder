@@ -6,6 +6,4 @@ fi
 set -eu
 set -o pipefail
 
-for f in $(find $(dirname $0)/../bin/ -type f -executable -print); do
-    install -m 0755 -o root -g root $f /usr/local/bin
-done
+install -m 0755 -o root -g root $(dirname $0)/../bin/* /usr/local/bin

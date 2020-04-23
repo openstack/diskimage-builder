@@ -1,0 +1,4 @@
+---
+upgrade:
+  - The ``pip-and-virtualenv`` element does not support Fedora 31 (and
+    greater) or Tumbleweed distributions.
