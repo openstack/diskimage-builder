@@ -276,6 +276,10 @@
         base_element: ubuntu-minimal
         release: 'xenial'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-bionic
@@ -292,6 +296,10 @@
         base_element: ubuntu-minimal
         release: 'bionic'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-bionic-src
@@ -307,6 +315,10 @@
         base_element: ubuntu-minimal
         release: 'bionic'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-nodepool-functional-openstack-gentoo-src
@@ -334,6 +346,10 @@
         base_element: debian-minimal
         release: 'stretch'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-nodepool-functional-openstack-debian-buster-src
@@ -349,6 +365,10 @@
         base_element: debian-minimal
         release: 'buster'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-nodepool-functional-openstack-opensuse-15-src
