@@ -67,6 +67,8 @@
         - ironic-python-agent-check-image-dib-centos8
     experimental:
       jobs:
+        - opendev-buildset-registry
+        - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-gentoo-src
         - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-nodepool-functional-openstack-debian-buster-src
