@@ -1,6 +1,7 @@
 - hosts: all
   name: Run dib functional tests
   roles:
+    - ensure-virtualenv
     - bindep
     - dib-setup-gate-mirrors
     - dib-functests
