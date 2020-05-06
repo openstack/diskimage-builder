@@ -26,6 +26,7 @@
         - pip-and-virtualenv/source-install-ubuntu
         - ubuntu-minimal/xenial-build-succeeds
         - ubuntu-minimal/bionic-build-succeeds
+        - ubuntu-minimal/focal-build-succeeds
 
 - job:
     name: dib-functests-image
@@ -80,6 +81,7 @@
     vars:
       dib_functests:
         - ubuntu-minimal/bionic-arm64-build-succeeds
+        - ubuntu-minimal/focal-arm64-build-succeeds
         - centos-minimal/8-aarch64-build-succeeds
 
 # Bionic / Python3 tests

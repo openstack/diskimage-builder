@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The ``ubuntu-minimal`` element now supports the Focal release.
