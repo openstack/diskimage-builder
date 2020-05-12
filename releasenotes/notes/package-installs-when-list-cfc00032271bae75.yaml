@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``package-installs`` element can now take a list value for the
+    ``when`` environment filter.

@@ -61,7 +61,7 @@ def _valid_for_arch(pkg_name, arch, not_arch):
     return not _is_arch_in_list(not_arch)
 
 
-def _when(statement):
+def _when(statements):
     '''evaulate a when: statement
 
     Evaluate statements of the form
@@ -74,38 +74,48 @@ def _when(statement):
 
     '''
     # No statement means install
-    if statement is None:
+    if statements is None:
         return True
 
-    # FOO =  BAR
-    # var op val
-    match = re.match(
-        r"(?P<var>[\w]+)(\s*)(?P<op>=|!=)(\s*)(?P<val>.*)", statement)
-    if not match:
-        print("Malformed when line: <%s>" % statement)
-        sys.exit(1)
-    match = match.groupdict()
-    var = match['var']
-    op = match['op']
-    val = match['val']
+    if not isinstance(statements, list):
+        statements = [statements]
 
-    if var not in os.environ:
-        raise RuntimeError("The variable <%s> is not set" % var)
+    result = []
 
-    logger.debug("when eval %s%s%s against <%s>" %
-                 (var, op, val, os.environ[var]))
+    for s in statements:
+        # FOO =  BAR
+        # var op val
+        match = re.match(
+            r"(?P<var>[\w]+)(\s*)(?P<op>=|!=)(\s*)(?P<val>.*)", s)
+        if not match:
+            print("Malformed when line: <%s>" % s)
+            sys.exit(1)
+        match = match.groupdict()
+        var = match['var']
+        op = match['op']
+        val = match['val']
 
-    if op == '=':
-        if val == os.environ[var]:
-            return True
-    elif op == '!=':
-        if val != os.environ[var]:
-            return True
-    else:
-        print("Malformed when op: %s" % op)
-        sys.exit(1)
+        if var not in os.environ:
+            raise RuntimeError("The variable <%s> is not set" % var)
 
-    return False
+        logger.debug("when eval %s%s%s against <%s>" %
+                     (var, op, val, os.environ[var]))
+
+        if op == '=':
+            if val == os.environ[var]:
+                result.append(True)
+                continue
+        elif op == '!=':
+            if val != os.environ[var]:
+                result.append(True)
+                continue
+        else:
+            print("Malformed when op: %s" % op)
+            sys.exit(1)
+
+        result.append(False)
+
+    return all(result)
 
 
 def collect_data(data, objs, element_name):

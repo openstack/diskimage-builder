@@ -93,6 +93,9 @@ packages), you can use something like::
   other_package:
     when: DIB_FEATURE_FLAG!=0
 
+You can also use a list of items in the ``when`` statement, which will
+be effectively combined with *and*.
+
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or
 post-install.d directories called package-installs-<element-name> will cause
 the list of packages in that file to be installed at the beginning of the

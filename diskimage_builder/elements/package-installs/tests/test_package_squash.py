@@ -138,3 +138,39 @@ class TestPackageInstall(base.BaseTestCase):
 
         self.assertRaises(RuntimeError, installs_squash.collect_data,
                           self.final_dict, objs, 'test_element')
+
+    @mock.patch.object(os, 'environ',
+                       dict(
+                           DIB_A_FEATURE='1',
+                           DIB_B_FEATURE='1',
+                           DIB_C_FEATURE='1',
+                           **os.environ))
+    def test_skip_when_list(self):
+        '''Exercise the when flag with lists'''
+        objs = {
+            'not_skipped_package': {
+                'when': [
+                    'DIB_A_FEATURE=1',
+                    'DIB_B_FEATURE=1',
+                    'DIB_C_FEATURE=1'
+                ]
+            },
+            'skipped_package': {
+                'when': [
+                    'DIB_A_FEATURE=1',
+                    'DIB_B_FEATURE=0',
+                    'DIB_C_FEATURE=1',
+                ]
+            },
+        }
+
+        result = installs_squash.collect_data(
+            self.final_dict, objs, 'test_element')
+
+        expected = {
+            'install.d': {
+                'install': [('not_skipped_package', 'test_element')]
+            }
+        }
+
+        self.assertThat(result, IsMatchingInstallList(expected))
