@@ -108,8 +108,9 @@ class BlockDeviceState(collections.MutableMapping):
         # This is pretty good for human consumption, but maybe a bit
         # verbose.
         nice_output = pprint.pformat(self.state, width=40)
-        for l in nice_output.split('\n'):
-            logger.debug('{0:{fill}{align}50}'.format(l, fill=' ', align='<'))
+        for line in nice_output.split('\n'):
+            logger.debug('{0:{fill}{align}50}'.format(
+                line, fill=' ', align='<'))
 
 
 class BlockDevice(object):
