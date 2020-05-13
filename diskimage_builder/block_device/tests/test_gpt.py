@@ -70,7 +70,7 @@ class TestGPT(tc.TestGraphGeneration):
         cmd_sequence = [
             mock.call(parted_cmd),
             mock.call(['sync']),
-            mock.call(['kpartx', '-avs', '/dev/loopX'])
+            mock.call(['kpartx', '-uvs', '/dev/loopX'])
         ]
         self.assertEqual(mock_exec_sudo.call_count, len(cmd_sequence))
         mock_exec_sudo.assert_has_calls(cmd_sequence)

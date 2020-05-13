@@ -1,0 +1,6 @@
+---
+fixes:
+  - Fix cases of 'mkfs' failing because the partitions never showed up.
+    Partition mappings will now be updated instead of just adding them with
+    'kpartx'. That means that 'kpartx' will also remove devmappings for deleted
+    partitions.

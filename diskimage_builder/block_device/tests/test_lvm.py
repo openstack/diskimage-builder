@@ -512,7 +512,7 @@ class TestLVM(tc.TestGraphGeneration):
                 mock.call.create_mbr(),
                 # now mount partitions
                 mock.call.sudo_part(['sync']),
-                mock.call.sudo_part(['kpartx', '-avs', '/dev/fake/image0']),
+                mock.call.sudo_part(['kpartx', '-uvs', '/dev/fake/image0']),
                 # now create lvm environment
                 mock.call.sudo_lvm(['pvcreate', '/dev/fake/root', '--force']),
                 mock.call.sudo_lvm(
