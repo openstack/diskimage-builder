@@ -3,12 +3,13 @@
       - openstack-cover-jobs
       - check-requirements
       - openstack-lower-constraints-jobs
-      - openstack-python-jobs-no-constraints
-      - openstack-python35-jobs
       - release-notes-jobs
       # NOTE(ianw): 2020-05-29 jobs are unstable; see
       # https://bugs.launchpad.net/tripleo/+bug/1879766
-      # - tripleo-buildimage-jobs
+      - tripleo-buildimage-jobs-centos-8
+      - openstack-python35-jobs
+      - openstack-python36-jobs
+      - openstack-python38-jobs
     check:
       jobs:
         - openstack-tox-pylint
@@ -26,24 +27,11 @@
             voting: false
         - dib-nodepool-functional-openstack-opensuse-tumbleweed-src:
             voting: false
-        - dib-functests-centos7-python2
-        - dib-functests-centos7-python2-image
-        - dib-functests-centos7-python2-extras
-        - dib-functests-xenial-python3
-        - dib-functests-xenial-python3-image
-        - dib-functests-xenial-python3-extras
-        - dib-functests-xenial-python3-containers
         - dib-functests-bionic-python3
         - dib-functests-bionic-python3-image
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
         - ironic-python-agent-check-image-dib-centos8
-        # IPA jobs that build an image without further validations.
-        # NOTE(dtantsur): this can be removed when DIB drops CentOS 7
-        # compatibility, but is useful for now since CentOS 7 is used in
-        # ironic Train CI.
-        - ironic-python-agent-check-image-dib-centos7:
-            voting: false
         # IPA jobs that build AND validate an image via deployment (two ways).
         - ipa-tempest-wholedisk-bios-ipmi-direct-dib-src:
             voting: false
@@ -63,8 +51,6 @@
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src
-        - dib-functests-xenial-python3
-        - dib-functests-centos7-python2
         - dib-functests-bionic-python3
         - ironic-python-agent-check-image-dib-centos8
     experimental:

@@ -7,8 +7,7 @@
     timeout: 5400
     required-projects:
       - openstack/diskimage-builder
-      - name: openstack/requirements
-        override-checkout: stable/train
+      - openstack/requirements
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
@@ -24,8 +23,10 @@
         - apt-sources/test-sources
         - centos-minimal/7-build-succeeds
         - centos-minimal/8-build-succeeds
+        - fedora/build-succeeds
         - ubuntu-minimal/xenial-build-succeeds
         - ubuntu-minimal/bionic-build-succeeds
+        - ubuntu-minimal/focal-build-succeeds
 
 - job:
     name: dib-functests-image
@@ -40,6 +41,7 @@
       dib_functests:
         - centos7/build-succeeds
         - centos/8-build-succeeds
+        - fedora/build-succeeds
         - opensuse/build-succeeds
         - opensuse/opensuse15-build-succeeds
         - ubuntu/xenial-build-succeeds
@@ -90,11 +92,6 @@
       Run the default tests on a Bionic build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-bionic
-    vars:
-      # These can only build on bionic
-      dib_functests_extra:
-        - fedora-minimal/build-succeeds
-        - ubuntu-minimal/focal-build-succeeds
 
 - job:
     name: dib-functests-bionic-python3-image
@@ -102,9 +99,6 @@
       The image tests on a Bionic build host with Python 3
     parent: dib-functests-image
     nodeset: ubuntu-bionic
-    vars:
-      dib_functests_extra:
-        - fedora/build-succeeds
     voting: false
 
 - job:
@@ -122,69 +116,6 @@
     parent: dib-functests-containers
     nodeset: ubuntu-bionic
     voting: false
-
-# Xenial / Python3 tests
-- job:
-    name: dib-functests-xenial-python3
-    description: |
-      Run the default tests on a Xenial build host with Python 3
-    parent: dib-functests-default
-    nodeset: ubuntu-xenial
-
-- job:
-    name: dib-functests-xenial-python3-image
-    description: |
-      The image tests on a Xenial build host with Python 3
-    parent: dib-functests-image
-    nodeset: ubuntu-xenial
-
-- job:
-    name: dib-functests-xenial-python3-extras
-    description: |
-      The extras tests on a Xenial build host with Python 3
-    parent: dib-functests-extras
-    nodeset: ubuntu-xenial
-    vars:
-      # opensuse-minimal can only build on xenial ATM, as other
-      # platforms don't have zypper
-      dib_functests_extra:
-        - opensuse-minimal/opensuse15-build-succeeds
-
-- job:
-    name: dib-functests-xenial-python3-containers
-    description: |
-      The containers tests on a Xenial build host with Python 3
-    parent: dib-functests-containers
-    nodeset: ubuntu-xenial
-    voting: false
-
-# Centos 7 / Python2 tests
-- job:
-    name: dib-functests-centos7-python2
-    description: |
-      Run the default tests on a Centos 7 build host with Python 2
-    parent: dib-functests-default
-    nodeset: centos-7
-    vars:
-      dib_python: python2
-
-- job:
-    name: dib-functests-centos7-python2-image
-    description: |
-      The image tests on a Centos 7 build host with Python 2
-    parent: dib-functests-image
-    nodeset: centos-7
-    vars:
-      dib_python: python2
-
-- job:
-    name: dib-functests-centos7-python2-extras
-    description: |
-      The extras tests on a Centos 7 build host with Python 2
-    parent: dib-functests-extras
-    nodeset: centos-7
-    vars:
-      dib_python: python2
 
 # ARM64 tests
 - job:
