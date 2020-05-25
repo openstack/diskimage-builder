@@ -1,27 +1,36 @@
 linux-image-generic:
-  not-arch: arm64
-  when: DIB_UBUNTU_KERNEL = linux-image-generic
+  - not-arch: arm64
+    when: DIB_UBUNTU_KERNEL = linux-image-generic
+  - arch: arm64
+    when:
+      - DIB_RELEASE != xenial
+      - DIB_UBUNTU_KERNEL = linux-image-generic
+
+# On ARM64/Xenial install the HWE kernel as generic because the base
+# kernel is very old and causes problems.
+linux-generic-hwe-16.04:
+  arch: arm64
+  when:
+    - DIB_RELEASE = xenial
+    - DIB_UBUNTU_KERNEL = linux-image-generic
+
+# NOTE: there isn't actually an arm64 linux-image-kvm, but we don't
+# have a way to error out here.
 linux-image-kvm:
   not-arch: arm64
   when: DIB_UBUNTU_KERNEL = linux-image-kvm
+
 linux-image-virtual:
-  not-arch: arm64
   when: DIB_UBUNTU_KERNEL = linux-image-virtual
+
 linux-generic-hwe-18.04:
-  not-arch: arm64
   when:
     - DIB_UBUNTU_KERNEL = linux-image-hwe
     - DIB_RELEASE = bionic
+
 linux-generic-hwe-20.04:
-  not-arch: arm64
   when:
     - DIB_UBUNTU_KERNEL = linux-image-hwe
     - DIB_RELEASE = focal
 
-# TODO(ianw): this is Xenial specific, for now.  This kernel works
-# much better, however, including better support for cdrom's for
-# config-drive.  We'll need to filter this further for future
-# releases; maybe add a $DIB_RELEASE filter too?
-linux-generic-hwe-16.04:
-  arch: arm64
 initramfs-tools:
