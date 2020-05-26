@@ -276,17 +276,7 @@ fi
 echo "Checking YAML parsing..."
 for i in $(find $ELEMENTS_DIR -type f -name '*.yaml'); do
     echo "Parsing  $i"
-    py_check="
-import yaml
-import sys
-try:
-    objs = yaml.safe_load(open('$i'))
-except yaml.parser.ParserError:
-    sys.exit(1)
-"
-    if ! python -c "$py_check"; then
-        error "$i is not a valid YAML file"
-    fi
+    yamllint -s -f parsable $i
 done
 echo "Checking pkg-map files..."
 for i in $(find $ELEMENTS_DIR -type f \
