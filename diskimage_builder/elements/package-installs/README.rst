@@ -96,6 +96,29 @@ packages), you can use something like::
 You can also use a list of items in the ``when`` statement, which will
 be effectively combined with *and*.
 
+If you need to filter multiple paths for a single package, you can
+make the parameters a list.  For example, if ``linux-image-generic``
+package should be installed when ``DIB_UBUNTU_KERNEL =
+linux-image-generic`` is set *except* on ``arm64`` Xenial hosts, where
+we would like to install ``linux-generic-hwe-16.04`` you could use the
+following:
+
+.. code-block:: YAML
+
+ linux-image-generic:
+  - not-arch: arm64
+    when: DIB_UBUNTU_KERNEL = linux-image-generic
+  - arch: arm64
+    when:
+     - DIB_RELEASE != xenial
+     - DIB_UBUNTU_KERNEL = linux-image-generic
+
+ linux-generic-hwe-16.04:
+   arch: arm64
+   when:
+    - DIB_RELEASE = xenial
+    - DIB_UBUNTU_KERNEL = linux-image-generic
+
 DEPRECATED: Adding a file under your elements pre-install.d, install.d, or
 post-install.d directories called package-installs-<element-name> will cause
 the list of packages in that file to be installed at the beginning of the

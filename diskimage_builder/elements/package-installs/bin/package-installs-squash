@@ -76,10 +76,8 @@ def _when(statements):
     # No statement means install
     if statements is None:
         return True
-
-    if not isinstance(statements, list):
+    if not isinstance(statements, (list, tuple)):
         statements = [statements]
-
     result = []
 
     for s in statements:
@@ -98,7 +96,7 @@ def _when(statements):
         if var not in os.environ:
             raise RuntimeError("The variable <%s> is not set" % var)
 
-        logger.debug("when eval %s%s%s against <%s>" %
+        logger.debug("... when eval %s%s%s against <%s>" %
                      (var, op, val, os.environ[var]))
 
         if op == '=':
@@ -121,34 +119,50 @@ def _when(statements):
 def collect_data(data, objs, element_name):
     for pkg_name, params in objs.items():
         if not params:
-            params = {}
-        phase = params.get('phase', 'install.d')
-        installs = ["install"]
-        if 'uninstall' in params:
-            installs = ["uninstall"]
-        if 'build-only' in params:
-            installs = ["install", "uninstall"]
+            params = [{}]
+        if not isinstance(params, (list, tuple)):
+            params = [params]
 
-        # Filter out incorrect installtypes
-        installtype = params.get('installtype', None)
-        elem_installtype = get_element_installtype(element_name)
-        valid_installtype = (installtype is None or
-                             installtype == elem_installtype)
-        valid_arch = _valid_for_arch(pkg_name, params.get('arch', None),
-                                     params.get('not-arch', None))
-        dib_py_version = str(params.get('dib_python_version', ''))
-        dib_py_version_env = os.environ.get('DIB_PYTHON_VERSION', '')
-        valid_dib_python_version = (dib_py_version == '' or
-                                    dib_py_version == dib_py_version_env)
+        for param in params:
+            logger.debug("Considering %s/%s param:%s" %
+                         (element_name, pkg_name, param))
+            phase = param.get('phase', 'install.d')
+            installs = ["install"]
+            if 'uninstall' in param:
+                installs = ["uninstall"]
+            if 'build-only' in param:
+                installs = ["install", "uninstall"]
 
-        # True means install, false skip
-        if _when(params.get('when', None)) is False:
-            logger.debug("Skipped due to when: %s/%s" %
-                         (element_name, pkg_name))
-            continue
+            # Filter out incorrect installtypes
+            installtype = param.get('installtype', None)
+            elem_installtype = get_element_installtype(element_name)
+            valid_installtype = (installtype is None or
+                                 installtype == elem_installtype)
+            if not valid_installtype:
+                logger.debug("... skipping due to installtype")
+                continue
 
-        if valid_installtype and valid_arch and valid_dib_python_version:
+            valid_arch = _valid_for_arch(pkg_name, param.get('arch', None),
+                                         param.get('not-arch', None))
+            if not valid_arch:
+                logger.debug("... skipping due to arch match")
+                continue
+
+            dib_py_version = str(param.get('dib_python_version', ''))
+            dib_py_version_env = os.environ.get('DIB_PYTHON_VERSION', '')
+            valid_dib_python_version = (dib_py_version == '' or
+                                        dib_py_version == dib_py_version_env)
+            if not valid_dib_python_version:
+                logger.debug("... skipping due to python version")
+                continue
+
+            # True means install, false skip
+            if _when(param.get('when', None)) is False:
+                logger.debug("... skipped due to when: failures")
+                continue
+
             for install in installs:
+                logger.debug("... installing for '%s'" % install)
                 data[phase][install].append((pkg_name, element_name))
 
     return data
