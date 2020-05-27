@@ -8,5 +8,6 @@ pbr!=2.1.0,>=2.0.0 # Apache-2.0
 PyYAML>=3.12 # MIT
 six>=1.10.0 # MIT
 stevedore>=1.20.0 # Apache-2.0
-# NOTE(ianw) in here because dib-lint uses flake8
+# NOTE(ianw) in here because dib-lint uses flake8 and yamllint
 flake8<4.0.0,>=3.6.0 # MIT
+yamllint>=1.23.0

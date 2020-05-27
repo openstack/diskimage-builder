@@ -12,5 +12,3 @@ testrepository>=0.0.18 # Apache-2.0/BSD
 testtools>=2.2.0 # MIT
 
 coverage!=4.4,>=4.0 # Apache-2.0
-
-yamllint>=1.23.0
