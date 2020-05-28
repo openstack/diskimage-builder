@@ -1,5 +1,0 @@
----
-fixes:
-  - |
-    A dependency on ``yamllint`` was added because it is now
-    required by dib-lint.
