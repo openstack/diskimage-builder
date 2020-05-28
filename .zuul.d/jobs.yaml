@@ -7,7 +7,8 @@
     timeout: 5400
     required-projects:
       - openstack/diskimage-builder
-      - openstack/requirements
+      - name: openstack/requirements
+        override-checkout: stable/train
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
@@ -23,10 +24,8 @@
         - apt-sources/test-sources
         - centos-minimal/7-build-succeeds
         - centos-minimal/8-build-succeeds
-        - pip-and-virtualenv/source-install-ubuntu
         - ubuntu-minimal/xenial-build-succeeds
         - ubuntu-minimal/bionic-build-succeeds
-        - ubuntu-minimal/focal-build-succeeds
 
 - job:
     name: dib-functests-image
@@ -95,6 +94,7 @@
       # These can only build on bionic
       dib_functests_extra:
         - fedora-minimal/build-succeeds
+        - ubuntu-minimal/focal-build-succeeds
 
 - job:
     name: dib-functests-bionic-python3-image
@@ -130,10 +130,6 @@
       Run the default tests on a Xenial build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-xenial
-    vars:
-      dib_functests_extra:
-        # Only builds on xenial; should work on focal in future
-        - pip-and-virtualenv/source-install-opensuse
 
 - job:
     name: dib-functests-xenial-python3-image
