@@ -40,20 +40,20 @@ fi
 # hardened/linux/amd64/no-multilib
 GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/17.1'}
 if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1" ]]; then
-    FILENAME_BASE='gentoo-stage4'
-    SIGNED_SOURCE_SUFFIX='minimal'
+    FILENAME_BASE='gentoo-stage3'
+    SIGNED_SOURCE_SUFFIX=''
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib" ]]; then
-    FILENAME_BASE='gentoo-stage4-nomultilib'
-    SIGNED_SOURCE_SUFFIX='minimal-nomultilib'
+    FILENAME_BASE='gentoo-stage3-nomultilib'
+    SIGNED_SOURCE_SUFFIX='-nomultilib'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/hardened" ]]; then
-    FILENAME_BASE='gentoo-stage4-hardened'
-    SIGNED_SOURCE_SUFFIX='hardened+minimal'
+    FILENAME_BASE='gentoo-stage3-hardened'
+    SIGNED_SOURCE_SUFFIX='-hardened'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]]; then
-    FILENAME_BASE='gentoo-stage4-hardened-nomultilib'
-    SIGNED_SOURCE_SUFFIX='hardened+minimal-nomultilib'
+    FILENAME_BASE='gentoo-stage3-hardened-nomultilib'
+    SIGNED_SOURCE_SUFFIX='-hardened+nomultilib'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd" ]]; then
-    FILENAME_BASE='gentoo-stage4-systemd'
-    SIGNED_SOURCE_SUFFIX='systemd'
+    FILENAME_BASE='gentoo-stage3-systemd'
+    SIGNED_SOURCE_SUFFIX='-systemd'
 else
     echo 'invalid profile, please select from the following profiles'
     echo 'default/linux/amd64/17.1'
@@ -64,7 +64,7 @@ else
     exit 1
 fi
 
-DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage4-amd64-${SIGNED_SOURCE_SUFFIX}.txt"}
+DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64${SIGNED_SOURCE_SUFFIX}.txt"}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/amd64/autobuilds/$(curl ${DIB_CLOUD_SOURCE} -s -f | tail -n 1 | cut -d\  -f 1)"}
 BASE_IMAGE_FILE_SUFFIX=${BASE_IMAGE_FILE_SUFFIX:-"$(basename ${BASE_IMAGE_FILE} | cut -d. -f 2,3)"}
 SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.DIGESTS.asc}"
@@ -106,3 +106,11 @@ fi
 # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
 # image tarball and host OS)
 sudo tar -C "${TARGET_ROOT}" --numeric-owner --xattrs -xf "${CACHED_FILE}"
+
+# Put in a dummy /etc/resolv.conf over the temporary one we used
+# to bootstrap.  systemd has a bug/feature [1] that it will assume
+# you want systemd-networkd as the network manager and create a
+# broken symlink to /run/... if the base image doesn't have one.
+# This broken link confuses things like dhclient.
+# [1] https://bugzilla.redhat.com/show_bug.cgi?id=1197204
+echo -e "# This file intentionally left blank\n" | sudo tee "${TARGET_ROOT}"/etc/resolv.conf
