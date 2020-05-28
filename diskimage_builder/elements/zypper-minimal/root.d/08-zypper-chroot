@@ -100,6 +100,9 @@ sudo mount -t sysfs none $TARGET_ROOT/sys
 
 # Install filesystem, base and useful tools
 sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends filesystem
+# Install xz before base to avoid pulling in busybox-xz
+# https://bugzilla.opensuse.org/show_bug.cgi?id=1172209
+sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends xz
 # Install basic components in order
 sudo zypper ${ZYPPER_TARGET_OPTS} install \
     ${DIB_OPENSUSE_PATTERNS} ${ZYPPER_INSTALL_SYSTEM_PYTHON} \
