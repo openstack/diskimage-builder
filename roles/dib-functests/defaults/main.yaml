@@ -1,5 +1,4 @@
 ---
-dib_python: python3
 dib_virtualenv: "{{ ansible_user_dir }}/dib-venv"
 dib_functests: []
 # This is a bit of hack; it allows us to template out jobs where the
