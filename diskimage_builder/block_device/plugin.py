@@ -12,7 +12,6 @@
 
 import abc
 import logging
-import six
 
 #
 # Plugins convert configuration entries into graph nodes ready for
@@ -22,8 +21,7 @@ import six
 logger = logging.getLogger(__name__)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class NodeBase(object):
+class NodeBase(object, metaclass=abc.ABCMeta):
     """A configuration node entry
 
     This is the main driver class for dib-block-device operation.
@@ -155,8 +153,7 @@ class NodeBase(object):
         return
 
 
-@six.add_metaclass(abc.ABCMeta)
-class PluginBase(object):
+class PluginBase(object, metaclass=abc.ABCMeta):
     """The base plugin object
 
     This is the base plugin object.  Plugins are an instantiation of
