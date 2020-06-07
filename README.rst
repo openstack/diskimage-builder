@@ -14,7 +14,7 @@ For example::
 
   $ DIB_RELEASE=bionic disk-image-create -o ubuntu-bionic.qcow2 vm ubuntu
 
-will create a bootable Ubuntu Trusty based ``qcow2`` image.
+will create a bootable Ubuntu Bionic based ``qcow2`` image.
 
 ``diskimage-builder`` is useful to anyone looking to produce
 customised images for deployment into clouds. These tools are the
