@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
+
 import os
 import os.path
 import runpy
@@ -33,9 +35,16 @@ def running_under_virtualenv():
 def activate_venv():
     if running_under_virtualenv():
         activate_this = os.path.join(sys.prefix, "bin", "activate_this.py")
-        globs = runpy.run_path(activate_this, globals())
-        globals().update(globs)
-        del globs
+        try:
+            globs = runpy.run_path(activate_this, globals())
+            globals().update(globs)
+            del globs
+        # TODO(dtantsur): replace with FileNotFoundError when Python 2 is no
+        # longer supported.
+        except OSError:
+            print("WARNING: A virtual environment was detected, but the "
+                  "activate_this.py script was not found. You may need to set "
+                  "PATH manually", file=sys.stderr)
 
 
 def main():
