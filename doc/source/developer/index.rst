@@ -12,6 +12,7 @@ Developer Guide
    dib_lint
    stable_interfaces
    vhd_creation
+   Module index <api/modules>
 
 This documentation explains how to get started with creating your own
 disk-image-builder elements as well as some high level concepts for element
@@ -40,7 +41,7 @@ Python module documentation
 ---------------------------
 
 For internal documentation on the DIB python components, see the
-:ref:`modindex`
+:ref:`modindex`.
 
 
 Finding Work
@@ -48,5 +49,5 @@ Finding Work
 
 We maintain a list of low-hanging-fruit tags on launchpad:
 
- * `https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit`
-   <https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit>
+* `https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit
+  <https://bugs.launchpad.net/diskimage-builder/+bugs?field.tag=low-hanging-fruit>`_

@@ -1,6 +1,7 @@
 .coverage
 coverage.xml
 cover/*
+doc/source/developer/api/
 *~
 .testrepository
 *.sw?
