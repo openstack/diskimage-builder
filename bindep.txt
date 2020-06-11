@@ -32,6 +32,8 @@ qemu-img [platform:redhat]
 policycoreutils-python [platform:rhel-7 platform:centos-7]
 policycoreutils-python-utils [platform:fedora platform:rhel-8 platform:centos-8]
 procps-ng [platform:redhat]
+yum [platform:redhat]
+yum-utils [platform:redhat]
 
 # suse
 python-pyliblzma [platform:suse]
