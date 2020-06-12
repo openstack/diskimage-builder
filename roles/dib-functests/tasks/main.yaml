@@ -25,7 +25,7 @@
   pip:
     name: "file://{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
     virtualenv: "{{ dib_virtualenv }}"
-    virtualenv_python: "{{ dib_python }}"
+    virtualenv_command: "{{ ensure_pip_virtualenv_command }}"
     extra_args: "-c {{ upper_constraints }}"
 
 - name: Setup log output
