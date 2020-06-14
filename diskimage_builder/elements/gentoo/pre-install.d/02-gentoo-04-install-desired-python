@@ -17,6 +17,9 @@ fi
 [[ ! -f ${PORTDIR}/profiles ]] && emerge-webrsync -q
 
 echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_9"* ]] && [[ ! -e /usr/lib64/libpython3.9.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.9
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_8"* ]] && [[ ! -e /usr/lib64/libpython3.8.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.8
+[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_7"* ]] && [[ ! -e /usr/lib64/libpython3.7m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.7
 [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]] && [[ ! -e /usr/lib64/libpython3.6m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.6
 [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_5"* ]] && [[ ! -e /usr/lib64/libpython3.5m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.5
 [[ "${GENTOO_PYTHON_TARGETS}" == *"python3_4"* ]] && [[ ! -e /usr/lib64/libpython3.4m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.4
@@ -41,6 +44,9 @@ set +e
 [[ "${GENTOO_PYTHON_TARGETS}" != *"python3_4"* ]] && emerge -C -q dev-lang/python:3.4
 [[ "${GENTOO_PYTHON_TARGETS}" != *"python3_5"* ]] && emerge -C -q dev-lang/python:3.5
 [[ "${GENTOO_PYTHON_TARGETS}" != *"python3_6"* ]] && emerge -C -q dev-lang/python:3.6
+[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_7"* ]] && emerge -C -q dev-lang/python:3.7
+[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_8"* ]] && emerge -C -q dev-lang/python:3.8
+[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_9"* ]] && emerge -C -q dev-lang/python:3.9
 set -e
 
 # make world consistant
