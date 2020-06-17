@@ -15,7 +15,7 @@ Arguments
 
 * ``DIB_BOOTLOADER_DEFAULT_CMDLINE`` sets parameters that are appended
   to the ``GRUB_CMDLINE_LINUX_DEFAULT`` values in ``grub.cfg``
-  configuration. It defaults to ``nofb nomodeset vga=normal``.
+  configuration. It defaults to ``nofb nomodeset gfxpayload=text``.
 
 * ``DIB_BOOTLOADER_SERIAL_CONSOLE`` sets the serial device to be
   used as a console. It defaults to ``hvc0`` for PowerPC, 

@@ -50,6 +50,6 @@ DEFAULT linux
 
 LABEL linux
     KERNEL /boot/$KERNEL
-    APPEND ro root=LABEL=${DIB_ROOT_LABEL} console=tty0 console=${SERIAL_CONSOLE} nofb nomodeset vga=normal
+    APPEND ro root=LABEL=${DIB_ROOT_LABEL} console=tty0 console=${SERIAL_CONSOLE} nofb nomodeset gfxpayload=text
     INITRD /boot/$RAMDISK
 _EOF_"
