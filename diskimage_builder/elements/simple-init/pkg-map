@@ -18,17 +18,9 @@
       "network-scripts": "wicked-service"
     }
   },
-  "release": {
+  "distro": {
     "fedora": {
-      "29": {
-        "network-scripts": "network-scripts"
-      },
-      "30": {
-        "network-scripts": "network-scripts"
-      },
-      "31": {
-        "network-scripts": "network-scripts"
-      }
+       "network-scripts": "network-scripts"
     }
   },
   "default": {

@@ -15,7 +15,7 @@ Distributions which are supported as a target for an image:
 
 - Centos 6, 7
 - Debian 8 ("jessie")
-- Fedora 30, 31
+- Fedora 31, 32
 - RHEL 6, 7
 - 16.04 ("xenial"), 18.04 ("bionic")
 - Gentoo
