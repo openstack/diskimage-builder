@@ -51,6 +51,9 @@ elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/hardened" ]]; then
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]]; then
     FILENAME_BASE='gentoo-stage3-hardened-nomultilib'
     SIGNED_SOURCE_SUFFIX='-hardened+nomultilib'
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/musl/hardened" ]]; then
+    FILENAME_BASE='gentoo-stage3-hardened-musl'
+    SIGNED_SOURCE_SUFFIX='-musl-hardened'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd" ]]; then
     FILENAME_BASE='gentoo-stage3-systemd'
     SIGNED_SOURCE_SUFFIX='-systemd'

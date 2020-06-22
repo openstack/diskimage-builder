@@ -19,13 +19,9 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
         emerge-webrsync -q
     fi
 
-    # upstream has problems with supporting other libcs still
-    if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then
-        echo '=sys-block/open-iscsi-2.0.877' >> /etc/portage/package.accept_keywords/open-iscsi
-    fi
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot openssl openssh
     # install layman
-    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --deep --ignore-built-slot-operator-deps=y layman
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --deep --ignore-built-slot-operator-deps=y layman
     # sync the initial overlay list
     layman -S
     # enable the various overlays, ignore failures (overlay my already be enabled)
