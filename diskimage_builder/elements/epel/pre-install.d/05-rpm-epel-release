@@ -35,9 +35,9 @@ fi
 
 if [ ${DIB_EPEL_DISABLED:-0} -ne 0 ]; then
     if [[ ${YUM} == "dnf" ]]; then
-        dnf config-manager --set-disabled epel
+        dnf config-manager --set-disabled "epel*"
     else
-        yum-config-manager --disable epel
+        yum-config-manager --disable "epel*"
     fi
 fi
 
