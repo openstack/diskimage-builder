@@ -23,6 +23,8 @@
         - apt-sources/test-sources
         - centos-minimal/7-build-succeeds
         - centos-minimal/8-build-succeeds
+        # TODO: enable when CentOS 8 Stream repos mirrored.
+        # - centos-minimal/8-stream-build-succeeds
         - fedora/build-succeeds
         - ubuntu-minimal/xenial-build-succeeds
         - ubuntu-minimal/bionic-build-succeeds
@@ -160,6 +162,19 @@
         base_element: centos-minimal
         release: '8'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
+
+- job:
+    name: dib-nodepool-functional-openstack-centos-8-stream-src
+    description: |
+      Test building and booting a Centos 8 Stream image with Nodepool and
+      OpenStack.
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_diskimage:
+        base_element: centos-minimal
+        release: '8-stream'
+        # TODO: set when CentOS 8 Stream repos mirrored.
+        # mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
     name: dib-nodepool-functional-openstack-fedora-30-src

@@ -2,7 +2,7 @@
 # upgrading packaged system pip/setuptools/virtualenv binaries with
 # upstream non-packaged versions, we wish to avoid this completely on
 # modern distros.
-if [[ $DISTRO_NAME =~ (centos|rhel) && $DIB_RELEASE -ge 8 ]]; then
+if [[ $DISTRO_NAME =~ (centos|rhel) && $DIB_RELEASE > 7 ]]; then
     export DIB_INSTALLTYPE_pip_and_virtualenv=${DIB_INSTALLTYPE_pip_and_virtualenv:-package}
 
     if [[ ${DIB_INSTALLTYPE_pip_and_virtualenv} == "source" ]]; then

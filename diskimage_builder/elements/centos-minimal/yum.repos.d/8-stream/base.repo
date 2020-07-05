@@ -1,0 +1,5 @@
+[Stream-BaseOS]
+name=CentOS-Stream - Base
+mirrorlist=http://mirrorlist.centos.org/?release=8-stream&arch=$basearch&repo=BaseOS
+gpgcheck=0
+
