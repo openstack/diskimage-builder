@@ -20,10 +20,10 @@ project = u'diskimage-builder'
 copyright = u'2016, Diskimage-builder contributors'
 
 # openstackdocstheme options
-repository_name = 'openstack/diskimage-builder'
-bug_project = 'diskimage-builder'
-bug_tag = ''
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
+openstackdocs_repo_name = 'openstack/diskimage-builder'
+openstackdocs_bug_project = 'diskimage-builder'
+openstackdocs_auto_name = False
+openstackdocs_bug_tag = ''
 
 # Release notes do not need a version in the title, they span
 # multiple versions.
@@ -62,7 +62,7 @@ exclude_patterns = []
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
