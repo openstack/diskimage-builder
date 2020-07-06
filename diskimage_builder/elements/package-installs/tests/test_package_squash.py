@@ -73,7 +73,7 @@ class TestPackageInstall(base.BaseTestCase):
 
         self.assertThat(result, IsMatchingInstallList(expected))
 
-    @mock.patch.object(os, 'environ', dict(ARCH='arm64', **os.environ))
+    @mock.patch.object(os, 'environ', dict(ARCH='arm64'))
     def test_arch(self):
         '''Exercise the arch and not-arch flags'''
         objs = {
@@ -125,8 +125,7 @@ class TestPackageInstall(base.BaseTestCase):
         with mock.patch.object(os, 'environ',
                                dict(ARCH=arch,
                                     DIB_UBUNTU_KERNEL='linux-image-generic',
-                                    DIB_RELEASE=release,
-                                    **os.environ)):
+                                    DIB_RELEASE=release)):
             result = installs_squash.collect_data(
                 self.final_dict, self.kernel_objs, 'test_element')
 
@@ -192,8 +191,7 @@ class TestPackageInstall(base.BaseTestCase):
                        dict(
                            DIB_A_FEATURE='1',
                            DIB_B_FEATURE='1',
-                           DIB_C_FEATURE='1',
-                           **os.environ))
+                           DIB_C_FEATURE='1'))
     def test_skip_when_list(self):
         '''Exercise the when flag with lists'''
         objs = {
