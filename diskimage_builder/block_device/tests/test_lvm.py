@@ -38,7 +38,7 @@ class TestLVM(tc.TestGraphGeneration):
         tree = self.load_config_file('lvm_tree.yaml')
         graph = self.load_config_file('lvm_graph.yaml')
         parsed_graph = config_tree_to_graph(tree)
-        self.assertItemsEqual(parsed_graph, graph)
+        self.assertCountEqual(parsed_graph, graph)
 
     def test_lvm_invalid_config(self):
         # test some invalid config paths
