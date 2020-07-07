@@ -206,7 +206,7 @@ class Partitioning(PluginBase):
         # now all the partitions are created, get device-mapper to
         # mount them
         if not os.path.exists("/.dockerenv"):
-            exec_sudo(["kpartx", "-avs", self.device_path])
+            exec_sudo(["kpartx", "-uvs", self.device_path])
         else:
             # If running inside Docker, make our nodes manually,
             # because udev will not be working. kpartx cannot run in
