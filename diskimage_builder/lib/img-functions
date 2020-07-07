@@ -43,7 +43,6 @@ function cleanup () {
     dib-block-device umount
     cleanup_build_dir
     cleanup_image_dir
-    cleanup_temp_python_exec
 }
 
 # Helper function to run a command inside the chroot

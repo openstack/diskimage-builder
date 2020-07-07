@@ -241,14 +241,6 @@ function cleanup_image_dir () {
     rm -rf --one-file-system $TMP_IMAGE_DIR
 }
 
-function cleanup_temp_python_exec () {
-    if [ ! -z "$DIB_ORIGINAL_PATH" ]; then
-        export PATH=$DIB_ORIGINAL_PATH
-    fi
-    rm "$DIB_PYTHON_EXEC_TMP/python" || true
-    rmdir "$DIB_PYTHON_EXEC_TMP" || true
-}
-
 # Run a directory of hooks outside the target (that is, no chrooting).
 function run_d() {
     check_element
