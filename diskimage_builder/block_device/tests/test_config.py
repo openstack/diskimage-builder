@@ -65,21 +65,21 @@ class TestConfigParsing(TestConfig):
     def test_graph(self):
         graph = self.load_config_file('simple_graph.yaml')
         parsed_graph = config_tree_to_graph(graph)
-        self.assertItemsEqual(parsed_graph, graph)
+        self.assertCountEqual(parsed_graph, graph)
 
     # equivalence of simple tree to graph
     def test_simple_tree(self):
         tree = self.load_config_file('simple_tree.yaml')
         graph = self.load_config_file('simple_graph.yaml')
         parsed_graph = config_tree_to_graph(tree)
-        self.assertItemsEqual(parsed_graph, graph)
+        self.assertCountEqual(parsed_graph, graph)
 
     # equivalence of a deeper tree to graph
     def test_deep_tree(self):
         tree = self.load_config_file('deep_tree.yaml')
         graph = self.load_config_file('deep_graph.yaml')
         parsed_graph = config_tree_to_graph(tree)
-        self.assertItemsEqual(parsed_graph, graph)
+        self.assertCountEqual(parsed_graph, graph)
 
     # equivalence of a complicated multi-partition tree to graph
     def test_multipart_tree(self):
@@ -87,7 +87,7 @@ class TestConfigParsing(TestConfig):
         graph = self.load_config_file('multiple_partitions_graph.yaml')
         parsed_graph = config_tree_to_graph(tree)
         logger.debug(parsed_graph)
-        self.assertItemsEqual(parsed_graph, graph)
+        self.assertCountEqual(parsed_graph, graph)
 
 
 class TestCreateGraph(TestGraphGeneration):
