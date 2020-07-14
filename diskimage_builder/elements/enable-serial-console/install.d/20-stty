@@ -12,4 +12,6 @@ if [ "$DIB_INIT_SYSTEM" == "upstart" ]; then
     install -m 0644 -o root -g root ${SCRIPTDIR}/ttySx.conf /etc/init/ttySx.conf
 elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/serial-console-udev.rules /etc/udev/rules.d/99-serial-console.rules
+elif [ "$DIB_INIT_SYSTEM" == "openrc" ]; then
+    sed -r 's/^#(.*ttyS[0,1].*$)/\1/' -i /etc/inittab
 fi
