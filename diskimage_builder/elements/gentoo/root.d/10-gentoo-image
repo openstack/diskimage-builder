@@ -86,15 +86,12 @@ else
     # https://wiki.gentoo.org/wiki/Project:RelEng#Keys
     # https://dev.gentoo.org/~dolsen/releases/keyrings/gentoo-keys-*.tar.xz
     # http://distfiles.gentoo.org/distfiles/gentoo-keys-*.tar.xz
-    GPGDIR=$(mktemp -d -t)
-    gpg --no-default-keyring --keyring "${GPGDIR}"/gentookeys.gpg --import "${TMP_HOOKS_PATH}"/extra-data.d/gentoo-releng.gpg
     # check the sig file
-    gpgv --keyring "${GPGDIR}"/gentookeys.gpg "${CACHED_SIGNATURE_FILE}"
+    gpgv --keyring "${TMP_HOOKS_PATH}"/extra-data.d/gentoo-releng.gpg "${CACHED_SIGNATURE_FILE}"
     if [[ "${?}" != 0 ]]; then
         echo 'invalid signature file'
         exit 1
     fi
-    rm -rf "${GPGDIR}"
     echo 'valid key used'
     CACHED_SHA512SUM=$(grep -A1 -e 'SHA512' "${CACHED_SIGNATURE_FILE}" | grep -e "${BASE_IMAGE_FILE_SUFFIX}$" | cut -d\  -f 1)
     ACTUAL_SHA512SUM=$(sha512sum "${CACHED_FILE}" | cut -d\  -f 1)
