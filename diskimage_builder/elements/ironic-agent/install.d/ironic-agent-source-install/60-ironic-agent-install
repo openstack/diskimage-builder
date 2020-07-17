@@ -45,5 +45,5 @@ esac
 
 # Copying the self signed certificate for request library
 if [ -f /tmp/in_target.d/ipa-trusted-cert.pem ]; then
-    cat /tmp/in_target.d/ipa-trusted-cert.pem >> $($IPADIR/venv/bin/python -c "import requests; print requests.certs.where()")
+    cat /tmp/in_target.d/ipa-trusted-cert.pem >> $($IPADIR/venv/bin/python -c "import requests; print(requests.certs.where())")
 fi
