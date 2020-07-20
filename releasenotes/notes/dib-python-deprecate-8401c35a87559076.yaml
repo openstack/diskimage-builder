@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``dib-python`` element is deprecated.  In chroot Python tools
+    should use ``#!/usrbin/env python3`` on all distributions now.

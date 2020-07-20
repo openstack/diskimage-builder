@@ -2,6 +2,11 @@
 dib-python
 ==========
 
+.. note::
+
+   This element is deprecated.  All distributions support Python 3 so
+   tools running in the chroot can simply use ``/usr/bin/python3``.
+
 Adds a symlink to ``/usr/local/bin/dib-python`` which points at either a
 ``python2`` or ``python3`` executable as appropriate.
 

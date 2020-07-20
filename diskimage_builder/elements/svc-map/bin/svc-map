@@ -1,4 +1,4 @@
-#!/usr/local/bin/dib-python
+#!/usr/bin/env python3
 
 # Copyright 2012 Hewlett-Packard Development Company, L.P.
 # Copyright 2014 Red Hat, Inc.

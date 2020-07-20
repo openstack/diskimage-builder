@@ -51,15 +51,6 @@ if [ $DIB_RELEASE != "trusty" ] && [ $DIB_RELEASE != "xenial" ]; then
 fi
 
 # default required
-to_install+="sudo " # dib-lint: safe_sudo
-
-if [ "$DIB_PYTHON_VERSION" == "2" ]; then
-    to_install+="python "
-elif [ "$DIB_PYTHON_VERSION" == "3" ]; then
-    to_install+="python3 "
-else
-    echo "ERROR: DIB_PYTHON_VERSION is '$DIB_PYTHON_VERSION' but needs to be 2 or 3"
-    exit 1
-fi
+to_install+="sudo python3 " # dib-lint: safe_sudo
 
 $apt_get install -y $to_install
