@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The ``bootloader`` element now co-installs a BIOS bootloader for
+    x86-64 when ``DIB_BLOCK_DEVICE=efi`` is set.  This makes images
+    that are EFI and BIOS cross-compatiable.

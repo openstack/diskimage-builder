@@ -150,6 +150,9 @@ function install_grub2 {
             case $ARCH in
                 "x86_64"|"amd64")
                     GRUB_OPTS="--target=x86_64-efi"
+                    # This call installs grub for BIOS compatability
+                    # which makes portable EFI/BIOS images.
+                    $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
                     ;;
                 # At this point, we don't need to override the target
                 # for any other architectures.
