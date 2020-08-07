@@ -1,4 +1,4 @@
-#!/usr/local/bin/dib-python
+#!/usr/bin/env python3
 # dib-lint: disable=indent
 # dib-lint indent requirements causes issue with pep8
 
@@ -16,7 +16,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import print_function
 import sys
 
 # Manually maintained for brevity; consider making this compiled from
