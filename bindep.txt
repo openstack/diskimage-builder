@@ -13,17 +13,17 @@ git
 
 squashfs-tools [!platform:suse]
 squashfs [platform:suse]
-zypper [!platform:debian-stretch !platform:redhat !platform:ubuntu-trusty !platform:ubuntu-bionic]
+zypper [!platform:debian-stretch !platform:redhat !platform:ubuntu-trusty !platform:ubuntu-bionic !platform:ubuntu-focal]
 gnupg2 [!platform:redhat !platform:ubuntu-trusty !platform:suse]
 
 # ubuntu
 apt-transport-https [platform:dpkg]
 inetutils-ping [platform:dpkg]
-python-lzma [platform:dpkg]
+python-lzma [platform:dpkg !platform:ubuntu-focal]
 qemu-utils [platform:dpkg]
 rpm [platform:dpkg]
 uuid-runtime [platform:dpkg]
-yum-utils [platform:dpkg]
+yum-utils [platform:dpkg !platform:ubuntu-focal]
 debootstrap [platform:dpkg]
 procps [platform:dpkg]
 
