@@ -1,5 +1,4 @@
 # Git isn't a dependency of this element, but is a dependency of pbr
-# if you are doing pip install on a git cloned directory, because this
-# looks to be a fairly common pattern it makes sense to have git on the
-# target image
+# if you are doing pip install on a git cloned directory
 git:
+  build-only: True
