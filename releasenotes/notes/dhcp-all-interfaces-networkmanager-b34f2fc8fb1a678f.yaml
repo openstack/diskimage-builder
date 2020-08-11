@@ -1,0 +1,10 @@
+---
+fixes:
+  - |
+    Fixes support for the ``dhcp-all-interfaces`` element when the system
+    networking configuration is managed via ``NetworkManager``.
+  - |
+    Fixes ``NetworkManager`` configuration with the ``dhcp-all-interfaces``
+    element to account for Centos8/RHEL8's default change to the
+    ``NetworkManager`` internal DHCP client, which can introduce different
+    behavior for infrastucture operators such as those using LACP.
