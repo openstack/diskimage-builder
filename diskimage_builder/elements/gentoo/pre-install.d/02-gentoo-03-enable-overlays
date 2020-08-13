@@ -22,6 +22,8 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot openssl openssh
     # install layman
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --deep --ignore-built-slot-operator-deps=y layman
+    # set layman config options
+    sed -i 's/^check_official.*/check_official : No/g' /etc/layman/layman.cfg # allow unoffical repos
     # sync the initial overlay list
     layman -S
     # enable the various overlays, ignore failures (overlay my already be enabled)
