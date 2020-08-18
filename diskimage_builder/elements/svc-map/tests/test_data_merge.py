@@ -50,10 +50,6 @@ class TestDataMerge(base.BaseTestCase):
             u'debian': u'glance-api',
             u'default': u'openstack-glance-api'
         },
-        u'glance-reg': {
-            u'debian': u'glance-reg',
-            u'default': u'openstack-glance-registry'
-        }
     }
 
     cinder_api_services = {
@@ -84,7 +80,6 @@ class TestDataMerge(base.BaseTestCase):
             u'nova-conductor': u'openstack-nova-conductor',
             u'nova-consoleauth': u'openstack-nova-console',
             u'glance-api': u'openstack-glance-api',
-            u'glance-reg': u'openstack-glance-registry'
         }
 
         fedora_nova_glance_cinder_services = {
@@ -94,7 +89,6 @@ class TestDataMerge(base.BaseTestCase):
             u'nova-conductor': u'openstack-nova-conductor',
             u'nova-consoleauth': u'openstack-nova-console',
             u'glance-api': u'openstack-glance-api',
-            u'glance-reg': u'openstack-glance-registry',
             u'cinder-api': u'openstack-cinder-api',
             u'cinder-scheduler': u'openstack-cinder-scheduler',
         }
@@ -140,7 +134,6 @@ class TestDataMerge(base.BaseTestCase):
             u'nova-conductor': u'nova-conductor',
             u'nova-consoleauth': u'nova-console',
             u'glance-api': u'glance-api',
-            u'glance-reg': u'glance-reg'
         }
 
         ubuntu_nova_glance_cinder_services = {
@@ -150,7 +143,6 @@ class TestDataMerge(base.BaseTestCase):
             u'nova-conductor': u'nova-conductor',
             u'nova-consoleauth': u'nova-console',
             u'glance-api': u'glance-api',
-            u'glance-reg': u'glance-reg',
             u'cinder-api': u'cinder-api',
             u'cinder-scheduler': u'cinder-scheduler'
         }

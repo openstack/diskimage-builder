@@ -55,9 +55,6 @@ Provides the following:
       glance-api:
         debian: glance-api
         default: openstack-glance-api
-      glance-reg:
-        debian: glance-reg
-        default: openstack-glance-registry
 
 
     If the distro is of the debian family the combined services file would be::
