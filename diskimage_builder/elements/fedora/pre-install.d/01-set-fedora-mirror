@@ -14,10 +14,14 @@ if [[ ${DIB_RELEASE} -gt 27 ]]; then
     # urgh, the repo is wrong in the "baseurl" line, see
     #  https://pagure.io/fedora/repos/issue/70
     for FILE in /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates-testing.repo; do
-        sed -i "s|/os/||" $FILE
+        sed -i "s,/os/,," $FILE
     done
 fi
 
 for FILE in /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates-testing.repo; do
-    sudo sed -e "s|^#baseurl=http[s]*://download.fedoraproject.org/pub/fedora/linux|baseurl=$DIB_DISTRIBUTION_MIRROR|;/^metalink/d" -i $FILE
+    # In >=32 this became "download.example" not
+    # "download.fedoraproject.org"
+    cat $FILE
+    sudo sed -e "s,^#baseurl=http[s]*://download.\(fedoraproject.org\|example\)/pub/fedora/linux,baseurl=$DIB_DISTRIBUTION_MIRROR,;/^metalink/d" -i $FILE
+    cat $FILE
 done
