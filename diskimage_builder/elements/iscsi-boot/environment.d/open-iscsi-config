@@ -1,4 +1,4 @@
-if [[ $DISTRO_NAME = "centos7" ]]; then
+if [[ $DISTRO_NAME =~ "centos" ]]; then
 
     DIB_DRACUT_ENABLED_MODULES+="
 - name: network
