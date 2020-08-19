@@ -9,9 +9,7 @@ set -o pipefail
 # get the directories in order
 mkdir -p /etc/portage/profile
 mkdir -p /etc/portage/package.accept_keywords
-if [ -f /etc/portage/package.keywords ]; then
-    mv /etc/portage/package.keywords /etc/portage/package.accept_keywords/prebuilt-1
-fi
+if [[ -f /etc/portage/package.keywords ]]; then mv /etc/portage/package.keywords /etc/portage/package.accept_keywords/prebuilt-1; fi
 mkdir -p /etc/portage/package.mask
 mkdir -p /etc/portage/package.unmask
 mkdir -p /etc/portage/package.use
@@ -21,22 +19,14 @@ echo 'dev-python/pip vanilla' >> /etc/portage/package.use/pip
 # needed to create disk images
 echo 'sys-fs/lvm2 -thin' >> /etc/portage/package.use/grub
 echo 'sys-boot/grub device-mapper' >> /etc/portage/package.use/grub
+echo 'sys-boot/grub grub_platforms_efi-64' >> /etc/portage/package.use/grub  # always enable efi-64
+if [[ 'x86_64' == "${ARCH}" ]]; then echo 'sys-boot/grub grub_platforms_pc' >> /etc/portage/package.use/grub; fi  # bios support for bios systems
 
-# needed in order to install pip packages as root
-echo '=dev-python/pip-9.0.1-r2 ~amd64' >> /etc/portage/package.accept_keywords/pip
 # needed to install static kernel
-echo '~sys-apps/debianutils-4.9.1 ~amd64' >> /etc/portage/package.accept_keywords/kernel
-echo 'sys-kernel/installkernel-gentoo ~amd64' >> /etc/portage/package.accept_keywords/kernel
-echo 'sys-kernel/gentoo-kernel-bin ~amd64' >> /etc/portage/package.accept_keywords/kernel
+if [[ 'x86_64' == "${ARCH}" ]]; then echo 'sys-kernel/gentoo-kernel-bin ~amd64' >> /etc/portage/package.accept_keywords/kernel; fi
+if [[ 'arm64' == "${ARCH}" ]]; then echo 'sys-kernel/gentoo-kernel-bin ~arm64' >> /etc/portage/package.accept_keywords/kernel; fi
 
-# needed for sfdisk to work
-echo '~sys-apps/util-linux-2.35.2 ~amd64  # sfdisk growpart fix' >> /etc/portage/package.accept_keywords/util-linux
-
-if [[ "${GENTOO_PROFILE}" == *"systemd"* ]]; then
-    # systemd import-tar is broken, use a more recent (fixed) version
-    echo '~sys-apps/systemd-241 ~amd64' >> /etc/portage/package.accept_keywords/systemd
-fi
-
+# musl only valid for amd64 for now
 if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then
     echo "dev-vcs/git -gpg" >> /etc/portage/package.use/musl  # gpg doesn't build on musl profiles
     echo "~sys-block/open-iscsi-2.0.878 ~amd64" >> /etc/portage/package.accept_keywords/musl
