@@ -128,10 +128,29 @@ def collect_data(data, objs, element_name):
                          (element_name, pkg_name, param))
             phase = param.get('phase', 'install.d')
             installs = ["install"]
-            if 'uninstall' in param:
-                installs = ["uninstall"]
-            if 'build-only' in param:
-                installs = ["install", "uninstall"]
+            if 'uninstall' in param or 'build-only' in param:
+                # We don't add the package to the uninstall list if
+                # something else has requested we install it without
+                # removing it.
+                in_install = any(
+                    map(lambda x: x[0] == pkg_name, data[phase]["install"]))
+                not_in_uninstall = all(
+                    map(lambda x: x[0] != pkg_name, data[phase]["uninstall"]))
+                if in_install and not_in_uninstall:
+                    if 'build-only' not in param:
+                        # Just skip further processing as we have no uninstall
+                        # work to do
+                        continue
+                else:
+                    if 'uninstall' in param:
+                        installs = ["uninstall"]
+                    if 'build-only' in param:
+                        installs = ["install", "uninstall"]
+            else:
+                # Remove any uninstallations if we are trying to install
+                # the package without uninstallation elsewhere.
+                data[phase]["uninstall"] = [
+                    x for x in data[phase]["uninstall"] if x[0] != pkg_name]
 
             # Filter out incorrect installtypes
             installtype = param.get('installtype', None)
