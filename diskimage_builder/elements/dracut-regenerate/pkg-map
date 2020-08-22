@@ -1,7 +1,8 @@
 {
   "family": {
     "gentoo": {
-      "PyYAML": "dev-python/pyyaml"
+      "PyYAML": "dev-python/pyyaml",
+      "python3-PyYAML": "dev-python/pyyaml"
     },
     "suse": {
       "PyYAML": "python-PyYAML",

@@ -14,4 +14,16 @@ elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/serial-console-udev.rules /etc/udev/rules.d/99-serial-console.rules
 elif [ "$DIB_INIT_SYSTEM" == "openrc" ]; then
     sed -r 's/^#(.*ttyS[0,1].*$)/\1/' -i /etc/inittab
+    echo '# diskimage-builder serial console' >> /etc/inittab
+    echo -n 's0:12345:respawn:/sbin/agetty -L 115200 ' >> /etc/inittab
+    if [[ -n "${DIB_BOOTLOADER_SERIAL_CONSOLE}" ]]; then
+        echo -n "${DIB_BOOTLOADER_SERIAL_CONSOLE}" >> /etc/inittab
+    elif [[ "powerpc ppc64 ppc64le" =~ ${ARCH} ]]; then
+        echo -n "hvc0" >> /etc/inittab
+    elif [[ "arm64" =~ ${ARCH} ]]; then
+        echo -n "ttyAMA0" >> /etc/inittab
+    else
+        echo -n "ttyS0" >> /etc/inittab
+    fi
+    echo ' vt100' >> /etc/inittab
 fi
