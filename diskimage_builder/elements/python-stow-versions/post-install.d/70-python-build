@@ -7,9 +7,9 @@ set -eu
 set -o pipefail
 
 DIB_PYTHON_FILES=('/usr/local/bin/pyenv-install', \
-    '/usr/localbin/pyenv-uninstall', '/usr/local/bin/python-build', \
+    '/usr/local/bin/pyenv-uninstall', '/usr/local/bin/python-build', \
     '/usr/local/share/python-build', '/pyenv')
 
 for path in ${DIB_PYTHON_FILES}; do
-    rm -rf ${DIB_PYTHON_PREFIX}/${path}
+    rm -rf ${path}
 done
