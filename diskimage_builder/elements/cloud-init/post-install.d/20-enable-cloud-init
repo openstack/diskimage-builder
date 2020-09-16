@@ -7,7 +7,7 @@ set -eu
 set -o pipefail
 
 # gentoo
-if [[ "${DISTRO_NAME}" == "gentoo" ]]; then
+if [[ "${DIB_INIT_SYSTEM}" == "openrc" ]]; then
     rc-update add cloud-config default
     rc-update add cloud-final default
     rc-update add cloud-init-local boot

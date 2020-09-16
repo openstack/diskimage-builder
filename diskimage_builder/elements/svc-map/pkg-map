@@ -1,12 +1,16 @@
 {
   "family": {
-    "redhat": {
-      "PyYAML": "PyYAML",
-      "python3-PyYAML": "python3-pyyaml"
-    },
     "debian": {
       "PyYAML": "python-yaml",
       "python3-PyYAML": "python3-yaml"
+    },
+    "gentoo": {
+      "PyYAML": "dev-python/pyyaml",
+      "python3-PyYAML": "dev-python/pyyaml"
+    },
+    "redhat": {
+      "PyYAML": "PyYAML",
+      "python3-PyYAML": "python3-pyyaml"
     },
     "suse": {
       "PyYAML": "python-PyYAML"
