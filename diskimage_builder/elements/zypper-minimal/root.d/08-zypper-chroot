@@ -103,6 +103,9 @@ sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends filesystem
 # Install grep before base to avoid pulling in busybox-grep as it conflicts
 # with rsync installation
 sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends grep
+# Install gzip before base to avoid pulling in busybox-gzip as it conflicts
+# with info installation
+sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends gzip
 # Install xz before base to avoid pulling in busybox-xz
 # https://bugzilla.opensuse.org/show_bug.cgi?id=1172209
 sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends xz
