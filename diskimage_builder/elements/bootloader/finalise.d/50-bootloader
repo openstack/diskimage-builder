@@ -88,6 +88,17 @@ function install_grub2 {
 
     echo "Installing GRUB2..."
 
+    # When using EFI image-based builds, particularly rhel element
+    # based on RHEL>=8.2 .qcow2, we might have /boot/grub2/grubenv
+    # as a dangling symlink to /boot/efi because we have extracted
+    # it from the root fs, but we didn't populate the separate EFI
+    # boot partition from the image.  grub2-install calls rename()
+    # on this file, so if it's a dangling symlink it errors.  Just
+    # remove it if it exists.
+    if [[ -L /boot/grub2/grubenv ]]; then
+        rm -f /boot/grub2/grubenv
+    fi
+
     # We need --force so grub does not fail due to being installed on the
     # root partition of a block device.
     GRUB_OPTS=${GRUB_OPTS:-"--force"}
