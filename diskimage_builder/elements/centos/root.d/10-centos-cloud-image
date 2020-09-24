@@ -51,7 +51,7 @@ else
     if [[ "${DIB_RELEASE}" = 7 ]]; then
         BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-CentOS-${DIB_RELEASE}-${ARCH}-${DIB_FLAVOR}.qcow2.xz}
     else
-        LATEST_IMAGE_FILE=$(curl -s https://cloud.centos.org/centos/${DIB_RELEASE}/${ARCH}/images/ | grep -o "CentOS-${DIB_RELEASE}-${DIB_FLAVOR}-.[^>]*.qcow2" | sort -r | head -1)
+        LATEST_IMAGE_FILE=$(curl -s https://cloud.centos.org/centos/${DIB_RELEASE}/${ARCH}/images/ | grep -o "CentOS-.[^>]*${DIB_FLAVOR}-.[^>]*.qcow2" | sort -r | head -1)
         BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$LATEST_IMAGE_FILE}
     fi
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
