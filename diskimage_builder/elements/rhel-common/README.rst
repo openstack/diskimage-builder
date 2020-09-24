@@ -24,15 +24,19 @@ Satellite.  An activation key can only be used for registration purposes using
 the subscription-manager command line tool and is considered a lower security
 risk.
 
-IMPORTANT NOTE:
+IMPORTANT NOTES:
 ----------------
 The 00-rhsm script is specific to RHEL6.  If you use the REG\_ variables to
 use with RHEL7, you do not need to set any DIB_RHSM variables.  The scripts
 named with "rhel-registration" have not been developed or tested for RHEL6.
 For information on building RHEL6 images, please see the rhel element README.
 
-Environment Variables For Image Creation
-----------------------------------------
+The 01-module-configuration script is specific to RHEL8.  RHEL8 includes
+various versions of software which can be selected during installation, some
+may be older and/or incompatible with a given release of OpenStack.
+
+Environment Variables For Regisration during Image Creation
+-----------------------------------------------------------
 The following environment variables are used for registering a RHEL instance
 with either the Red Hat Customer Portal or Satellite 6.
 
@@ -244,3 +248,20 @@ use the following metadata::
         }
     }
 
+
+Environment Variables for Module Selection during Image Creation
+----------------------------------------------------------------
+The following environment variable is used to select module streams to be
+enabled during an image build on RHEL8.  Any existing stream for the given
+module is first disabled prior to enabling the specified stream.
+
+#### DIB\_DNF\_MODULE\_STREAMS
+This is a space-separated list of module streams to enable prior to any
+RPMs being installed.
+
+Image Build Module Selection Example
+------------------------------------
+When using Train on RHEL8.2, one must select the appropriate virt and
+container-tools module streams:
+
+DIB_DNF_MODULE_STREAMS='virt:8.2 container-tools:2.0'

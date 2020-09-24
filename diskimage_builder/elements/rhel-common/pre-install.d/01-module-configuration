@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# When building RHEL overcloud images, certain modules may be preferred
+# or even required.
+#
+# For example, container-tools:2.0 is notably a requirement when running
+# the Train releases on RHEL 8.2.
+#
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+
+set -eu
+set -o pipefail
+
+if [ "${YUM}" == "dnf" ]; then
+    for m in ${DIB_DNF_MODULE_STREAMS}; do
+        ${YUM} -y module disable ${m/:*/}
+        ${YUM} -y module enable ${m}
+    done
+fi
