@@ -14,6 +14,8 @@ fi
 set -eu
 set -o pipefail
 
+export DIB_DNF_MODULE_STREAMS=${DIB_DNF_MODULE_STREAMS:-}
+
 if [ "${YUM}" == "dnf" ]; then
     for m in ${DIB_DNF_MODULE_STREAMS}; do
         ${YUM} -y module disable ${m/:*/}
