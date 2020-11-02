@@ -93,7 +93,7 @@ function _install_repos {
     if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE} > "7" ]]; then
         packages+="centos-repos centos-gpg-keys "
         if [[ "$DIB_RELEASE" =~ (stream) ]]; then
-            packages+="centos-release-stream "
+            packages+="centos-stream-release centos-stream-repos "
         fi
     fi
 
