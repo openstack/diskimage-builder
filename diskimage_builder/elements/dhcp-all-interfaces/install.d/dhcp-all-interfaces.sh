@@ -45,6 +45,29 @@ function get_if_type() {
     cat /sys/class/net/${1}/type
 }
 
+function interface_is_vlan() {
+    # Check if this is a vlan interface created on top of an Ethernet interface.
+    local interface=$1
+
+    # When the vlan interface is created, its mac address is copied from the
+    # underlying address and the address assignment type is set to 2
+    mac_addr_type=$(cat /sys/class/net/${interface}/addr_assign_type)
+    if [ "$mac_addr_type" != "2" ]; then
+        return 1
+    fi
+
+    # Only check for vlan interfaces named <interface>.<vlan>
+    lower_interface="$(echo $interface | cut -f1 -d'.')"
+    if [[ ! -z $lower_interface ]]; then
+        mac_addr_type=$(cat /sys/class/net/${lower_interface}/addr_assign_type)
+        if [ "$mac_addr_type" == "0" ]; then
+            return 0 # interface is vlan
+        fi
+    fi
+
+    return 1
+}
+
 function enable_interface() {
     local interface=$1
     local ipv6_init=$2
@@ -76,7 +99,11 @@ function enable_interface() {
         if [ "$(get_if_type $interface)" == "32" ]; then
             printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"InfiniBand\"\nCONNECTED_MODE=\"no\"\nDEFROUTE=\"yes\"\nPEERDNS=\"yes\"\nPEERROUTES=\"yes\"\nIPV4_FAILURE_FATAL=\"yes\"\nIPV6INIT=\"no\"" >"${SCRIPTS_PATH}ifcfg-$interface"
         else
-            printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"\n" >"${SCRIPTS_PATH}ifcfg-$interface"
+            if interface_is_vlan $interface; then
+                printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nVLAN=\"yes\"\n" >"${SCRIPTS_PATH}ifcfg-$interface"
+            else
+                printf "DEVICE=\"$interface\"\nBOOTPROTO=\"dhcp\"\nONBOOT=\"yes\"\nTYPE=\"Ethernet\"\n" >"${SCRIPTS_PATH}ifcfg-$interface"
+            fi
             if [ "$ipv6_init" == "True" ]; then
                 # Make DUID-UUID Type 4 (RFC 6355)
                 echo "default-duid \"\\x00\\x04$(sed 's/.\{2\}/\\x&/g' < /etc/machine-id)\";" >"/var/lib/dhclient/dhclient6--$interface.lease"
@@ -132,9 +159,7 @@ function inspect_interface() {
     echo -n "Inspecting interface: $interface..."
     if config_exists $interface; then
         echo "Has config, skipping."
-    elif [ "$mac_addr_type" != "0" ]; then
-        echo "Device has generated MAC, skipping."
-    else
+    elif interface_is_vlan $interface || [ "$mac_addr_type" == "0" ]; then
         local has_link
         local tries=DIB_DHCP_TIMEOUT
         for ((; tries > 0; tries--)); do
@@ -180,6 +205,8 @@ function inspect_interface() {
         else
             echo "No link detected, skipping"
         fi
+    else
+        echo "Device has generated MAC, skipping."
     fi
 }
 
