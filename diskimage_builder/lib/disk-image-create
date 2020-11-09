@@ -41,6 +41,8 @@ diskimage_builder.paths.show_path("elements")')
 
 source $_LIB/die
 
+DIB_BLOCK_DEVICE="${DIB_PYTHON_EXEC} ${_LIB}/dib-block-device.py"
+
 IS_RAMDISK=0
 if [ "$SCRIPTNAME" == "ramdisk-image-create" ]; then
   IS_RAMDISK=1
@@ -330,19 +332,19 @@ mount-base: ${TMP_BUILD_DIR}/mnt
 build-dir: ${TMP_BUILD_DIR}
 EOF
 
-dib-block-device init
+${DIB_BLOCK_DEVICE} init
 
 # Need to get the real root label because it can be overwritten
 # by the BLOCK_DEVICE_CONFIG.
-DIB_ROOT_LABEL=$(dib-block-device getval root-label)
+DIB_ROOT_LABEL=$(${DIB_BLOCK_DEVICE} getval root-label)
 export DIB_ROOT_LABEL
 
 # Need to get the real fs type for the root filesystem
-DIB_ROOT_FSTYPE=$(dib-block-device getval root-fstype)
+DIB_ROOT_FSTYPE=$(${DIB_BLOCK_DEVICE} getval root-fstype)
 export DIB_ROOT_FSTYPE
 
 # retrieve mount points so we can reuse in elements
-DIB_MOUNTPOINTS=$(dib-block-device getval mount-points)
+DIB_MOUNTPOINTS=$(${DIB_BLOCK_DEVICE} getval mount-points)
 export DIB_MOUNTPOINTS
 
 create_base
@@ -501,33 +503,33 @@ if [ -z ${IMAGE_BLOCK_DEVICE} ] ; then
     fi
 
     # After changeing the parameters, there is the need to
-    # re-run dib-block-device init because some value might
+    # re-run ${DIB_BLOCK_DEVICE} init because some value might
     # change based on the new set parameters.
-    dib-block-device init
+    ${DIB_BLOCK_DEVICE} init
 
-    # values to dib-block-device: using the YAML config and
-    dib-block-device create
+    # values to ${DIB_BLOCK_DEVICE}: using the YAML config and
+    ${DIB_BLOCK_DEVICE} create
 
     # This is the device (/dev/loopX).  It's where to install the
     # bootloader.
-    IMAGE_BLOCK_DEVICE=$(dib-block-device getval image-block-device)
+    IMAGE_BLOCK_DEVICE=$(${DIB_BLOCK_DEVICE} getval image-block-device)
     export IMAGE_BLOCK_DEVICE
 
     # Similar to above, but all mounted devices.  This is handy for
     # some bootloaders that have multi-partition layouts and want to
     # copy things to different places other than just
     # IMAGE_BLOCK_DEVICE.  "eval" this into an array as needed
-    IMAGE_BLOCK_DEVICES=$(dib-block-device getval image-block-devices)
+    IMAGE_BLOCK_DEVICES=$(${DIB_BLOCK_DEVICE} getval image-block-devices)
     export IMAGE_BLOCK_DEVICES
 
     # Write the fstab
-    dib-block-device writefstab
+    ${DIB_BLOCK_DEVICE} writefstab
 fi
 
 # XXX: needed?
 LOOPDEV=${IMAGE_BLOCK_DEVICE}
 
-# At this point, dib-block-device has created the raw image file
+# At this point, ${DIB_BLOCK_DEVICE} has created the raw image file
 # (IMAGE_BLOCK_DEVICE) and mounted all the partitions under
 # $TMP_BUILD_DIR/mnt for us.  We can now copy into the final image.
 
@@ -582,12 +584,12 @@ done
 export EXTRA_UNMOUNT=""
 unmount_image
 
-TMP_IMAGE_PATH=$(dib-block-device getval image-path)
+TMP_IMAGE_PATH=$(${DIB_BLOCK_DEVICE} getval image-path)
 export TMP_IMAGE_PATH
 
 # remove all mounts
-dib-block-device umount
-dib-block-device cleanup
+${DIB_BLOCK_DEVICE} umount
+${DIB_BLOCK_DEVICE} cleanup
 
 cleanup_build_dir
 
