@@ -340,7 +340,7 @@ function arg_to_elements() {
   #        element=$i
   #        path=${image_elements[$i]
   #      done
-  elinfo_out="$(element-info --env $IMAGE_ELEMENT)"
+  elinfo_out="$(${DIB_PYTHON_EXEC} ${_LIB}/element-info.py --env ${IMAGE_ELEMENT})"
   if [ $? -ne 0 ]; then
       echo "ERROR: element-info failed to expand elements."
       exit 1
