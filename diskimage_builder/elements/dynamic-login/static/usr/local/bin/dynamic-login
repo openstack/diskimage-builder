@@ -19,14 +19,14 @@ set -o pipefail
 
 # Reads an encrypted root password from the kernel command line and set
 # it to the root user
-if [[ $(</proc/cmdline) =~ rootpwd=\"([^\"]+)\" ]]; then
+if [[ $(</proc/cmdline) =~ rootpwd=\"?([^\"]+)\" ]]; then
     echo "root:${BASH_REMATCH[1]}" | chpasswd -e
 fi
 
 # Reads a sshkey from the kernel command line and appends it to the root
 # user authorized_keys
 SSHDIR=/root/.ssh
-if [[ $(</proc/cmdline) =~ sshkey=\"([^\"]+)\" ]]; then
+if [[ $(</proc/cmdline) =~ sshkey=\"?([^\"]+)\" ]]; then
     mkdir -p $SSHDIR
     chmod 700 $SSHDIR
     echo "${BASH_REMATCH[1]}" > $SSHDIR/authorized_keys
