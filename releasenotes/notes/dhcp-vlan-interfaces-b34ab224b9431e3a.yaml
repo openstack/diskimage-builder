@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Add support to run dhclient on vlan interfaces created on top of
+    an Ethernet interface.  The vlan interfaces in this case will use
+    the default naming convention of <interface>.<vlan>. See also
+    <https://storyboard.openstack.org/#!/story/2008298>`__
+    for further details.
