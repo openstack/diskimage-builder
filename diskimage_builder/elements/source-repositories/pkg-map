@@ -3,6 +3,9 @@
     "gentoo": {
       "git": "dev-vcs/git"
     },
+    "redhat": {
+      "git": "git-core"
+    },
     "suse": {
       "git": "git-core"
     }
