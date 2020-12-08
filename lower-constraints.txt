@@ -7,7 +7,7 @@ docutils==0.11
 dulwich==0.15.0
 extras==1.0.0
 fixtures==3.0.0
-flake8==2.5.4
+flake8==3.8.4
 hacking==0.10.0
 imagesize==0.7.1
 iso8601==0.1.11
@@ -25,7 +25,7 @@ os-client-config==1.28.0
 oslotest==3.2.0
 pbr==2.0.0
 pep8==1.5.7
-pyflakes==0.8.1
+pyflakes==2.2.0
 Pygments==2.2.0
 pylint==1.7.1
 python-mimeparse==1.6.0
