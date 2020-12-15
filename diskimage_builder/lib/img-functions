@@ -40,7 +40,7 @@ function trap_cleanup() {
 
 function cleanup () {
     unmount_image
-    dib-block-device umount
+    ${DIB_PYTHON_EXEC} ${_LIB}/dib-block-device.py umount
     cleanup_build_dir
     cleanup_image_dir
 }
