@@ -444,7 +444,7 @@ Example:
         pvs:
           - name: pv
             options: ["--force"]
-            device: root
+            base: root
 
         vgs:
           - name: vg
