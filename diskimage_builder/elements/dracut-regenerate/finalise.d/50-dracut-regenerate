@@ -73,6 +73,7 @@ def main():
 
         # list installed modules of dracut
         cmdline = ['dracut', '--list-modules']
+        cmdline += [ramdisk_path, kernel_version]
         logging.debug("Calling: %s" % cmdline)
         subp = subprocess.Popen(cmdline, stdout=subprocess.PIPE)
         out, err = subp.communicate()
