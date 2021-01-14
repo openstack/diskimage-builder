@@ -8,6 +8,9 @@ set -eu
 set -o pipefail
 
 if [[ $DISTRO_NAME =~ "centos" ]]; then
+    if [[ -L /boot/grub2/grubenv ]]; then
+        rm -f /boot/grub2/grubenv
+    fi
     sed -i -E 's/(GRUB_CMDLINE_LINUX_DEFAULT=")(.+)(")/\1\2 rd.iscsi.firmware=1"/' /etc/default/grub
     grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
