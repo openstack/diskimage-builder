@@ -29,7 +29,7 @@ echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
 
 # make sure we have the new python for portage bevore we possibly remove python 2.7
 # this is done one by one with nodeps because it can sometimes have dependency loops
-PYTHON_PACKAGES="dev-python/six dev-python/packaging dev-python/appdirs dev-python/setuptools dev-python/pyparsing dev-python/certifi"
+PYTHON_PACKAGES="dev-python/six dev-python/toml dev-python/pyproject2setuppy dev-python/packaging dev-python/appdirs dev-python/setuptools dev-python/pyparsing dev-python/certifi"
 for PACKAGE in ${PYTHON_PACKAGES}; do
     emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --nodeps "${PACKAGE}"
 done
