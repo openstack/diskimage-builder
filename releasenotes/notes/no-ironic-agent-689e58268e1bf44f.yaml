@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Removes the long deprecated ironic-agent element. Use
+    ironic-python-agent-ramdisk from the ironic-python-agent-builder project.
