@@ -16,38 +16,16 @@ fi
 
 [[ ! -f ${PORTDIR}/profiles ]] && emerge-webrsync -q
 
+# set active python targets
 echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_9"* ]] && [[ ! -e /usr/lib64/libpython3.9.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.9
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_8"* ]] && [[ ! -e /usr/lib64/libpython3.8.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.8
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_7"* ]] && [[ ! -e /usr/lib64/libpython3.7m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.7
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_6"* ]] && [[ ! -e /usr/lib64/libpython3.6m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.6
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_5"* ]] && [[ ! -e /usr/lib64/libpython3.5m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.5
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python3_4"* ]] && [[ ! -e /usr/lib64/libpython3.4m.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:3.4
-[[ "${GENTOO_PYTHON_TARGETS}" == *"python2_7"* ]] && [[ ! -e /usr/lib64/libpython2.7.so ]] && emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot dev-lang/python:2.7
 # disable python in git if we have to, it only supports python-2.7
 [[ "${GENTOO_PYTHON_TARGETS}" != *"python2_7"* ]] && echo 'dev-vcs/git -python' >> /etc/portage/package.use/git
 
-# make sure we have the new python for portage bevore we possibly remove python 2.7
-# this is done one by one with nodeps because it can sometimes have dependency loops
-PYTHON_PACKAGES="dev-python/six dev-python/toml dev-python/pyproject2setuppy dev-python/packaging dev-python/appdirs dev-python/setuptools dev-python/pyparsing dev-python/certifi"
-for PACKAGE in ${PYTHON_PACKAGES}; do
-    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --nodeps "${PACKAGE}"
-done
 # install portage first due to bug in env vars not being passed when portage installs itself and re-inits
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot sys-apps/portage
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --deep --complete-graph=y sys-apps/portage dev-python/pyxattr
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --update --newuse --deep sys-apps/portage
 # set the active python version
-eselect python set ${GENTOO_PYTHON_ACTIVE_VERSION}
-# allow these uninstalls to fail as they may not be installed to begin with
-set +e
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python2_7"* ]] && emerge -C -q dev-lang/python:2.7
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_4"* ]] && emerge -C -q dev-lang/python:3.4
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_5"* ]] && emerge -C -q dev-lang/python:3.5
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_6"* ]] && emerge -C -q dev-lang/python:3.6
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_7"* ]] && emerge -C -q dev-lang/python:3.7
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_8"* ]] && emerge -C -q dev-lang/python:3.8
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python3_9"* ]] && emerge -C -q dev-lang/python:3.9
-set -e
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --nodeps dev-lang/python-exec python-exec-conf
+echo yes | etc-update --automode -3 /etc/python-exec/python-exec.conf
 
 # make world consistant
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world

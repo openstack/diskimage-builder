@@ -8,7 +8,7 @@ set -o pipefail
 
 if [[ ${GENTOO_OVERLAYS} != '' ]]; then
     if mountpoint -q /dev/shm; then
-    echo "/dev/shm found in /proc/self/mountinfo"
+        echo "/dev/shm found in /proc/self/mountinfo"
     elif [[ -k /dev/shm ]]; then
         echo "/dev/shm exists and is stickied"
     else
