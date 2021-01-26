@@ -27,4 +27,13 @@ DIB_UBUNTU_KERNEL:
   :Notes: The element must know about the package, otherwise it will select
           the default.
 
+
+DIB_UBUNTU_MIRROR_DISTS:
+  :Required: No
+  :Default: ``updates,security,backports``
+  :Description:  Allow to manage 'dists' repos
+  :Example: ``DIB_UBUNTU_MIRROR_DISTS=updates,security``
+  :Notes: For some deployment,
+          is may be required to disable backport|update|etc packages integration.
+
 .. element_deps::

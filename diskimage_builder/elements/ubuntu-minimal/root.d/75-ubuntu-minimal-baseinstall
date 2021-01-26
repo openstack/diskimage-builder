@@ -27,12 +27,18 @@ if [ -n "${DIB_APT_KEYRING:-${DIB_DEBIAN_KEYRING:-}}" ]; then
 fi
 
 # We should manage this in a betterer way
+# Add "basic" release dist
 sudo bash -c "cat << EOF >$TARGET_ROOT/etc/apt/sources.list
 deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE ${DIB_DEBIAN_COMPONENTS//,/ }
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-updates ${DIB_DEBIAN_COMPONENTS//,/ }
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-backports ${DIB_DEBIAN_COMPONENTS//,/ }
-deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-security ${DIB_DEBIAN_COMPONENTS//,/ }
 EOF"
+
+# Add any extra dists
+for dist in ${DIB_UBUNTU_MIRROR_DISTS//,/ } ; do
+sudo bash -c "cat << EOF >>$TARGET_ROOT/etc/apt/sources.list
+deb $DIB_DISTRIBUTION_MIRROR $DIB_RELEASE-$dist ${DIB_DEBIAN_COMPONENTS//,/ }
+EOF"
+done
+
 
 sudo mount -t proc none $TARGET_ROOT/proc
 sudo mount -t sysfs none $TARGET_ROOT/sys
