@@ -15,7 +15,9 @@ if [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} == 7 ]]; then
     # "install this from EPEL".  So we hack in an install of it here
     # from EPEL.  Nothing else should have installed EPEL at this
     # early stage.
-    yum install -y python3 epel-release
+    yum install -y python3
+    # NOTE(dpawlik) The epel-release package is not available in RHEL.
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     yum install -y python36-PyYAML
     yum remove -y epel-release
 elif [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} > 7 ]]; then
