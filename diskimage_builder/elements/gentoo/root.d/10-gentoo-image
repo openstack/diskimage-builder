@@ -24,12 +24,8 @@ set -o pipefail
 [ -n "${ARCH}" ]
 [ -n "${TARGET_ROOT}" ]
 
-if [ 'amd64' = "${ARCH}" ] ; then
-    ARCH='x86_64'
-fi
-
-if [[ 'x86_64' != "${ARCH}" ]] && [[ 'arm64' != "${ARCH}" ]]; then
-    echo "Only x86_64 or arm64 images are currently available but ARCH is set to ${ARCH}."
+if [[ 'amd64' != "${ARCH}" ]] && [[ 'arm64' != "${ARCH}" ]]; then
+    echo "Only amd64 or arm64 images are currently available but ARCH is set to ${ARCH}."
     exit 1
 fi
 

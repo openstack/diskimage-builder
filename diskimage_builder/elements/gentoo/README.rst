@@ -6,7 +6,7 @@ located in profile specific sub directories:
 
     http://distfiles.gentoo.org/releases/amd64/autobuilds/
 
-As of this writing, only x86_64 images are available.
+As of this writing, only amd64 and arm64 images are available.
 
 Notes:
 
@@ -31,6 +31,8 @@ Notes:
     default/linux/amd64/17.1/hardened
     default/linux/amd64/17.1/no-multilib/hardened
     default/linux/amd64/17.1/systemd
+    default/linux/arm64/17.0
+    default/linux/arm64/17.0/systemd
 
 * You can set the `GENTOO_PORTAGE_CLEANUP` environment variable to False to
   disable the clean up of portage repositories (including overlays).  This
@@ -40,11 +42,6 @@ Notes:
   you may use the `GENTOO_PYTHON_TARGETS` environment variable to select
   the versions of python you want on your image.  The format of this variable
   is a string as follows `"python2_7 python3_6"`.
-
-* In addition you can select the primary python version you wish to use (that
-  which will be called by running the `python` command.  The
-  `GENTOO_PYTHON_ACTIVE_VERSION` is used to set that mapping.  The variable
-  contents can be something like `python3.6`.
 
 * You can enable overlays using the `GENTOO_OVERLAYS` variable.  In it you
   should put a space separated list of overlays.  The overlays must be in the
