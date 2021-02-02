@@ -24,7 +24,7 @@ fi
 
 # CentOS Stream releases (e.g. 8-stream, 9-stream)
 if [[ ${DIB_RELEASE} =~ '-stream' ]]; then
-    sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-Base.repo
+    sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-BaseOS.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-AppStream.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-centosplus.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-Extras.repo
