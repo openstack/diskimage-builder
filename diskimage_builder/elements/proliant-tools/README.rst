@@ -1,12 +1,12 @@
 proliant-tools
 ==============
 
-* This element can be used when building ironic-agent ramdisk.  It
-  enables ironic-agent ramdisk to do in-band cleaning operations specific
-  to HPE ProLiant hardware.
+* This element can be used when building ironic-python-agent ramdisk.  It
+  enables ironic-python-agent ramdisk to do in-band cleaning operations
+  specific to HPE ProLiant hardware.
 
-* Works with ubuntu and fedora distributions (on which ironic-agent
-  element is supported).
+* Works with ubuntu and fedora distributions (on which the
+  ironic-python-agent-ramdisk element is supported).
 
 * Currently the following utilities are installed:
 
