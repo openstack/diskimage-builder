@@ -6,17 +6,16 @@ fi
 set -eu
 set -o pipefail
 
-# Cloud images may hard code the eth0 interfaces so they
+# Cloud images may hard code interfaces so they
 # boot with DHCP.
 
-# Fedora
-rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
+# RHEL/CentOS/Fedora
+for ifcfg in $(ls /etc/sysconfig/network-scripts/ifcfg-* | grep -v "ifcfg-lo"); do 
+    rm -f $ifcfg
+done
 
-# Ubuntu
-rm -f /etc/network/interfaces.d/eth*.cfg
-
-# Debian
-rm -f /etc/network/interfaces.d/eth*
+# Ubuntu/Debian
+rm -f /etc/network/interfaces.d/*
 
 # Gentoo
 rm -f /etc/conf.d/net*
