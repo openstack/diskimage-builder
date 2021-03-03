@@ -34,6 +34,7 @@ if [[ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]]; then
     alien -i /tmp/ssacli.rpm
 else
     rpm -iv /tmp/ssacli.rpm
+    rpm --import https://downloads.linux.hpe.com/SDR/hpePublicKey2048_key1.pub
 fi
 
 rm -f /tmp/ssacli.rpm
@@ -41,8 +42,8 @@ rm -f /tmp/ssacli.rpm
 # Install proliantutils python module in the
 # virtual environment of ironic-python-agent.
 # This is pre-installed by
-# ironic-agent/install.d/ironic-agent-source-install/60-ironic-agent-install.
-IPA_VENV=/usr/share/ironic-python-agent/venv
+# ironic-python-agent-ramdisk/install.d/ironic-python-agent-ramdisk-source-install/60-ironic-python-agent-ramdisk-install.
+IPA_VENV=/opt/ironic-python-agent
 if [[ -d "$IPA_VENV" ]]; then
     $IPA_VENV/bin/pip install proliantutils
 else
