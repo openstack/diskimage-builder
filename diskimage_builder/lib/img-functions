@@ -216,6 +216,9 @@ function select_boot_kernel_initrd () {
     elif [[ -f "${TARGET_ROOT}"/etc/gentoo-release ]]; then
         KERNEL="$(basename $(ls -1rv $BOOTDIR/vmlinuz-* | head -n 1))"
         RAMDISK="$(basename $(ls -1rv $BOOTDIR/initramfs-* | head -n 1))"
+    elif [[ $DISTRO_NAME = opensuse ]]; then
+        KERNEL=$(basename $(readlink -e $BOOTDIR/vmlinuz))
+        RAMDISK=$(basename $(readlink -e $BOOTDIR/initrd))
     else
         echo "ERROR: Unable to detect operating system"
         exit 1
