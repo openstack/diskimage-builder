@@ -1,5 +1,6 @@
 export DISTRO_NAME=fedora
 export DIB_RELEASE=${DIB_RELEASE:-32}
+export EFI_BOOT_DIR="EFI/fedora"
 
 # Note the filename URL has a "sub-release" in it
 #  http:// ... Fedora-Cloud-Base-25-1.3.x86_64.qcow2

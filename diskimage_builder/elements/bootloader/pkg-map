@@ -18,11 +18,11 @@
     "redhat": {
       "extlinux": "syslinux-extlinux",
       "grub-pc": "grub2-tools grub2",
-      "grub-efi-amd64": "grub2-tools grub2-pc grub2-efi-x64 grub2-efi-x64-modules efibootmgr",
-      "grub-efi-arm64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules efibootmgr",
-      "grub-efi-aarch64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules efibootmgr",
+      "grub-efi-amd64": "grub2-tools grub2 grub2-pc grub2-efi-x64 grub2-efi-x64-modules efibootmgr shim-x64",
+      "grub-efi-arm64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules efibootmgr shim-aa64",
+      "grub-efi-aarch64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules efibootmgr shim-aa64",
       "grub-efi": "grub2-tools grub2-efi efibootmgr",
-      "grub-efi-x86_64": "grub2-tools grub2-efi-x64 grub2-efi-x64-modules efibootmgr",
+      "grub-efi-x86_64": "grub2-tools grub2 grub2-efi-x64 grub2-efi-x64-modules efibootmgr shim-x64",
       "grub-ppc64": "grub2-tools grub2"
     }
   },
@@ -31,7 +31,7 @@
     "extlinux": "extlinux",
     "grub-pc": "grub-pc",
     "grub-efi-amd64": "grub-efi grub-pc-bin efibootmgr",
-    "grub-efi-arm64": "grub-efi-arm64 efibootmgr",
+    "grub-efi-arm64": "grub-efi-arm64 grub-efi-arm64-bin efibootmgr",
     "grub-ppc64": "grub-ieee1275"
   }
 }

@@ -1,5 +1,6 @@
 export DISTRO_NAME=centos
 export DIB_RELEASE=${DIB_RELEASE:-7}
+export EFI_BOOT_DIR="EFI/centos"
 
 # by default, enable DHCP configuration of eth0 & eth1 in network
 # scripts for centos 7.  See yum-minimal for full details.  CentOS 8

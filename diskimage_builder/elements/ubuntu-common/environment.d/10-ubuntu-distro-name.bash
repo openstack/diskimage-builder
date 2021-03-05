@@ -1,6 +1,7 @@
 export DISTRO_NAME=${DISTRO_NAME:-ubuntu}
 export DIB_RELEASE=${DIB_RELEASE:-bionic}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main,universe}
+export EFI_BOOT_DIR="EFI/ubuntu"
 
 # There are two default distro mirrors depending on architecture
 ARCH=${ARCH:-}

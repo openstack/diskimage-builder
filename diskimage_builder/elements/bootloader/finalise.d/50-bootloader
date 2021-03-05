@@ -79,6 +79,12 @@ function install_grub2 {
         GRUBNAME=$(type -p grub2-install)
     fi
 
+    if type grub2-mkconfig >/dev/null; then
+        GRUB_MKCONFIG="grub2-mkconfig"
+    else
+        GRUB_MKCONFIG="grub-mkconfig"
+    fi
+
     # If no GRUB2 is found, fallback to extlinux
     if [ -z "$GRUBNAME" ] || [ $($GRUBNAME --version | grep "0.97" | wc -l) -ne 0 ]; then
         echo "No GRUB2 found. Fallback to Extlinux..."
@@ -150,7 +156,7 @@ function install_grub2 {
         modules="part_msdos part_gpt lvm"
         extra_options=""
         if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
-            modules="$modules biosdisk"
+            $GRUBNAME --modules="$modules biosdisk" $GRUB_OPTS $BOOT_DEV
         elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
             # This tells the EFI install to put the EFI binaries into
             # the generic /BOOT directory and avoids trying to update
@@ -168,8 +174,14 @@ function install_grub2 {
                 # At this point, we don't need to override the target
                 # for any other architectures.
             esac
+            if [ -d /boot/efi/$EFI_BOOT_DIR ]; then
+                # Make the grub config in the EFI directory for UEFI boot
+                $GRUB_MKCONFIG -o /boot/efi/$EFI_BOOT_DIR/grub.cfg
+            else
+                echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
+                $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
+            fi
         fi
-        $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
     fi
 
     # This might be better factored out into a per-distro 'install-bootblock'
@@ -204,12 +216,6 @@ function install_grub2 {
     echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
     echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
 
-    if type grub2-mkconfig >/dev/null; then
-        GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
-    else
-        GRUB_MKCONFIG="grub-mkconfig -o $GRUB_CFG"
-    fi
-
     # os-prober leaks /dev/sda into config file in dual-boot host
     # Disable grub-os-prober to avoid the issue  while running
     # grub-mkconfig
@@ -220,7 +226,7 @@ function install_grub2 {
         echo 'GRUB_DISABLE_OS_PROBER=true' >> /etc/default/grub
     fi
 
-    $GRUB_MKCONFIG
+    $GRUB_MKCONFIG -o $GRUB_CFG
 
     # Remove the fix to disable os_prober
     if [ -n "$PROBER_DISABLED" ]; then

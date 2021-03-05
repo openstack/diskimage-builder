@@ -1,6 +1,7 @@
 export DISTRO_NAME=debian
 export DIB_RELEASE=${DIB_RELEASE:-stable}
 export DIB_INIT_SYSTEM=systemd
+export EFI_BOOT_DIR="EFI/debian"
 
 if [ -n "${DIB_DEBIAN_DISTRIBUTION_MIRROR:-}" ]; then
     DIB_DISTRIBUTION_MIRROR=$DIB_DEBIAN_DISTRIBUTION_MIRROR

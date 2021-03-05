@@ -1,5 +1,6 @@
 export DISTRO_NAME=opensuse
 export DIB_RELEASE=${DIB_RELEASE:-15.1}
+export EFI_BOOT_DIR="EFI/opensuse"
 export DIB_OPENSUSE_PATTERNS=patterns-openSUSE-base
 export DIB_INIT_SYSTEM=systemd
 case ${DIB_RELEASE} in
