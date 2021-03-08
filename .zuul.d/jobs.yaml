@@ -178,16 +178,6 @@
         # mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
-    name: dib-nodepool-functional-openstack-fedora-31-src
-    description: |
-      Test building and booting a Fedora 31 image with Nodepool and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: fedora-minimal
-        release: '31'
-
-- job:
     name: dib-nodepool-functional-openstack-fedora-32-src
     description: |
       Test building and booting a Fedora 32 image with Nodepool and OpenStack
