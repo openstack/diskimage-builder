@@ -1,4 +1,4 @@
 # NOTE(dpawlik) We set get-pip.py script to use 3.5 version, that is compatible
 # with python2.7 and newer. It should be removed in the future, when Python 2
 # is dropped.
-pip-and-virtualenv file /tmp/get-pip.py https://bootstrap.pypa.io/3.5/get-pip.py
+pip-and-virtualenv file /tmp/get-pip.py https://bootstrap.pypa.io/pip/3.5/get-pip.py
