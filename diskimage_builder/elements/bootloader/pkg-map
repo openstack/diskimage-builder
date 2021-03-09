@@ -1,18 +1,4 @@
 {
-  "release": {
-    "rhel": {
-      "8": {
-        "extlinux": "syslinux-extlinux",
-        "grub-pc": "grub2-tools grub2",
-        "grub-efi-amd64": "grub2-tools grub2-pc grub2-efi-x64 grub2-efi-x64-modules",
-        "grub-efi-arm64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules",
-        "grub-efi-aarch64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules",
-        "grub-efi": "grub2-tools grub2-efi",
-        "grub-efi-x86_64": "grub2-tools grub2-efi-x64 grub2-efi-x64-modules",
-        "grub-ppc64": "grub2-tools grub2"
-      }
-    }
-  },
   "family": {
     "gentoo": {
       "dkms_package": "",
@@ -36,6 +22,7 @@
       "grub-efi-arm64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules",
       "grub-efi-aarch64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules",
       "grub-efi": "grub2-tools grub2-efi",
+      "grub-efi-x86_64": "grub2-tools grub2-efi-x64 grub2-efi-x64-modules",
       "grub-ppc64": "grub2-tools grub2"
     }
   },
