@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Add aarch64 support for ''rhel''.

@@ -9,17 +9,18 @@ set -o pipefail
 
 opts=
 attach_opts=
+arch=$(uname -m)
 
 if [ "${DIB_RELEASE:-7}" == "7" ]; then
     repos="repos --enable rhel-7-server-rpms"
     satellite_repo="rhel-7-server-rh-common-rpms"
 elif [ "${DIB_RELEASE}" == "8" ]; then
     if [ -n "${REG_RELEASE:-}" ]; then
-        repos="repos --enable rhel-8-for-x86_64-appstream-eus-rpms --enable rhel-8-for-x86_64-baseos-eus-rpms"
+        repos="repos --enable rhel-8-for-${arch}-appstream-eus-rpms --enable rhel-8-for-${arch}-baseos-eus-rpms"
     else
-        repos="repos --enable rhel-8-for-x86_64-appstream-rpms --enable rhel-8-for-x86_64-baseos-rpms"
+        repos="repos --enable rhel-8-for-${arch}-appstream-rpms --enable rhel-8-for-${arch}-baseos-rpms"
     fi
-    satellite_repo="satellite-tools-6.5-for-rhel-8-x86_64-rpms"
+    satellite_repo="satellite-tools-6.5-for-rhel-8-${arch}-rpms"
 fi
 
 REG_SAT_CERT=${REG_SAT_CERT:-"katello-ca-consumer-latest.noarch.rpm"}
