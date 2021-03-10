@@ -104,6 +104,8 @@ A single string representing a list of repository names separated by a
 comma (No spaces).  Each of the repositories in this string are enabled
 through subscription manager.  Once you've attached a subscription, you can
 find available repositories by running subscription-manager repos --list.
+No base repos will be added when REG_REPOS is set, so these must be included
+in REG_REPOS.
 
 #### REG\_SERVER\_URL
 Gives the hostname of the subscription service to use. The default is

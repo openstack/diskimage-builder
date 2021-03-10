@@ -10,15 +10,17 @@ set -o pipefail
 opts=
 attach_opts=
 arch=$(uname -m)
+repos="repos "
+base_repos=
 
 if [ "${DIB_RELEASE:-7}" == "7" ]; then
-    repos="repos --enable rhel-7-server-rpms"
+    base_repos="rhel-7-server-rpms"
     satellite_repo="rhel-7-server-rh-common-rpms"
 elif [ "${DIB_RELEASE}" == "8" ]; then
     if [ -n "${REG_RELEASE:-}" ]; then
-        repos="repos --enable rhel-8-for-${arch}-appstream-eus-rpms --enable rhel-8-for-${arch}-baseos-eus-rpms"
+        base_repos="rhel-8-for-${arch}-appstream-eus-rpms rhel-8-for-${arch}-baseos-eus-rpms"
     else
-        repos="repos --enable rhel-8-for-${arch}-appstream-rpms --enable rhel-8-for-${arch}-baseos-rpms"
+        base_repos="rhel-8-for-${arch}-appstream-rpms rhel-8-for-${arch}-baseos-rpms"
     fi
     satellite_repo="satellite-tools-6.5-for-rhel-8-${arch}-rpms"
 fi
@@ -91,6 +93,10 @@ fi
 
 if [ -n "${REG_REPOS:-}" ]; then
     for repo in $(echo $REG_REPOS | tr ',' '\n'); do
+        repos="$repos --enable $repo"
+    done
+else
+    for repo in $base_repos; do
         repos="$repos --enable $repo"
     done
 fi
