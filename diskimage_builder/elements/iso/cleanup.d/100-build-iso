@@ -32,6 +32,12 @@ function build_efiboot_img() {
     if [[ $DISTRO_NAME = "fedora" || $DISTRO_NAME = "rhel7" ]] ; then
         cp $TMP_BOOTLOADER_DIR/shim.efi $TMP_BUILD_DIR/bootx64.efi
         cp $TMP_BOOTLOADER_DIR/grubx64.efi $TMP_BUILD_DIR/grubx64.efi
+    elif [[ $DISTRO_NAME = "centos" ]] ; then
+        cp $TMP_BOOTLOADER_DIR/shimx64-centos.efi $TMP_BUILD_DIR/bootx64.efi
+        cp $TMP_BOOTLOADER_DIR/grubx64.efi $TMP_BUILD_DIR/grubx64.efi
+    elif [[ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]] ; then
+        cp $TMP_BOOTLOADER_DIR/shimx64.efi.signed $TMP_BUILD_DIR/bootx64.efi
+        cp $TMP_BOOTLOADER_DIR/grubx64.efi.signed $TMP_BUILD_DIR/grubx64.efi
     else
         cp $TMP_BOOTLOADER_DIR/shim.efi.signed $TMP_BUILD_DIR/bootx64.efi
         cp $TMP_BOOTLOADER_DIR/grubx64.efi.signed $TMP_BUILD_DIR/grubx64.efi
@@ -64,6 +70,10 @@ function build_iso() {
     MKISOFS="/usr/bin/mkisofs"
     if [ $DISTRO_NAME = "fedora" ]; then
         EXTRA_KERNEL_PARAMS="usbcore.autosuspend=-1"
+    #centos
+    elif [ $DISTRO_NAME = "centos" ]; then
+        EFI_BOOT_DIR="EFI/centos"
+        EXTRA_KERNEL_PARAMS=""
     #debian
     elif [ $DISTRO_NAME = "debian" ]; then
         EXTRA_KERNEL_PARAMS=""
@@ -175,4 +185,3 @@ build_iso "$EMITTED_KERNEL" "$EMITTED_RAMDISK" "$EMITTED_KERNEL_CMDLINE_ARGS" \
 
 # Clean-up the bootloaders directory
 sudo rm -fr $TMP_BOOTLOADER_DIR
-

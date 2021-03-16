@@ -4,6 +4,11 @@
         "syslinux": "syslinux",
         "syslinux-common": "syslinux-common",
         "isolinux": "isolinux"
+    },
+    "ubuntu":{
+        "syslinux": "syslinux",
+        "syslinux-common": "syslinux-common",
+        "isolinux": "isolinux"
     }
   },
   "family":{
@@ -24,4 +29,3 @@
       "isolinux": ""
   }
 }
-
