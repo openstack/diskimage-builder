@@ -7,8 +7,8 @@ set -eu
 set -o pipefail
 
 # Add hpdsa repository
-echo 'deb https://downloads.linux.hp.com/SDR/repo/ubuntu-hpdsa' $DIB_RELEASE ' main' \
+echo 'deb https://downloads.linux.hpe.com/SDR/repo/ubuntu-hpdsa' $DIB_RELEASE ' main' \
     >> /etc/apt/sources.list.d/ubuntu-hpdsa.list
 
 # Add the key
-curl -f -s https://downloads.linux.hp.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
+curl -f -s https://downloads.linux.hpe.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
