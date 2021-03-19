@@ -24,7 +24,7 @@ echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
 # install portage first due to bug in env vars not being passed when portage installs itself and re-inits
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --update --newuse --deep sys-apps/portage
 # set the active python version
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --nodeps dev-lang/python-exec python-exec-conf
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --nodeps dev-lang/python-exec dev-lang/python-exec-conf
 echo yes | etc-update --automode -3 /etc/python-exec/python-exec.conf
 
 # make world consistant

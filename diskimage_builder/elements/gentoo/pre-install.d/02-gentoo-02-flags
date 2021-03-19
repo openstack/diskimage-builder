@@ -26,18 +26,16 @@ if [[ 'amd64' == "${ARCH}" ]]; then
     echo 'sys-boot/grub grub_platforms_pc' >> /etc/portage/package.use/grub  # bios support for bios systems
 fi
 
-# tool for setting python versions
-echo "~dev-lang/python-exec-2.4.6 ~${ARCH}" >> /etc/portage/package.accept_keywords/python-exec-conf
-echo "dev-lang/python-exec-conf ~${ARCH}" >> /etc/portage/package.accept_keywords/python-exec-conf
-
 # needed to install static kernel
 echo "sys-kernel/gentoo-kernel-bin ~${ARCH}" >> /etc/portage/package.accept_keywords/kernel
 echo "virtual/dist-kernel ~${ARCH}" >> /etc/portage/package.accept_keywords/kernel
+
+# needed for gcc-10 support
+echo "~sys-block/open-iscsi-2.1.4 ~${ARCH}" >> /etc/portage/package.accept_keywords/open-iscsi
+echo "~sys-block/open-isns-0.101 ~${ARCH}" >> /etc/portage/package.accept_keywords/open-iscsi
 
 # musl only valid for amd64 for now
 if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then
     echo "dev-vcs/git -gpg" >> /etc/portage/package.use/musl  # gpg doesn't build on musl profiles
     echo "sys-libs/pam cracklib" >> /etc/portage/package.use/musl
-    echo "~sys-block/open-iscsi-2.1.1 ~${ARCH}" >> /etc/portage/package.accept_keywords/musl
-    echo "~sys-block/open-isns-0.100 ~${ARCH}" >> /etc/portage/package.accept_keywords/musl
 fi
