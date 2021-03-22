@@ -1,7 +1,8 @@
 {
   "family": {
     "redhat": {
-      "dhcp-client": "dhclient"
+      "dhcp-client": "dhclient",
+      "glean": "python3-glean"
     },
     "debian": {
       "dhcp-client": "isc-dhcp-client",
