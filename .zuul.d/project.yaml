@@ -61,5 +61,6 @@
         - dib-nodepool-functional-openstack-gentoo-src
         - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-nodepool-functional-openstack-debian-buster-src
+        - dib-nodepool-functional-openstack-debian-bullseye-src
         - octavia-v1-dsvm-scenario
         - octavia-v1-dsvm-py3x-scenario

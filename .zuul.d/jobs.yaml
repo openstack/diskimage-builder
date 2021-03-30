@@ -288,6 +288,23 @@
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
+    name: dib-nodepool-functional-openstack-debian-bullseye-src
+    description: |
+      Test building and booting a Debian bullseye image with Nodepool
+      and OpenStack
+    parent: dib-nodepool-functional-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
+    vars:
+      nodepool_diskimage:
+        base_element: debian-minimal
+        release: 'bullseye'
+        mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
+
+- job:
     name: dib-nodepool-functional-openstack-debian-buster-src
     description: |
       Test building and booting a Debian buster image with Nodepool
