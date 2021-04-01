@@ -31,6 +31,7 @@
         - ubuntu-minimal/focal-build-succeeds
         - containerfile/focal-build-succeeds
         - fedora-container/build-succeeds
+        - openeuler-minimal/20.03-LTS-SP2-build-succeeds
 
 - job:
     name: dib-functests-image
@@ -89,6 +90,7 @@
         - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
         - centos-minimal/8-aarch64-build-succeeds
+        - openeuler-minimal/20.03-LTS-SP2-build-succeeds
 
 # Bionic / Python3 tests
 - job:

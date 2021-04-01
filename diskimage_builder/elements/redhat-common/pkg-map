@@ -4,6 +4,11 @@
       "libselinux-python": "python3-libselinux",
       "policycoreutils": "python3-policycoreutils",
       "policycoreutils-python": "policycoreutils-python-utils"
+    },
+    "openeuler": {
+      "libselinux-python": "python3-libselinux",
+      "policycoreutils": "python3-policycoreutils",
+      "policycoreutils-python": "policycoreutils-python-utils"
     }
   },
   "release": {

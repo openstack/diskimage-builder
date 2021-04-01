@@ -1,7 +1,7 @@
 =============
 redhat-common
 =============
-Image installation steps common to RHEL, CentOS, and Fedora.
+Image installation steps common to RHEL, CentOS, Fedora and openEuler.
 
 Requirements:
 

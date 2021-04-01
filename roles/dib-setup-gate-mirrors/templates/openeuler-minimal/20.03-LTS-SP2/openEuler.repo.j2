@@ -1,0 +1,29 @@
+[OS]
+name=OS
+baseurl=http://{{ mirror_fqdn }}/openeuler/openEuler-20.03-LTS-SP2/OS/$basearch/
+enabled=1
+gpgcheck=0
+
+[everything]
+name=everything
+baseurl=http://{{ mirror_fqdn }}/openeuler/openEuler-20.03-LTS-SP2/everything/$basearch/
+enabled=1
+gpgcheck=0
+
+[EPOL]
+name=EPOL
+baseurl=http://{{ mirror_fqdn }}/openeuler/openEuler-20.03-LTS-SP2/EPOL/main/$basearch/
+enabled=1
+gpgcheck=0
+
+[EPOL-UPDATE]
+name=EPOL-UPDATE
+baseurl=http://{{ mirror_fqdn }}/openeuler/openEuler-20.03-LTS-SP2/EPOL/update/main/$basearch/
+enabled=1
+gpgcheck=0
+
+[update]
+name=update
+baseurl=http://{{ mirror_fqdn }}/openeuler/openEuler-20.03-LTS-SP2/update/$basearch/
+enabled=1
+gpgcheck=0

@@ -58,6 +58,8 @@ if [[ -d ${DIB_OS_CI_YUM_REPOS:-/not/a/path/} ]]; then
         fi
     elif [[ "${DISTRO_NAME}" == "centos" ]]; then
         export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/centos-minimal/${DIB_RELEASE}/yum.repos.d
+    elif [[ "${DISTRO_NAME}" == "openeuler" ]]; then
+        export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/openeuler-minimal/${DIB_RELEASE}/yum.repos.d
     fi
 
 fi

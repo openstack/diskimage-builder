@@ -1,0 +1,4 @@
+cloud-init
+growroot
+openssh-server
+yum-minimal

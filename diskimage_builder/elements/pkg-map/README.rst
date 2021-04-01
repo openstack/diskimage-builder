@@ -24,7 +24,7 @@ Provides the following:
    The family is set automatically within pkg-map based on the
    supplied distro name. Families include:
 
-     + redhat: includes centos, fedora, and rhel distros
+     + redhat: includes centos, fedora, openeuler and rhel distros
      + debian: includes debian and ubuntu distros
      + suse: includes the opensuse distro
 

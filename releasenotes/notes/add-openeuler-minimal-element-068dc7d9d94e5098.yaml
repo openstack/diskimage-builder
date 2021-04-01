@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Add ``openeuler-minimal`` element. OpenEuler is an open source community driven
+    YUM/DNF distro like Fedora.
+    For more info about openEuler, see: https://openeuler.org/en.

@@ -1,0 +1,1 @@
+export DIB_RELEASE='20.03-LTS-SP2'

@@ -1,4 +1,12 @@
 {
+  "distro": {
+    "openeuler": {
+      "linux-firmware": "",
+      "linux-firmware-whence": "",
+      "lsb_release": "openeuler-lsb",
+      "redhat-rpm-config": "openEuler-rpm-config"
+    }
+  },
   "release": {
       "centos": {
           "7": {

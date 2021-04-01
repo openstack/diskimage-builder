@@ -31,6 +31,8 @@ fi
 ARCH=${ARCH:-x86_64}
 if [ $ARCH = amd64 ]; then
     ARCH=x86_64
+elif [[ "arm64" == "$ARCH" ]]; then
+    ARCH="aarch64"
 fi
 # Calling elements will need to set DISTRO_NAME and DIB_RELEASE
 # TODO Maybe deal with DIB_DISTRIBUTION_MIRROR
@@ -75,6 +77,8 @@ function _install_repos {
     packages+="basesystem filesystem setup "
     if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 29 ]]; then
         packages+="fedora-release-cloud fedora-release-common "
+    elif [[ ${DISTRO_NAME} == 'openeuler' ]]; then
+        packages+="openEuler-release "
     else
         packages+="${DISTRO_NAME}-release "
     fi
@@ -97,6 +101,11 @@ function _install_repos {
         else
             packages+="centos-linux-release centos-linux-repos "
         fi
+    fi
+
+    # For openEuler, install other required repos and gpy-keys packages.
+    if [[ ${DISTRO_NAME} == 'openeuler' ]]; then
+        packages+="openEuler-repos openEuler-gpg-keys "
     fi
 
     # By default, parent elements (fedora-minimal, centos-minimal)
@@ -150,6 +159,12 @@ function _install_repos {
     if [[ -n ${DIB_YUM_MINIMAL_EXTRA_REPOS:-} ]]; then
         sudo cp ${DIB_YUM_MINIMAL_EXTRA_REPOS}/* \
             $TARGET_ROOT/etc/yum.repos.d/
+    fi
+
+    # For openEuler, some repos like update are disabled by default.
+    # Ensure all the repo is enabled, so that we get the latest packages.
+    if [[ ${DISTRO_NAME} == 'openeuler' ]]; then
+        sudo sed -i 's/enabled=0/enabled=1/' $TARGET_ROOT/etc/yum.repos.d/*.repo
     fi
 }
 
@@ -292,7 +307,7 @@ _install_repos
 # it seems, as it seems like as part of the Fedora modular updates
 # (https://docs.fedoraproject.org/en-US/modularity/) we can pick up
 # seemingly mismatched libraries.
-if [[ ${DISTRO_NAME} == 'fedora' ]]; then
+if [[ ${DISTRO_NAME} =~ (fedora|openeuler) ]]; then
     _install_pkg_manager dnf dnf-plugins-core curl
 elif [[ ${DISTRO_NAME} == centos && $DIB_RELEASE > "7" ]]; then
     _install_pkg_manager dnf dnf-plugins-core curl libcurl

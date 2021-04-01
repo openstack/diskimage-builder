@@ -58,3 +58,18 @@
   with_nested:
     - [ 'default' ]
     - [ 'fedora.repo', 'fedora-updates.repo' ]
+
+- name: Create openeuler-minimal 20.03-LTS-SP2 directory
+  file:
+    path: "{{ dib_gate_mirror_repos }}/openeuler-minimal/20.03-LTS-SP2/yum.repos.d"
+    state: directory
+    mode: 0775
+    recurse: yes
+
+- name: Install openeuler-minimal 20.03-LTS-SP2 repo files
+  template:
+    dest: "{{ dib_gate_mirror_repos }}/openeuler-minimal/20.03-LTS-SP2/yum.repos.d/dib-mirror-{{ item }}"
+    mode: 0644
+    src: "openeuler-minimal/20.03-LTS-SP2/{{ item }}.j2"
+  with_items:
+    - openEuler.repo
