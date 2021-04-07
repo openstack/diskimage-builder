@@ -154,31 +154,31 @@ function install_grub2 {
     else
         # This set of modules is sufficient for all installs (mbr/gpt/efi)
         modules="part_msdos part_gpt lvm"
-        extra_options=""
         if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
             $GRUBNAME --modules="$modules biosdisk" $GRUB_OPTS $BOOT_DEV
         elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
-            # This tells the EFI install to put the EFI binaries into
-            # the generic /BOOT directory and avoids trying to update
-            # nvram settings.
-            extra_options="--removable"
             # We need to manually set the target if it's different to
             # the host.  Setup for EFI
             case $ARCH in
                 "x86_64"|"amd64")
-                    GRUB_OPTS="--target=x86_64-efi"
                     # This call installs grub for BIOS compatability
                     # which makes portable EFI/BIOS images.
                     $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
+                    # Set the x86_64 specific efi target for the generic
+                    # installation below.
+                    GRUB_OPTS="--target=x86_64-efi"
                     ;;
                 # At this point, we don't need to override the target
                 # for any other architectures.
             esac
-            if [ -d /boot/efi/$EFI_BOOT_DIR ]; then
-                # Make the grub config in the EFI directory for UEFI boot
-                $GRUB_MKCONFIG -o /boot/efi/$EFI_BOOT_DIR/grub.cfg
-            else
+            # If we don't have a distro specific dir with presigned efi targets
+            # we install a generic one.
+            if [ ! -d /boot/efi/$EFI_BOOT_DIR ]; then
                 echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
+                # This tells the EFI install to put the EFI binaries into
+                # the generic /BOOT directory and avoids trying to update
+                # nvram settings.
+                extra_options="--removable"
                 $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
             fi
         fi
@@ -226,6 +226,13 @@ function install_grub2 {
         echo 'GRUB_DISABLE_OS_PROBER=true' >> /etc/default/grub
     fi
 
+    # GRUB_MKCONFIG call needs to happen after we configure
+    # /etc/default/grub above. Without this we can set inappropriate
+    # root device labels and then images don't boot.
+    #
+    # This produces a legacy config which both bios and uefi can boot
+    # Later we copy the final config to an efi specific location to
+    # support uefi specific functionality like secure boot.
     $GRUB_MKCONFIG -o $GRUB_CFG
 
     # Remove the fix to disable os_prober
@@ -252,6 +259,14 @@ function install_grub2 {
     # linuxefi/initrdefi for the image to boot under efi
     if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
         sed -i 's%\(linux\|initrd\)16 /boot%\1efi /boot%g' $GRUB_CFG
+
+        # Finally copy the grub.cfg to the EFI specific dir to support
+        # functionality like secure boot. We make a copy because
+        # /boot and /boot/efi may be different partitions and uefi looks
+        # for a specific partition UUID preventing symlinks from working.
+        if [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
+            cp $GRUB_CFG /boot/efi/$EFI_BOOT_DIR/grub.cfg
+        fi
     fi
 }
 
