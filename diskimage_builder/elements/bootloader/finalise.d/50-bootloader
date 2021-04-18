@@ -65,7 +65,8 @@ function install_grub2 {
                 "${DIB_BLOCK_DEVICE}" == "gpt" ]]; then
         install-packages -m bootloader grub-pc
     elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
-        install-packages -m bootloader grub-efi-$ARCH
+        install-packages -e -m bootloader grub-efi-$ARCH
+        install-packages -m bootloader grub-efi grub-efi-$ARCH
     else
         echo "Failure: I'm not sure what bootloader to install"
         echo "Ensure you have included a block-device-* element"

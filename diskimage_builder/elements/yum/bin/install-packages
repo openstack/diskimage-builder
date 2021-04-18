@@ -53,7 +53,7 @@ while getopts "hud:em:" opt; do
             DOWNLOAD_PATH=$OPTARG
             ;;
         e)
-            ACTION="erase"
+            ACTION="remove"
             ;;
         m)
             MAP_ELEMENT=$OPTARG
