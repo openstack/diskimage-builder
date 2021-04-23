@@ -22,6 +22,9 @@ set -eu
 set -o pipefail
 
 python3 -m venv /usr/glean
+# glean requires PBR to install. We explicitly pip install it to avoid
+# SNI problems with pypi.org on older distros.
+/usr/glean/bin/pip install pbr
 /usr/glean/bin/pip install /tmp/glean.git
 
 mkdir -p /usr/local/bin
