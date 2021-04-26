@@ -23,7 +23,7 @@ set -o pipefail
 
 name=$(basename $0)
 
-usage() {
+function usage {
     echo "Usage: $name [OPTION] scripts_directory"
     echo "Option:"
     echo "      --list  print names of all valid files"
@@ -35,25 +35,29 @@ usage() {
 } >&2
 
 
-output_prefix() {
+function output_prefix {
     printf "%s " "${name}" >&2
 }
 
-output () {
+function output {
     output_prefix
     echo $* >&2
 }
 
-output_printf () {
+function output_printf {
     local FORMAT="$1"
     shift
     output_prefix
     printf "${FORMAT}" $@ >&2
 }
 
+function cleanup {
+    rm -rf ${PROFILE_DIR}
+}
+
 # source the environment files from environment.d
 #  arg : target_dir
-source_environment() {
+function source_environment {
 
     local dir=$target_dir/../environment.d
     local env_files
@@ -118,6 +122,7 @@ if [ ${DIB_DEBUG_TRACE} -gt 0 ]; then
 fi
 
 PROFILE_DIR=$(mktemp -d --tmpdir profiledir.XXXXXX)
+trap cleanup EXIT
 
 # note, run this in a sub-shell so we don't pollute our
 # own environment with source_environment
