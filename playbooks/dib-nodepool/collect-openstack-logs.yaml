@@ -1,0 +1,21 @@
+- hosts: all
+  tasks:
+    - name: Copy openstack logs
+      ignore_errors: yes
+      block:
+        - name: Make openstack logs dir
+          become: true
+          file:
+            path: /var/log/nodepool/openstack
+            state: directory
+            mode: '0755'
+        - name: Write out openstack logs
+          become: true
+          shell:
+            cmd: |
+              u=""
+              name=""
+              for u in $(systemctl list-unit-files | grep devstack | awk '{print $1}'); do
+                name=$(echo $u | sed 's/devstack@/screen-/' | sed 's/\.service//')
+                journalctl -o short-precise --unit $u  > /var/log/nodepool/openstack/$name.txt
+              done
