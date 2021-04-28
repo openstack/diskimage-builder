@@ -205,26 +205,6 @@
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
-    name: dib-nodepool-functional-openstack-ubuntu-bionic
-    description: |
-      Test building and booting an Ubuntu bionic image with Nodepool
-      and OpenStack (using released libraries)
-    parent: nodepool-functional-openstack-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
-    vars:
-      nodepool_debug: true
-      nodepool_extra_packages:
-        - debootstrap
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'bionic'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
     name: dib-nodepool-functional-openstack-ubuntu-bionic-src
     description: |
       Test building and booting an Ubuntu bionic image with Nodepool
