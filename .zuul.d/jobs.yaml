@@ -139,6 +139,7 @@
       under nodepool, using source versions of dependencies such as
       nodepool, dib, openstacksdk and glean.
     parent: nodepool-functional-container-openstack-siblings-base
+    post-run: playbooks/dib-nodepool/collect-openstack-logs.yaml
     vars:
       nodepool_debug: true
 
