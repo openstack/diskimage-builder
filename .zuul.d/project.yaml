@@ -32,10 +32,8 @@
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
         - ironic-python-agent-check-image-dib-centos8
-        # IPA jobs that build AND validate an image via deployment (two ways).
-        - ipa-tempest-wholedisk-bios-ipmi-direct-dib-src:
-            voting: false
-        - ipa-tempest-bios-ipmi-iscsi-src:
+        # IPA job that builds AND validates an image via deployment
+        - ipa-tempest-bios-ipmi-direct-src:
             voting: false
     check-arm64:
       jobs:
