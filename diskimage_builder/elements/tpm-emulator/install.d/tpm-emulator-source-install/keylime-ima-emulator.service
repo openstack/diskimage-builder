@@ -1,0 +1,13 @@
+[Unit]
+Description=The Keylime ima emulator
+Wants=tpm2-abrmd.service
+Before=keylime-agent.service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/keylime_ima_emulator
+Restart=always
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target

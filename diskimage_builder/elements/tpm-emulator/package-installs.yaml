@@ -1,0 +1,20 @@
+swig:
+tpm2-abrmd:
+tpm2-tools:
+tpm2-tss:
+make:
+gcc-c++:
+  uninstall: true
+pkg-config:
+  uninstall: true
+libtool:
+  uninstall: true
+libstdc++-devel:
+  uninstall: true
+git:
+dbus-devel:
+glib2-devel:
+uriparser-devel:
+libgcrypt-devel:
+libcurl-devel:
+libselinux-python3:

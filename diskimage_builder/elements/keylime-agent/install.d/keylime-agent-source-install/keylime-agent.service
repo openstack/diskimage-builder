@@ -1,0 +1,12 @@
+[Unit]
+Description=The Keylime agent
+Wants=tpm2-abrmd.service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/keylime_agent
+Restart=always
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target

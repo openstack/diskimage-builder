@@ -1,0 +1,58 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+SCRIPTDIR=$(dirname $0)
+VENVDIR=/opt/keylime
+
+KLDIR=/tmp/keylime
+
+# create the virtual environment
+
+if [ $DIB_PYTHON_VERSION == 3 ]; then
+    $DIB_PYTHON -m venv $VENVDIR
+else
+    $DIB_PYTHON -m virtualenv $VENVDIR
+fi
+
+install -d /etc/ima/
+
+install -c -m 0644 ${SCRIPTDIR}/ima-policy /etc/ima/ima-policy
+
+# install Keylime-agent inside the virtual environment
+$VENVDIR/bin/pip install 'pip>=19.1.1'
+$VENVDIR/bin/pip install -r $KLDIR/requirements.txt $KLDIR
+ln -s $VENVDIR/bin/keylime_agent /usr/local/bin/keylime_agent
+
+if [ "$DIB_KEYLIME_AGENT_REGISTRAR_IP" != "0" ]; then
+    sed -i "s/registrar_ip = 127.0.0.1/registrar_ip = "$DIB_KEYLIME_AGENT_REGISTRAR_IP"/" /etc/keylime.conf
+fi
+if [ "$DIB_KEYLIME_AGENT_REGISTRAR_PORT" != "8890" ]; then
+    sed -i "s/registrar_port = 8890/registrar_port = "$DIB_KEYLIME_AGENT_REGISTRAR_PORT"/" /etc/keylime.conf
+fi
+# set the agent uuid to randomly generated
+sed -i 's/^\(agent\_uuid\s*=\s*\).*$/\1dmidecode/' /etc/keylime.conf
+sed -i 's/^\(level\s*=\s*\).*$/\1DEBUG/' /etc/keylime.conf
+sed -i 's/^\(cloudagent\_ip\s*=\s*\).*$/\10.0.0.0/' /etc/keylime.conf
+
+
+# create allowlist
+./$KLDIR/scripts/create_allowlist.sh /root/allowlist.txt sha256sum
+
+case "$DIB_INIT_SYSTEM" in
+    systemd)
+        install -D -g root -o root -m 0644 ${SCRIPTDIR}/keylime-agent.service /usr/lib/systemd/system/keylime-agent.service
+        ;;
+    sysv)
+        install -D -g root -o root -m 0755 ${SCRIPTDIR}/keylime-agent.init /etc/init.d/keylime-agent.init
+        update-rc.d keylime-agent.init defaults
+        ;;
+    *)
+        echo "Unsupported init system"
+        exit 1
+        ;;
+esac
