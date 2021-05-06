@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Element block-device-efi-lvm has been added which is like block-device-efi
+    but defines an LVM logical group in the root partition. Four logical
+    volumes are defined in that group, mounted to /, /tmp, /var, and /home.
+
+    This volume layout will not meet all requirements, but this is more of an
+    example demonstrating the capability to encourage more usage of this
+    existing feature.

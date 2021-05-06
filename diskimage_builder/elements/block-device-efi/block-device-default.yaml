@@ -14,7 +14,7 @@
             mount_point: /boot/efi
             fstab:
               options: "defaults"
-              fsck-passno: 1
+              fsck-passno: 2
       - name: BSP
         type: 'EF02'
         size: 8MiB
