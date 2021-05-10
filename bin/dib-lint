@@ -111,7 +111,7 @@ for i in $(find $ELEMENTS_DIR -type f \
         # "dib-python" interpreter can confuse the magic matching
         # being done in "file" and make it think the file is not
         # python; special-case it.
-        if [[ "$(file -b -k --mime-type $i)" =~ "text/x-python" ]] || \
+        if [[ "$(file -b -k --mime-type $i)" =~ (text/x-python|text/x-script.python) ]] || \
                [[ $firstline =~ "dib-python" ]]; then
             flake8 $i || error "$i failed flake8"
         else
