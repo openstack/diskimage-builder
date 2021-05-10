@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+case ${DIB_GROWVOLS_TRIGGER} in
+    manual) echo "growvols triggered manually after boot"; exit ;;
+    systemd) echo "growvols triggered by systemd" ;;
+    *) echo "Unsupported DIB_GROWVOLS_TRIGGER: ${DIB_GROWVOLS_TRIGGER}"; exit 1 ;;
+esac
+
+cat << EOF | sudo tee /etc/sysconfig/growvols > /dev/null
+GROWVOLS_ARGS="${DIB_GROWVOLS_ARGS}"
+GROWVOLS_GROUP="${DIB_GROWVOLS_GROUP}"
+GROWVOLS_DEVICE="${DIB_GROWVOLS_DEVICE}"
+EOF
+
+case "$DIB_INIT_SYSTEM" in
+    systemd)
+        systemctl enable growvols.service
+        ;;
+    *)
+        echo "Unsupported init system"
+        exit 1
+        ;;
+esac
