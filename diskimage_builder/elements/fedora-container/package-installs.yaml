@@ -1,0 +1,20 @@
+audit:
+dracut:
+dracut-config-generic:
+grubby:
+kernel:
+initscripts:
+man-pages:
+lsb_release:
+redhat-rpm-config:
+linux-firmware:
+    uninstall: true
+linux-firmware-whence:
+    uninstall: true
+# NOTE(ianw) pkg-map restricts this to !rhel/centos 7; in 7
+# the "initscripts" package handles basic networking, in
+# 8+ it's the role of NetworkManager and dhcp-client.  This
+# mirrors the default packages installed in upstream cloud images
+# to facilitate a basic network.
+NetworkManager:
+dhcp-client:
