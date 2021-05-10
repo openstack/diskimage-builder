@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# Copyright 2015 Hewlett-Packard Development Company, L.P.
+# Copyright 2019 Red Hat, INC.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
+    . ${TARGET_ROOT}/.extra_settings
+fi
+
+[ -n "$DIB_CONTAINER_FILE" ]
+
+# Use the image cache directory as the default context, so anything
+# there is automatically available for COPY commands.
+DIB_CONTAINER_CONTEXT=${DIB_CONTAINER_CONTEXT:-${DIB_IMAGE_CACHE}/containerfile}
+
+mkdir -p $DIB_CONTAINER_CONTEXT
+
+podman build -t dib-work-image -f $DIB_CONTAINER_FILE $DIB_CONTAINER_CONTEXT
+container=$(podman run -d dib-work-image /bin/sh)
+podman export $container | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
+podman rm $container
+podman rmi dib-work-image
+
+sudo rm -f ${TARGET_ROOT}/.extra_settings
