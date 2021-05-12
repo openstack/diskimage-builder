@@ -201,6 +201,31 @@ function install_grub2 {
     echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
     echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
 
+    # NOTE(ianw) : 2021-05-11
+    # On Fedora there has been a switch to BLS
+    #  https://fedoraproject.org/wiki/Changes/BootLoaderSpecByDefault
+    # which means that kernel-install will have created entries in
+    #  /boot/loader/entries/...
+    # and, as the wiki page says
+    #
+    #   The main issue appears to be that a number of places document
+    #   a way to pass kernel options that is no longer working with
+    #   BLS, i.e. edit /etc/default/grub before running
+    #   grub2-mkconfig.
+    #
+    # i.e. exactly what we're doing above to override the root device
+    # in particular.  Override grub2 to use it's old config format and
+    # remove any BLS entries the kernel install made.
+    #
+    # I imagine at some point we will reworking things in a more
+    # general sense to support BLS if that's what everything is
+    # switching to.
+    #
+    if [[ ${DISTRO_NAME} = fedora ]]; then
+        echo 'GRUB_ENABLE_BLSCFG=false' >> /etc/default/grub
+        rm -rf /boot/loader/
+    fi
+
     if [[ -n "${DIB_BOOTLOADER_SERIAL_CONSOLE}" ]]; then
         SERIAL_CONSOLE="${DIB_BOOTLOADER_SERIAL_CONSOLE}"
     elif [[ "powerpc ppc64 ppc64le" =~ "$ARCH" ]]; then
