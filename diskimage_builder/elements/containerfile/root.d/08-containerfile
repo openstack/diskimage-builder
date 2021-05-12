@@ -25,7 +25,26 @@ if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
     . ${TARGET_ROOT}/.extra_settings
 fi
 
-[ -n "$DIB_CONTAINER_FILE" ]
+if [ -z "${DIB_CONTAINER_FILE:-}" ]; then
+    _xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
+    eval declare -A image_elements=($(get_image_element_array))
+
+    for i in "${!image_elements[@]}"; do
+        element=$i
+        element_dir=${image_elements[$i]}
+
+        containerfile="${element_dir}/containerfiles/${DIB_RELEASE}"
+        if [ -f "${containerfile}" ]; then
+            echo "Found container file ${containerfile}"
+            DIB_CONTAINER_FILE="${containerfile}"
+            break
+        fi
+    done
+
+    $_xtrace
+fi
 
 # Use the image cache directory as the default context, so anything
 # there is automatically available for COPY commands.
