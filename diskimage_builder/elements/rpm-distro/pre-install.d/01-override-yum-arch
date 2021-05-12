@@ -6,10 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [ "i386" = "$ARCH" ]; then
-    basearch=i386
-    arch=i686
-elif [[ "amd64 x86_64" =~ "$ARCH" ]]; then
+if [[ "amd64 x86_64" =~ "$ARCH" ]]; then
     basearch=x86_64
     arch=x86_64
 elif [[ "$ARCH" = "ppc64" ]]; then

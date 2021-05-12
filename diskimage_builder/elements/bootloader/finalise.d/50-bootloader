@@ -52,19 +52,25 @@ else
     GRUB_MKCONFIG="grub-mkconfig"
 fi
 
-echo "Installing GRUB2..."
+if [[ ! $($GRUBNAME --version) =~ ' 2.' ]]; then
+    echo "Failure: not grub2"
+    exit 1
+fi
 
-# This might be better factored out into a per-distro 'install-bootblock'
-# helper.
+# Some distros keep things in /boot/grub2, others in /boot/grub
 if [ -d /boot/grub2 ]; then
     GRUB_CFG=/boot/grub2/grub.cfg
     GRUBENV=/boot/grub2/grubenv
 else
-    # TODO(frickler): /boot/grub doesn't seem to exist for gentoo either
-    # at this point, let's hope it gets created later
+    # NOTE(ianw) This used to be behind a "-d /boot/grub" but this
+    # directory doesn't seem to exist for gentoo at this point;
+    # something creates it later.  So we just fallback to this
+    # unconditionally.
     GRUB_CFG=/boot/grub/grub.cfg
     GRUBENV=/boot/grub/grubenv
 fi
+
+echo "Installing GRUB2..."
 
 # When using EFI image-based builds, particularly rhel element
 # based on RHEL>=8.2 .qcow2, we might have /boot/grub2/grubenv
@@ -79,41 +85,19 @@ fi
 
 # We need --force so grub does not fail due to being installed on the
 # root partition of a block device.
-GRUB_OPTS=${GRUB_OPTS:-"--force"}
-# XXX: This is buggy:
-# - --target=i386-pc is invalid for non-i386/amd64 architectures
-# - and for UEFI too.
-#    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-if [[ ! $GRUB_OPTS == *--target* ]] && [[ $($GRUBNAME --version) =~ ' 2.' ]]; then
-    # /sys/ comes from the host machine. If the host machine is using EFI
-    # but the image being built doesn't have EFI boot-images installed we
-    # should set the --target to use a BIOS-based boot-image.
-    #
-    # * --target tells grub what's the target platform
-    # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
-    # * i386-pc is used for BIOS-based machines
-    # http://www.gnu.org/software/grub/manual/grub.html#Installation
-    #
-    if [ -d /sys/firmware/efi ]; then
-        if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
-            case $ARCH in
-                "x86_64"|"amd64")
-                    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-                    ;;
-                "i386")
-                    target=i386-pc
-                    if [ -e /proc/device-tree ]; then
-                        for x in /proc/device-tree/*; do
-                            if [ -e "$x" ]; then
-                                target="i386-ieee1275"
-                            fi
-                        done
-                    fi
-                    GRUB_OPTS="$GRUB_OPTS --target=$target"
-                    ;;
-            esac
-        fi
-    fi
+GRUB_OPTS="--force "
+
+# /sys/ comes from the host machine. If the host machine is using EFI
+# but the image being built doesn't have EFI boot-images installed we
+# should set the --target to use a BIOS-based boot-image.
+#
+# * --target tells grub what's the target platform
+# * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
+# * i386-pc is used for BIOS-based machines
+# http://www.gnu.org/software/grub/manual/grub.html#Installation
+#
+if [[ -d /sys/firmware/efi && ! -d /usr/lib/grub/*-efi ]]; then
+    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
 fi
 
 if [[ "$ARCH" =~ "ppc" ]] ; then

@@ -1,7 +1,7 @@
 Components
 ==========
 
-`disk-image-create [-a i386|amd64|armhf|arm64] -o filename {element} [{element} ...]`
+`disk-image-create [-a amd64|armhf|arm64] -o filename {element} [{element} ...]`
 
     Create an image of element {element}, optionally mixing in other elements.
     Element dependencies are automatically included. Support for other

@@ -1,0 +1,3 @@
+---
+deprecations:
+  - References to building ``i386`` images have been removed.

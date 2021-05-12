@@ -52,7 +52,7 @@ function show_options () {
     echo "Usage: ${SCRIPTNAME} [OPTION]... [ELEMENT]..."
     echo
     echo "Options:"
-    echo "    -a i386|amd64|armhf|arm64 -- set the architecture of the image(default amd64)"
+    echo "    -a amd64|armhf|arm64 -- set the architecture of the image(default amd64)"
     echo "    -o imagename -- set the imagename of the output image file(default image)"
     echo "    -t qcow2,tar,tgz,squashfs,vhd,docker,aci,raw -- set the image types of the output image files (default qcow2)"
     echo "       File types should be comma separated. VHD outputting requires the vhd-util"
