@@ -11,6 +11,6 @@ Due to a bug in the released version of urlgrabber, on many systems an
 installation of urlgrabber from git is required. The git repository
 can be found here: http://yum.baseurl.org/gitweb?p=urlgrabber.git;a=summary
 
-This element sets the ``DIB_RELEASE`` var to 'fedora'. The release of
+This element sets the ``DISTRO_NAME`` var to 'fedora'. The release of
 fedora to be installed can be controlled through the ``DIB_RELEASE``
 variable, which defaults the latest supported release.
