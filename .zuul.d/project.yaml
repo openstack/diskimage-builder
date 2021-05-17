@@ -17,7 +17,7 @@
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-centos-8-stream-src
-        - dib-nodepool-functional-openstack-fedora-32-src
+        - dib-nodepool-functional-openstack-fedora-34-containerfile-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src
@@ -46,7 +46,7 @@
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-centos-8-stream-src
-        - dib-nodepool-functional-openstack-fedora-32-src
+        - dib-nodepool-functional-openstack-fedora-34-containerfile-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src

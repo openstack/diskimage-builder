@@ -30,6 +30,7 @@
         - ubuntu-minimal/bionic-build-succeeds
         - ubuntu-minimal/focal-build-succeeds
         - containerfile/focal-build-succeeds
+        - fedora-container/build-succeeds
 
 - job:
     name: dib-functests-image
@@ -180,14 +181,18 @@
         # mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
-    name: dib-nodepool-functional-openstack-fedora-32-src
+    name: dib-nodepool-functional-openstack-fedora-34-containerfile-src
     description: |
-      Test building and booting a Fedora 32 image with Nodepool and OpenStack
+      Test building and booting an Fedora image from a
+      containerfile with Nodepool and OpenStack (using released
+      libraries)
     parent: dib-nodepool-functional-src-base
+    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
+      nodepool_debug: true
       nodepool_diskimage:
-        base_element: fedora-minimal
-        release: '32'
+        base_element: fedora-container
+        release: '34'
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src
