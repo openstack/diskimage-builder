@@ -5,9 +5,9 @@
       "extlinux": "syslinux",
       "grub-pc": "grub",
       "grub-efi": "grub",
-      "grub-efi-amd64": "grub",
-      "grub-efi-arm64": "grub",
-      "grub-efi-aarch64": "grub"
+      "grub-efi-amd64": "",
+      "grub-efi-arm64": "",
+      "grub-efi-aarch64": ""
     },
     "suse": {
       "dkms_package": "",
