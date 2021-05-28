@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    Removed support for ``extlinux`` and ``grub`` (as opposed to
+    ``grub2``) support from the bootloader element.
