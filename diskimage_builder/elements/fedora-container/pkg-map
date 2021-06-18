@@ -1,16 +1,8 @@
 {
-  "release": {
-      "centos": {
-          "7": {
-              "NetworkManager": "",
-              "dhcp-client": ""
-          }
+  "family": {
+      "redhat": {
+          "lsb_release": "redhat-lsb-core"
       }
-  },
-"family": {
-    "redhat": {
-      "lsb_release": "redhat-lsb-core"
-    }
   }
 }
 
