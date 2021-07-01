@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Base installs now mount ``/sys`` read-only in chroot environemnts.
+    This is a good indication to various tools and scripts that that
+    they are running in a unprivileged/containerised environment.

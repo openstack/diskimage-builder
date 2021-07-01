@@ -48,7 +48,7 @@ function apt_sources_write {
 }
 
 sudo mount -t proc none $TARGET_ROOT/proc
-sudo mount -t sysfs none $TARGET_ROOT/sys
+sudo mount -o ro -t sysfs none $TARGET_ROOT/sys
 trap "sudo umount $TARGET_ROOT/proc; sudo umount $TARGET_ROOT/sys" EXIT
 
 apt_get="sudo chroot $TARGET_ROOT /usr/bin/apt-get"

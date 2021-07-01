@@ -404,7 +404,14 @@ function mount_proc_dev_sys () {
     sudo mount -t proc none $TMP_MOUNT_PATH/proc
     sudo mount --bind /dev $TMP_MOUNT_PATH/dev
     sudo mount -t devpts $(mount_dev_pts_options) devpts $TMP_MOUNT_PATH/dev/pts
-    sudo mount -t sysfs none $TMP_MOUNT_PATH/sys
+    # /sys is mounted RO inside non-privledged containers, thus
+    # mounting this RO in the chroot here is an indication to
+    # systemd/udev and other things that you are inside a container.
+    # This is generically safe and can help avoid issues where things
+    # we don't control like pre/post scripts try to do things that
+    # don't work when building inside a dib container like udevadm
+    # --settle calls, etc.
+    sudo mount -o ro -t sysfs none $TMP_MOUNT_PATH/sys
 }
 
 # Recursively unmount directories under a given directory DIR

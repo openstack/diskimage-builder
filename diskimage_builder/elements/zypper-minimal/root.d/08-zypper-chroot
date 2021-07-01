@@ -96,7 +96,7 @@ sudo mkdir -p $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
 sudo mount -t proc none $TARGET_ROOT/proc
 sudo mount --bind /dev $TARGET_ROOT/dev
 sudo mount -t devpts $(mount_dev_pts_options) devpts $TARGET_ROOT/dev/pts
-sudo mount -t sysfs none $TARGET_ROOT/sys
+sudo mount -o ro -t sysfs none $TARGET_ROOT/sys
 
 # Install filesystem, base and useful tools
 sudo zypper ${ZYPPER_TARGET_OPTS} install --no-recommends filesystem

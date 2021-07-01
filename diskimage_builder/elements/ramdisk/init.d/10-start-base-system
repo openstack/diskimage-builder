@@ -2,7 +2,7 @@ mkdir -p /proc /sys /dev /boot /etc /mnt /lib/modules
 
 mount -t proc proc /proc
 
-mount -t sysfs none /sys
+mount -o ro -t sysfs none /sys
 
 UDEVD=
 if [ -x "/bin/systemd-udevd" ]; then
