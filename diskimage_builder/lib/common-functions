@@ -285,9 +285,9 @@ function _arg_defaults_hack() {
     local elements
 
     for arg do
-        if [[ "$arg" =~ "vm" ]]; then
+        if [[ $arg = vm ]]; then
             vm_seen=1
-        elif [[ "$arg" =~ "block-device-" ]]; then
+        elif [[ $arg = block-device-* ]]; then
             blockdev_seen=1
         fi
         elements="$elements $arg"
