@@ -1,17 +1,5 @@
-.coverage
-coverage.xml
-cover/*
 doc/source/developer/api/
-*~
-.testrepository
-*.sw?
-#*#
 *.pyc
-.tox
-*.egg
-*.egg-info
-*.eggs
-dist
 *.qcow2
 *.raw
 *.initrd
@@ -19,9 +7,30 @@ dist
 /*-manifests
 /*.d
 !/.zuul.d
-build
-AUTHORS
-ChangeLog
-bin/diskimage_builder
 *.bak
 *.orig
+
+# Packages
+*.egg*
+*.egg-info
+dist
+build
+eggs
+bin/diskimage_builder
+
+# Unit test / coverage reports
+cover/
+.coverage*
+coverage.xml
+!.coveragerc
+.tox
+.stestr/
+.venv
+
+# pbr generates these
+AUTHORS
+ChangeLog
+
+# Editors
+*~
+*.sw?
