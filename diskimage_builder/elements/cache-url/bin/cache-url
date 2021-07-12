@@ -21,6 +21,11 @@ fi
 set -eu
 set -o pipefail
 
+CURL_DASH_V=''
+if [ ${DIB_DEBUG_TRACE:-0} -gt 1 ]; then
+    CURL_DASH_V='-v'
+fi
+
 # Download a URL to a local cache
 # e.g. cache-url http://.../foo ~/.cache/image-create/foo
 
@@ -86,7 +91,7 @@ else
     success="Downloaded and cached $url for the first time"
 fi
 
-rcode=$(curl -v -L -o $tmp -w '%{http_code}' --connect-timeout 10 "${curl_opts[@]}" $url $time_cond)
+rcode=$(curl ${CURL_DASH_V} -L -o $tmp -w '%{http_code}' --connect-timeout 10 "${curl_opts[@]}" $url $time_cond)
 if [ "$rcode" == "200" -o "${url:0:7}" == "file://" ] ; then
     # In cases where servers ignore the Modified time,
     # curl cancels the download, outputs a 200 and leaves
