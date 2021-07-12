@@ -1,0 +1,14 @@
+[Unit]
+Description=Grow LVM volumes
+Wants=systemd-udev-settle.service
+After=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/sysconfig/growvols
+User=root
+ExecStart=/usr/local/sbin/growvols --verbose --yes
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
