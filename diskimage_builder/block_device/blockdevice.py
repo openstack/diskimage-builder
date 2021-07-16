@@ -13,7 +13,7 @@
 # under the License.
 
 import codecs
-import collections
+import collections.abc
 import json
 import logging
 import os
@@ -40,7 +40,7 @@ def _load_json(file_name):
     return None
 
 
-class BlockDeviceState(collections.MutableMapping):
+class BlockDeviceState(collections.abc.MutableMapping):
     """The global state singleton
 
     An reference to an instance of this object is saved into nodes as
