@@ -1,31 +1,39 @@
 # Pick which distros we need to force python2 and which to python3
 if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
-    if [ "$DISTRO_NAME" == "ubuntu" ]; then
+    case "$DISTRO_NAME" in
+    ubuntu)
         if [ "$DIB_RELEASE" == "trusty" ]; then
             DIB_PYTHON_VERSION=2
         fi
-    elif [ "$DISTRO_NAME" == "debian" ]; then
+    ;;
+    debian)
         DIB_PYTHON_VERSION=2
-    elif [ "$DISTRO_NAME" == "fedora" ]; then
+    ;;
+    fedora)
         if [ "$DIB_RELEASE" -le 22 ]; then
             DIB_PYTHON_VERSION=2
         fi
-    elif [ "$DISTRO_NAME" == "centos7" ]; then
+    ;;
+    centos7)
         DIB_PYTHON_VERSION=2
-    elif [ "$DISTRO_NAME" == "rhel7" ]; then
+    ;;
+    rhel7)
         # TODO(nmagnezi): Remove this when the 'rhel7' element gets replaced by 'rhel'
         DIB_PYTHON_VERSION=2
-    elif [[ "$DISTRO_NAME" =~ (rhel|centos) ]]; then
-        if [[ "${DIB_RELEASE}" == "7" ]]; then
+    ;;
+    rhel|centos)
+        if [ "$DIB_RELEASE" == "7" ]; then
             DIB_PYTHON_VERSION=2
         else
             DIB_PYTHON_VERSION=3
         fi
-    elif [ "$DISTRO_NAME" == "opensuse" ]; then
+    ;;
+    opensuse)
         if [ "${DIB_RELEASE:0:2}" == "42" ]; then
             DIB_PYTHON_VERSION=2
         fi
-    fi
+    ;;
+    esac
 fi
 
 if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
