@@ -44,8 +44,9 @@ else
         exit 1
         ;;
     esac
-    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-Fedora-Cloud-Base-$DIB_RELEASE-$DIB_FEDORA_SUBRELEASE.$ARCH.qcow2}
-    BASE_IMAGE_TAR=Fedora-Cloud-Base-$DIB_RELEASE-$DIB_FEDORA_SUBRELEASE.$ARCH.tgz
+    SUBRELEASE=$(curl -Ls $DIB_CLOUD_IMAGES/ | grep -o -P '(?<=Fedora-Cloud-Base-'${DIB_RELEASE}'-).*(?=.'${ARCH}'.qcow2")' | sort -r | head -1)
+    BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-Fedora-Cloud-Base-$DIB_RELEASE-$SUBRELEASE.$ARCH.qcow2}
+    BASE_IMAGE_TAR=Fedora-Cloud-Base-$DIB_RELEASE-$SUBRELEASE.$ARCH.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
     CACHED_IMAGE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
 fi
