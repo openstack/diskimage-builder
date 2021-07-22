@@ -35,7 +35,8 @@ case ${DIB_RELEASE} in
     # We handle unknown cases in environment.d/10-opensuse-distro-name.bash
 esac
 # NOTE(toabctl): if something changes here on the buildservice side, please
-# first ask in #opensuse-cloud on freenode before you change the format here!
+# first ask in #opensuse-cloud on Libera Chat before you change the format
+# here!
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.opensuse.org/repositories/Cloud:/Images:/${OPENSUSE_IMAGE_BASEDIR}_${DIB_RELEASE}/images/}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-${OPENSUSE_IMAGE_FILE}-rootfs.${ARCH}.${OPENSUSE_IMAGE_EXT}}
 SHA256SUMS_FILE=${SHA256SUMS_FILE:-${BASE_IMAGE_FILE}.sha256}
