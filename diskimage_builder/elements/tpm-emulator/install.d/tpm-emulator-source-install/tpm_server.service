@@ -1,0 +1,10 @@
+[Unit]
+Description=TPM server
+
+[Service]
+ExecStart=/usr/local/bin/tpm_server -rm
+Restart=on-failure
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target

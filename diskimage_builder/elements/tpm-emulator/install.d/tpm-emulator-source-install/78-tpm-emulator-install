@@ -1,0 +1,53 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+SCRIPTDIR=$(dirname $0)
+VENVDIR=/opt/keylime
+
+KLDIR=/tmp/keylime
+TPMDIR=/tmp/ibmtpm
+
+# create the virtual environment
+
+if [ $DIB_PYTHON_VERSION == 3 ]; then
+    $DIB_PYTHON -m venv $VENVDIR
+else
+    $DIB_PYTHON -m virtualenv $VENVDIR
+fi
+
+# install tpm
+cd $TPMDIR/src
+# compile tpm emulator
+make
+# install tpm_server
+install -c -m 0755 $TPMDIR/src/tpm_server /usr/local/bin/tpm_server
+# install init_tpm_server script
+install -c -m 0755 $KLDIR/scripts/init_tpm_server /usr/local/bin/init_tpm_server
+
+install -d -g root -o root -m 0755 /etc/systemd/system/tpm2-abrmd.service.d/
+install -c -g root -o root -m 0644 ${SCRIPTDIR}/10-tcti-emulator.conf /etc/systemd/system/tpm2-abrmd.service.d/
+install -c -g root -o root -m 0644 ${SCRIPTDIR}/20-remove-conditionpathexistsglob.conf /etc/systemd/system/tpm2-abrmd.service.d/
+
+
+# install Keylime-agent inside the virtual environment
+$VENVDIR/bin/pip install 'pip>=19.1.1'
+$VENVDIR/bin/pip install -r $KLDIR/requirements.txt $KLDIR
+ln -s $VENVDIR/bin/keylime_ima_emulator /usr/local/bin/keylime_ima_emulator
+
+
+case "$DIB_INIT_SYSTEM" in
+    systemd)
+        install -D -g root -o root -m 0644 ${SCRIPTDIR}/tpm_server.service /usr/lib/systemd/system/tpm_server.service
+        install -D -g root -o root -m 0644 ${SCRIPTDIR}/keylime-ima-emulator.service /usr/lib/systemd/system/keylime-ima-emulator.service
+        ;;
+    *)
+        echo "Unsupported init system"
+        exit 1
+        ;;
+esac
+
