@@ -8,7 +8,7 @@ Jenkins
 -------
 
 * Jenkins from jenkins apt repo.
-* IRC notification service, notify-only on #triple on freenode, port 7000 ssl.
+* IRC notification service, notify-only on #triple on OFTC, port 7000 ssl.
 * Github OAuth plugin, permit all from tripleo organisation, and organisation
   members as service admins.
 * Grant jenkins builders sudo [may want lxc containers or cloud instances for

@@ -42,7 +42,7 @@ Communication
 -------------
 
 Communication among the diskimage-builder developers happens on IRC in
-``#openstack-dib`` on freenode and on the ``openstack-discuss`` mailing list
+``#openstack-dib`` on OFTC and on the ``openstack-discuss`` mailing list
 (``openstack-discuss@lists.openstack.org``).
 
 
