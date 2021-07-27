@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Now, users of the ``yum-minimal`` element can specify additional packages
+    to install while creating the initial chroot by setting
+    ``DIB_YUM_MINIMAL_BOOTSTRAP_PACKAGES``. This can be useful for adding
+    support for new linux distributions that use yum.
+

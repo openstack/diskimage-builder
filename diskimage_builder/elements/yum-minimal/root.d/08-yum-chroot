@@ -71,8 +71,8 @@ function _install_repos {
     # is that they are only installed in one big transaction with the
     # rest of the system?  but we don't want to use yum to do this
     # (see above) so ...
-    packages="basesystem filesystem setup "
-
+    packages="${DIB_YUM_MINIMAL_BOOTSTRAP_PACKAGES:-} "
+    packages+="basesystem filesystem setup "
     if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 29 ]]; then
         packages+="fedora-release-cloud fedora-release-common "
     else

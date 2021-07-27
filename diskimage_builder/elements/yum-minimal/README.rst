@@ -22,3 +22,8 @@ image.
 If you wish to include extra repositories, set ``DIB_YUM_MINIMAL_EXTRA_REPOS``
 to a directory with the ``.repo`` files. The repo files will not be removed
 from the final image.
+
+If you are bootstrapping a custom or unsupported OS, and need to install
+additional packages to setup the base chroot, set
+``DIB_YUM_MINIMAL_BOOTSTRAP_PACKAGES`` to the list of additional packages to
+install.
