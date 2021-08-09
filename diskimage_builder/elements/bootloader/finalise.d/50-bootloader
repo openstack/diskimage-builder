@@ -55,6 +55,16 @@ fi
 
 echo "Installing GRUB2..."
 
+# This might be better factored out into a per-distro 'install-bootblock'
+# helper.
+if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+    GRUBENV=/boot/grub2/grubenv
+elif [ -d /boot/grub ]; then
+    GRUB_CFG=/boot/grub/grub.cfg
+    GRUBENV=/boot/grub/grubenv
+fi
+
 # When using EFI image-based builds, particularly rhel element
 # based on RHEL>=8.2 .qcow2, we might have /boot/grub2/grubenv
 # as a dangling symlink to /boot/efi because we have extracted
@@ -62,8 +72,8 @@ echo "Installing GRUB2..."
 # boot partition from the image.  grub2-install calls rename()
 # on this file, so if it's a dangling symlink it errors.  Just
 # remove it if it exists.
-if [[ -L /boot/grub2/grubenv ]]; then
-    rm -f /boot/grub2/grubenv
+if [[ -L $GRUBENV ]]; then
+    rm -f $GRUBENV
 fi
 
 # We need --force so grub does not fail due to being installed on the
@@ -143,14 +153,6 @@ else
             $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
         fi
     fi
-fi
-
-# This might be better factored out into a per-distro 'install-bootblock'
-# helper.
-if [ -d /boot/grub2 ]; then
-    GRUB_CFG=/boot/grub2/grub.cfg
-elif [ -d /boot/grub ]; then
-    GRUB_CFG=/boot/grub/grub.cfg
 fi
 
 # Override the root device to the default label, and disable uuid
@@ -238,12 +240,15 @@ fi
 if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
     sed -i 's%\(linux\|initrd\)16 /boot%\1efi /boot%g' $GRUB_CFG
 
-    # Finally copy the grub.cfg to the EFI specific dir to support
-    # functionality like secure boot. We make a copy because
+    # Finally copy the grub.cfg and grubenv to the EFI specific dir
+    # to support functionality like secure boot. We make a copy because
     # /boot and /boot/efi may be different partitions and uefi looks
     # for a specific partition UUID preventing symlinks from working.
     if [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
         cp $GRUB_CFG /boot/efi/$EFI_BOOT_DIR/grub.cfg
+        if [ -a $GRUBENV ]; then
+            cp $GRUBENV /boot/efi/$EFI_BOOT_DIR/grubenv
+        fi
     fi
 fi
 
