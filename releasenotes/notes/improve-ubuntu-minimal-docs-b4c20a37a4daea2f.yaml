@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Added a note about a known issue with debootstrap versions when building
+    the ubuntu-minimal element and added a reference to where exactly to find
+    the DIB_RELEASE variable.

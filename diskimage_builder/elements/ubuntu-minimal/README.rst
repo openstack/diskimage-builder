@@ -6,10 +6,18 @@ The ``ubuntu-minimal`` element uses debootstrap for generating a
 minimal image. In contrast the ``ubuntu`` element uses the cloud-image
 as the initial base.
 
-By default this element creates the latest LTS release.  The exact
-setting can be found in the element's ``environment.d`` directory in
-the variable ``DIB_RELEASE``.  If a different release of Ubuntu should
-be created, the variable ``DIB_RELEASE`` can be set appropriately.
+.. note::
+
+   You will need to install a working debootstrap for diskimage-builder. The
+   version you install may not support all Debian and Ubuntu releases that you
+   want to bootstrap. Consider using the zuul/nodepool-builder docker image
+   instead as maximum compatibility is attempted there.
+
+By default this element creates the latest LTS release.  The exact setting can
+be found in the `ubuntu-common <https://docs.openstack.org/diskimage-builder/latest/elements/ubuntu-common/README.html>`_
+element's ``environment.d`` directory in the variable ``DIB_RELEASE``.  If a
+different release of Ubuntu should be created, the variable ``DIB_RELEASE`` can
+be set appropriately.
 
 Note that this element installs ``systemd-sysv`` as the init system for
 18.04+.
