@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    A custom yum repository can now be configured by defining
+    `DIB_YUM_REPO_PACKAGE` as a yum available package or a URL to an rpm file.
+    This package can install repo files with any associated keys and
+    certificates.
