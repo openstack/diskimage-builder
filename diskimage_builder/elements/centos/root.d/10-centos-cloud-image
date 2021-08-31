@@ -29,7 +29,12 @@ else
         elif [[ "arm64" =~ "$ARCH" ]]; then
             ARCH="aarch64"
         fi
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/${DIB_RELEASE}/${ARCH}/images}
+        if [[ "${DIB_RELEASE}" == "9" ]]; then
+            dib_release_path=9-stream
+        else
+            dib_release_path=${DIB_RELEASE}
+        fi
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/${dib_release_path}/${ARCH}/images}
     else
         echo 'centos root element only support the x86_64, aarch64 and ppc64le values for $ARCH'
         exit 1
@@ -51,7 +56,12 @@ else
     if [[ "${DIB_RELEASE}" = 7 ]]; then
         BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-CentOS-${DIB_RELEASE}-${ARCH}-${DIB_FLAVOR}.qcow2.xz}
     else
-        BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(curl -s https://cloud.centos.org/centos/${DIB_RELEASE}/${ARCH}/images/ | grep -o "CentOS-.[^>]*${DIB_FLAVOR}-.[^>]*.qcow2" | sort -r | head -1)}
+        if [[ "${DIB_RELEASE}" == "9" ]]; then
+            dib_release_path=9-stream
+        else
+            dib_release_path=${DIB_RELEASE}
+        fi
+        BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(curl -s https://cloud.centos.org/centos/${dib_release_path}/${ARCH}/images/ | grep -o "CentOS-.[^>]*${DIB_FLAVOR}-.[^>]*.qcow2" | sort -r | head -1)}
     fi
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE

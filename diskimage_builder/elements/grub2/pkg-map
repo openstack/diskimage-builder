@@ -6,6 +6,13 @@
         "signed_shim_efi": "shim",
         "grub_bios": "grub2"
       }
+    },
+    "centos": {
+      "9": {
+        "signed_grub_efi": "efibootmgr grub2-efi-x64",
+        "signed_shim_efi": "shim",
+        "grub_bios": "grub2"
+      }
     }
   },
   "family":{
