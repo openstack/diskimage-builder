@@ -26,7 +26,7 @@ export LC_ALL=C
 
 # Store our initial environment and command line args for later
 export DIB_ARGS="$@"
-export DIB_ENV=$(export | grep ' DIB_.*=')
+export DIB_ENV=$(declare -p $(compgen -v | grep '^DIB_'))
 
 SCRIPTNAME=$(basename $0)
 
