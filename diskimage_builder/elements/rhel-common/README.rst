@@ -31,8 +31,8 @@ use with RHEL7, you do not need to set any DIB_RHSM variables.  The scripts
 named with "rhel-registration" have not been developed or tested for RHEL6.
 For information on building RHEL6 images, please see the rhel element README.
 
-Environment Variables For Regisration during Image Creation
------------------------------------------------------------
+Environment Variables For Registration during Image Creation
+------------------------------------------------------------
 The following environment variables are used for registering a RHEL instance
 with either the Red Hat Customer Portal or Satellite 6.
 
