@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    This includes updates to allow `yum-minimal` elements to work on
+    host platforms that only supply DNF (e.g. Debian Bullseye).  Note
+    the `dnf download` plugin is required on these platforms.

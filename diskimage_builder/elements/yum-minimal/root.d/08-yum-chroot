@@ -46,6 +46,16 @@ trap "$EACTION" EXIT
 YUM_CACHE=$DIB_IMAGE_CACHE/yum
 mkdir -p $YUM_CACHE
 
+# Debian Bullseye and beyond only has DNF locally
+HOST_YUM_DOWNLOADER="yumdownloader"
+HOST_YUM="yum"
+if ! command -v yumdownloader &> /dev/null
+then
+    HOST_YUM_DOWNLOADER="dnf download"
+    HOST_YUM="dnf"
+fi
+
+
 # Note, on Debian/Ubuntu, %_dbpath is set in the RPM macros as
 # ${HOME}/.rpmdb/ -- this makes sense as RPM isn't the system
 # packager.  This path is relative to the "--root" argument
@@ -55,7 +65,7 @@ _RPM="rpm --dbpath=/var/lib/rpm"
 # chroot, which are needed to bootstrap yum/dnf
 #
 # note this runs outside the chroot, where we're assuming the platform
-# has yum/yumdownloader
+# has yum/yumdownloader/dnf download
 function _install_repos {
     local packages
     local rc
@@ -130,7 +140,7 @@ function _install_repos {
     # can clean it up nicely
     local temp_tmp
     temp_tmp=$(mktemp -d)
-    TMPDIR=${temp_tmp} yumdownloader --verbose \
+    TMPDIR=${temp_tmp} ${HOST_YUM_DOWNLOADER} --verbose \
         --releasever=${DIB_RELEASE/-*/} \
         --setopt=reposdir=$repo \
         --setopt=cachedir=$temp_tmp \
@@ -237,7 +247,7 @@ function _install_pkg_manager {
             sudo ln -s $TARGET_ROOT/etc/dnf/vars $TARGET_ROOT/etc/yum/vars
         fi
 
-        sudo -E yum -y \
+        sudo -E ${HOST_YUM} -y \
             --disableexcludes=all \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
