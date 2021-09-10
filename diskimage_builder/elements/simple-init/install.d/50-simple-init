@@ -29,4 +29,9 @@ if [[ ${DIB_SIMPLE_INIT_NETWORKMANAGER} != 0 ]]; then
     enable_nm="--use-nm"
 fi
 
-glean-install ${enable_nm}
+no_dhcp_fallback=""
+if [[ ${DIB_SIMPLE_INIT_NO_DHCP_FALLBACK:-0} != 0 ]]; then
+    no_dhcp_fallback="--no-dhcp-fallback"
+fi
+
+glean-install ${enable_nm} ${no_dhcp_fallback}

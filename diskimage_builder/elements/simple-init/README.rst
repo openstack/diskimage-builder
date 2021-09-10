@@ -68,3 +68,12 @@ non-zero.  See the glean documentation for what the implications for
 this are on each platform.
 
 This is currently only implemented for CentOS and Fedora platforms.
+
+Fallback
+--------
+
+Glean falls back to DHCPv4 for all interfaces that do not have an explicit
+configuration. If this is not desired, set the following variable to disable
+the fallback and leave such interfaces unconfigured::
+
+    export DIB_SIMPLE_INIT_NO_DHCP_FALLBACK=1
