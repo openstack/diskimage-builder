@@ -32,6 +32,8 @@
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
         - ironic-python-agent-check-image-dib-centos8
+        - dib-nodepool-functional-openstack-debian-bullseye-src:
+            voting: false
         # IPA job that builds AND validates an image via deployment
         - ipa-tempest-bios-ipmi-direct-src:
             voting: false
@@ -59,4 +61,3 @@
         - dib-nodepool-functional-openstack-gentoo-src
         - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-nodepool-functional-openstack-debian-buster-src
-        - dib-nodepool-functional-openstack-debian-bullseye-src
