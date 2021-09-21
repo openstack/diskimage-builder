@@ -34,9 +34,10 @@ install -c -g root -o root -m 0644 ${SCRIPTDIR}/10-tcti-emulator.conf /etc/syste
 install -c -g root -o root -m 0644 ${SCRIPTDIR}/20-remove-conditionpathexistsglob.conf /etc/systemd/system/tpm2-abrmd.service.d/
 
 
-# install Keylime-agent inside the virtual environment
+# install Keylime-ima-emulator inside the virtual environment
 $VENVDIR/bin/pip install 'pip>=19.1.1'
 $VENVDIR/bin/pip install -r $KLDIR/requirements.txt $KLDIR
+$VENVDIR/bin/pip install dataclasses
 ln -s $VENVDIR/bin/keylime_ima_emulator /usr/local/bin/keylime_ima_emulator
 
 
