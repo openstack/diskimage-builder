@@ -87,6 +87,8 @@ function _install_repos {
     packages+="basesystem filesystem setup "
     if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 29 ]]; then
         packages+="fedora-release-cloud fedora-release-common "
+    elif [[ ${DISTRO_NAME} == 'centos' && ${DIB_RELEASE} = '9-stream' ]]; then
+        packages+="bash glibc ncurses-libs "
     elif [[ ${DISTRO_NAME} == 'openeuler' ]]; then
         packages+="openEuler-release "
     else
@@ -104,7 +106,7 @@ function _install_repos {
     fi
 
     # CentOS 8.1 split repositories and GPG keys out into subpackages
-    if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE} > "7" ]]; then
+    if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE%-stream} -gt 7 ]]; then
         packages+="centos-gpg-keys "
         if [[ "$DIB_RELEASE" =~ (stream) ]]; then
             packages+="centos-stream-release centos-stream-repos "
@@ -141,7 +143,7 @@ function _install_repos {
     local temp_tmp
     temp_tmp=$(mktemp -d)
     TMPDIR=${temp_tmp} ${HOST_YUM_DOWNLOADER} --verbose \
-        --releasever=${DIB_RELEASE/-*/} \
+        --releasever=${DIB_RELEASE} \
         --setopt=reposdir=$repo \
         --setopt=cachedir=$temp_tmp \
         --destdir=$WORKING \

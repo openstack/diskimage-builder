@@ -1,0 +1,10 @@
+[baseos]
+name=CentOS Stream 9 - BaseOS
+metalink=https://mirrors.centos.org/metalink?repo=centos-baseos-9-stream&arch=$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+

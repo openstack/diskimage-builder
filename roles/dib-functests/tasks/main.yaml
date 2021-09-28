@@ -49,6 +49,7 @@
   args:
     executable: /bin/bash
   become: yes
+  when: ansible_os_family == 'Debian'
 
 - name: Run dib functional tests
   shell:

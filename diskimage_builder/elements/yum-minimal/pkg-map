@@ -15,6 +15,13 @@
           }
       }
   },
+  "release": {
+      "centos": {
+          "9-stream": {
+              "lsb_release": "ed hostname patch postfix tar time"
+          }
+      }
+  },
 "family": {
     "redhat": {
       "lsb_release": "redhat-lsb-core"
