@@ -1,29 +1,17 @@
 {
-  "distro": {
-    "fedora": {
-      "libselinux-python": "python3-libselinux",
-      "policycoreutils": "python3-policycoreutils",
-      "policycoreutils-python": "policycoreutils-python-utils"
-    },
-    "openeuler": {
-      "libselinux-python": "python3-libselinux",
-      "policycoreutils": "python3-policycoreutils",
-      "policycoreutils-python": "policycoreutils-python-utils"
-    }
-  },
   "release": {
     "rhel": {
-      "8": {
-        "libselinux-python": "python3-libselinux",
-        "policycoreutils": "python3-policycoreutils",
-        "policycoreutils-python": "policycoreutils-python-utils"
+      "7": {
+        "python3-libselinux": "libselinux-python",
+        "python3-policycoreutils": "policycoreutils",
+        "policycoreutils-python-utils": "policycoreutils-python"
       }
     },
     "centos": {
-      "8": {
-        "libselinux-python": "python3-libselinux",
-        "policycoreutils": "python3-policycoreutils",
-        "policycoreutils-python": "policycoreutils-python-utils"
+      "7": {
+        "python3-libselinux": "libselinux-python",
+        "python3-policycoreutils": "policycoreutils",
+        "policycoreutils-python-utils": "policycoreutils-python"
       }
     }
   }
