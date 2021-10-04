@@ -18,6 +18,10 @@ files will be copied to /etc/yum.repos.d/ during the image build, and then
 removed at the end of the build. Each repo file should be named differently to
 avoid a filename collision.
 
+The yum repository can also be configured by defining `DIB_YUM_REPO_PACKAGE` as
+a yum available package or a URL to an rpm file. This package can install repo
+files with any associated keys and certificates.
+
 Environment Variables for Module Selection during Image Creation
 ----------------------------------------------------------------
 The following environment variable is used to select module streams to be
