@@ -26,6 +26,24 @@
       "grub-efi-aarch64": "grub2-efi-aa64 grub2-efi-aa64-modules shim-aa64"
     }
   },
+  "release": {
+    "rhel": {
+      "9": {
+        "grub-efi-amd64": "grub2-efi-x64 shim-x64",
+        "grub-efi-x86_64": "grub2-efi-x64 shim-x64",
+        "grub-efi-arm64": "grub2-efi-aa64 shim-aa64",
+        "grub-efi-aarch64": "grub2-efi-aa64 shim-aa64"
+      }
+    },
+    "centos": {
+      "9": {
+        "grub-efi-amd64": "grub2-efi-x64 shim-x64",
+        "grub-efi-x86_64": "grub2-efi-x64 shim-x64",
+        "grub-efi-arm64": "grub2-efi-aa64 shim-aa64",
+        "grub-efi-aarch64": "grub2-efi-aa64 shim-aa64"
+      }
+    }
+  },
   "default": {
     "dkms_package": "dkms",
     "extlinux": "extlinux",
