@@ -155,38 +155,25 @@ else
     fi
 fi
 
+# Fedora 30 and RHEL-8.2 onwards support the Bootloader Spec and use grubby
+# to manage kernel menu entries and kernel arguments.
+# https://fedoraproject.org/wiki/Changes/BootLoaderSpecByDefault
+USE_GRUBBY=
+if grep -qe "^\s*GRUB_ENABLE_BLSCFG=true" /etc/default/grub; then
+    USE_GRUBBY=true
+fi
+
 # Override the root device to the default label, and disable uuid
 # lookup.
-echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
+if [ -n "$USE_GRUBBY" ]; then
+    grubby --update-kernel=ALL --args="root=LABEL=${DIB_ROOT_LABEL}"
+else
+    echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
+fi
 echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
 echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
 echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
 echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
-
-# NOTE(ianw) : 2021-05-11
-# On Fedora there has been a switch to BLS
-#  https://fedoraproject.org/wiki/Changes/BootLoaderSpecByDefault
-# which means that kernel-install will have created entries in
-#  /boot/loader/entries/...
-# and, as the wiki page says
-#
-#   The main issue appears to be that a number of places document
-#   a way to pass kernel options that is no longer working with
-#   BLS, i.e. edit /etc/default/grub before running
-#   grub2-mkconfig.
-#
-# i.e. exactly what we're doing above to override the root device
-# in particular.  Override grub2 to use it's old config format and
-# remove any BLS entries the kernel install made.
-#
-# I imagine at some point we will reworking things in a more
-# general sense to support BLS if that's what everything is
-# switching to.
-#
-if [[ ${DISTRO_NAME} = fedora ]]; then
-    echo 'GRUB_ENABLE_BLSCFG=false' >> /etc/default/grub
-    rm -rf /boot/loader/
-fi
 
 if [[ -n "${DIB_BOOTLOADER_SERIAL_CONSOLE}" ]]; then
     SERIAL_CONSOLE="${DIB_BOOTLOADER_SERIAL_CONSOLE}"
@@ -200,8 +187,11 @@ else
 fi
 
 GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=${SERIAL_CONSOLE} no_timer_check"
-
-echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
+if [ -n "$USE_GRUBBY" ]; then
+    grubby --update-kernel=ALL --args="$GRUB_CMDLINE_LINUX_DEFAULT"
+else
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
+fi
 echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
 
 # os-prober leaks /dev/sda into config file in dual-boot host
