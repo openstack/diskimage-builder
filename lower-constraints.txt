@@ -19,7 +19,7 @@ linecache2==1.0.0
 MarkupSafe==1.0
 mock==2.0.0
 mox3==0.20.0
-networkx==2.4.0
+networkx==2.3.0
 openstackdocstheme==1.18.1
 os-client-config==1.28.0
 oslotest==3.2.0
