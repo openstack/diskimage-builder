@@ -50,8 +50,8 @@
         - fedora/build-succeeds
         - opensuse/build-succeeds
         - opensuse/opensuse15-build-succeeds
-        - ubuntu/xenial-build-succeeds
         - ubuntu/bionic-build-succeeds
+        - ubuntu/focal-build-succeeds
 
 - job:
     name: dib-functests-extras
