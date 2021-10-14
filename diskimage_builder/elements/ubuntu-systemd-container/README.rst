@@ -2,6 +2,10 @@
 ubuntu-systemd-container
 ========================
 
+.. note::
+
+   As of October 2021 this element is deprecated and unmaintained.
+
 The ``ubuntu-systemd-container`` element uses debootstrap for generating
 a minimal image for use by machine containers. In contrast the ``ubuntu``
 element uses the cloud-image as the initial base and the ``ubuntu-minimal``

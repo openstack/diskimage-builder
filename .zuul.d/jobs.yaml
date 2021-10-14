@@ -67,19 +67,6 @@
         - debian-minimal/stable-vm
 
 - job:
-    name: dib-functests-containers
-    description: |
-      These are tests for elements focused on containers or other
-      small deployments
-    abstract: true
-    voting: false
-    parent: dib-functests-base
-    vars:
-      dib_functests:
-        - ubuntu-systemd-container/bionic-build-succeeds
-        - ubuntu-systemd-container/xenial-build-succeeds
-
-- job:
     name: dib-functests-arm64
     description: |
       ARM64 build tests
@@ -116,13 +103,6 @@
     nodeset: ubuntu-bionic
     voting: false
 
-- job:
-    name: dib-functests-bionic-python3-containers
-    description: |
-      The containers tests on a Bionic build host with Python 3
-    parent: dib-functests-containers
-    nodeset: ubuntu-bionic
-    voting: false
 
 # ARM64 tests
 - job:

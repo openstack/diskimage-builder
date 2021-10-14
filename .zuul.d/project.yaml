@@ -29,7 +29,6 @@
         - dib-functests-bionic-python3
         - dib-functests-bionic-python3-image
         - dib-functests-bionic-python3-extras
-        - dib-functests-bionic-python3-containers
         - ironic-python-agent-check-image-dib-centos8
         - dib-nodepool-functional-openstack-debian-bullseye-src:
             voting: false
