@@ -20,29 +20,9 @@
     parent: dib-functests-base
     vars:
       dib_functests:
-        - centos-minimal/7-build-succeeds
-        - centos-minimal/8-build-succeeds
-        # TODO: enable when CentOS 8 Stream repos mirrored.
-        # - centos-minimal/8-stream-build-succeeds
-        - fedora/build-succeeds
-        - ubuntu-minimal/xenial-build-succeeds
-        - ubuntu-minimal/bionic-build-succeeds
-        - ubuntu-minimal/focal-build-succeeds
         - containerfile/focal-build-succeeds
-        - fedora-container/build-succeeds
         - openeuler-minimal/20.03-LTS-SP2-build-succeeds
-
-- job:
-    name: dib-functests-image
-    description: |
-      This is tests that rely on downloading an upstream
-      image.  We generally do not have mirrors for these images
-      so they can be slighlty unreliable.
-    abstract: true
-    voting: false
-    parent: dib-functests-base
-    vars:
-      dib_functests:
+        # Image based tests
         - centos/8-build-succeeds
         - centos/8-stream-build-succeeds
         - fedora/build-succeeds
@@ -62,7 +42,6 @@
     vars:
       dib_functests:
         - gentoo/build-succeeds
-        - debian-minimal/stable-vm
 
 - job:
     name: dib-functests-arm64
@@ -84,14 +63,6 @@
       Run the default tests on a Bionic build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-bionic
-
-- job:
-    name: dib-functests-bionic-python3-image
-    description: |
-      The image tests on a Bionic build host with Python 3
-    parent: dib-functests-image
-    nodeset: ubuntu-bionic
-    voting: false
 
 - job:
     name: dib-functests-bionic-python3-extras
