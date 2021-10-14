@@ -11,6 +11,7 @@
     check:
       jobs:
         - openstack-tox-pylint
+        - dib-functests-bionic-python3
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
@@ -26,11 +27,11 @@
             voting: false
         - dib-nodepool-functional-openstack-opensuse-tumbleweed-src:
             voting: false
-        - dib-functests-bionic-python3
-        - dib-functests-bionic-python3-extras
-        - ironic-python-agent-check-image-dib-centos8
+        - dib-nodepool-functional-openstack-gentoo-src:
+            voting: false
         - dib-nodepool-functional-openstack-debian-bullseye-src:
             voting: false
+        - ironic-python-agent-check-image-dib-centos8
         # IPA job that builds AND validates an image via deployment
         - ipa-tempest-bios-ipmi-direct-src:
             voting: false
@@ -55,6 +56,5 @@
       jobs:
         - opendev-buildset-registry
         - nodepool-build-image-siblings
-        - dib-nodepool-functional-openstack-gentoo-src
         - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-nodepool-functional-openstack-debian-buster-src

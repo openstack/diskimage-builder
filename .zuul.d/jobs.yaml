@@ -32,18 +32,6 @@
         - ubuntu/focal-build-succeeds
 
 - job:
-    name: dib-functests-extras
-    description: |
-      These are tests which are not as widely supported as the
-      core platforms
-    abstract: true
-    voting: false
-    parent: dib-functests-base
-    vars:
-      dib_functests:
-        - gentoo/build-succeeds
-
-- job:
     name: dib-functests-arm64
     description: |
       ARM64 build tests
@@ -63,14 +51,6 @@
       Run the default tests on a Bionic build host with Python 3
     parent: dib-functests-default
     nodeset: ubuntu-bionic
-
-- job:
-    name: dib-functests-bionic-python3-extras
-    description: |
-      The extras tests on a Bionic build host with Python 3
-    parent: dib-functests-extras
-    nodeset: ubuntu-bionic
-    voting: false
 
 
 # ARM64 tests
