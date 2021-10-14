@@ -20,7 +20,6 @@
     parent: dib-functests-base
     vars:
       dib_functests:
-        - apt-sources/test-sources
         - centos-minimal/7-build-succeeds
         - centos-minimal/8-build-succeeds
         # TODO: enable when CentOS 8 Stream repos mirrored.
