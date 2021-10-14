@@ -11,4 +11,8 @@ will search active elements for a container file located in
 `containerfiles/${DIB_RELEASE}`.
 
 Alternatively, to use this element directly supply the path to a
-container file in the environment variable `DIB_CONTAINER_FILE`.
+container file in the environment variable
+`DIB_CONTAINERFILE_DOCKERFILE`.
+
+Set ``DIB_CONTAINERFILE_PODMAN_ROOT`` to ``1`` to run `podman` as
+`root`.

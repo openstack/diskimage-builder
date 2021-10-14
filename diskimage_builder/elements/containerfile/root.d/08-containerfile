@@ -25,7 +25,7 @@ if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
     . ${TARGET_ROOT}/.extra_settings
 fi
 
-if [ -z "${DIB_CONTAINER_FILE:-}" ]; then
+if [ -z "${DIB_CONTAINERFILE_DOCKERFILE:-}" ]; then
     _xtrace=$(set +o | grep xtrace)
     set +o xtrace
 
@@ -38,7 +38,7 @@ if [ -z "${DIB_CONTAINER_FILE:-}" ]; then
         containerfile="${element_dir}/containerfiles/${DIB_RELEASE}"
         if [ -f "${containerfile}" ]; then
             echo "Found container file ${containerfile}"
-            DIB_CONTAINER_FILE="${containerfile}"
+            DIB_CONTAINERFILE_DOCKERFILE="${containerfile}"
             break
         fi
     done
@@ -52,10 +52,16 @@ DIB_CONTAINER_CONTEXT=${DIB_CONTAINER_CONTEXT:-${DIB_IMAGE_CACHE}/containerfile}
 
 mkdir -p $DIB_CONTAINER_CONTEXT
 
-podman build -t dib-work-image -f $DIB_CONTAINER_FILE $DIB_CONTAINER_CONTEXT
-container=$(podman run -d dib-work-image /bin/sh)
-podman export $container | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
-podman rm $container
-podman rmi dib-work-image
+if [[ ${DIB_CONTAINERFILE_PODMAN_ROOT:-0} -gt 0 ]]; then
+    _sudo="sudo"
+else
+    _sudo=""
+fi
+
+${_sudo} podman build -t dib-work-image -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
+container=$(${_sudo} podman run -d dib-work-image /bin/sh)
+${_sudo} podman export $container | ${_sudo} tar -C $TARGET_ROOT --numeric-owner -xf -
+${_sudo} podman rm $container
+${_sudo} podman rmi dib-work-image
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings

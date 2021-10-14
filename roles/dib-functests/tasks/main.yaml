@@ -34,6 +34,22 @@
     state: directory
     mode: ugo+rw
 
+# NOTE(ianw) 2021-10-15 : at this point dnf-plugins-core is stuck in
+# the NEW queue.  Use that when it is available over this hack,
+# obviously.
+- name: Install dnf download
+  shell: |
+      set -x
+      git clone https://github.com/rpm-software-management/dnf-plugins-core
+      mkdir /usr/lib/python3/dist-packages/dnf-plugins
+      cp -r dnf-plugins-core/plugins/dnfpluginscore /usr/lib/python3/dist-packages
+      cp dnf-plugins-core/plugins/download.py /usr/lib/python3/dist-packages/dnf-plugins
+      rm -rf dnf-plugins-core
+      echo 'pluginpath=/usr/lib/python3/dist-packages/dnf-plugins' >> /etc/dnf/dnf.conf
+  args:
+    executable: /bin/bash
+  become: yes
+
 - name: Run dib functional tests
   shell:
     cmd: |
@@ -47,3 +63,6 @@
     DIB_NO_TMPFS: 1
     TMPDIR: /opt/dib_cache
     DIB_OS_CI_YUM_REPOS: "{{ dib_gate_mirror_repos|default(omit) }}"
+    # NOTE(ianw) 2021-10-15 : this might be our bullseye images
+    # having issues with non-root podman.  This works for now.
+    DIB_CONTAINERFILE_PODMAN_ROOT: 1
