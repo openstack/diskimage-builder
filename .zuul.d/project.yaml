@@ -11,7 +11,7 @@
     check:
       jobs:
         - openstack-tox-pylint
-        - dib-functests-bionic-python3
+        - dib-functests
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
@@ -50,7 +50,7 @@
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src
-        - dib-functests-bionic-python3
+        - dib-functests
         - ironic-python-agent-check-image-dib-centos8
     experimental:
       jobs:

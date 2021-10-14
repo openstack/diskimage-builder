@@ -13,11 +13,11 @@
       - ^doc/.*$
 
 - job:
-    name: dib-functests-default
+    name: dib-functests
     description: |
       This is the base set of stable tests
-    abstract: true
     parent: dib-functests-base
+    nodeset: ubuntu-bionic
     vars:
       dib_functests:
         - containerfile/focal-build-succeeds
@@ -43,15 +43,6 @@
         - ubuntu-minimal/focal-arm64-build-succeeds
         - centos-minimal/8-aarch64-build-succeeds
         - openeuler-minimal/20.03-LTS-SP2-build-succeeds
-
-# Bionic / Python3 tests
-- job:
-    name: dib-functests-bionic-python3
-    description: |
-      Run the default tests on a Bionic build host with Python 3
-    parent: dib-functests-default
-    nodeset: ubuntu-bionic
-
 
 # ARM64 tests
 - job:
