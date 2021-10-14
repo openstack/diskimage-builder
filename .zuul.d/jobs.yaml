@@ -43,7 +43,6 @@
     parent: dib-functests-base
     vars:
       dib_functests:
-        - centos7/build-succeeds
         - centos/8-build-succeeds
         - centos/8-stream-build-succeeds
         - fedora/build-succeeds
