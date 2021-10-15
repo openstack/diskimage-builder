@@ -25,49 +25,36 @@ CACHED_FILE_LOCK=$DIB_LOCKFILES/$BASE_IMAGE_FILE.lock
 CACHED_SUMS=$DIB_IMAGE_CACHE/SHA256SUMS.ubuntu.$DIB_RELEASE.$ARCH
 
 function get_ubuntu_tarball() {
-    if [ -n "$DIB_OFFLINE" -a -z "$DIB_LOCAL_IMAGE" ] ; then
-        if [ -f "$CACHED_FILE" ] ; then
-            echo "Not checking freshness of cached $CACHED_FILE."
-        else
-            echo "Fetching Base Image"
-            $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $CACHED_SUMS
-            $TMP_HOOKS_PATH/bin/cache-url \
-                $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
-            pushd $DIB_IMAGE_CACHE
+    if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
+        echo "Not checking freshness of cached $CACHED_FILE."
+    else
+        echo "Fetching Base Image"
+        $TMP_HOOKS_PATH/bin/cache-url $SHA256SUMS $CACHED_SUMS
+        $TMP_HOOKS_PATH/bin/cache-url \
+            $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
+        pushd $DIB_IMAGE_CACHE
+        if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
+            # It is likely that an upstream http(s) proxy has given us a skewed
+            # result - either a cached SHA file or a cached image. Use cache-busting
+            # to get (as long as caches are compliant...) fresh files.
+            # Try the sha256sum first, just in case that is the stale one (avoiding
+            # downloading the larger image), and then if the sums still fail retry
+            # the image.
+            $TMP_HOOKS_PATH/bin/cache-url -f $SHA256SUMS $CACHED_SUMS
             if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
-                # It is likely that an upstream http(s) proxy has given us a skewed
-                # result - either a cached SHA file or a cached image. Use cache-busting
-                # to get (as long as caches are compliant...) fresh files.
-                # Try the sha256sum first, just in case that is the stale one (avoiding
-                # downloading the larger image), and then if the sums still fail retry
-                # the image.
-                $TMP_HOOKS_PATH/bin/cache-url -f $SHA256SUMS $CACHED_SUMS
-                if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
-                    $TMP_HOOKS_PATH/bin/cache-url -f \
-                        $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
-                    grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
-                fi
+                $TMP_HOOKS_PATH/bin/cache-url -f \
+                    $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
+                grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
             fi
-            popd
         fi
-    elif [ ! -f "$DIB_LOCAL_IMAGE" ] ; then
-        echo "Unable to find image $DIB_LOCAL_IMAGE locally! Check path and file name to source image"
-        exit 1
+        popd
     fi
     # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
     # image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
-    if [ "$DIB_RELEASE" != "trusty" ] && [ "$DIB_RELEASE" != "xenial" ] ; then
-        if [ -n "$DIB_LOCAL_IMAGE"] ; then
-            sudo unsquashfs -f -d $TARGET_ROOT $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
-        else
-            sudo unsquashfs -f -d $TARGET_ROOT $DIB_LOCAL_IMAGE
-        fi
+    if [ $DIB_RELEASE != "trusty" ] && [ $DIB_RELEASE != "xenial" ]; then
+        sudo unsquashfs -f -d $TARGET_ROOT $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
     else
-        if [ -n "$DIB_LOCAL_IMAGE"] ; then
-            sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
-        else
-            sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_LOCAL_IMAGE
-        fi
+        sudo tar -C $TARGET_ROOT --numeric-owner -xzf $DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
     fi
 }
 
