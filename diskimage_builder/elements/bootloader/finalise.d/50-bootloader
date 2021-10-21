@@ -60,7 +60,9 @@ echo "Installing GRUB2..."
 if [ -d /boot/grub2 ]; then
     GRUB_CFG=/boot/grub2/grub.cfg
     GRUBENV=/boot/grub2/grubenv
-elif [ -d /boot/grub ]; then
+else
+    # TODO(frickler): /boot/grub doesn't seem to exist for gentoo either
+    # at this point, let's hope it gets created later
     GRUB_CFG=/boot/grub/grub.cfg
     GRUBENV=/boot/grub/grubenv
 fi
