@@ -21,9 +21,7 @@
     vars:
       dib_functests:
         - containerfile/focal-build-succeeds
-        # NOTE(ianw) 2021-10-15 : this currently segfaults
-        # yum...
-        #- openeuler-minimal/20.03-LTS-SP2-build-succeeds
+        - openeuler-minimal/20.03-LTS-SP2-build-succeeds
         # Image based tests
         - centos/8-build-succeeds
         - centos/8-stream-build-succeeds
@@ -45,9 +43,7 @@
         - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
         - centos-minimal/8-aarch64-build-succeeds
-        # NOTE(ianw) 2021-10-15 : this currently segfaults
-        # yum...
-        #- openeuler-minimal/20.03-LTS-SP2-build-succeeds
+        - openeuler-minimal/20.03-LTS-SP2-build-succeeds
 
 #
 # Build and boot functional tests
