@@ -165,6 +165,12 @@ if grep -qe "^\s*GRUB_ENABLE_BLSCFG=true" /etc/default/grub; then
     USE_GRUBBY=true
 fi
 
+# When building CentOS9 with centos-minimal /etc/default/grub does not exist
+# after grub2-tools installation. However we need CS9 to use grubby.
+if [[ "$DISTRO_NAME" == "centos" ]] && [[ $DIB_RELEASE =~ 9 ]]; then
+    USE_GRUBBY=true
+fi
+
 # Override the root device to the default label, and disable uuid
 # lookup.
 if [ -n "$USE_GRUBBY" ]; then

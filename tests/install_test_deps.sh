@@ -7,6 +7,7 @@ sudo apt-get update || true
 sudo apt-get install -y --force-yes \
         docker.io || \
     sudo yum -y install --enablerepo=epel \
+         yum-utils \
          debootstrap \
          dpkg \
          docker || \

@@ -39,6 +39,22 @@
     - appstream.repo
     - extras.repo
 
+- name: Create centos-minimal 9-stream directory
+  file:
+    path: "{{ dib_gate_mirror_repos }}/centos-minimal/9-stream/yum.repos.d"
+    state: directory
+    mode: 0775
+    recurse: yes
+
+- name: Install centos-minimal 9-stream repo files
+  template:
+    dest: "{{ dib_gate_mirror_repos }}/centos-minimal/9-stream/yum.repos.d/dib-mirror-{{ item }}"
+    mode: 0644
+    src: "centos-minimal/9-stream/{{ item }}.j2"
+  with_items:
+    - base.repo
+    - appstream.repo
+
 - name: Create fedora-minimal directories
   file:
     path: "{{ dib_gate_mirror_repos }}/fedora-minimal/{{ item }}/yum.repos.d"
