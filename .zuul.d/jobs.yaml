@@ -119,7 +119,6 @@
       containerfile with Nodepool and OpenStack (using released
       libraries)
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_debug: true
       nodepool_diskimage:
@@ -132,7 +131,6 @@
       Test building and booting an Ubuntu xenial image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_diskimage:
         base_element: ubuntu-minimal
@@ -149,7 +147,6 @@
       Test building and booting an Ubuntu bionic image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_diskimage:
         base_element: ubuntu-minimal
@@ -166,7 +163,6 @@
       Test building and booting an Ubuntu focal image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_diskimage:
         base_element: ubuntu-minimal
@@ -195,7 +191,6 @@
       Test building and booting a Debian stretch image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_diskimage:
         base_element: debian-minimal
@@ -212,7 +207,6 @@
       Test building and booting a Debian bullseye image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_diskimage:
         base_element: debian-minimal
@@ -229,7 +223,6 @@
       Test building and booting a Debian buster image with Nodepool
       and OpenStack
     parent: dib-nodepool-functional-src-base
-    pre-run: playbooks/dib-nodepool/debootstrap.yaml
     vars:
       nodepool_diskimage:
         base_element: debian-minimal
