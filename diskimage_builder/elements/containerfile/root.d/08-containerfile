@@ -60,7 +60,9 @@ fi
 
 ${_sudo} podman build -t dib-work-image -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
 container=$(${_sudo} podman run -d dib-work-image /bin/sh)
-${_sudo} podman export $container | ${_sudo} tar -C $TARGET_ROOT --numeric-owner -xf -
+# NOTE(ianw) 2021-11-10 the tar must always be sudo to write out the chroot files
+# as other uids
+${_sudo} podman export $container | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
 ${_sudo} podman rm $container
 ${_sudo} podman rmi dib-work-image
 

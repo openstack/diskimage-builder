@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    This release fixes an regression in the ``containerfile`` element
+    that prevented it extracting root images correctly.
