@@ -58,12 +58,22 @@ else
     _sudo=""
 fi
 
-${_sudo} podman build -t dib-work-image -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
-container=$(${_sudo} podman run -d dib-work-image /bin/sh)
+_podman_build_image="dib-tmp-work-image-$RANDOM"
+_podman_export_container="dib-tmp-export-$RANDOM"
+
+function podman_cleanup() {
+    echo "Cleaning up container ${_podman_export_container}"
+    ${_sudo} podman rm ${_podman_export_container} || true
+    echo "Cleaning up build image ${_podman_build_image}"
+    ${_sudo} podman rmi ${_podman_build_image} || true
+}
+
+trap "podman_cleanup" EXIT
+
+${_sudo} podman build -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
+${_sudo} podman run --name ${_podman_export_container} -d ${_podman_build_image} /bin/sh
 # NOTE(ianw) 2021-11-10 the tar must always be sudo to write out the chroot files
 # as other uids
-${_sudo} podman export $container | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
-${_sudo} podman rm $container
-${_sudo} podman rmi dib-work-image
+${_sudo} podman export ${_podman_export_container} | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings
