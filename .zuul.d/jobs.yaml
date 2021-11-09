@@ -27,7 +27,7 @@
         # Image based tests
         - centos/8-build-succeeds
         - centos/8-stream-build-succeeds
-        - centos/9-stream-build-succeeds
+        # - centos/9-stream-build-succeeds
         - fedora/build-succeeds
         - opensuse/build-succeeds
         - opensuse/opensuse15-build-succeeds
