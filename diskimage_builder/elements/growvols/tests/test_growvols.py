@@ -283,7 +283,7 @@ class TestGrowvols(base.BaseTestCase):
         # No partitions
         e = self.assertRaises(Exception, growvols.find_next_device_name,
                               devices, 'sdb', 1)
-        self.assertEquals(
+        self.assertEqual(
             'Could not find partition naming scheme for sdb', str(e))
 
         # Use NVMe device naming
