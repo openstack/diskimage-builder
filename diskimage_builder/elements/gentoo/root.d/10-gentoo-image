@@ -29,36 +29,29 @@ if [[ 'amd64' != "${ARCH}" ]] && [[ 'arm64' != "${ARCH}" ]]; then
     exit 1
 fi
 
-# valid gentoo profiles are as follows
-# default/linux/amd64/13.0
-# default/linux/amd64/13.0/no-multilib
-# hardened/linux/amd64
-# hardened/linux/amd64/no-multilib
-# default/linux/arm64/17.0
-# default/linux/arm64/17.0/systemd
 GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/17.1'}
 if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3'
-    SIGNED_SOURCE_SUFFIX=''
+    SIGNED_SOURCE_SUFFIX='-openrc'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3-nomultilib'
-    SIGNED_SOURCE_SUFFIX='-nomultilib'
+    SIGNED_SOURCE_SUFFIX='-nomultilib-openrc'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/hardened" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3-hardened'
-    SIGNED_SOURCE_SUFFIX='-hardened'
+    SIGNED_SOURCE_SUFFIX='-hardened-openrc'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3-hardened-nomultilib'
-    SIGNED_SOURCE_SUFFIX='-hardened+nomultilib'
+    SIGNED_SOURCE_SUFFIX='-hardened-nomultilib-openrc'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/musl/hardened" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3-hardened-musl'
     SIGNED_SOURCE_SUFFIX='-musl-hardened'
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3-systemd'
     SIGNED_SOURCE_SUFFIX='-systemd'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.0" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.1" ]]; then
     FILENAME_BASE='arm64_gentoo-stage3'
     SIGNED_SOURCE_SUFFIX=''
-elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.0/systemd" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.1/systemd" ]]; then
     FILENAME_BASE='arm64_gentoo-stage3-systemd'
     SIGNED_SOURCE_SUFFIX='-systemd'
 else
@@ -68,8 +61,8 @@ else
     echo 'default/linux/amd64/17.1/hardened'
     echo 'default/linux/amd64/17.1/no-multilib/hardened'
     echo 'default/linux/amd64/17.1/systemd'
-    echo 'default/linux/arm64/17.0'
-    echo 'default/linux/arm64/17.0/systemd'
+    echo 'default/linux/arm64/17.1'
+    echo 'default/linux/arm64/17.1/systemd'
     exit 1
 fi
 
