@@ -157,27 +157,7 @@ else
     fi
 fi
 
-# Fedora 30 and RHEL-8.2 onwards support the Bootloader Spec and use grubby
-# to manage kernel menu entries and kernel arguments.
-# https://fedoraproject.org/wiki/Changes/BootLoaderSpecByDefault
-USE_GRUBBY=
-if grep -qe "^\s*GRUB_ENABLE_BLSCFG=true" /etc/default/grub; then
-    USE_GRUBBY=true
-fi
-
-# When building CentOS9 with centos-minimal /etc/default/grub does not exist
-# after grub2-tools installation. However we need CS9 to use grubby.
-if [[ "$DISTRO_NAME" == "centos" ]] && [[ $DIB_RELEASE =~ 9 ]]; then
-    USE_GRUBBY=true
-fi
-
-# Override the root device to the default label, and disable uuid
-# lookup.
-if [ -n "$USE_GRUBBY" ]; then
-    grubby --update-kernel=ALL --args="root=LABEL=${DIB_ROOT_LABEL}"
-else
-    echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
-fi
+echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
 echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
 echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
 echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
@@ -195,11 +175,7 @@ else
 fi
 
 GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=${SERIAL_CONSOLE} no_timer_check"
-if [ -n "$USE_GRUBBY" ]; then
-    grubby --update-kernel=ALL --args="${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}"
-else
-    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
-fi
+echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}\"" >>/etc/default/grub
 echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
 
 # os-prober leaks /dev/sda into config file in dual-boot host
@@ -220,6 +196,11 @@ fi
 # Later we copy the final config to an efi specific location to
 # support uefi specific functionality like secure boot.
 $GRUB_MKCONFIG -o $GRUB_CFG
+
+# If we are using BLS, for debugging purposes dump out the kernel
+if [[ -e /boot/loader/entries ]]; then
+    grubby --info=ALL
+fi
 
 # Remove the fix to disable os_prober
 if [ -n "$PROBER_DISABLED" ]; then
