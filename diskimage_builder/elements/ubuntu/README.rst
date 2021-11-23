@@ -21,5 +21,10 @@ Overrides:
    ``(universe|multiverse)``
  * Setting ``DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE`` updates apt
    settings to allow insecure/unuthenticated repositories.
+ * Setting ``DIB_OFFLINE`` will prevent to download again the source image
+   if is already present in to $DIB_IMAGE_CACHE path.
+ * Setting ``DIB_LOCAL_IMAGE`` to use a image from a local source (full path and file name) 
+   and not download image from internet. Local source for release Trusty
+   have to be tar.gz format. For other more recent release get the squashfs image.
 
 .. element_deps::
