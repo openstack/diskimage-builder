@@ -6,6 +6,24 @@ fi
 set -eu
 set -o pipefail
 
+# NOTES on pip install functions
+# It's all installed into /usr/local/bin so override any packages, even
+# if installed later.
+# NOTE(dpawlik): The get-pip.py script is not based on master release.
+# Ensure that uses the latest available version.
+
+function install_python3_pip {
+    python3 /tmp/get-pip.py $pip_args
+    python3 -m pip install $pip_args pip
+    pip3 install $pip_args virtualenv
+}
+
+function install_python2_pip {
+    python2 /tmp/get-pip.py $pip_args
+    python2 -m pip install $pip_args pip
+    pip install $pip_args virtualenv
+}
+
 if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
 
     # Default packages
@@ -233,34 +251,31 @@ elif [[ $DISTRO_NAME = gentoo ]]; then
     packages="dev-python/pip dev-python/virtualenv"
     emerge -U $packages
 else
-    # pre-install packages so dependencies are there.  We will
-    # overwrite with latest below.
-    packages="python-pip python3-pip python-virtualenv"
+    if [[ $DIB_RELEASE = bullseye ]]; then
+        packages="python3-pip python3-virtualenv"
+        apt-get -y install $packages
+        install_python3_pip
+    else
+        # pre-install packages so dependencies are there.  We will
+        # overwrite with latest below.
+        packages="python-pip python-virtualenv"
 
-    # Unfortunately older ubuntu (trusty) doesn't have a
-    # python3-virtualenv package -- it seems it wasn't ready at the
-    # time and you had to use "python -m venv".  Since then virtualenv
-    # has gained 3.4 support so the pip install below will work
-    if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
-        packages+=" python3-virtualenv"
+        # Unfortunately older ubuntu (trusty) doesn't have a
+        # python3-virtualenv package -- it seems it wasn't ready at the
+        # time and you had to use "python -m venv".  Since then virtualenv
+        # has gained 3.4 support so the pip install below will work
+        if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
+            packages+="python3-pip python3-virtualenv"
+        fi
+
+        apt-get -y install $packages
+
+        # force things to happen so our assumptions hold
+        pip_args="-U --force-reinstall"
+
+        install_python2_pip
+        if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
+            install_python3_pip
+        fi
     fi
-
-    apt-get -y install $packages
-
-    # force things to happen so our assumptions hold
-    pip_args="-U --force-reinstall"
-
-    # These install into /usr/local/bin so override any packages, even
-    # if installed later.
-
-    python3 /tmp/get-pip.py $pip_args
-    python2 /tmp/get-pip.py $pip_args
-
-    # NOTE(dpawlik) The get-pip.py script is not base on master release.
-    # Ensure that is uses latest available version.
-    python3 -m pip install $pip_args pip
-    python2 -m pip install $pip_args pip
-
-    pip3 install $pip_args virtualenv
-    pip install $pip_args virtualenv
 fi
