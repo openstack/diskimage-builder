@@ -14,3 +14,5 @@ Note on x86 this provides the extra `BIOS boot partition
 <https://en.wikipedia.org/wiki/BIOS_boot_partition>`__ and a EFI boot
 partition for maximum compatability.
 
+This element requires ``dosfstools`` and ``lvm2`` packages to be installed
+on the build system.
