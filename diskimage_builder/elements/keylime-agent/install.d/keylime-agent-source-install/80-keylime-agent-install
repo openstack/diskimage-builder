@@ -12,7 +12,6 @@ VENVDIR=/opt/keylime
 KLDIR=/tmp/keylime
 
 # create the virtual environment
-
 if [ $DIB_PYTHON_VERSION == 3 ]; then
     $DIB_PYTHON -m venv $VENVDIR
 else
@@ -26,6 +25,8 @@ install -c -m 0644 ${SCRIPTDIR}/ima-policy /etc/ima/ima-policy
 # install Keylime-agent inside the virtual environment
 $VENVDIR/bin/pip install 'pip>=19.1.1'
 $VENVDIR/bin/pip install -r $KLDIR/requirements.txt $KLDIR
+# dataclasses are missing in python3.6, so we have to install it manually
+$VENVDIR/bin/pip install dataclasses
 ln -s $VENVDIR/bin/keylime_agent /usr/local/bin/keylime_agent
 
 if [ "$DIB_KEYLIME_AGENT_REGISTRAR_IP" != "0" ]; then
@@ -34,14 +35,18 @@ fi
 if [ "$DIB_KEYLIME_AGENT_REGISTRAR_PORT" != "8890" ]; then
     sed -i "s/registrar_port = 8890/registrar_port = "$DIB_KEYLIME_AGENT_REGISTRAR_PORT"/" /etc/keylime.conf
 fi
-# set the agent uuid to randomly generated
-sed -i 's/^\(agent\_uuid\s*=\s*\).*$/\1dmidecode/' /etc/keylime.conf
+if [ "$DIB_KEYLIME_AGENT_PORT" != "9002" ]; then
+    sed -i "s/cloudagent_port = 9002/cloudagent_port = "$DIB_KEYLIME_AGENT_PORT"/" /etc/keylime.conf
+fi
+# set the agent uuid to hash_ek
+sed -i 's/^\(agent\_uuid\s*=\s*\).*$/\1hash_ek/' /etc/keylime.conf
 sed -i 's/^\(level\s*=\s*\).*$/\1DEBUG/' /etc/keylime.conf
 sed -i 's/^\(cloudagent\_ip\s*=\s*\).*$/\10.0.0.0/' /etc/keylime.conf
 
-
-# create allowlist
+# create allowlist and checksum
 ./$KLDIR/scripts/create_allowlist.sh /root/allowlist.txt sha256sum
+touch /root/checksum.txt
+sha256sum /root/allowlist.txt > /root/checksum.txt
 
 case "$DIB_INIT_SYSTEM" in
     systemd)

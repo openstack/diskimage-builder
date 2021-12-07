@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# dib-lint: disable=safe_sudo
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[ -n "$TARGET_ROOT" ]
+
+IMAGE_PATH=$(readlink -f $IMAGE_NAME)
+# copy allowlist and checksum to image path
+sudo cp $TARGET_ROOT/root/allowlist.txt ${IMAGE_PATH}-allowlist.txt
+sudo cp $TARGET_ROOT/root/checksum.txt ${IMAGE_PATH}-checksum.txt
