@@ -43,6 +43,7 @@
         - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
         - centos-minimal/8-aarch64-build-succeeds
+        - centos-minimal/8-stream-aarch64-build-succeeds
         - openeuler-minimal/20.03-LTS-SP2-build-succeeds
 
 #
