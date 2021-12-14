@@ -38,7 +38,8 @@
             voting: false
     check-arm64:
       jobs:
-        - dib-functests-arm64
+        - dib-functests-arm64-deb
+        - dib-functests-arm64-rpm
     gate:
       jobs:
         - openstack-tox-pylint

@@ -30,16 +30,28 @@
         - ubuntu/bionic-build-succeeds
         - ubuntu/focal-build-succeeds
 
+# NOTE(ianw) : these jobs are split to keep the build times a bit more
+# reasonable.
 - job:
-    name: dib-functests-arm64
+    name: dib-functests-arm64-deb
     description: |
-      ARM64 build tests
+      ARM64 build tests (Debian-like distros)
     nodeset: debian-bullseye-arm64
     parent: dib-functests-base
     vars:
       dib_functests:
         - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
+        - debian-minimal/bullseye-arm64-build-succeeds
+
+- job:
+    name: dib-functests-arm64-rpm
+    description: |
+      ARM64 build tests (RPM-like distros)
+    nodeset: debian-bullseye-arm64
+    parent: dib-functests-base
+    vars:
+      dib_functests:
         - centos-minimal/8-aarch64-build-succeeds
         - centos-minimal/8-stream-aarch64-build-succeeds
         - openeuler-minimal/20.03-LTS-SP2-build-succeeds
