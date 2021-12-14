@@ -1,3 +1,5 @@
 base
+block-device-mbr
 epel
 openstack-ci-mirrors
+vm
