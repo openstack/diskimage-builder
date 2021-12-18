@@ -13,3 +13,10 @@ if [[ "${DIB_INIT_SYSTEM}" == "openrc" ]]; then
     rc-update add cloud-init-local boot
     rc-update add cloud-init default
 fi
+
+if [[ "${DIB_INIT_SYSTEM}" == "systemd" ]]; then
+    systemctl enable cloud-config.service
+    systemctl enable cloud-final.service
+    systemctl enable cloud-init-local.service
+    systemctl enable cloud-init.service
+fi
