@@ -265,7 +265,7 @@ else
         # time and you had to use "python -m venv".  Since then virtualenv
         # has gained 3.4 support so the pip install below will work
         if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
-            packages+="python3-pip python3-virtualenv"
+            packages+=" python3-pip python3-virtualenv"
         fi
 
         apt-get -y install $packages
