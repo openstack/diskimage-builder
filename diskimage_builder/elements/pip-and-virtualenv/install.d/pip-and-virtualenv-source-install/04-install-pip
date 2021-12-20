@@ -24,6 +24,9 @@ function install_python2_pip {
     pip install $pip_args virtualenv
 }
 
+# force things to happen so our assumptions hold
+pip_args="-U --force-reinstall"
+
 if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
 
     # Default packages
@@ -97,9 +100,6 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
             esac
             ;;
     esac
-
-    # force things to happen so our assumptions hold
-    pip_args="-U --force-reinstall"
 
     # GENERAL WARNING : mixing packaged python libraries with
     # pip-installed versions always creates issues.  Upstream
@@ -269,9 +269,6 @@ else
         fi
 
         apt-get -y install $packages
-
-        # force things to happen so our assumptions hold
-        pip_args="-U --force-reinstall"
 
         install_python2_pip
         if [[ ${DIB_PYTHON_VERSION} == 3 ]]; then
