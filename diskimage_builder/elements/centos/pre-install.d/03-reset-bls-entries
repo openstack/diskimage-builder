@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [[ ! '9-stream' =~ ${DIB_RELEASE} ]]; then
+    exit 0
+fi
+
+# This is a workaround for the grub issue reported upstream with
+#  https://bugzilla.redhat.com/show_bug.cgi?id=2032680
+
+# This clears out and recreates the BLS entries from the upstream
+# .qcow2 image in /boot/loader/entries with the current machine-id.
+# This means that in the bootloader setup, grub2-mkconfig will update
+# config options as required.
+
+# All grub2-switch-to-blscfg really does is call "kernel-install" with
+# the kernels installed in /lib/modules -- this is another option for
+# recreating the BLS entries.  You can also re-install the kernel
+# packages to do this.  Another option again would be just to rename
+# the exsiting .conf files.
+
+# If this is already set, grub2-switch-to-blscfg will abort
+sed -i 's/GRUB_ENABLE_BLSCFG=true//' /etc/default/grub
+echo "--- /etc/default/grub dump ---"
+cat /etc/default/grub
+
+# Clear out the entries that came with the qcow2 image
+echo "--- Clearing BLS entries ---"
+ls /boot/loader/entries/*.conf
+rm /boot/loader/entries/*.conf
+
+# This will regenerate /boot/loader/entries for the current
+# machine-id.  After this, grub2-mkconfig works as usual.
+#
+grub2-switch-to-blscfg
+echo "--- Show kernels ---"
+grubby --info=ALL
+
+# Local variables:
+# mode: sh
+# End:
