@@ -12,12 +12,12 @@ set -o pipefail
 if [[ "${DIB_RELEASE}" = 7 ]]; then
     if [[ "amd64 x86_64" =~ "$ARCH" ]]; then
         ARCH="x86_64"
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/${DIB_RELEASE}/images}
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://cloud.centos.org/centos/${DIB_RELEASE}/images}
     elif [[ "arm64 aarch64" =~ "$ARCH" ]]; then
         ARCH="aarch64"
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/altarch/${DIB_RELEASE}/images/aarch64}
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://cloud.centos.org/altarch/${DIB_RELEASE}/images/aarch64}
     elif [[ "ppc64le" =~ "$ARCH" ]]; then
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/altarch/${DIB_RELEASE}/images/ppc64le}
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://cloud.centos.org/altarch/${DIB_RELEASE}/images/ppc64le}
     else
         echo 'centos root element only support the x86_64, aarch64 and ppc64le values for $ARCH'
         exit 1
@@ -34,7 +34,7 @@ else
         else
             dib_release_path=${DIB_RELEASE}
         fi
-        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://cloud.centos.org/centos/${dib_release_path}/${ARCH}/images}
+        DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://cloud.centos.org/centos/${dib_release_path}/${ARCH}/images}
     else
         echo 'centos root element only support the x86_64, aarch64 and ppc64le values for $ARCH'
         exit 1
