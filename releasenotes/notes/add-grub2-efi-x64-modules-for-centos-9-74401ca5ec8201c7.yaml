@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    An issue causing bootloader installation to fail on EFI system was fixed.
+    grub2 could not find the neccecary files, adding the grub2-efi-x64-modules
+    package to the pkg-map for centos-9 in the grub2 element fixes the issue.
+    See bug: `1957169 <https://bugs.launchpad.net/tripleo/+bug/1957169>`_.
