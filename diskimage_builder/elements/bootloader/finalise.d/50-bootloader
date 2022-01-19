@@ -34,7 +34,6 @@ elif [[ "${DIB_BLOCK_DEVICE}" == "mbr" ||
             "${DIB_BLOCK_DEVICE}" == "gpt" ]]; then
     install-packages -m bootloader grub-pc
 elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
-    install-packages -e -m bootloader grub-efi-$ARCH
     install-packages -m bootloader grub-efi grub-efi-$ARCH
 else
     echo "Failure: I'm not sure what bootloader to install"
@@ -96,7 +95,7 @@ if [[ ! $GRUB_OPTS == *--target* ]] && [[ $($GRUBNAME --version) =~ ' 2.' ]]; th
     # http://www.gnu.org/software/grub/manual/grub.html#Installation
     #
     if [ -d /sys/firmware/efi ]; then
-        if [ ! -d /usr/lib/grub/*-efi ]; then
+        if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
             case $ARCH in
                 "x86_64"|"amd64")
                     GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
