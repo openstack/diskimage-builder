@@ -37,6 +37,8 @@ DEFAULT_SKIP_TESTS=(
     # These download base images which has shown to be very unreliable
     # in the gate.  Keep them in a -nv job until we can figure out
     # better caching for the images
+    opensuse/build-succeeds
+    opensuse/opensuse15-build-succeeds
     centos7/build-succeeds
     debian/build-succeeds
     fedora/build-succeeds

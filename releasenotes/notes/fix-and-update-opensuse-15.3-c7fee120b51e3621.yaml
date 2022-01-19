@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    Bumped the default openSUSE Leap release to 15.3 for the opensuse element.
+deprecations:
+  - |
+    Dropped support for building openSUSE Leap 42.1, 42.2, 42.3, 15.0, 15.1,
+    and 15.2, since all of them have already reached end-of-life.

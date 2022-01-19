@@ -20,4 +20,4 @@ Distributions which are supported as a target for an image:
 - 16.04 ("xenial"), 18.04 ("bionic")
 - Gentoo
 - openEuler 20.03-LTS-SP1+
-- openSUSE Leap 42.3, 15.0, 15.1 and Tumbleweed (opensuse-minimal only)
+- openSUSE Leap 15.3 and Tumbleweed (opensuse-minimal only)
