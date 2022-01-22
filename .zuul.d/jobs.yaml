@@ -133,6 +133,19 @@
         release: '35'
 
 - job:
+    name: dib-nodepool-functional-openstack-rockylinux-8-containerfile-src
+    description: |
+      Test building and booting a Rocky Linux image from a
+      containerfile with Nodepool and OpenStack (using released
+      libraries)
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_debug: true
+      nodepool_diskimage:
+        base_element: rocky-container
+        release: '8'
+
+- job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src
     description: |
       Test building and booting an Ubuntu xenial image with Nodepool
