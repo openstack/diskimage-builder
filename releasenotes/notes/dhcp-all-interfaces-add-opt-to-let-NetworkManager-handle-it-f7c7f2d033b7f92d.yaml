@@ -1,0 +1,15 @@
+---
+features:
+  - |
+    It is now possible to configure the dhcp-all-interfaces element not to
+    install the dhcp-all-interfaces service on systems with NetworkManager.
+
+    NetworkManager is quite capable to do automatic interface configuration.
+    NetworkManager will by default try to auto-configure any interface with
+    no configuration, it will use DHCP for IPv4 and Router Advertisements to
+    decide how to initialize IPv6.
+
+    The new environment variable ``DIB_DHCP_NETWORK_MANAGER_AUTO`` (defauls to:
+    ``false``) has been added, when set to ``true`` only the configuration for
+    NetworkManager is written.
+
