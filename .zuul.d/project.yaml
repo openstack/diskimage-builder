@@ -15,7 +15,6 @@
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
-        - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
         - dib-nodepool-functional-openstack-fedora-35-containerfile-src
@@ -46,7 +45,6 @@
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
-        - dib-nodepool-functional-openstack-centos-8-src
         - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
         - dib-nodepool-functional-openstack-fedora-35-containerfile-src

@@ -23,7 +23,6 @@
         - containerfile/focal-build-succeeds
         - openeuler-minimal/20.03-LTS-SP2-build-succeeds
         # Image based tests
-        - centos/8-build-succeeds
         - centos/8-stream-build-succeeds
         - centos/9-stream-build-succeeds
         - fedora/build-succeeds
@@ -53,7 +52,6 @@
     parent: dib-functests-base
     vars:
       dib_functests:
-        - centos-minimal/8-aarch64-build-succeeds
         - centos-minimal/8-stream-aarch64-build-succeeds
         - openeuler-minimal/20.03-LTS-SP2-build-succeeds
 
@@ -81,17 +79,6 @@
       nodepool_diskimage:
         base_element: centos-minimal
         release: '7'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
-
-- job:
-    name: dib-nodepool-functional-openstack-centos-8-src
-    description: |
-      Test building and booting a Centos 8 image with Nodepool and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: centos-minimal
-        release: '8'
         mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
