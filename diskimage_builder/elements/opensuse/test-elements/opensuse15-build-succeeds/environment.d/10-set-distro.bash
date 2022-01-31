@@ -1,1 +1,1 @@
-export DIB_RELEASE=15.1
+export DIB_RELEASE=15.3
