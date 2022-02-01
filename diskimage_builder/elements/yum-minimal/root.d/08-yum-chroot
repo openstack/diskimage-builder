@@ -125,7 +125,8 @@ function _install_repos {
     # this is copied to TMP_HOOK_PATH by the usual hook-copying
     # routines.  In the gate, environment.d files for the funtional
     # tests will set DIB_YUM_MINIMAL_BOOTSTRAP_REPOS -- this contains
-    # mirrors correct for the region setup by contrib/setup-gate-mirrors.sh
+    # mirrors correct for the region setup by the
+    # dib-setup-gate-mirrors role.
     local repo=${DIB_YUM_MINIMAL_BOOTSTRAP_REPOS:-}
     if [[ -z ${repo} ]]; then
         # take in preference more specific subdirs
