@@ -140,10 +140,13 @@ function _install_repos {
     # ${TMPDIR}/yum-$USER-random.  Since we don't need this once the
     # initial download happens, redirect TMPDIR for this call so we
     # can clean it up nicely
+    #
+    # Note that the $releasever for centos-stream is just the major
+    # version.  There is another variable "$stream" that we don't pass
     local temp_tmp
     temp_tmp=$(mktemp -d)
     TMPDIR=${temp_tmp} ${HOST_YUM_DOWNLOADER} --verbose \
-        --releasever=${DIB_RELEASE} \
+        --releasever=${DIB_RELEASE/-*/} \
         --setopt=reposdir=$repo \
         --setopt=cachedir=$temp_tmp \
         --destdir=$WORKING \
@@ -205,8 +208,8 @@ function _install_pkg_manager {
     # the yumdownloader calls above in _install_repos want to use
     # ~/.rpmdb/ ... there is nothing in the build-system /var/lib/rpm!
     #
-    # Another issue we hit is having to set --releasedir here.  yum
-    # determines $releasevar based on (more or less) "rpm -q
+    # Another issue we hit is having to set --releasever here.  yum
+    # determines $releasever based on (more or less) "rpm -q
     # --whatprovides $distroverpkg".  By default, this is
     # "redhat-release" (fedora-release provides redhat-release) but
     # some platforms like CentOS override it in /etc/yum.conf (to
