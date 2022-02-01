@@ -14,7 +14,7 @@ DIB_DISTRIBUTION_MIRROR:
    :Default: None
    :Description: To use a CentOS Yum mirror, set this variable to the mirror URL
                  before running bin/disk-image-create. This URL should point to
-                 the directory containing the ``7/8/8-stream`` directories.
+                 the directory containing the ``7/8-stream/9-stream`` directories.
    :Example: ``DIB_DISTRIBUTION_MIRROR=http://amirror.com/centos``
 
 DIB_CLOUD_IMAGES:
