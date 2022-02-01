@@ -1,6 +1,5 @@
 [Stream-BaseOS]
 name=CentOS-Stream - BaseOS
-# Switch to mirrors once available
-metalink=https://mirrors.centos.org/metalink?repo=centos-baseos-9-stream&arch=$basearch
+baseurl=https://{{ mirror_fqdn }}/centos-stream/9-stream/BaseOS/$basearch/os/
 gpgcheck=0
 
