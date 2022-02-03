@@ -12,7 +12,7 @@ case ${DIB_GROWVOLS_TRIGGER} in
     *) echo "Unsupported DIB_GROWVOLS_TRIGGER: ${DIB_GROWVOLS_TRIGGER}"; exit 1 ;;
 esac
 
-cat << EOF | sudo tee /etc/sysconfig/growvols > /dev/null
+cat << EOF | sudo tee /etc/default/growvols > /dev/null
 GROWVOLS_ARGS="${DIB_GROWVOLS_ARGS}"
 GROWVOLS_GROUP="${DIB_GROWVOLS_GROUP}"
 GROWVOLS_DEVICE="${DIB_GROWVOLS_DEVICE}"

@@ -5,7 +5,7 @@ After=systemd-udev-settle.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=-/etc/sysconfig/growvols
+EnvironmentFile=-/etc/default/growvols
 User=root
 ExecStart=/usr/local/sbin/growvols --verbose --yes
 RemainAfterExit=true
