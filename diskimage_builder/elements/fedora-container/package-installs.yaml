@@ -12,3 +12,4 @@ linux-firmware:
     uninstall: true
 linux-firmware-whence:
     uninstall: true
+glibc-langpack-en:
