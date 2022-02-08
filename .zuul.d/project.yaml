@@ -18,6 +18,8 @@
         - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
         - dib-nodepool-functional-openstack-fedora-35-containerfile-src
+        - dib-nodepool-functional-openstack-rockylinux-8-containerfile-src:
+            voting: false
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src

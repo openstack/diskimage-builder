@@ -1,0 +1,13 @@
+audit:
+dnf-plugins-core:
+dracut:
+dracut-config-generic:
+grubby:
+kernel:
+initscripts:
+man-pages:
+redhat-rpm-config:
+linux-firmware:
+    uninstall: true
+linux-firmware-whence:
+    uninstall: true
