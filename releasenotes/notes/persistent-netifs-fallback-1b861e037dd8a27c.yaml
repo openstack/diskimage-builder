@@ -1,0 +1,12 @@
+---
+fixes:
+  - |
+    The dhcp-all-interfaces element does not work correctly with the new
+    "predictable names" scheme for network interfaces.
+    During boot the name of the interfaces is changed from ethX to the new
+    scheme, for example enpXsX; this name change is not detected by udev de
+    facto making the udev rule of the dhcp-all-interfaces element useless;
+    this causes the machine booted with the image including the dhcp-all-interfaces
+    element to not get any ip and so being unreachable from the network.
+    This patch includes a workaround to fallback to the "persistent names"
+    scheme allowing the dhcp-all-interfaces element to work again as intended.

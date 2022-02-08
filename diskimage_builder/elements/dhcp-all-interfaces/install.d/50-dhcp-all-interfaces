@@ -64,6 +64,7 @@ elif [ "$DIB_INIT_SYSTEM" == "systemd" ]; then
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/dhcp-interface@.service /usr/lib/systemd/system/dhcp-interface@.service
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/dhcp-all-interfaces-udev.rules /etc/udev/rules.d/99-dhcp-all-interfaces.rules
     sed -i "s/TimeoutStartSec=DIB_DHCP_TIMEOUT/TimeoutStartSec=$(( ${DIB_DHCP_TIMEOUT:-30} * 2 ))s/" /usr/lib/systemd/system/dhcp-interface@.service
+    install -D -g root -o root -m 0644 ${SCRIPTDIR}/udev-net-setup-link.rules /etc/udev/rules.d/80-net-setup-link.rules
 elif [ "$DIB_INIT_SYSTEM" == "sysv" ]; then
     install -D -g root -o root -m 0755 ${SCRIPTDIR}/dhcp-all-interfaces.init /etc/init.d/dhcp-all-interfaces
     update-rc.d dhcp-all-interfaces defaults
