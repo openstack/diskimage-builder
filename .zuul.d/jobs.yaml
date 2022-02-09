@@ -11,6 +11,7 @@
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
+      - ^releasenotes/.*$
 
 - job:
     name: dib-functests
@@ -70,6 +71,10 @@
     post-run: playbooks/dib-nodepool/collect-openstack-logs.yaml
     vars:
       nodepool_debug: true
+    irrelevant-files:
+      - ^.*\.rst$
+      - ^doc/.*$
+      - ^releasenotes/.*$
 
 - job:
     name: dib-nodepool-functional-openstack-centos-7-src
