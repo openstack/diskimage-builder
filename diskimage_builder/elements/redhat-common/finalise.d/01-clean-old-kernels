@@ -18,7 +18,7 @@ if [[ ${YUM} == "dnf" ]]; then
     #  http://dnf.readthedocs.org/en/latest/cli_vs_yum.html
     _old_kernels="$(dnf repoquery --installonly --latest-limit=-1 -q)"
     if [[ -n "${_old_kernels}" ]]; then
-        rpm -e ${_old_kernels}
+        dnf remove -y --setopt=protect_running_kernel=False ${_old_kernels}
     fi
 else
     install-packages yum-utils
