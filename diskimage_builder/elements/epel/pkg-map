@@ -11,6 +11,10 @@
     "rhel7": {
        "wget": "wget",
        "yum-utils": "yum-utils"
+    },
+    "rocky": {
+       "wget": "wget",
+       "yum-utils": "yum-utils"
     }
  },
  "default": {
