@@ -74,7 +74,7 @@ fi
 DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/latest-stage3-${ARCH_PATH}${SIGNED_SOURCE_SUFFIX}.txt"}
 BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/$(curl "${DIB_CLOUD_SOURCE}" -s -f | tail -n 1 | cut -d\  -f 1)"}
 BASE_IMAGE_FILE_SUFFIX=${BASE_IMAGE_FILE_SUFFIX:-"$(basename "${BASE_IMAGE_FILE}" | cut -d. -f 2,3)"}
-SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.DIGESTS.asc}"
+SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.asc}"
 CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.${BASE_IMAGE_FILE_SUFFIX}"
 CACHED_SIGNATURE_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.asc"
 
@@ -91,18 +91,11 @@ else
     # https://dev.gentoo.org/~dolsen/releases/keyrings/gentoo-keys-*.tar.xz
     # http://distfiles.gentoo.org/distfiles/gentoo-keys-*.tar.xz
     # check the sig file
-    if ! gpgv --keyring "${TMP_HOOKS_PATH}"/extra-data.d/gentoo-releng.gpg "${CACHED_SIGNATURE_FILE}"; then
+    if ! gpgv --keyring "${TMP_HOOKS_PATH}"/extra-data.d/gentoo-releng.gpg "${CACHED_SIGNATURE_FILE}" "${CACHED_FILE}"; then
         echo 'invalid signature file'
         exit 1
     fi
-    echo 'valid key used'
-    CACHED_SHA512SUM=$(grep -A1 -e 'SHA512' "${CACHED_SIGNATURE_FILE}" | grep -e "${BASE_IMAGE_FILE_SUFFIX}$" | cut -d\  -f 1)
-    ACTUAL_SHA512SUM=$(sha512sum "${CACHED_FILE}" | cut -d\  -f 1)
-    if [[ "${ACTUAL_SHA512SUM}" != "${CACHED_SHA512SUM}" ]]; then
-        echo "invalid checksum on downloaded tarball: ${CACHED_FILE}"
-        exit 1
-    fi
-    echo 'valid checksum'
+    echo 'base image file verified'
     popd
 fi
 
