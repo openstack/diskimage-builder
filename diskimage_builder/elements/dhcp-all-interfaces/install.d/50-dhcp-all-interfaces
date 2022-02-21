@@ -9,14 +9,6 @@ set -o pipefail
 SCRIPTDIR=$(dirname $0)
 
 if [ -e "/etc/redhat-release" ]; then
-    # TODO(hjensas): Once ndisc6 package is available in EPEL8 drop this,
-    # and add the package back in pkg-map.
-    # See: https://bugzilla.redhat.com/show_bug.cgi?id=1779134
-    if type dnf &>/dev/null; then
-        dnf -v -y install ndisc6 || true
-    else
-        yum -v -y install ndisc6 || true
-    fi
     # NOTE(TheJulia): While the internal client which every networkmanager user
     # should have is internal, dhclient has better behavior which includes
     # shutting down the port between retries which is critical for recovery
@@ -31,6 +23,22 @@ if [ -x "/etc/NetworkManager" ]; then
     install -D -g root -o root -m 0644 ${SCRIPTDIR}/NetworkManager-conf.d-00-main.conf /etc/NetworkManager/conf.d/00-main.conf
     sed -i "s/DIB_DHCP_CLIENT/${DIB_DHCP_CLIENT:-internal}/g" /etc/NetworkManager/conf.d/00-main.conf
     sed -i "s/DIB_DHCP_TIMEOUT/${DIB_DHCP_TIMEOUT:-30}/g" /etc/NetworkManager/conf.d/00-main.conf
+    if [ "${DIB_DHCP_NETWORK_MANAGER_AUTO:-false}" == true ]; then
+        # Use NetworkManager for auto configuration, it will behave just as
+        # good as dhcp-all-interfaces.sh in most cases.
+        exit 0
+    fi
+fi
+
+if [ -e "/etc/redhat-release" ]; then
+    # TODO(hjensas): Once ndisc6 package is available in EPEL8 drop this,
+    # and add the package back in pkg-map.
+    # See: https://bugzilla.redhat.com/show_bug.cgi?id=1779134
+    if type dnf &>/dev/null; then
+        dnf -v -y install ndisc6 || true
+    else
+        yum -v -y install ndisc6 || true
+    fi
 fi
 
 
