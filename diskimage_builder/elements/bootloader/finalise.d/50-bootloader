@@ -87,22 +87,6 @@ fi
 # root partition of a block device.
 GRUB_OPTS="--force "
 
-# /sys/ comes from the host machine. If the host machine is using EFI
-# but the image being built doesn't have EFI boot-images installed we
-# should set the --target to use a BIOS-based boot-image.
-#
-# * --target tells grub what's the target platform
-# * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
-# * i386-pc is used for BIOS-based machines
-#   http://www.gnu.org/software/grub/manual/grub.html#Installation
-# * this check is only valid for x86_64; other platforms we support
-#   are either not EFI (ppc) or always EFI (arm64)
-if [[ "x86_64 amd64" =~ ${ARCH} ]]; then
-    if [[ -d /sys/firmware/efi && ! -d /usr/lib/grub/x86_64-efi ]]; then
-        GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
-    fi
-fi
-
 if [[ "$ARCH" =~ "ppc" ]] ; then
     # For PPC (64-Bit regardless of Endian-ness), we use the "boot"
     # partition as the one to point grub-install to, not the loopback
@@ -113,8 +97,13 @@ if [[ "$ARCH" =~ "ppc" ]] ; then
 else
     # This set of modules is sufficient for all installs (mbr/gpt/efi)
     modules="part_msdos part_gpt lvm"
+
     if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
-        $GRUBNAME --modules="$modules biosdisk" $GRUB_OPTS $BOOT_DEV
+        if [[ ! "x86_64 amd64" =~ ${ARCH} ]]; then
+            echo "*** ${ARCH} is not supported by mbr/gpt"
+        fi
+        $GRUBNAME --modules="$modules biosdisk" --target=i386-pc \
+                $GRUB_OPTS $BOOT_DEV
     elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
         # We need to manually set the target if it's different to
         # the host.  Setup for EFI
