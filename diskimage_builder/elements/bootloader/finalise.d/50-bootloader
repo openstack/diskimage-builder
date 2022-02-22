@@ -94,10 +94,13 @@ GRUB_OPTS="--force "
 # * --target tells grub what's the target platform
 # * the boot images are placed in /usr/lib/grub/<cpu>-<platform>
 # * i386-pc is used for BIOS-based machines
-# http://www.gnu.org/software/grub/manual/grub.html#Installation
-#
-if [[ -d /sys/firmware/efi && ! -d /usr/lib/grub/*-efi ]]; then
-    GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+#   http://www.gnu.org/software/grub/manual/grub.html#Installation
+# * this check is only valid for x86_64; other platforms we support
+#   are either not EFI (ppc) or always EFI (arm64)
+if [[ "x86_64 amd64" =~ ${ARCH} ]]; then
+    if [[ -d /sys/firmware/efi && ! -d /usr/lib/grub/x86_64-efi ]]; then
+        GRUB_OPTS="$GRUB_OPTS --target=i386-pc"
+    fi
 fi
 
 if [[ "$ARCH" =~ "ppc" ]] ; then
