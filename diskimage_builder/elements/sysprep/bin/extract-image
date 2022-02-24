@@ -18,6 +18,12 @@ CACHED_TAR=$DIB_IMAGE_CACHE/$BASE_IMAGE_TAR
 DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-""}
 TAR_LOCK=$CACHED_TAR.lock
 
+# GPT GUIDs of interest.
+# See https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+# also https://systemd.io/BOOT_LOADER_SPECIFICATION/
+GUID_EFI="c12a7328-f81f-11d2-ba4b-00a0c93ec93b"
+GUID_LINUX_BOOT="bc13c2ff-59e6-4262-a352-b275fd6f7172"
+
 function extract_image() {
     if [ -n "$DIB_OFFLINE" -a -f "$CACHED_TAR" ] ; then
         echo "Not checking freshness of cached $CACHED_TAR."
@@ -59,29 +65,73 @@ function extract_image() {
 
             qemu-img convert -f qcow2 -O raw $CACHED_IMAGE $RAW_FILE
 
-            ROOT_PARTITION=p$(sudo kpartx -l $RAW_FILE | awk "/loop[0-9]+p/"|wc -l)
-            sudo udevadm settle
-
             # kpartx fails if no /dev/loop* exists, "losetup -f" prints first unused
             # loop device and creates it if it doesn't exist
-            sudo losetup -f
+            LOOPDEV_BASE=$(basename $(sudo losetup -f))
 
-            # XXX: Parsing stdout is dangerous, would like a better way to discover
-            #      the device used for the image.
-            ROOT_LOOPDEV=$(sudo kpartx -av $RAW_FILE | \
-                awk "/loop[0-9]+$ROOT_PARTITION/ {print \$3}")
+            # add partition mappings
+            sudo kpartx -av $RAW_FILE
+
             # If running inside Docker, make our nodes manually, because udev will not be working.
             if [ -f /.dockerenv ]; then
                 sudo dmsetup --noudevsync mknodes
             fi
-            if ! timeout 5 sh -c "while ! [ -e /dev/mapper/$ROOT_LOOPDEV ]; do sleep 1; done"; then
-                echo "Error: Could not find /dev/mapper/$ROOT_LOOPDEV"
+            if ! timeout 5 sh -c "while ! ls /dev/mapper/${LOOPDEV_BASE}p* ; do sleep 1; done"; then
+                echo "Error: Could not find any ${LOOPDEV_BASE} devices"
                 exit 1
             fi
+
             EACTION="sudo kpartx -d $RAW_FILE ; $EACTION"
             trap "$EACTION" EXIT
+
+            ROOT_LOOPDEV=""
+            BOOT_LOOPDEV=""
+            EFI_LOOPDEV=""
+
+            LOOPDEVS=$(ls /dev/mapper/${LOOPDEV_BASE}p* | sort -r)
+            LOOPDEV_COUNT=$(echo $LOOPDEVS | wc -w)
+            if [ $LOOPDEV_COUNT == "1" ]; then
+                # if there is one partition device, assume it is the root device
+                ROOT_LOOPDEV=${LOOPDEVS}
+                LOOPDEVS=""
+            fi
+
+            for LOOPDEV in ${LOOPDEVS}; do
+                fstype=$(lsblk --all --nodeps --noheadings --output FSTYPE $LOOPDEV)
+                label=$(lsblk --all --nodeps --noheadings --output LABEL $LOOPDEV)
+                part_type=$(lsblk --all --nodeps --noheadings --output PARTTYPE $LOOPDEV)
+
+                if [ -z "${fstype}" ]; then
+                    # Ignore block device with no filesystem type
+                    continue
+                fi
+
+                # look for EFI partition to mount at /boot/efi either by GUID or
+                # label convention
+                if [ -z "$EFI_LOOPDEV" ]; then
+                    if [[ ${part_type} == ${GUID_EFI} ]]; then
+                        EFI_LOOPDEV=$LOOPDEV
+                        continue
+                    fi
+                fi
+
+                # look for EFI partition to mount at /boot/efi either by GUID or
+                # label convention.
+                if [ -z "$BOOT_LOOPDEV" ]; then
+                    if [[ ${part_type} == ${GUID_LINUX_BOOT} || ${label} == "boot" ]]; then
+                        BOOT_LOOPDEV=$LOOPDEV
+                        continue
+                    fi
+                fi
+
+                if [ -z "$ROOT_LOOPDEV" ]; then
+                    ROOT_LOOPDEV=$LOOPDEV
+                    continue
+                fi
+            done
+
             mkdir $WORKING/mnt
-            if [ "xfs" = "$(sudo blkid -o value -s TYPE /dev/mapper/$ROOT_LOOPDEV)" ]; then
+            if [ "xfs" = "$(sudo blkid -o value -s TYPE $ROOT_LOOPDEV)" ]; then
                 # mount xfs with nouuid, just in case that uuid is already mounted
                 # use ro to avoid/workaround xfs uuid issues on older
                 # kernels with newer rhel images which seem to set
@@ -93,9 +143,22 @@ function extract_image() {
                 MOUNTOPTS=""
             fi
 
-            sudo mount $MOUNTOPTS /dev/mapper/$ROOT_LOOPDEV $WORKING/mnt
+            sudo mount $MOUNTOPTS $ROOT_LOOPDEV $WORKING/mnt
             EACTION="sudo umount -f $WORKING/mnt ; $EACTION"
             trap "$EACTION" EXIT
+
+            if [ ! -z "$BOOT_LOOPDEV" ]; then
+                # mount to /boot
+                sudo mount $BOOT_LOOPDEV $WORKING/mnt/boot
+                EACTION="sudo umount -f $BOOT_LOOPDEV ; $EACTION"
+                trap "$EACTION" EXIT
+            fi
+            if [ ! -z "$EFI_LOOPDEV" ]; then
+                # mount to /boot/efi
+                sudo mount $EFI_LOOPDEV $WORKING/mnt/boot/efi
+                EACTION="sudo umount -f $EFI_LOOPDEV ; $EACTION"
+                trap "$EACTION" EXIT
+            fi
 
             # find out if chroot tar has full xattr support
             if [ 0 == `sudo chroot $WORKING/mnt bin/tar --help | grep -c xattrs-exclude` ]; then
