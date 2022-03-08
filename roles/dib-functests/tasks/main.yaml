@@ -66,4 +66,4 @@
     DIB_OS_CI_YUM_REPOS: "{{ dib_gate_mirror_repos|default(omit) }}"
     # NOTE(ianw) 2021-10-15 : this might be our bullseye images
     # having issues with non-root podman.  This works for now.
-    DIB_CONTAINERFILE_PODMAN_ROOT: 1
+    DIB_CONTAINERFILE_RUNTIME_ROOT: 1

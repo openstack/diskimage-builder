@@ -21,6 +21,13 @@ fi
 set -eu
 set -o pipefail
 
+: "${DIB_CONTAINERFILE_RUNTIME:=podman}"
+
+# Convert the old value which was podman specific
+if [[ "${DIB_CONTAINERFILE_PODMAN_ROOT:-0}" != '0' ]]; then
+    DIB_CONTAINERFILE_RUNTIME_ROOT=1
+fi
+
 if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
     . ${TARGET_ROOT}/.extra_settings
 fi
@@ -52,7 +59,7 @@ DIB_CONTAINER_CONTEXT=${DIB_CONTAINER_CONTEXT:-${DIB_IMAGE_CACHE}/containerfile}
 
 mkdir -p $DIB_CONTAINER_CONTEXT
 
-if [[ ${DIB_CONTAINERFILE_PODMAN_ROOT:-0} -gt 0 ]]; then
+if [[ ${DIB_CONTAINERFILE_RUNTIME_ROOT:-0} -gt 0 ]]; then
     _sudo="sudo"
 else
     _sudo=""
@@ -63,17 +70,17 @@ _podman_export_container="dib-tmp-export-$RANDOM"
 
 function podman_cleanup() {
     echo "Cleaning up container ${_podman_export_container}"
-    ${_sudo} podman rm ${_podman_export_container} || true
+    ${_sudo} ${DIB_CONTAINERFILE_RUNTIME} rm ${_podman_export_container} || true
     echo "Cleaning up build image ${_podman_build_image}"
-    ${_sudo} podman rmi ${_podman_build_image} || true
+    ${_sudo} ${DIB_CONTAINERFILE_RUNTIME} rmi ${_podman_build_image} || true
 }
 
 trap "podman_cleanup" EXIT
 
-${_sudo} podman build -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
-${_sudo} podman run --name ${_podman_export_container} -d ${_podman_build_image} /bin/sh
+${_sudo} ${DIB_CONTAINERFILE_RUNTIME} build -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
+${_sudo} ${DIB_CONTAINERFILE_RUNTIME} run --name ${_podman_export_container} -d ${_podman_build_image} /bin/sh
 # NOTE(ianw) 2021-11-10 the tar must always be sudo to write out the chroot files
 # as other uids
-${_sudo} podman export ${_podman_export_container} | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
+${_sudo} ${DIB_CONTAINERFILE_RUNTIME} export ${_podman_export_container} | sudo tar -C $TARGET_ROOT --numeric-owner -xf -
 
 sudo rm -f ${TARGET_ROOT}/.extra_settings
