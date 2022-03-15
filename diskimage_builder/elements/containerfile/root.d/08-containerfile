@@ -28,6 +28,12 @@ if [[ "${DIB_CONTAINERFILE_PODMAN_ROOT:-0}" != '0' ]]; then
     DIB_CONTAINERFILE_RUNTIME_ROOT=1
 fi
 
+if [[ -z "${DIB_CONTAINERFILE_NETWORK_DRIVER:-}"  ]]; then
+    DIB_CONTAINERFILE_RUNTIME_NETWORK=""
+else
+    DIB_CONTAINERFILE_RUNTIME_NETWORK="--network ${DIB_CONTAINERFILE_NETWORK_DRIVER:-}"
+fi
+
 if [ -f ${TARGET_ROOT}/.extra_settings ] ; then
     . ${TARGET_ROOT}/.extra_settings
 fi
@@ -77,8 +83,8 @@ function podman_cleanup() {
 
 trap "podman_cleanup" EXIT
 
-${_sudo} ${DIB_CONTAINERFILE_RUNTIME} build -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
-${_sudo} ${DIB_CONTAINERFILE_RUNTIME} run --name ${_podman_export_container} -d ${_podman_build_image} /bin/sh
+${_sudo} ${DIB_CONTAINERFILE_RUNTIME} build ${DIB_CONTAINERFILE_RUNTIME_NETWORK} -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
+${_sudo} ${DIB_CONTAINERFILE_RUNTIME} run ${DIB_CONTAINERFILE_RUNTIME_NETWORK} --name ${_podman_export_container} -d ${_podman_build_image} /bin/sh
 # NOTE(ianw) 2021-11-10 the tar must always be sudo to write out the chroot files
 # as other uids
 ${_sudo} ${DIB_CONTAINERFILE_RUNTIME} export ${_podman_export_container} | sudo tar -C $TARGET_ROOT --numeric-owner -xf -

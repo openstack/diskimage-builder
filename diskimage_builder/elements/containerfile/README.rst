@@ -19,3 +19,6 @@ images (default is ``podman``).
 
 Set ``DIB_CONTAINERFILE_RUNTIME_ROOT`` to ``1`` to run the runtime
 (Docker or ``podman``, per above) as ``root``.
+
+Set ``DIB_CONTAINERFILE_NETWORK_DRIVER`` to a network driver of your choice
+(e.g. host) to use it instead of the default bridge during build.
