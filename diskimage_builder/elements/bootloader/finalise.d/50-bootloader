@@ -25,6 +25,8 @@ BOOT_DEV=$IMAGE_BLOCK_DEVICE
 declare -A DEVICES
 eval DEVICES=( $IMAGE_BLOCK_DEVICES )
 
+DIB_BLOCK_DEVICE=${DIB_BLOCK_DEVICE:-}
+
 # Right now we can't use pkg-map to branch by arch, so tag an
 # architecture specific virtual package so we can install the
 # rigth thing based on distribution.
@@ -36,9 +38,7 @@ elif [[ "${DIB_BLOCK_DEVICE}" == "mbr" ||
 elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
     install-packages -m bootloader grub-efi grub-efi-$ARCH
 else
-    echo "Failure: I'm not sure what bootloader to install"
-    echo "Ensure you have included a block-device-* element"
-    exit 1
+    install-packages -m bootloader grub-pc grub-efi grub-efi-$ARCH
 fi
 
 GRUBNAME=$(type -p grub-install) || echo "trying grub2-install"
@@ -70,8 +70,6 @@ else
     GRUBENV=/boot/grub/grubenv
 fi
 
-echo "Installing GRUB2..."
-
 # When using EFI image-based builds, particularly rhel element
 # based on RHEL>=8.2 .qcow2, we might have /boot/grub2/grubenv
 # as a dangling symlink to /boot/efi because we have extracted
@@ -81,55 +79,6 @@ echo "Installing GRUB2..."
 # remove it if it exists.
 if [[ -L $GRUBENV ]]; then
     rm -f $GRUBENV
-fi
-
-# We need --force so grub does not fail due to being installed on the
-# root partition of a block device.
-GRUB_OPTS="--force "
-
-if [[ "$ARCH" =~ "ppc" ]] ; then
-    # For PPC (64-Bit regardless of Endian-ness), we use the "boot"
-    # partition as the one to point grub-install to, not the loopback
-    # device.  ppc has a dedicated PReP boot partition.
-    # For grub2 < 2.02~beta3 this needs to be a /dev/mapper/... node after
-    # that a dev/loopXpN node will work fine.
-    $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
-else
-    # This set of modules is sufficient for all installs (mbr/gpt/efi)
-    modules="part_msdos part_gpt lvm"
-
-    if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
-        if [[ ! "x86_64 amd64" =~ ${ARCH} ]]; then
-            echo "*** ${ARCH} is not supported by mbr/gpt"
-        fi
-        $GRUBNAME --modules="$modules biosdisk" --target=i386-pc \
-                $GRUB_OPTS $BOOT_DEV
-    elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
-        # We need to manually set the target if it's different to
-        # the host.  Setup for EFI
-        case $ARCH in
-            "x86_64"|"amd64")
-                # This call installs grub for BIOS compatability
-                # which makes portable EFI/BIOS images.
-                $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
-                # Set the x86_64 specific efi target for the generic
-                # installation below.
-                GRUB_OPTS="--target=x86_64-efi"
-                ;;
-            # At this point, we don't need to override the target
-            # for any other architectures.
-        esac
-        # If we don't have a distro specific dir with presigned efi targets
-        # we install a generic one.
-        if [ ! -d /boot/efi/$EFI_BOOT_DIR ]; then
-            echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
-            # This tells the EFI install to put the EFI binaries into
-            # the generic /BOOT directory and avoids trying to update
-            # nvram settings.
-            extra_options="--removable"
-            $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
-        fi
-    fi
 fi
 
 echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
@@ -206,3 +155,59 @@ if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
     fi
 fi
 
+if [[ ! "$ARCH" =~ "ppc" ]] && [[ -z  "${DIB_BLOCK_DEVICE}" ]]; then
+    echo "WARNING: No bootloader installation will occur."
+    echo "To install a bootloader ensure you have included a block-device-* element"
+    exit 0
+fi
+
+echo "Installing GRUB2..."
+
+# We need --force so grub does not fail due to being installed on the
+# root partition of a block device.
+GRUB_OPTS="--force "
+
+if [[ "$ARCH" =~ "ppc" ]] ; then
+    # For PPC (64-Bit regardless of Endian-ness), we use the "boot"
+    # partition as the one to point grub-install to, not the loopback
+    # device.  ppc has a dedicated PReP boot partition.
+    # For grub2 < 2.02~beta3 this needs to be a /dev/mapper/... node after
+    # that a dev/loopXpN node will work fine.
+    $GRUBNAME --modules="part_msdos" $GRUB_OPTS ${DEVICES[boot]} --no-nvram
+else
+    # This set of modules is sufficient for all installs (mbr/gpt/efi)
+    modules="part_msdos part_gpt lvm"
+
+    if [[ ${DIB_BLOCK_DEVICE} == "mbr" || ${DIB_BLOCK_DEVICE} == "gpt" ]]; then
+        if [[ ! "x86_64 amd64" =~ ${ARCH} ]]; then
+            echo "*** ${ARCH} is not supported by mbr/gpt"
+        fi
+        $GRUBNAME --modules="$modules biosdisk" --target=i386-pc \
+                $GRUB_OPTS $BOOT_DEV
+    elif [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
+        # We need to manually set the target if it's different to
+        # the host.  Setup for EFI
+        case $ARCH in
+            "x86_64"|"amd64")
+                # This call installs grub for BIOS compatability
+                # which makes portable EFI/BIOS images.
+                $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
+                # Set the x86_64 specific efi target for the generic
+                # installation below.
+                GRUB_OPTS="--target=x86_64-efi"
+                ;;
+            # At this point, we don't need to override the target
+            # for any other architectures.
+        esac
+        # If we don't have a distro specific dir with presigned efi targets
+        # we install a generic one.
+        if [ ! -d /boot/efi/$EFI_BOOT_DIR ]; then
+            echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
+            # This tells the EFI install to put the EFI binaries into
+            # the generic /BOOT directory and avoids trying to update
+            # nvram settings.
+            extra_options="--removable"
+            $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
+        fi
+    fi
+fi
