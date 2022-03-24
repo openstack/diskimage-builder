@@ -35,7 +35,7 @@ rootpwd
 
 .. note::
    The value of these parameters must be **quoted**, e.g: sshkey="ssh-rsa
-   BBBA1NBzaC1yc2E ...".
+   BBBA1NBzaC1yc2E ..."
 
 
 .. warning::
