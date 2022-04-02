@@ -1,0 +1,3 @@
+---
+upgrade:
+  - This release removes support for Python releases before 3.8
