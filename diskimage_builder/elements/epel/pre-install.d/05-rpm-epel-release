@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-if [[ (${DISTRO_NAME} =~ "centos" || ${DISTRO_NAME} =~ "rocky") && "${DIB_RELEASE%-stream}" -lt '9' ]]; then
+if [[ (${DISTRO_NAME} =~ "centos" || ${DISTRO_NAME} =~ "rocky") ]]; then
     # Centos has "epel-release" in extras, which is default enabled.
     ${YUM} install -y epel-release
 else
