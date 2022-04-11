@@ -85,39 +85,24 @@ function _install_repos {
     # (see above) so ...
     packages="${DIB_YUM_MINIMAL_BOOTSTRAP_PACKAGES:-} "
     packages+="basesystem filesystem setup "
-    if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 29 ]]; then
+    if [[ ${DISTRO_NAME} = fedora ]]; then
         packages+="fedora-release-cloud fedora-release-common "
-    elif [[ ${DISTRO_NAME} == 'centos' && ${DIB_RELEASE} = '9-stream' ]]; then
-        packages+="bash glibc ncurses-libs "
-    elif [[ ${DISTRO_NAME} == 'openeuler' ]]; then
-        packages+="openEuler-release "
-    else
-        packages+="${DISTRO_NAME}-release "
-    fi
-
-    # Starting in F21 this was split into a separate package
-    if [[ ${DISTRO_NAME} == 'fedora' ]]; then
-        packages+="fedora-repos "
-    fi
-
-    # F27 started putting gpg keys into this separate package
-    if [[ ${DISTRO_NAME} = fedora && ${DIB_RELEASE} -gt 26 ]]; then
-        packages+="fedora-gpg-keys "
-    fi
-
-    # CentOS 8.1 split repositories and GPG keys out into subpackages
-    if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE%-stream} -gt 7 ]]; then
+        packages+="fedora-repos fedora-gpg-keys"
+    elif [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE%-stream} -gt 7 ]]; then
         packages+="centos-gpg-keys "
         if [[ "$DIB_RELEASE" =~ (stream) ]]; then
             packages+="centos-stream-release centos-stream-repos "
         else
             packages+="centos-linux-release centos-linux-repos "
         fi
-    fi
-
-    # For openEuler, install other required repos and gpy-keys packages.
-    if [[ ${DISTRO_NAME} == 'openeuler' ]]; then
+    elif [[ ${DISTRO_NAME} == 'openeuler' ]]; then
+        packages+="openEuler-release "
         packages+="openEuler-repos openEuler-gpg-keys "
+    else
+        # NOTE(ianw) 2022-04-20 : can probably remove when we don't
+        # support centos 7, unlikely anything else ends up here at
+        # this point.
+        packages+="${DISTRO_NAME}-release "
     fi
 
     # By default, parent elements (fedora-minimal, centos-minimal)
