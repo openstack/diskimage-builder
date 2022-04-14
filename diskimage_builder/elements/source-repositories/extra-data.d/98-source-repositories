@@ -159,30 +159,26 @@ function get_repos_for_element(){
                         echo "REPOLOCATIONS don't match ("$CACHE_PATH" != "$DESIRED")" >&2
                         exit 1
                     elif [[ "$REPOREF" != "*" ]]; then
-                        pushd $REPO_DEST > /dev/null
                         # When we first clone we create a branch naming what we fetched
                         # that must match, or we are asking for two different references from the
                         # same repo, which is an error
-                        if ! git rev-parse fetch_$REPOREF; then
+                        if ! sudo git -C ${REPO_DEST} rev-parse fetch_$REPOREF; then
                             echo "REPOREFS don't match - failed to get sha1 of fetch_$REPOREF" >&2
                             exit 1
                         fi
-                        popd > /dev/null
                     fi
                 else
                     sudo git clone -q $CACHE_PATH $REPO_DEST
-                    pushd $REPO_DEST > /dev/null
                     if [[ "$REPOREF" == "*" ]]; then
-                        sudo git fetch -q --prune --update-head-ok $CACHE_PATH \
+                        sudo git -C ${REPO_DEST} fetch -q --prune --update-head-ok $CACHE_PATH \
                             +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
-                        git_sha=$(git rev-parse HEAD)
+                        git_sha=$(sudo git -C ${REPO_DEST} rev-parse HEAD)
                     else
-                        sudo git fetch -q $CACHE_PATH $REPOREF:fetch_$REPOREF
-                        sudo git reset --hard FETCH_HEAD
+                        sudo git -C ${REPO_DEST} fetch -q $CACHE_PATH $REPOREF:fetch_$REPOREF
+                        sudo git -C ${REPO_DEST} reset --hard FETCH_HEAD
                         # Get the sha in use
-                        git_sha=$(git rev-parse FETCH_HEAD)
+                        git_sha=$(sudo git -C ${REPO_DEST} rev-parse FETCH_HEAD)
                     fi
-                    popd > /dev/null
 
                     # Write the sha being used into the source-repositories manifest
                     echo "$REPONAME git $REPOPATH $REPOLOCATION $git_sha" >> $GIT_MANIFEST
