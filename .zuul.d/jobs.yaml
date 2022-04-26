@@ -188,6 +188,22 @@
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
+    name: dib-nodepool-functional-openstack-ubuntu-jammy-src
+    description: |
+      Test building and booting an Ubuntu jammy image with Nodepool
+      and OpenStack
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_diskimage:
+        base_element: ubuntu-minimal
+        release: 'jammy'
+        # mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
+
+- job:
     name: dib-nodepool-functional-openstack-gentoo-src
     description: |
       Test building and booting a Gentoo image with Nodepool and OpenStack
