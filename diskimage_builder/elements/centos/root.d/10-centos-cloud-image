@@ -61,7 +61,7 @@ else
         else
             dib_release_path=${DIB_RELEASE}
         fi
-        BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(curl -s https://cloud.centos.org/centos/${dib_release_path}/${ARCH}/images/ | grep -o "CentOS-.[^>]*${DIB_FLAVOR}-.[^>]*.qcow2" | sort -r | head -1)}
+        BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$(head -1 < <(curl -s https://cloud.centos.org/centos/${dib_release_path}/${ARCH}/images/ | grep -o "CentOS-.[^>]*${DIB_FLAVOR}-.[^>]*.qcow2" | sort -r))}
     fi
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
