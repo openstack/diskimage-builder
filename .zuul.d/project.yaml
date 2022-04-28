@@ -3,7 +3,7 @@
       - openstack-cover-jobs
       - check-requirements
       - openstack-lower-constraints-jobs
-      - release-notes-jobs
+      - release-notes-jobs-python3
       # NOTE(ianw): 2020-05-29 jobs are unstable; see
       # https://bugs.launchpad.net/tripleo/+bug/1879766
       - tripleo-buildimage-jobs-centos-8
