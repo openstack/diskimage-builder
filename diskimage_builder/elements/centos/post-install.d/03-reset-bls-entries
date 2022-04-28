@@ -21,10 +21,12 @@ pushd /boot/loader/entries
 
 machine_id=$(</etc/machine-id)
 
-for entry in *; do
+for entry in *.conf; do
     new_entry=$(echo $entry | sed "s/^[a-f0-9]*/$machine_id/")
     echo "renaming $entry to $new_entry for new machine-id"
-    mv $entry $new_entry
+    if [[ $entry != $new_entry ]]; then
+        mv $entry $new_entry
+    fi
 done
 popd
 
