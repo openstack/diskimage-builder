@@ -1,0 +1,14 @@
+---
+other:
+  - |
+    The block device lvm lvs `size` attribute was passed directly to lvcreate,
+    so using units M, G means base 2. All other block device size values are
+    parsed with accepted conventions of M, B being base 10 and MiB, GiB being
+    base 2. lvm lvs `size` attributes are now parsed the same as other size
+    attributes. This improves consistency and makes it practical to calculate
+    volume sizes to fill the partition size. This means existing size values
+    will now create slightly smaller volumes. Previous sizes can be restored by
+    changing the unit to MiB, GiB, or increasing the value for a base 10 unit.
+
+    Requested sizes will also be rounded down to align with physical extents
+    (4MiB).
