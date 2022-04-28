@@ -79,7 +79,7 @@ function enable_interface() {
         printf "auto $interface\niface $interface inet dhcp\n\n" >>$ENI_FILE
         if [ "$ipv6_init" == "True" ]; then
             # Make DUID-UUID Type 4 (RFC 6355)
-            echo "default-duid \"\\x00\\x04$(sed 's/.\{2\}/\\x&/g' < /etc/machine-id)\";" >"/var/lib/dhclient/dhclient6--$interface.lease"
+            echo "default-duid \"\\x00\\x04$(sed 's/.\{2\}/\\x&/g' < /etc/machine-id)\";" >"/var/lib/dhcp/dhclient6--$interface.lease"
             if [ $ipv6_AdvManagedFlag == "Yes" ]; then
                 # IPv6 DHCPv6 Stateful address configuration
                 printf "iface $interface inet6 dhcp\n\n" >>$ENI_FILE
@@ -90,7 +90,7 @@ function enable_interface() {
                 echo "DHCPv6 Stateless Configured."
             else
                 # IPv6 Autoconfiguration (SLAAC)
-                printf "iface $interface inet6 auto\tdhcp 0\n\n" >>$ENI_FILE
+                printf "iface $interface inet6 auto\n\tdhcp 0\n\n" >>$ENI_FILE
                 echo "IPv6 SLAAC Configured"
             fi
         fi
