@@ -6,10 +6,17 @@ fi
 set -eu
 set -o pipefail
 
-if [ -e /etc/machine-id ]; then
-    > /etc/machine-id
-fi
-
 if [ -e /var/lib/dbus/machine-id ]; then
     > /var/lib/dbus/machine-id
 fi
+
+# According to documented First Boot Semantics writing "uninitialized" will trigger the full
+# first boot behaviour.
+# https://www.freedesktop.org/software/systemd/man/machine-id.html#First%20Boot%20Semantics
+# On older versions of systemd before first boot semantics were formalised, any non-uuid value
+# will trigger a new machine-id to be generated, so "uninitialized" also works.
+# Previously this was done here by truncating /etc/machine-id.
+if [ -e /etc/machine-id ]; then
+    echo uninitialized > /etc/machine-id
+fi
+
