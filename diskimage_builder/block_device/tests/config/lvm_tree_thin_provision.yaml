@@ -1,0 +1,122 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    name: mbr
+    label: mbr
+    partitions:
+      - name: root
+        base: image0
+        flags: [ boot,primary ]
+        size: 3G
+
+- lvm:
+    base: mbr
+    pvs:
+      - name: pv
+        options: ["--force"]
+        base: root
+
+    vgs:
+      - name: vg
+        base: ["pv"]
+        options: ["--force"]
+
+    lvs:
+      - name: lv_thinpool
+        type: thin-pool
+        base: vg
+        size: 2800MiB
+
+      - name: lv_root
+        type: thin
+        thin-pool: lv_thinpool
+        base: vg
+        size: 1800MiB
+
+      - name: lv_tmp
+        type: thin
+        thin-pool: lv_thinpool
+        base: vg
+        size: 100MiB
+
+      - name: lv_var
+        type: thin
+        thin-pool: lv_thinpool
+        base: vg
+        size: 500MiB
+
+      - name: lv_log
+        type: thin
+        thin-pool: lv_thinpool
+        base: vg
+        size: 100MiB
+
+      - name: lv_audit
+        type: thin
+        thin-pool: lv_thinpool
+        base: vg
+        size: 100MiB
+
+      - name: lv_home
+        type: thin
+        thin-pool: lv_thinpool
+        base: vg
+        size: 200MiB
+
+- mkfs:
+    name: fs_root
+    base: lv_root
+    label: "img-rootfs"
+    type: "xfs"
+    mount:
+      mount_point: /
+      fstab:
+          options: "rw,relatime"
+          fsck-passno: 1
+
+- mkfs:
+    name: fs_var
+    base: lv_var
+    type: "xfs"
+    mount:
+      mount_point: /var
+      fstab:
+          options: "rw,relatime"
+
+- mkfs:
+    name: fs_log
+    base: lv_log
+    type: "xfs"
+    mount:
+      mount_point: /var/log
+      fstab:
+          options: "rw,relatime"
+
+- mkfs:
+    name: fs_audit
+    base: lv_audit
+    type: "xfs"
+    mount:
+      mount_point: /var/log/audit
+      fstab:
+          options: "rw,relatime"
+
+- mkfs:
+    name: fs_tmp
+    base: lv_tmp
+    type: "xfs"
+    mount:
+      mount_point: /tmp
+      fstab:
+          options: "rw,nosuid,nodev,noexec,relatime"
+
+- mkfs:
+    name: fs_home
+    base: lv_home
+    type: "xfs"
+    mount:
+      mount_point: /home
+      fstab:
+          options: "rw,nodev,relatime"

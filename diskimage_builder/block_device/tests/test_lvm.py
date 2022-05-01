@@ -582,3 +582,129 @@ class TestLVM(tc.TestGraphGeneration):
             ]
 
             manager.assert_has_calls(cmd_sequence)
+
+    @mock.patch('diskimage_builder.block_device.level1.lvm.exec_sudo')
+    def test_lvm_thin_provision(self, mock_exec_sudo):
+        # Test the command-sequence for a more complicated LVM setup
+        tree = self.load_config_file('lvm_tree_thin_provision.yaml')
+        config = config_tree_to_graph(tree)
+
+        state = BlockDeviceState()
+
+        graph, call_order = create_graph(config, self.fake_default_config,
+                                         state)
+
+        # Fake state for the two PV's specified by this config
+        state['blockdev'] = {}
+        state['blockdev']['root'] = {}
+        state['blockdev']['root']['device'] = '/dev/fake/root'
+
+        for node in call_order:
+            # XXX: This has not mocked out the "lower" layers of
+            # creating the devices, which we're assuming works OK, nor
+            # the upper layers.
+            if isinstance(node, (LVMNode, PvsNode,
+                                 VgsNode, LvsNode)):
+                # only the LVMNode actually does anything here...
+                node.create()
+
+        # ensure the sequence of calls correctly setup the devices
+        cmd_sequence = [
+            # create the pv's on the faked out block devices
+            mock.call(['pvcreate', '/dev/fake/root', '--force']),
+            # create a volume called "vg" out of these two pv's
+            mock.call(['vgcreate', 'vg', '/dev/fake/root', '--force']),
+            mock.call(['lvcreate', '--name', 'lv_thinpool',
+                      '--type', 'thin-pool', '-L', '2936012800B', 'vg']),
+            # create a bunch of lv's on vg using the pool
+            mock.call(['lvcreate', '--name', 'lv_root', '--type', 'thin',
+                      '--thin-pool', 'lv_thinpool', '-V', '1887436800B',
+                       'vg']),
+            mock.call(['lvcreate', '--name', 'lv_tmp', '--type', 'thin',
+                      '--thin-pool', 'lv_thinpool', '-V', '104857600B', 'vg']),
+            mock.call(['lvcreate', '--name', 'lv_var', '--type', 'thin',
+                      '--thin-pool', 'lv_thinpool', '-V', '524288000B', 'vg']),
+            mock.call(['lvcreate', '--name', 'lv_log', '--type', 'thin',
+                      '--thin-pool', 'lv_thinpool', '-V', '104857600B', 'vg']),
+            mock.call(['lvcreate', '--name', 'lv_audit', '--type', 'thin',
+                      '--thin-pool', 'lv_thinpool', '-V', '104857600B', 'vg']),
+            mock.call(['lvcreate', '--name', 'lv_home', '--type', 'thin',
+                      '--thin-pool', 'lv_thinpool', '-V', '209715200B', 'vg'])]
+
+        self.assertEqual(mock_exec_sudo.call_count, len(cmd_sequence))
+        mock_exec_sudo.assert_has_calls(cmd_sequence)
+
+        # Ensure the correct LVM state was preserved
+        blockdev_state = {
+            'root': {'device': '/dev/fake/root'},
+            'lv_thinpool': {
+                'vgs': 'vg',
+                'size': '2800MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_thinpool'
+            },
+            'lv_root': {
+                'vgs': 'vg',
+                'size': '1800MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_root'
+            },
+            'lv_tmp': {
+                'vgs': 'vg',
+                'size': '100MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_tmp'
+            },
+            'lv_var': {
+                'vgs': 'vg',
+                'size': '500MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_var'
+            },
+            'lv_log': {
+                'vgs': 'vg',
+                'size': '100MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_log'
+            },
+            'lv_audit': {
+                'vgs': 'vg',
+                'size': '100MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_audit'
+            },
+            'lv_home': {
+                'vgs': 'vg',
+                'size': '200MiB',
+                'extents': None,
+                'opts': None,
+                'device': '/dev/mapper/vg-lv_home'
+            }
+        }
+
+        self.assertDictEqual(state['blockdev'], blockdev_state)
+
+    @mock.patch('diskimage_builder.block_device.level1.lvm.exec_sudo')
+    def test_validate_lvs_type(self, mock_exec_sudo):
+        # Test the command-sequence for a more complicated LVM setup
+        tree = self.load_config_file('lvm_tree_thin_provision.yaml')
+        print(tree)
+        tree[2]['lvm']['lvs'][0]['type'] = 'thin-pol'
+
+        config = config_tree_to_graph(tree)
+
+        state = BlockDeviceState()
+
+        self.assertRaisesRegex(
+            BlockDeviceSetupException,
+            "Unsupported type:thin-pol, supported types: thin, thin-pool",
+            create_graph,
+            config,
+            self.fake_default_config,
+            state)

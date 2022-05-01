@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    LVM thin provisioning is now supported in the block device `lvs` node. Thin
+    pools can be defined and thin volumes associated with those pools.

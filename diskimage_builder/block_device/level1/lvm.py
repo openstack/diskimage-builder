@@ -23,6 +23,7 @@ from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import remove_device
 
 PHYSICAL_EXTENT_BYTES = parse_abs_size_spec('4MiB')
+LVS_TYPES = ['thin', 'thin-pool']
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +174,8 @@ class VgsNode(NodeBase):
 
 
 class LvsNode(NodeBase):
-    def __init__(self, name, state, base, options, size, extents):
+    def __init__(self, name, state, base, options, size, extents, segtype,
+                 thin_pool):
         """Logical Volume
 
         This is a placeholder node for a logical volume
@@ -186,21 +188,31 @@ class LvsNode(NodeBase):
         :param size: size of the LV, using the supported unit types
                      (MB, MiB, etc)
         :param extents: size of the LV in extents
+        :param segtype: value passed to segment type, supports thin and
+                        thin-pool
+        :param thin_pool: name of the thin pool to create this volume from
         """
         super(LvsNode, self).__init__(name, state)
         self.base = base
         self.options = options
         self.size = size
         self.extents = extents
+        self.type = segtype
+        self.thin_pool = thin_pool
 
     def _create(self):
         cmd = ["lvcreate", ]
         cmd.extend(['--name', self.name])
+        if self.type:
+            cmd.extend(['--type', self.type])
+        if self.thin_pool:
+            cmd.extend(['--thin-pool', self.thin_pool])
         if self.size:
             size = parse_abs_size_spec(self.size)
             # ensuire size aligns with physical extents
             size = size - size % PHYSICAL_EXTENT_BYTES
-            cmd.extend(['-L', '%dB' % size])
+            size_arg = '-V' if self.type == 'thin' else '-L'
+            cmd.extend([size_arg, '%dB' % size])
         elif self.extents:
             cmd.extend(['-l', self.extents])
         if self.options:
@@ -391,10 +403,18 @@ class LVMPlugin(PluginBase):
                 self._config_error("base:%s in lvs does not match a valid vg" %
                                    lvs_cfg['base'])
 
+            if 'type' in lvs_cfg:
+                if lvs_cfg['type'] not in LVS_TYPES:
+                    self._config_error(
+                        "Unsupported type:%s, supported types: %s" %
+                        (lvs_cfg['type'], ', '.join(LVS_TYPES)))
+
             lvs_item = LvsNode(lvs_cfg['name'], state, lvs_cfg['base'],
                                lvs_cfg.get('options', None),
                                lvs_cfg.get('size', None),
-                               lvs_cfg.get('extents', None))
+                               lvs_cfg.get('extents', None),
+                               lvs_cfg.get('type', None),
+                               lvs_cfg.get('thin-pool', None))
             self.lvs.append(lvs_item)
 
         # create the "driver" node

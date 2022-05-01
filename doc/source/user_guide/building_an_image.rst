@@ -435,6 +435,14 @@ options
     (optional) List of options for the logical volume. It can contain any
     option supported by the `lvcreate` command.
 
+type
+    (optional) When set to `thin-pool` a thin pool volume will be created. When
+    set to `thin` the thin volume will be backed by the thin pool named with the
+    `thin-pool` key.
+
+thin-pool
+    (optional) Name of the thin pool to use for this thin volume.
+
 Example:
 
 .. code-block:: yaml
