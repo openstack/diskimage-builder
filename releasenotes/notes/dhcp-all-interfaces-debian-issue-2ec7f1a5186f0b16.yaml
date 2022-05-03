@@ -1,0 +1,20 @@
+issues:
+  - |
+    The dhcp-all-interfaces element attempts to work with "predictable
+    interface names". During boot the name of the interfaces is changed from
+    ethX to the new scheme, for example enpXsX; depending on the Linux kernel
+    this move may be captured by udev as an "add" or "move" event. The
+    dhcp-all-interfaces udev rule has been updated to match against both
+    possible events. If you prefer to not use predictable names your image
+    builds can set DIB_BOOTLOADER_DEFAULT_CMDLINE with net.ifnames=0 or mask
+    the default policy with `ln -s /dev/null /etc/systemd/network/99-default.link`.
+    This process is documented by systemd:
+    https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
+
+    Note that this update reverts previous changes to disable predictable
+    interface names completely when using dhcp-all-interfaces. Predictable
+    device names were disabled in an effort to make dhcp-all-interfaces
+    function on Debian Bullseye, but this broke any users that wished to
+    use predictable device names. Instaed we make predictable device names
+    work on Debian Bullseye and allow users to disable predictable device
+    names should they choose to.
