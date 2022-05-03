@@ -29,6 +29,7 @@
         - fedora/build-succeeds
         - ubuntu/bionic-build-succeeds
         - ubuntu/focal-build-succeeds
+        - ubuntu/jammy-build-succeeds
 
 # NOTE(ianw) : these jobs are split to keep the build times a bit more
 # reasonable.
@@ -42,6 +43,7 @@
       dib_functests:
         - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
+        - ubuntu-minimal/jammy-arm64-build-succeeds
         - debian-minimal/bullseye-arm64-build-succeeds
 
 - job:

@@ -27,6 +27,7 @@ uuid-runtime [platform:dpkg]
 yum-utils [platform:dpkg !platform:ubuntu-focal !platform:debian-bullseye]
 dnf [platform:debian-bullseye]
 debootstrap [platform:dpkg]
+zstd [platform:dpkg]
 procps [platform:dpkg]
 
 # centos/fedora
