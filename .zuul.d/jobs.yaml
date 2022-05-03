@@ -27,7 +27,6 @@
         - centos/8-stream-build-succeeds
         - centos/9-stream-build-succeeds
         - fedora/build-succeeds
-        - opensuse/build-succeeds
         - ubuntu/bionic-build-succeeds
         - ubuntu/focal-build-succeeds
 
