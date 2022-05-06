@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Set cloud-init to generate ssh authkeys
+if [ -f "/etc/cloud/cloud.cfg" ]; then
+    echo "Ensure ssh_genkeytypes is not present"
+    sudo sed -i '/ssh_genkeytypes/d' /etc/cloud/cloud.cfg
+    echo "Ensure ssh_genkeytypes value"
+    echo "ssh_genkeytypes:  ['rsa', 'ecdsa', 'ed25519']" | sudo tee -a /etc/cloud/cloud.cfg
+fi
