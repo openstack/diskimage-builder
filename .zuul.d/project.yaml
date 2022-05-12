@@ -34,7 +34,7 @@
             voting: false
         - dib-nodepool-functional-openstack-debian-bullseye-src:
             voting: false
-        - ironic-python-agent-check-image-dib-centos8
+        - ironic-python-agent-check-image-dib-centos9
         # IPA job that builds AND validates an image via deployment
         - ipa-tempest-bios-ipmi-direct-src:
             voting: false
@@ -56,7 +56,7 @@
         - dib-nodepool-functional-openstack-ubuntu-focal-src
         - dib-nodepool-functional-openstack-ubuntu-jammy-src
         - dib-functests
-        - ironic-python-agent-check-image-dib-centos8
+        - ironic-python-agent-check-image-dib-centos9
     experimental:
       jobs:
         - opendev-buildset-registry
