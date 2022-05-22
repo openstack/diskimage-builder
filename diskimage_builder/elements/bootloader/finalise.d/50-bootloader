@@ -68,6 +68,7 @@ else
     # unconditionally.
     GRUB_CFG=/boot/grub/grub.cfg
     GRUBENV=/boot/grub/grubenv
+    mkdir -p /boot/grub
 fi
 
 # When using EFI image-based builds, particularly rhel element
