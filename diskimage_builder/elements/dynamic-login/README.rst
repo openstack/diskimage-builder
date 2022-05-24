@@ -29,8 +29,8 @@ rootpwd
                 root password to the one specified by this option. Note that
                 this password must be **encrypted**. Interpolation can be
                 avoided by using $$. Encrypted passwords can be generated
-                using the ``openssl`` command, e.g: *openssl passwd -1
-                -stdin <<< YOUR_PASSWORD | sed 's/\$/\$$/g'*.
+                using the ``openssl`` command, e.g: ``openssl passwd -1
+                -stdin <<< YOUR_PASSWORD | sed 's/\$/\$\$/g'``.
 
 
 .. note::
