@@ -156,7 +156,18 @@ function extract_image() {
 
             if [ ! -z "$BOOT_LOOPDEV" ]; then
                 # mount to /boot
-                sudo mount $BOOT_LOOPDEV $WORKING/mnt/boot
+                BOOT_FSTYPE=$(sudo blkid -o value -s TYPE $ROOT_LOOPDEV)
+                if [ "xfs" = "$BOOT_FSTYPE" ]; then
+                    BOOT_MOUNTOPTS="-o nouuid,ro"
+                    # Similar to root filesystem, if the boot filesystem
+                    # is XFS and the base OS is the same as the image being
+                    # rebuilt, we need to pass "nouuid" to bypass UUID safety
+                    # checks and successfully mounts so we can extract the
+                    # contents.
+                else
+                    BOOT_MOUNTOPTS=""
+                fi
+                sudo mount $BOOT_MOUNTOPTS $BOOT_LOOPDEV $WORKING/mnt/boot
                 EACTION="sudo umount -f $BOOT_LOOPDEV ; $EACTION"
                 trap "$EACTION" EXIT
             fi
