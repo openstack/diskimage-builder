@@ -28,8 +28,6 @@
         # while; promote to voting after some stability.
         - dib-nodepool-functional-openstack-opensuse-15-src:
             voting: false
-        - dib-nodepool-functional-openstack-opensuse-tumbleweed-src:
-            voting: false
         - dib-nodepool-functional-openstack-gentoo-src:
             voting: false
         - dib-nodepool-functional-openstack-debian-bullseye-src:
