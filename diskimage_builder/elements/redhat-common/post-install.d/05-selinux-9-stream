@@ -1,0 +1,12 @@
+# NOTE(ianw) 2022-06-09 : this is a workaround for setfiles
+# failing until libselinux-3.4-2.el9.x86_64.rpm
+#  https://bugzilla.redhat.com/show_bug.cgi?id=2094683
+if [[ '9-stream' =~ ${DIB_RELEASE} ]]; then
+    sudo dnf update -y \
+         https://kojihub.stream.centos.org/kojifiles/packages/libselinux/3.4/2.el9/x86_64/libselinux-3.4-2.el9.x86_64.rpm \
+         https://kojihub.stream.centos.org/kojifiles/packages/libselinux/3.4/2.el9/x86_64/libselinux-utils-3.4-2.el9.x86_64.rpm \
+         https://kojihub.stream.centos.org/kojifiles/packages/libselinux/3.4/2.el9/x86_64/python3-libselinux-3.4-2.el9.x86_64.rpm \
+         https://kojihub.stream.centos.org/kojifiles/packages/libselinux/3.4/2.el9/x86_64/libselinux-static-3.4-2.el9.x86_64.rpm \
+         https://kojihub.stream.centos.org/kojifiles/packages/libselinux/3.4/2.el9/x86_64/libselinux-ruby-3.4-2.el9.x86_64.rpm \
+         https://kojihub.stream.centos.org/kojifiles/packages/libselinux/3.4/2.el9/x86_64/libselinux-devel-3.4-2.el9.x86_64.rpm
+fi
