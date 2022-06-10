@@ -7,10 +7,21 @@
       # NOTE(ianw): 2020-05-29 jobs are unstable; see
       # https://bugs.launchpad.net/tripleo/+bug/1879766
       - tripleo-buildimage-jobs-centos-8
-      - openstack-python3-zed-jobs
     check:
       jobs:
         - openstack-tox-pylint
+        - tox-py36:
+            nodeset:
+              nodes:
+                - name: ubuntu-bionic
+                  label: ubuntu-bionic
+        - tox-py38
+        - tox-py39
+        - tox-py310:
+            nodeset:
+              nodes:
+                - name: ubuntu-jammy
+                  label: ubuntu-jammy
         - dib-functests
         - opendev-buildset-registry
         - nodepool-build-image-siblings
@@ -45,6 +56,18 @@
     gate:
       jobs:
         - openstack-tox-pylint
+        - tox-py36:
+            nodeset:
+              nodes:
+                - name: ubuntu-bionic
+                  label: ubuntu-bionic
+        - tox-py38
+        - tox-py39
+        - tox-py310:
+            nodeset:
+              nodes:
+                - name: ubuntu-jammy
+                  label: ubuntu-jammy
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
