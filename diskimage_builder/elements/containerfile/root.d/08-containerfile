@@ -57,6 +57,11 @@ if [ -z "${DIB_CONTAINERFILE_DOCKERFILE:-}" ]; then
     done
 
     $_xtrace
+
+    if [ -z "${DIB_CONTAINERFILE_DOCKERFILE:-}" ]; then
+        echo "*** DIB_CONTAINERFILE_DOCKERFILE not specified or found!"
+        exit 1
+    fi
 fi
 
 # Use the image cache directory as the default context, so anything
