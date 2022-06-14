@@ -129,6 +129,9 @@ case "${REG_METHOD:-}" in
         fi
         ;;
     satellite)
+        if [ -z "${REG_ACTIVATION_KEY}" -a -z "${REG_ENVIRONMENT}" ]; then
+            echo "WARNING: subscription-manager register might hang if REG_ACTIVATION_KEY and REG_ENVIRONMENT are not provided."
+        fi
         # Save an unmodified copy of the repo list for logging
         user_repos=$repos
         repos="$repos --enable ${satellite_repo}"
