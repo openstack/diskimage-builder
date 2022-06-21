@@ -156,6 +156,29 @@ if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
     fi
 fi
 
+# Ensure paths in BLS entries account for /boot being a partition or part of the
+# root partition
+if [[ -e /boot/loader/entries ]]; then
+    pushd /boot/loader/entries
+    set +e
+    mountpoint /boot
+    bootmount=$?
+
+    for entry in *; do
+        if [[ $bootmount -eq 0 ]]; then
+            sed -i "s| /boot/vmlinuz| /vmlinuz|" $entry
+            sed -i "s| /boot/initramfs| /initramfs|" $entry
+        else
+            sed -i "s| /vmlinuz| /boot/vmlinuz|" $entry
+            sed -i "s| /initramfs| /boot/initramfs|" $entry
+        fi
+    done
+    set -e
+    popd
+    # Print resulting grubby output for debug purposes
+    grubby --info=ALL
+fi
+
 if [[ ! "$ARCH" =~ "ppc" ]] && [[ -z  "${DIB_BLOCK_DEVICE}" ]]; then
     echo "WARNING: No bootloader installation will occur."
     echo "To install a bootloader ensure you have included a block-device-* element"

@@ -27,11 +27,6 @@ for entry in *.conf; do
     if [[ $entry != $new_entry ]]; then
         mv $entry $new_entry
     fi
-
-    # RHEL-9 is unique in having a separate /boot partition, fix the paths to assume
-    # /boot will be in the root partition.
-    sed -i "s| /vmlinuz| /boot/vmlinuz|" $new_entry
-    sed -i "s| /initramfs| /boot/initramfs|" $new_entry
 done
 popd
 
