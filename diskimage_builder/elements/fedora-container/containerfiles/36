@@ -1,0 +1,3 @@
+FROM docker.io/library/fedora:36
+
+RUN dnf install -y findutils util-linux

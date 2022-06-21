@@ -115,7 +115,7 @@
         # mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
-    name: dib-nodepool-functional-openstack-fedora-35-containerfile-src
+    name: dib-nodepool-functional-openstack-fedora-36-containerfile-src
     description: |
       Test building and booting an Fedora image from a
       containerfile with Nodepool and OpenStack (using released
@@ -124,8 +124,8 @@
     vars:
       nodepool_debug: true
       nodepool_diskimage:
-        base_element: fedora-container
-        release: '35'
+        base_element : fedora-container
+        release: '36'
 
 - job:
     name: dib-nodepool-functional-openstack-rockylinux-8-containerfile-src
