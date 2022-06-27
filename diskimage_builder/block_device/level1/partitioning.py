@@ -23,6 +23,7 @@ from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
 from diskimage_builder.block_device.utils import parse_rel_size_spec
+from diskimage_builder.block_device.utils import remove_device
 
 
 logger = logging.getLogger(__name__)
@@ -117,10 +118,11 @@ class Partitioning(PluginBase):
                 # below once we're done.  So the device this partition
                 # will be seen at becomes "/dev/mapper/loop0pX"
                 assert self.device_path[:5] == "/dev/"
-                partition_device_name = "/dev/mapper/%sp%d" % \
-                                        (self.device_path[5:], part_no)
+                device_name = "%sp%d" % (self.device_path[5:], part_no)
+                device_path = "/dev/mapper/%s" % device_name
                 self.state['blockdev'][part_name] \
-                    = {'device': partition_device_name}
+                    = {'device': device_path}
+                part_cfg.add_rollback(remove_device, device_name)
 
     def _create_gpt(self):
         """Create partitions with GPT"""
@@ -158,14 +160,16 @@ class Partitioning(PluginBase):
             # below once we're done.  So the device this partition
             # will be seen at becomes "/dev/mapper/loop0pX"
             assert self.device_path[:5] == "/dev/"
-            device_name = "/dev/mapper/%sp%d" % (self.device_path[5:], pnum)
+            device_name = "%sp%d" % (self.device_path[5:], pnum)
+            device_path = "/dev/mapper/%s" % device_name
             self.state['blockdev'][p.get_name()] \
-                = {'device': device_name}
+                = {'device': device_path}
 
             disk_free = disk_free - size
             pnum = pnum + 1
             logger.debug("Partition %s added, %s remaining in disk",
                          pnum, disk_free)
+            p.add_rollback(remove_device, device_name)
 
         logger.debug("cmd: %s", ' '.join(cmd))
         exec_sudo(cmd)
