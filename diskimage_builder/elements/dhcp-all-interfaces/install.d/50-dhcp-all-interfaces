@@ -9,12 +9,21 @@ set -o pipefail
 SCRIPTDIR=$(dirname $0)
 
 if [ -e "/etc/redhat-release" ]; then
-    # NOTE(TheJulia): While the internal client which every networkmanager user
-    # should have is internal, dhclient has better behavior which includes
-    # shutting down the port between retries which is critical for recovery
-    # from LACP port blocking situations. As such, we'll force it to dhclient.
+    # NOTE(TheJulia): RHEL, prior to RHEL8 used dhclient by default launched
+    # by NetworkManager. In RHEL8, this default switched to the "internal"
+    # dhcp client. 
+    # This is problematic in RHEL8, with port blocking situations as dhclient
+    # has better behavior which includes shutting down the port between
+    # retries which is critical for recovery from LACP port blocking
+    # situations. As such, we'll force it to dhclient.
     # For more information, see https://storyboard.openstack.org/#!/story/2008001
-    DIB_DHCP_CLIENT=${DIB_DHCP_CLIENT:-dhclient}
+    if [[ '7' =~ ${DIB_RELEASE} ]]; then
+        DIB_DHCP_CLIENT=${DIB_DHCP_CLIENT:-dhclient}
+    elif [[ '8' =~ ${DIB_RELEASE} ]]; then
+        DIB_DHCP_CLIENT=${DIB_DHCP_CLIENT:-dhclient}
+    fi
+    # NOTE(TheJulia): Centos 9-stream/RHEL9, appear to need to leverage the
+    # internal interface. See: https://storyboard.openstack.org/#!/story/2010109
 fi
 
 
