@@ -39,3 +39,13 @@ DIB_DHCP_NETWORK_MANAGER_AUTO
    auto-configure any interface with no configuration, it will use DHCP for
    IPv4 and Router Advertisements to decide how to initialize IPv6.
   :Example: DIB_DHCP_NETWORK_MANAGER_AUTO=true
+
+DIB_DHCP_CLIENT
+  :Required: no
+  :Default: internal
+  :Description: When NetworkManager is in use, this setting conveys which DHCP
+   client is in use for acquiring a DHCP address for the node. In some specific
+   cases, where known that dhclient is the tested or most compatible default,
+   specifically for Centos 7, 8, and 8-Stream, as well as derived distributions.
+   Otherwise, the "internal" dhcp client is the default.
+  :Example: DIB_DHCP_CLIENT
