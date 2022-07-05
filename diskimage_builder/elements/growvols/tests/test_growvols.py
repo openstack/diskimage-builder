@@ -114,6 +114,28 @@ SGDISK_LARGEST = "%s\n%s\n" % (SECTOR_START, SECTOR_END)
 # output of vgs --noheadings --options vg_name
 VGS = "  vg\n"
 
+# output of lvs --noheadings --options lv_name,lv_dm_path,lv_attr,pool_lv
+LVS = '''
+  lv_audit    /dev/mapper/vg-lv_audit    Vwi-aotz--
+  lv_home     /dev/mapper/vg-lv_home     Vwi-aotz--
+  lv_log      /dev/mapper/vg-lv_log      Vwi-aotz--
+  lv_root     /dev/mapper/vg-lv_root     Vwi-aotz--
+  lv_srv      /dev/mapper/vg-lv_srv      Vwi-aotz--
+  lv_tmp      /dev/mapper/vg-lv_tmp      Vwi-aotz--
+  lv_var      /dev/mapper/vg-lv_var      Vwi-aotz--
+'''
+
+LVS_THIN = '''
+  lv_audit    /dev/mapper/vg-lv_audit    Vwi-aotz-- lv_thinpool
+  lv_home     /dev/mapper/vg-lv_home     Vwi-aotz-- lv_thinpool
+  lv_log      /dev/mapper/vg-lv_log      Vwi-aotz-- lv_thinpool
+  lv_root     /dev/mapper/vg-lv_root     Vwi-aotz-- lv_thinpool
+  lv_srv      /dev/mapper/vg-lv_srv      Vwi-aotz-- lv_thinpool
+  lv_thinpool /dev/mapper/vg-lv_thinpool twi-aotz--
+  lv_tmp      /dev/mapper/vg-lv_tmp      Vwi-aotz-- lv_thinpool
+  lv_var      /dev/mapper/vg-lv_var      Vwi-aotz-- lv_thinpool
+'''
+
 
 class TestGrowvols(base.BaseTestCase):
 
@@ -360,30 +382,30 @@ class TestGrowvols(base.BaseTestCase):
         # buy default, assign all to /
         opts.grow_vols = ['']
         self.assertEqual(
-            {'/dev/lv/lv_root': fidy_g},
-            growvols.find_grow_vols(opts, DEVICES, 'lv', fidy_g)
+            {'/dev/mapper/vg-lv_root': fidy_g},
+            growvols.find_grow_vols(opts, DEVICES, 'vg', fidy_g)
         )
 
         # assign to /home, /var, remainder to /
         opts.grow_vols = ['/home=20%', 'fs_var=40%']
         self.assertEqual(
             {
-                '/dev/lv/lv_home': ten_g,
-                '/dev/lv/lv_var': ten_g * 2,
-                '/dev/lv/lv_root': ten_g * 2
+                '/dev/mapper/vg-lv_home': ten_g,
+                '/dev/mapper/vg-lv_var': ten_g * 2,
+                '/dev/mapper/vg-lv_root': ten_g * 2
             },
-            growvols.find_grow_vols(opts, DEVICES, 'lv', fidy_g)
+            growvols.find_grow_vols(opts, DEVICES, 'vg', fidy_g)
         )
 
         # assign to /home, /var, /tmp by amount
         opts.grow_vols = ['/home=19GiB', 'fs_var=30GiB', '/tmp=1GiB']
         self.assertEqual(
             {
-                '/dev/lv/lv_home': one_g * 19,
-                '/dev/lv/lv_var': one_g * 30,
-                '/dev/lv/lv_tmp': one_g
+                '/dev/mapper/vg-lv_home': one_g * 19,
+                '/dev/mapper/vg-lv_var': one_g * 30,
+                '/dev/mapper/vg-lv_tmp': one_g
             },
-            growvols.find_grow_vols(opts, DEVICES, 'lv', fidy_g)
+            growvols.find_grow_vols(opts, DEVICES, 'vg', fidy_g)
         )
 
     @mock.patch('builtins.open', autospec=True)
@@ -400,6 +422,41 @@ class TestGrowvols(base.BaseTestCase):
         mock_open.side_effect = FileNotFoundError
         self.assertRaises(FileNotFoundError, growvols.find_sector_size, 'sdx')
 
+    @mock.patch('growvols.execute')
+    def test_find_thin_pool(self, mock_execute):
+        # No thin pool
+        mock_execute.return_value = LVS
+        self.assertIsNone(growvols.find_thin_pool(DEVICES, 'vg'))
+        mock_execute.assert_called_once_with([
+            'lvs', '--noheadings', '--options',
+            'lv_name,lv_dm_path,lv_attr,pool_lv'])
+
+        # One thin pool, all volumes use it
+        mock_execute.return_value = LVS_THIN
+        self.assertEqual('/dev/mapper/vg-lv_thinpool',
+                         growvols.find_thin_pool(DEVICES, 'vg'))
+
+        # One pool, not used by all volumes
+        mock_execute.return_value = '''
+  lv_thinpool /dev/mapper/vg-lv_thinpool twi-aotz--
+  lv_home     /dev/mapper/vg-lv_home     Vwi-aotz--
+  lv_root     /dev/mapper/vg-lv_root     Vwi-aotz-- lv_thinpool'''
+        e = self.assertRaises(Exception, growvols.find_thin_pool,
+                              DEVICES, 'vg')
+        self.assertEqual('All volumes need to be in pool lv_thinpool. '
+                         'lv_home is in pool None', str(e))
+
+        # Two pools, volumes use both
+        mock_execute.return_value = '''
+  lv_thin1 /dev/mapper/vg-lv_thin1 twi-aotz--
+  lv_thin2 /dev/mapper/vg-lv_thin2 twi-aotz--
+  lv_home  /dev/mapper/vg-lv_home  Vwi-aotz-- lv_thin2
+  lv_root  /dev/mapper/vg-lv_root  Vwi-aotz-- lv_thin1'''
+        e = self.assertRaises(Exception, growvols.find_thin_pool,
+                              DEVICES, 'vg')
+        self.assertEqual('All volumes need to be in pool lv_thin1. '
+                         'lv_home is in pool lv_thin2', str(e))
+
     @mock.patch('growvols.find_sector_size')
     @mock.patch('growvols.execute')
     def test_main(self, mock_execute, mock_sector_size):
@@ -410,6 +467,7 @@ class TestGrowvols(base.BaseTestCase):
             LSBLK,
             SGDISK_LARGEST,
             VGS,
+            LVS,
         ]
         growvols.main(['growvols', '--noop'])
         mock_execute.assert_has_calls([
@@ -418,6 +476,8 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
+            mock.call(['lvs', '--noheadings', '--options',
+                       'lv_name,lv_dm_path,lv_attr,pool_lv'])
         ])
 
         # no arguments, assign all to /
@@ -426,6 +486,7 @@ class TestGrowvols(base.BaseTestCase):
             LSBLK,
             SGDISK_LARGEST,
             VGS,
+            LVS,
             '', '', '', '', '', ''
         ]
         growvols.main(['growvols', '--yes'])
@@ -435,14 +496,16 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
+            mock.call(['lvs', '--noheadings', '--options',
+                       'lv_name,lv_dm_path,lv_attr,pool_lv']),
             mock.call(['sgdisk', '--new=5:79267840:488265727',
                        '--change-name=5:growvols', '/dev/sda']),
             mock.call(['partprobe']),
             mock.call(['pvcreate', '/dev/sda5']),
             mock.call(['vgextend', 'vg', '/dev/sda5']),
             mock.call(['lvextend', '--size', '+209404821504B',
-                       '/dev/vg/lv_root', '/dev/sda5']),
-            mock.call(['xfs_growfs', '/dev/vg/lv_root'])
+                       '/dev/mapper/vg-lv_root', '/dev/sda5']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_root'])
         ])
 
         # assign to /home, /var, remainder to /
@@ -451,6 +514,7 @@ class TestGrowvols(base.BaseTestCase):
             LSBLK,
             SGDISK_LARGEST,
             VGS,
+            LVS,
             '', '', '', '', '', '', '', '', '', ''
         ]
         growvols.main(['growvols', '--yes', '--group', 'vg',
@@ -461,20 +525,22 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
+            mock.call(['lvs', '--noheadings', '--options',
+                       'lv_name,lv_dm_path,lv_attr,pool_lv']),
             mock.call(['sgdisk', '--new=5:79267840:488265727',
                        '--change-name=5:growvols', '/dev/sda']),
             mock.call(['partprobe']),
             mock.call(['pvcreate', '/dev/sda5']),
             mock.call(['vgextend', 'vg', '/dev/sda5']),
             mock.call(['lvextend', '--size', '+41880125440B',
-                       '/dev/vg/lv_home', '/dev/sda5']),
+                       '/dev/mapper/vg-lv_home', '/dev/sda5']),
             mock.call(['lvextend', '--size', '+83760250880B',
-                       '/dev/vg/lv_var', '/dev/sda5']),
+                       '/dev/mapper/vg-lv_var', '/dev/sda5']),
             mock.call(['lvextend', '--size', '+83764445184B',
-                       '/dev/vg/lv_root', '/dev/sda5']),
-            mock.call(['xfs_growfs', '/dev/vg/lv_home']),
-            mock.call(['xfs_growfs', '/dev/vg/lv_var']),
-            mock.call(['xfs_growfs', '/dev/vg/lv_root']),
+                       '/dev/mapper/vg-lv_root', '/dev/sda5']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_root']),
         ])
 
         # no space to grow, failed
@@ -485,6 +551,7 @@ class TestGrowvols(base.BaseTestCase):
             LSBLK,
             sgdisk_largest,
             VGS,
+            LVS,
         ]
         self.assertEqual(
             2,
@@ -496,8 +563,51 @@ class TestGrowvols(base.BaseTestCase):
             LSBLK,
             sgdisk_largest,
             VGS,
+            LVS,
         ]
         self.assertEqual(
             0,
             growvols.main(['growvols'])
         )
+
+    @mock.patch('growvols.find_sector_size')
+    @mock.patch('growvols.execute')
+    def test_main_thin_provision(self, mock_execute, mock_sector_size):
+        mock_sector_size.return_value = 512
+
+        # assign to /home, /var, remainder to /
+        mock_execute.reset_mock()
+        mock_execute.side_effect = [
+            LSBLK,
+            SGDISK_LARGEST,
+            VGS,
+            LVS_THIN,
+            '', '', '', '', '', '', '', '', '', '', ''
+        ]
+        growvols.main(['growvols', '--yes', '--group', 'vg',
+                       '/home=20%', 'fs_var=40%'])
+        mock_execute.assert_has_calls([
+            mock.call(['lsblk', '-Po',
+                       'kname,pkname,name,label,type,fstype,mountpoint']),
+            mock.call(['sgdisk', '--first-aligned-in-largest',
+                       '--end-of-largest', '/dev/sda']),
+            mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
+            mock.call(['lvs', '--noheadings', '--options',
+                       'lv_name,lv_dm_path,lv_attr,pool_lv']),
+            mock.call(['sgdisk', '--new=5:79267840:488265727',
+                       '--change-name=5:growvols', '/dev/sda']),
+            mock.call(['partprobe']),
+            mock.call(['pvcreate', '/dev/sda5']),
+            mock.call(['vgextend', 'vg', '/dev/sda5']),
+            mock.call(['lvextend', '-L+209404821504B',
+                       '/dev/mapper/vg-lv_thinpool', '/dev/sda5']),
+            mock.call(['lvextend', '--size', '+41880125440B',
+                       '/dev/mapper/vg-lv_home']),
+            mock.call(['lvextend', '--size', '+83760250880B',
+                       '/dev/mapper/vg-lv_var']),
+            mock.call(['lvextend', '--size', '+83764445184B',
+                       '/dev/mapper/vg-lv_root']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_root']),
+        ])
