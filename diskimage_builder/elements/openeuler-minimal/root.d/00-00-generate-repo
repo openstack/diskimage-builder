@@ -11,17 +11,18 @@ set -o pipefail
 yum_repos_dir="$(dirname $0)/../yum.repos.d"
 mkdir -p $yum_repos_dir
 
+REPO_URL=${DIB_DISTRIBUTION_MIRROR:-http://repo.openeuler.org}
 repo_file=$(mktemp)
 cat > $repo_file << EOF
 [OS]
 name=openEuler-$DIB_RELEASE - OS
-baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/
+baseurl=${REPO_URL}/openEuler-$DIB_RELEASE/OS/\$basearch/
 enabled=1
 gpgcheck=0
 
 [update]
 name=openEuler-$DIB_RELEASE - update
-baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/update/\$basearch/
+baseurl=${REPO_URL}/openEuler-$DIB_RELEASE/update/\$basearch/
 enabled=1
 gpgcheck=0
 EOF
