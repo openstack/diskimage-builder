@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# gentoo
+if [ "${DISTRO_NAME}" == "gentoo" ]; then
+  for service_name in "${DIB_ENABLE_SERVICES}"; do
+    if [[ "${DIB_INIT_SYSTEM}" == "openrc" ]]; then
+      rc-update add ${service_name} default
+    fi
+
+    if [[ "${DIB_INIT_SYSTEM}" == "systemd" ]]; then
+      systemctl enable ${service_name}.service
+    fi
+  done
+fi
