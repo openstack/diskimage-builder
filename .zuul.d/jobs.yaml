@@ -153,6 +153,23 @@
     nodeset: ubuntu-focal
 
 - job:
+    name: dib-nodepool-functional-openstack-rockylinux-9-containerfile-src
+    description: |
+      Test building and booting a Rocky Linux image from a
+      containerfile with Nodepool and OpenStack (using released
+      libraries)
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_debug: true
+      nodepool_diskimage:
+        base_element: rocky-container
+        release: '9'
+    # NOTE(ianw) 2022-07-11 : something in jammy has broken running
+    # podman inside docker.  Investigations continue, but force this
+    # back for now.
+    nodeset: ubuntu-focal
+
+- job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src
     description: |
       Test building and booting an Ubuntu xenial image with Nodepool
