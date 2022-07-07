@@ -11,9 +11,7 @@ if [ "${DISTRO_NAME}" == "gentoo" ]; then
   for service_name in "${DIB_ENABLE_SERVICES}"; do
     if [[ "${DIB_INIT_SYSTEM}" == "openrc" ]]; then
       rc-update add ${service_name} default
-    fi
-
-    if [[ "${DIB_INIT_SYSTEM}" == "systemd" ]]; then
+    elif [[ "${DIB_INIT_SYSTEM}" == "systemd" ]]; then
       systemctl enable ${service_name}.service
     fi
   done
