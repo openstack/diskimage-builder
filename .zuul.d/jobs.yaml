@@ -126,6 +126,10 @@
       nodepool_diskimage:
         base_element : fedora-container
         release: '36'
+    # NOTE(ianw) 2022-07-11 : something in jammy has broken running
+    # podman inside docker.  Investigations continue, but force this
+    # back for now.
+    nodeset: ubuntu-focal
 
 - job:
     name: dib-nodepool-functional-openstack-rockylinux-8-containerfile-src
@@ -139,6 +143,10 @@
       nodepool_diskimage:
         base_element: rocky-container
         release: '8'
+    # NOTE(ianw) 2022-07-11 : something in jammy has broken running
+    # podman inside docker.  Investigations continue, but force this
+    # back for now.
+    nodeset: ubuntu-focal
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src
