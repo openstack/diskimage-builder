@@ -41,10 +41,10 @@ function get_ubuntu_tarball() {
             $TMP_HOOKS_PATH/bin/cache-url \
                 $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
             pushd $DIB_IMAGE_CACHE
-            if ! grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check - ; then
+            if ! grep "${BASE_IMAGE_FILE}$" $CACHED_SUMS | sha256sum --check - ; then
                 $TMP_HOOKS_PATH/bin/cache-url -f \
                     $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
-                grep "$BASE_IMAGE_FILE" $CACHED_SUMS | sha256sum --check -
+                grep "${BASE_IMAGE_FILE}$" $CACHED_SUMS | sha256sum --check -
             fi
         fi
         IMAGE_PATH=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
