@@ -3,7 +3,7 @@ export DISTRO_NAME=gentoo
 export EFI_BOOT_DIR="EFI/gentoo"
 export GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/17.1'}
 export GENTOO_PORTAGE_CLEANUP=${GENTOO_PORTAGE_CLEANUP:-'True'}
-export GENTOO_PYTHON_TARGETS=${GENTOO_PYTHON_TARGETS:-'python3_10'}
+export GENTOO_PYTHON_TARGETS=${GENTOO_PYTHON_TARGETS:-''}
 export GENTOO_OVERLAYS=${GENTOO_OVERLAYS:-''}
 export GENTOO_EMERGE_DEFAULT_OPTS=${GENTOO_EMERGE_DEFAULT_OPTS:-"--binpkg-respect-use --rebuilt-binaries=y --usepkg=y --with-bdeps=y --binpkg-changed-deps=y --quiet --jobs=2 --autounmask=n"}
 

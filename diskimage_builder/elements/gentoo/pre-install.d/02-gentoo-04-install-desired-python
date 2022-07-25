@@ -6,34 +6,34 @@ fi
 set -eu
 set -o pipefail
 
-if mountpoint -q /dev/shm; then
-    echo "/dev/shm found in /proc/self/mountinfo"
-elif [[ -k /dev/shm ]]; then
-    echo "/dev/shm exists and is stickied"
-else
-    fix_shm
+if [[ ${GENTOO_PYTHON_TARGETS} != '' ]]; then
+    if mountpoint -q /dev/shm; then
+        echo "/dev/shm found in /proc/self/mountinfo"
+    elif [[ -k /dev/shm ]]; then
+        echo "/dev/shm exists and is stickied"
+    else
+        fix_shm
+    fi
+
+    [[ ! -f ${PORTDIR}/profiles ]] && emerge-webrsync -q
+
+    # set active python targets
+    echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
+
+    # install portage first due to bug in env vars not being passed when portage installs itself and re-inits
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --update --newuse --deep sys-apps/portage
+    # set the active python version
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --nodeps dev-lang/python-exec dev-lang/python-exec-conf
+    echo yes | etc-update --automode -3 /etc/python-exec/python-exec.conf
+
+    # make world consistant
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world
+    # rebuild packages that might need it
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
+    # remove unneeded packages
+    emerge --verbose=n --depclean
+    # rebuild packages that might have somehow depended on the unneeded packages
+    emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
+
+    unfix_shm
 fi
-
-[[ ! -f ${PORTDIR}/profiles ]] && emerge-webrsync -q
-
-# set active python targets
-echo "PYTHON_TARGETS=\"${GENTOO_PYTHON_TARGETS}\"" >> /etc/portage/make.conf
-# disable python in git if we have to, it only supports python-2.7
-[[ "${GENTOO_PYTHON_TARGETS}" != *"python2_7"* ]] && echo 'dev-vcs/git -python' >> /etc/portage/package.use/git
-
-# install portage first due to bug in env vars not being passed when portage installs itself and re-inits
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --update --newuse --deep sys-apps/portage
-# set the active python version
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --oneshot --update --newuse --nodeps dev-lang/python-exec dev-lang/python-exec-conf
-echo yes | etc-update --automode -3 /etc/python-exec/python-exec.conf
-
-# make world consistant
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world
-# rebuild packages that might need it
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
-# remove unneeded packages
-emerge --verbose=n --depclean
-# rebuild packages that might have somehow depended on the unneeded packages
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
-
-unfix_shm
