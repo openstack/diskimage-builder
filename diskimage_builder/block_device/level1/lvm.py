@@ -19,7 +19,9 @@ from diskimage_builder.block_device.exception \
 from diskimage_builder.block_device.plugin import NodeBase
 from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
+from diskimage_builder.block_device.utils import parse_abs_size_spec
 
+PHYSICAL_EXTENT_BYTES = parse_abs_size_spec('4MiB')
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +182,8 @@ class LvsNode(NodeBase):
         :param state: global state pointer
         :param base: the parent volume group
         :param options: options passed to lvcreate
-        :param size: size of the LV, in MB (this or extents must be provided)
+        :param size: size of the LV, using the supported unit types
+                     (MB, MiB, etc)
         :param extents: size of the LV in extents
         """
         super(LvsNode, self).__init__(name, state)
@@ -193,7 +196,10 @@ class LvsNode(NodeBase):
         cmd = ["lvcreate", ]
         cmd.extend(['--name', self.name])
         if self.size:
-            cmd.extend(['-L', self.size])
+            size = parse_abs_size_spec(self.size)
+            # ensuire size aligns with physical extents
+            size = size - size % PHYSICAL_EXTENT_BYTES
+            cmd.extend(['-L', '%dB' % size])
         elif self.extents:
             cmd.extend(['-l', self.extents])
         if self.options:

@@ -104,12 +104,18 @@ class TestLVM(tc.TestGraphGeneration):
             mock.call(['vgcreate', 'vg',
                        '/dev/fake/root', '/dev/fake/data', '--force']),
             # create a bunch of lv's on vg
-            mock.call(['lvcreate', '--name', 'lv_root', '-L', '1800M', 'vg']),
-            mock.call(['lvcreate', '--name', 'lv_tmp', '-L', '100M', 'vg']),
-            mock.call(['lvcreate', '--name', 'lv_var', '-L', '500M', 'vg']),
-            mock.call(['lvcreate', '--name', 'lv_log', '-L', '100M', 'vg']),
-            mock.call(['lvcreate', '--name', 'lv_audit', '-L', '100M', 'vg']),
-            mock.call(['lvcreate', '--name', 'lv_home', '-L', '200M', 'vg'])]
+            mock.call(['lvcreate', '--name', 'lv_root', '-L', '1799356416B',
+                       'vg']),
+            mock.call(['lvcreate', '--name', 'lv_tmp', '-L', '96468992B',
+                       'vg']),
+            mock.call(['lvcreate', '--name', 'lv_var', '-L', '499122176B',
+                       'vg']),
+            mock.call(['lvcreate', '--name', 'lv_log', '-L', '96468992B',
+                       'vg']),
+            mock.call(['lvcreate', '--name', 'lv_audit', '-L', '96468992B',
+                       'vg']),
+            mock.call(['lvcreate', '--name', 'lv_home', '-L', '197132288B',
+                       'vg'])]
 
         self.assertEqual(mock_exec_sudo.call_count, len(cmd_sequence))
         mock_exec_sudo.assert_has_calls(cmd_sequence)
@@ -216,17 +222,17 @@ class TestLVM(tc.TestGraphGeneration):
                            '/dev/fake/data', '--force']),
                 # create a bunch of lv's on vg
                 mock.call(['lvcreate', '--name', 'lv_root',
-                           '-L', '1800M', 'vg1']),
+                           '-L', '1799356416B', 'vg1']),
                 mock.call(['lvcreate', '--name', 'lv_tmp',
-                           '-L', '100M', 'vg1']),
+                           '-L', '96468992B', 'vg1']),
                 mock.call(['lvcreate', '--name', 'lv_var',
-                           '-L', '500M', 'vg2']),
+                           '-L', '499122176B', 'vg2']),
                 mock.call(['lvcreate', '--name', 'lv_log',
-                           '-L', '100M', 'vg2']),
+                           '-L', '96468992B', 'vg2']),
                 mock.call(['lvcreate', '--name', 'lv_audit',
-                           '-L', '100M', 'vg2']),
+                           '-L', '96468992B', 'vg2']),
                 mock.call(['lvcreate', '--name', 'lv_home',
-                           '-L', '200M', 'vg2'])]
+                           '-L', '197132288B', 'vg2'])]
 
             self.assertListEqual(mock_exec_sudo.call_args_list,
                                  cmd_sequence)
@@ -389,9 +395,9 @@ class TestLVM(tc.TestGraphGeneration):
                            '/dev/fake/data1', '/dev/fake/data2', '--force']),
                 # create root and data volume
                 mock.call(['lvcreate', '--name', 'lv_root',
-                           '-L', '1800M', 'vg_root']),
+                           '-L', '1799356416B', 'vg_root']),
                 mock.call(['lvcreate', '--name', 'lv_data',
-                           '-L', '2G', 'vg_data'])
+                           '-L', '1996488704B', 'vg_data'])
             ]
 
             self.assertListEqual(mock_exec_sudo.call_args_list,
