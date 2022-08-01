@@ -27,7 +27,10 @@
         - centos/8-stream-build-succeeds
         - centos/9-stream-build-succeeds
         - fedora/build-succeeds
-        - opensuse/build-succeeds
+        # NOTE(ianw) 2022-08-02 : disabled due to upstream
+        # checksum mismatches; see
+        #  https://bugzilla.suse.com/show_bug.cgi?id=1202041
+        # - opensuse/build-succeeds
         - ubuntu/bionic-build-succeeds
         - ubuntu/focal-build-succeeds
         - ubuntu/jammy-build-succeeds
