@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+if [ ${DIB_DEBUG_TRACE:-0} -gt 1 ]; then
     set -x
 fi
 set -eu
@@ -41,12 +41,21 @@ if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
     # between image tarball and host OS)
     sudo tar -C $TARGET_ROOT --numeric-owner -xf $CACHED_FILE
 else
-    echo "Fetching Base Image"
+    echo "Fetching Base Image ${BASE_IMAGE_FILE}"
     $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$SHA256SUMS_FILE $CACHED_SHA256SUMS_FILE
     $TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_FILE.tgz $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
     pushd $DIB_IMAGE_CACHE
+
     # Calculate sha256sum of downloaded image and check against content from sha256 file
     SHA256SUM=$(sha256sum ${BASE_IMAGE_FILE} | cut -d " " -f1)
-    grep -q $SHA256SUM SHA256SUMS.$BASE_IMAGE_FILE
+    SIZE=$(stat -c%s ${BASE_IMAGE_FILE})
+    echo "Base image has sha256sum:${SHA256SUM} size:${SIZE}"
+    if grep -q $SHA256SUM SHA256SUMS.$BASE_IMAGE_FILE; then
+        echo "Image downloaded successfully"
+    else
+        echo "*** Checksum mismatch"
+        cat SHA256SUMS.$BASE_IMAGE_FILE
+        exit 1
+    fi
     popd
 fi
