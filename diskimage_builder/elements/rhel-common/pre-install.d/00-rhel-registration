@@ -23,6 +23,9 @@ elif [ "${DIB_RELEASE}" == "8" ]; then
         base_repos="rhel-8-for-${arch}-appstream-rpms rhel-8-for-${arch}-baseos-rpms"
     fi
     satellite_repo="satellite-tools-6.5-for-rhel-8-${arch}-rpms"
+elif [ "${DIB_RELEASE}" == "9" ]; then
+    base_repos="rhel-9-for-${arch}-appstream-rpms rhel-9-for-${arch}-baseos-rpms"
+    satellite_repo="rhel-9-for-${arch}-highavailability-rpms"
 fi
 
 REG_SAT_CERT=${REG_SAT_CERT:-"katello-ca-consumer-latest.noarch.rpm"}
