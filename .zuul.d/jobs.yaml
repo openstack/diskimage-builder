@@ -22,7 +22,7 @@
     vars:
       dib_functests:
         - containerfile/jammy-build-succeeds
-        - openeuler-minimal/20.03-LTS-SP2-build-succeeds
+        - openeuler-minimal/22.03-LTS-build-succeeds
         # Image based tests
         - centos/8-stream-build-succeeds
         - centos/9-stream-build-succeeds
@@ -60,7 +60,7 @@
       dib_functests:
         - centos-minimal/8-stream-aarch64-build-succeeds
         - centos-minimal/9-stream-aarch64-build-succeeds
-        - openeuler-minimal/20.03-LTS-SP2-build-succeeds
+        - openeuler-minimal/22.03-LTS-build-succeeds
 
 #
 # Build and boot functional tests

@@ -101,7 +101,7 @@ We run functional (build-only) tests on the following elements and
 versions:
 
 * ``containerfile``: Ubuntu Focal
-* ``openeuler-minimal``: 20.03-LTS-SP2
+* ``openeuler-minimal``: 22.03-LTS
 * ``centos`` : (image-based build) 8-stream and 9-stream
 * ``fedora`` : (image-based build) latest
 * ``opensuse`` : 15.3
@@ -112,7 +112,7 @@ For ARM64, we also run functional tests on
 * ``ubuntu-minimal`` : Bionic and Focal
 * ``debian-minimal`` : Bullseye
 * ``centos-minimal`` : 8-stream and 9-stream
-* ``openeuler-minimal``: 20.03-LTS-SP2
+* ``openeuler-minimal``: 22.03-LTS
 
 For additional details, see the ``README`` file of the relevant
 elements.
