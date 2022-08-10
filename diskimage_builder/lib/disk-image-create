@@ -533,6 +533,8 @@ LOOPDEV=${IMAGE_BLOCK_DEVICE}
 # (IMAGE_BLOCK_DEVICE) and mounted all the partitions under
 # $TMP_BUILD_DIR/mnt for us.  We can now copy into the final image.
 
+echo "Start to copy data into raw image"
+
 # 'mv' is not usable here - especially when a top level directory
 # has the same name as a mount point of a partition.  If so, 'mv'
 # will complain:
@@ -541,6 +543,8 @@ LOOPDEV=${IMAGE_BLOCK_DEVICE}
 # therefore a 'cp' and 'rm' approach is used.
 sudo cp -ra ${TMP_BUILD_DIR}/built/* $TMP_BUILD_DIR/mnt
 sudo rm -fr ${TMP_BUILD_DIR}/built/*
+
+echo "Finish copying data into raw image"
 
 mount_proc_dev_sys
 run_d pre-finalise
