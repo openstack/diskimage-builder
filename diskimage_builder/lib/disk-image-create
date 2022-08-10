@@ -533,14 +533,7 @@ LOOPDEV=${IMAGE_BLOCK_DEVICE}
 # (IMAGE_BLOCK_DEVICE) and mounted all the partitions under
 # $TMP_BUILD_DIR/mnt for us.  We can now copy into the final image.
 
-# 'mv' is not usable here - especially when a top level directory
-# has the same name as a mount point of a partition.  If so, 'mv'
-# will complain:
-# mv: inter-device move failed: '...' to '...'; \
-#       unable to remove target: Device or resource busy
-# therefore a 'cp' and 'rm' approach is used.
-sudo cp -ra ${TMP_BUILD_DIR}/built/* $TMP_BUILD_DIR/mnt
-sudo rm -fr ${TMP_BUILD_DIR}/built/*
+sudo mv ${TMP_BUILD_DIR}/built/* $TMP_BUILD_DIR/mnt
 
 mount_proc_dev_sys
 run_d pre-finalise
