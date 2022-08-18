@@ -6,8 +6,7 @@ RUN systemctl unmask console-getty.service dev-hugepages.mount \
     getty.target sys-fs-fuse-connections.mount systemd-logind.service \
     systemd-remount-fs.service
 
-# NOTE(neilhanlon) 2022-08-02
-# Unlike with the RL8 image, there does not appear to be a requirement to
-# populate /etc/machine-id in order for /bin/kernel-install to correctly copy
-# kernels into /boot. As a result, we will not run the machine setup
-# systemd-machine-id-setup script
+# /etc/machine-id needs to be populated for /bin/kernel-install to
+# correctly copy kernels into /boot.  We will clear this out in the
+# final image.
+RUN systemd-machine-id-setup
