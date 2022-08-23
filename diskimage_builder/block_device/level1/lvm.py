@@ -20,6 +20,7 @@ from diskimage_builder.block_device.plugin import NodeBase
 from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
+from diskimage_builder.block_device.utils import remove_device
 
 PHYSICAL_EXTENT_BYTES = parse_abs_size_spec('4MiB')
 
@@ -211,13 +212,15 @@ class LvsNode(NodeBase):
         exec_sudo(cmd)
 
         # save state
+        device_name = '%s-%s' % (self.base, self.name)
         self.state['blockdev'][self.name] = {
             'vgs': self.base,
             'size': self.size,
             'extents': self.extents,
             'opts': self.options,
-            'device': '/dev/mapper/%s-%s' % (self.base, self.name)
+            'device': '/dev/mapper/%s' % device_name
         }
+        self.add_rollback(remove_device, device_name)
 
     def _umount(self):
         exec_sudo(['lvchange', '-an',

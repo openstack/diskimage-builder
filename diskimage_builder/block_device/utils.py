@@ -143,3 +143,20 @@ def exec_sudo(cmd):
         raise e
 
     return out
+
+
+def remove_device(device_name):
+    """Attempt to remove a device-mapper device
+
+    Convenience rollback function to attempt to delete a device,
+    logging a warning if the delete fails.
+
+    :param device_name: Name of device to run dmsetup remove on
+    """
+    logger.debug('Removing device %s', device_name)
+    try:
+        exec_sudo(["dmsetup", "remove", device_name])
+    except BlockDeviceSetupException as e:
+        # Do not raise an error - maybe other cleanup methods
+        # can at least do some more work.
+        logger.warning("Removing device failed (%s)", e.returncode)
