@@ -178,7 +178,7 @@ def _expand_element_dependencies(user_elements, all_elements):
         raise MissingOSException("Please include an operating system element")
 
     out = final_elements - provided
-    return([all_elements[element] for element in out])
+    return [all_elements[element] for element in out]
 
 
 def _find_all_elements(paths=None):

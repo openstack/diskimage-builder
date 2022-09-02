@@ -4,7 +4,8 @@ if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
     set -x
 fi
 
-set -euo pipefail
+set -eu
+set -o pipefail
 
 case "$DISTRO_NAME" in
     centos* | rhel* | rocky*)

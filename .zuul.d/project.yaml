@@ -9,7 +9,7 @@
       - tripleo-buildimage-jobs-centos-8
     check:
       jobs:
-        - openstack-tox-pylint
+        - openstack-tox-linters
         - tox-py36:
             nodeset:
               nodes:
@@ -55,7 +55,7 @@
         - dib-functests-arm64-rpm
     gate:
       jobs:
-        - openstack-tox-pylint
+        - openstack-tox-linters
         - tox-py36:
             nodeset:
               nodes:

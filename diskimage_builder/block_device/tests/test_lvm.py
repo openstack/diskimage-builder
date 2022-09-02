@@ -60,7 +60,7 @@ class TestLVM(tc.TestGraphGeneration):
                                LVMPlugin, bad_config, {}, {})
 
         bad_config = copy.deepcopy(lvm_config)
-        del(bad_config['lvs'][0]['size'])
+        del bad_config['lvs'][0]['size']
         self.assertRaisesRegex(BlockDeviceSetupException,
                                "Missing 'size' or 'extents' in lvs config",
                                LVMPlugin, bad_config, {}, {})
