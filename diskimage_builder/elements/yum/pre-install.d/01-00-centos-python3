@@ -17,7 +17,7 @@ if [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} == 7 ]]; then
     # early stage.
     yum install -y python3
     # NOTE(dpawlik) The epel-release package is not available in RHEL.
-    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum install -y ${DIB_CENTOS_7_PREINSTALL_EPEL_URL_PACKAGE:-https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm}
     yum install -y python36-PyYAML
     yum remove -y epel-release
 elif [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} > 7 ]]; then
