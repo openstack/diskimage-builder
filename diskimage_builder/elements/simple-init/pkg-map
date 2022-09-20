@@ -24,9 +24,20 @@
        "network-scripts": "network-scripts"
     }
   },
+  "release": {
+    "fedora": {
+       "36": {
+         "NetworkManager-initscripts-ifcfg-rh": "NetworkManager-initscripts-ifcfg-rh"
+       },
+       "37": {
+         "NetworkManager-initscripts-ifcfg-rh": "NetworkManager-initscripts-ifcfg-rh"
+       }
+    }
+  },
   "default": {
     "dhcp-client": "isc-dhcp-client",
     "ifupdown": "",
-    "network-scripts": ""
+    "network-scripts": "",
+    "NetworkManager-initscripts-ifcfg-rh": ""
   }
 }
