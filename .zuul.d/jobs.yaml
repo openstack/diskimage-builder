@@ -61,6 +61,7 @@
         - centos-minimal/8-stream-aarch64-build-succeeds
         - centos-minimal/9-stream-aarch64-build-succeeds
         - openeuler-minimal/22.03-LTS-build-succeeds
+        - rocky-container/rocky-9-aarch64-build-succeeds
 
 #
 # Build and boot functional tests
