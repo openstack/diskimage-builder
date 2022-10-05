@@ -14,7 +14,11 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 # The others aren't enabled and do not exist on all mirrors
 if [[ ${DIB_RELEASE} == '7' ]]; then
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\(centos\|altarch\)/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Base.repo
-# CentOS Stream releases (e.g. 8-stream, 9-stream)
+# CentOS Stream releases (9-stream)
+elif [[ ${DIB_RELEASE} =~ '9-stream' ]]; then
+    sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/centos.repo
+    sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/centos-addons.repo
+# CentOS Stream releases (8-stream)
 elif [[ ${DIB_RELEASE} =~ '-stream' ]]; then
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-BaseOS.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-AppStream.repo
