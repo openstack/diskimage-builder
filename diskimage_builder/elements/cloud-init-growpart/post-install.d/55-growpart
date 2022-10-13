@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [[ -n ${DIB_CLOUD_INIT_GROWPART_DEVICES} ]]; then
+    if [ -d /etc/cloud/cloud.cfg.d ]; then
+        cat > /etc/cloud/cloud.cfg.d/55-growpart.cfg <<EOF
+#cloud-config
+growpart:
+    mode: auto
+    devices: $DIB_CLOUD_INIT_GROWPART_DEVICES
+    ignore_growroot_disabled: false
+EOF
+    else
+        echo "The /etc/cloud/cloud.cfg.d directory must exist."
+        exit 1
+    fi
+else
+    echo "Set the device list in DIB_CLOUD_INIT_GROWPART_DEVICES."
+    exit 1
+fi
