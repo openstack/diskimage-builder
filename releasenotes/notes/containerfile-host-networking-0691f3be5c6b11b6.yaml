@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The default networking in the ``containerfile`` element is
+    switched to ``host`` as we have found that more reliable in
+    generating the initial chroot images.

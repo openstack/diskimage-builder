@@ -28,8 +28,13 @@ if [[ "${DIB_CONTAINERFILE_PODMAN_ROOT:-0}" != '0' ]]; then
     DIB_CONTAINERFILE_RUNTIME_ROOT=1
 fi
 
+# NOTE(ianw) 2022-12-15 : this used to be left blank, but we've found
+# with current podman this is the only reliable way to get networking
+# in the container we're building (needed for yum update, package
+# install, etc.).  It's less secure, but we're already running in a
+# priviledged container ...
 if [[ -z "${DIB_CONTAINERFILE_NETWORK_DRIVER:-}"  ]]; then
-    DIB_CONTAINERFILE_RUNTIME_NETWORK=""
+    DIB_CONTAINERFILE_RUNTIME_NETWORK="--network host"
 else
     DIB_CONTAINERFILE_RUNTIME_NETWORK="--network ${DIB_CONTAINERFILE_NETWORK_DRIVER:-}"
 fi

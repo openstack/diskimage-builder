@@ -15,8 +15,16 @@
               nodes:
                 - name: ubuntu-bionic
                   label: ubuntu-bionic
-        - tox-py38
-        - tox-py39
+        - tox-py38:
+            nodeset:
+              nodes:
+                - name: ubuntu-focal
+                  label: ubuntu-focal
+        - tox-py39:
+            nodeset:
+              nodes:
+                - name: ubuntu-focal
+                  label: ubuntu-focal
         - tox-py310:
             nodeset:
               nodes:
@@ -61,8 +69,16 @@
               nodes:
                 - name: ubuntu-bionic
                   label: ubuntu-bionic
-        - tox-py38
-        - tox-py39
+        - tox-py38:
+            nodeset:
+              nodes:
+                - name: ubuntu-focal
+                  label: ubuntu-focal
+        - tox-py39:
+            nodeset:
+              nodes:
+                - name: ubuntu-focal
+                  label: ubuntu-focal
         - tox-py310:
             nodeset:
               nodes:
