@@ -97,9 +97,9 @@ function extract_image() {
             fi
 
             for LOOPDEV in ${LOOPDEVS}; do
-                fstype=$(lsblk --all --nodeps --noheadings --output FSTYPE $LOOPDEV)
-                label=$(lsblk --all --nodeps --noheadings --output LABEL $LOOPDEV)
-                part_type=$(lsblk --all --nodeps --noheadings --output PARTTYPE $LOOPDEV)
+                fstype=$(sudo blkid -o value -s TYPE -p "${LOOPDEV}" 2>/dev/null)
+                label=$(sudo blkid -o value -s LABEL -p "${LOOPDEV}" 2>/dev/null)
+                part_type=$(sudo blkid -o value -s PART_ENTRY_TYPE -p "${LOOPDEV}" 2>/dev/null)
 
                 if [ -z "${fstype}" ]; then
                     # Ignore block device with no filesystem type
