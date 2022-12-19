@@ -36,11 +36,21 @@ UNITS = ['%']
 UNITS.extend(UNIT_BYTES.keys())
 AMOUNT_UNIT_RE = re.compile('^([0-9]+)(%s)$' % '|'.join(UNITS))
 
+UNIT_BYTES_FORMAT = {
+    'B': 1,
+    'KiB': 1024,
+    'MiB': 1048576,
+    'GiB': 1073741824
+}
+
 # Only create growth partition if there is at least 1GiB available
 MIN_DISK_SPACE_BYTES = UNIT_BYTES['GiB']
 
 # Default LVM physical extent size is 4MiB
 PHYSICAL_EXTENT_BYTES = 4 * UNIT_BYTES['MiB']
+
+# Grow the thin pool metadata size to 1GiB
+POOL_METADATA_SIZE = UNIT_BYTES['GiB']
 
 
 class Command(object):
@@ -172,13 +182,13 @@ def printable_cmd(cmd):
 
 
 def convert_bytes(num):
-    """Format a bytes amount with units MB, GB etc"""
-    step_unit = 1000.0
-
-    for x in ['B', 'KB', 'MB', 'GB', 'TB']:
-        if num < step_unit:
-            return "%d%s" % (num, x)
-        num /= step_unit
+    """Format a bytes amount with units GiB, MiB etc"""
+    for x in ['GiB', 'MiB', 'KiB', 'B']:
+        unit = UNIT_BYTES_FORMAT[x]
+        unit_num = num // unit
+        if unit_num > 0:
+            break
+    return "%d%s" % (unit_num, x)
 
 
 def execute(cmd):
@@ -499,9 +509,14 @@ def main(argv):
     group = find_group(opts)
     partnum = find_next_partnum(devices, disk_name)
     devname = find_next_device_name(devices, disk_name, partnum)
+    thin_pool = find_thin_pool(devices, group)
+    if thin_pool:
+        # total size available, reduced by POOL_METADATA_SIZE
+        # rounded down to whole extent
+        size_bytes -= POOL_METADATA_SIZE
+        size_bytes -= size_bytes % PHYSICAL_EXTENT_BYTES
     dev_path = '/dev/%s' % devname
     grow_vols = find_grow_vols(opts, devices, group, size_bytes)
-    thin_pool = find_thin_pool(devices, group)
 
     commands = []
 
@@ -528,14 +543,20 @@ def main(argv):
     ], 'Add physical volume %s to group %s' % (devname, group)))
 
     if thin_pool:
-        # total size available, rounded down to whole extents
-        pool_size = size_bytes - size_bytes % PHYSICAL_EXTENT_BYTES
         commands.append(Command([
             'lvextend',
-            '-L+%sB' % pool_size,
+            '--poolmetadatasize',
+            '+%sB' % POOL_METADATA_SIZE,
             thin_pool,
             dev_path
-        ], 'Add %s to thin pool %s' % (convert_bytes(pool_size),
+        ], 'Add %s to thin pool metadata %s' % (
+            convert_bytes(POOL_METADATA_SIZE), thin_pool)))
+        commands.append(Command([
+            'lvextend',
+            '-L+%sB' % size_bytes,
+            thin_pool,
+            dev_path
+        ], 'Add %s to thin pool %s' % (convert_bytes(size_bytes),
                                                      thin_pool)))
 
     for volume_path, size_bytes in grow_vols.items():
