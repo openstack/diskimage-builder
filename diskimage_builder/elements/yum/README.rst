@@ -22,20 +22,22 @@ The yum repository can also be configured by defining `DIB_YUM_REPO_PACKAGE` as
 a yum available package or a URL to an rpm file. This package can install repo
 files with any associated keys and certificates.
 
-Environment Variables for Module Selection during Image Creation
-----------------------------------------------------------------
-The following environment variable is used to select module streams to be
-enabled during an image build on Yum/DNF based distributions. Any existing
-stream for the given module is first disabled prior to enabling
-the specified stream.
+Environment Variables
+---------------------
 
-#### DIB\_DNF\_MODULE\_STREAMS
-This is a space-separated list of module streams to enable prior to any
-RPMs being installed.
+DIB_DNF_MODULE_STREAMS
+  :Required: No
+  :Default: None
+  :Description: The following environment variable is used to select module streams
+                to be enabled during an image build on Yum/DNF based distributions.Any existing
+                stream for the given module is first disabled prior to enabling the specified
+                stream.
+  :Example: ``DIB_DNF_MODULE_STREAMS='virt:8.2 container-tools:3.0'``
 
-Image Build Module Selection Example
-------------------------------------
-When using Train release on RHEL/CentOS/Fedora, one must select the appropriate
-virt and container-tools module streams:
+DIB_CENTOS_7_PREINSTALL_EPEL_URL_PACKAGE
+  :Required: No
+  :Default: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  :Description: The environment variable is used to override default value in pre-install 
+                stage to install epel repository from custom source
+  :Example: ``DIB_CENTOS_7_PREINSTALL_EPEL_URL_PACKAGE=http://repos.example.com/epel/epel-latest-7.noarch.rpm``
 
-DIB_DNF_MODULE_STREAMS='virt:8.2 container-tools:3.0'
