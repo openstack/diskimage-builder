@@ -512,9 +512,11 @@ def main(argv):
     thin_pool = find_thin_pool(devices, group)
     if thin_pool:
         # total size available, reduced by POOL_METADATA_SIZE
-        # rounded down to whole extent
+        # rounded down to whole extent and reduced by 1 extent
+        # for metadata overhead
         size_bytes -= POOL_METADATA_SIZE
         size_bytes -= size_bytes % PHYSICAL_EXTENT_BYTES
+        size_bytes -= PHYSICAL_EXTENT_BYTES
     dev_path = '/dev/%s' % devname
     grow_vols = find_grow_vols(opts, devices, group, size_bytes)
 
