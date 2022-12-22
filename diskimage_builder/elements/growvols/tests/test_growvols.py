@@ -110,6 +110,13 @@ DEVICES = [{
 SECTOR_START = 79267840
 SECTOR_END = 488265727
 SGDISK_LARGEST = "%s\n%s\n" % (SECTOR_START, SECTOR_END)
+SGDISK_V = """
+Problem: The secondary header's self-pointer indicates that it doesn't reside
+at the end of the disk. If you've added a disk to a RAID array, use the 'e'
+option on the experts' menu to adjust the secondary header's and partition
+table's locations.
+
+Identified 1 problems!"""
 
 # output of vgs --noheadings --options vg_name
 VGS = "  vg\n"
@@ -465,6 +472,9 @@ class TestGrowvols(base.BaseTestCase):
         # noop, only discover block device info
         mock_execute.side_effect = [
             LSBLK,
+            SGDISK_V,
+            '',
+            '',
             SGDISK_LARGEST,
             VGS,
             LVS,
@@ -473,6 +483,9 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.assert_has_calls([
             mock.call(['lsblk', '-Po',
                        'kname,pkname,name,label,type,fstype,mountpoint']),
+            mock.call(['sgdisk', '-v', '/dev/sda']),
+            mock.call(['sgdisk', '-e', '/dev/sda']),
+            mock.call(['partprobe']),
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
@@ -484,6 +497,7 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.reset_mock()
         mock_execute.side_effect = [
             LSBLK,
+            '',
             SGDISK_LARGEST,
             VGS,
             LVS,
@@ -493,6 +507,7 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.assert_has_calls([
             mock.call(['lsblk', '-Po',
                        'kname,pkname,name,label,type,fstype,mountpoint']),
+            mock.call(['sgdisk', '-v', '/dev/sda']),
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
@@ -512,6 +527,7 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.reset_mock()
         mock_execute.side_effect = [
             LSBLK,
+            '',
             SGDISK_LARGEST,
             VGS,
             LVS,
@@ -522,6 +538,7 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.assert_has_calls([
             mock.call(['lsblk', '-Po',
                        'kname,pkname,name,label,type,fstype,mountpoint']),
+            mock.call(['sgdisk', '-v', '/dev/sda']),
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
@@ -549,6 +566,7 @@ class TestGrowvols(base.BaseTestCase):
         sgdisk_largest = "%s\n%s\n" % (sector_start, sector_end)
         mock_execute.side_effect = [
             LSBLK,
+            '',
             sgdisk_largest,
             VGS,
             LVS,
@@ -561,6 +579,7 @@ class TestGrowvols(base.BaseTestCase):
         # no space to grow, success
         mock_execute.side_effect = [
             LSBLK,
+            '',
             sgdisk_largest,
             VGS,
             LVS,
@@ -579,6 +598,7 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.reset_mock()
         mock_execute.side_effect = [
             LSBLK,
+            '',
             SGDISK_LARGEST,
             VGS,
             LVS_THIN,
@@ -589,6 +609,7 @@ class TestGrowvols(base.BaseTestCase):
         mock_execute.assert_has_calls([
             mock.call(['lsblk', '-Po',
                        'kname,pkname,name,label,type,fstype,mountpoint']),
+            mock.call(['sgdisk', '-v', '/dev/sda']),
             mock.call(['sgdisk', '--first-aligned-in-largest',
                        '--end-of-largest', '/dev/sda']),
             mock.call(['vgs', '--noheadings', '--options', 'vg_name']),

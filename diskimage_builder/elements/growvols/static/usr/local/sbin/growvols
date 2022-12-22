@@ -269,6 +269,17 @@ def find_disk(opts, devices):
     return device
 
 
+def grow_gpt(disk_name):
+    device = '/dev/%s' % disk_name
+    output = execute(['sgdisk', '-v', device])
+
+    search_str = "it doesn't reside\nat the end of the disk"
+    if search_str in output:
+        LOG.info('Fixing GPT structure, moving to end of device %s', device)
+        execute(['sgdisk', '-e', device])
+        execute(['partprobe'])
+
+
 def find_space(disk_name):
     LOG.info('Finding spare space to grow into')
     dev_path = '/dev/%s' % disk_name
@@ -489,6 +500,8 @@ def main(argv):
     devices = find_devices()
     disk = find_disk(opts, devices)
     disk_name = disk['KNAME']
+
+    grow_gpt(disk_name)
 
     sector_bytes = find_sector_size(disk_name)
     sector_start, sector_end, size_sectors = find_space(disk_name)
