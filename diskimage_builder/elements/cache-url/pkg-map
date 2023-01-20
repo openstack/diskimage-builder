@@ -1,4 +1,9 @@
 {
+    "family": {
+        "redhat": {
+            "curl": ""
+        }
+    },
     "distro": {
         "gentoo": {
             "curl": "net-misc/curl"
