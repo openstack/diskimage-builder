@@ -316,6 +316,20 @@ class BlockDevice(object):
             print("%s" % root_fs['type'])
             return 0
 
+        if symbol == "boot-label":
+            try:
+                boot_mount = self._config_get_mount("/boot")
+                boot_fs = self._config_get_mkfs(boot_mount['base'])
+                # If not explicitly defined, we appear to fallback
+                # to name for a label, which we can only get from the
+                # resulting filesystem config.
+                boot_label = boot_fs.get('label', boot_fs.get('name', ''))
+            except AssertionError:
+                boot_label = ''
+            logger.debug("boot-label [%s]", boot_label)
+            print("%s" % boot_label)
+            return 0
+
         if symbol == 'mount-points':
             mount_points = self._config_get_all_mount_points()
             # we return the mountpoints joined by a pipe, because it is not
