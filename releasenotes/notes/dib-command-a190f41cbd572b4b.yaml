@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    A new command ``diskimage-builder`` is now provided (also aliased to
+    ``dib``). It provides a YAML file based interface to ``disk-image-create``
+    and ``ramdisk-image-create``. All arguments can be specified as yaml
+    dictionary entries, along with environment variable overrides which are
+    applied over the provided environment.
