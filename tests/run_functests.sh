@@ -6,7 +6,7 @@ set -o pipefail
 BASE_DIR=$(cd $(dirname "$0")/.. && pwd)
 
 # then execute tests for elements
-export DIB_CMD="disk-image-create"
+export DIB_CMD="diskimage-builder"
 export DIB_ELEMENTS=$(python -c '
 import diskimage_builder.paths
 diskimage_builder.paths.show_path("elements")')
@@ -111,13 +111,11 @@ function wait_minus_n {
 # in results which tests have failed.
 function logfile_status {
     local status="$1"
-    local arg="$2"
-    local filename
-    if [[ -z "${arg// }" ]]; then
+    local filename="$2"
+    if [[ -z "${filename}" ]]; then
         return
     fi
 
-    filename="$(echo $arg | cut -f2 -d' ')"
     echo "Moving ${filename} to ${filename/.log/.$status.log}"
     mv "$filename" ${filename/.log/.$status.log}
 }
@@ -132,25 +130,30 @@ function run_disk_element_test() {
     local output_format="$4"
     local logfile="$5"
 
-    local use_tmp_flag=""
     local dest_dir=$(mktemp -d)
 
     if [[ ${KEEP_OUTPUT} -ne 1 ]]; then
         trap "rm -rf $dest_dir" EXIT
     fi
 
-    if [ "${dont_use_tmp}" = "yes" ]; then
-        use_tmp_flag="--no-tmpfs"
-    fi
+    cat >> $dest_dir/image.yaml << EOF
+- imagename: $dest_dir/image
+  debug-trace: 1
+  types: [$output_format]
+  no-tmpfs: $dont_use_tmp
+  logfile: $logfile
+  skip-base: yes
+  elements:
+  - $element
+  - $test_element
+  environment:
+    DIB_SHOW_IMAGE_USAGE: "1"
+EOF
 
     if break="after-error" break_outside_target=1 \
         break_cmd="cp -v \$TMP_MOUNT_PATH/tmp/dib-test-should-fail ${dest_dir} || true" \
-        DIB_SHOW_IMAGE_USAGE=1 \
         ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -x -t ${output_format} \
-                       ${use_tmp_flag} \
-                       ${logfile} \
-                       -o $dest_dir/image -n $element $test_element 2>&1 \
+        $DIB_CMD $dest_dir/image.yaml 2>&1 \
            | log_with_prefix "${element}/${test_element}"; then
 
         if [[ "qcow2" =~ "$output_format" ]]; then
@@ -212,16 +215,18 @@ function run_ramdisk_element_test() {
     local logfile="$5"
     local dest_dir=$(mktemp -d)
 
-    local use_tmp_flag=""
-    if [ "${dont_use_tmp}" = "yes" ]; then
-        use_tmp_flag="--no-tmpfs"
-    fi
+    cat >> $dest_dir/image.yaml << EOF
+- imagename: $dest_dir/image
+  debug-trace: 1
+  no-tmpfs: $dont_use_tmp
+  logfile: $logfile
+  elements:
+  - $element
+  - $test_element
+EOF
 
     if ELEMENTS_PATH=$DIB_ELEMENTS/$element/test-elements \
-        $DIB_CMD -x -o ${dest_dir}/image \
-                       ${logfile} \
-                       ${use_tmp_flag} \
-                       ${element} ${test_element} 2>&1 \
+        $DIB_CMD $dest_dir/image.yaml 2>&1 \
             | log_with_prefix "${element}/${test_element}"; then
         # TODO(dtantsur): test also kernel presence once we sort out its naming
         # problem (vmlinuz vs kernel)
@@ -416,9 +421,9 @@ for test in "${TESTS_TO_RUN[@]}"; do
         element_output=$(cat ${element_output_override})
     fi
 
-    log_argument=' '
+    log_argument=''
     if [[ -n "${LOG_DIRECTORY}" ]]; then
-        log_argument="--logfile ${LOG_DIRECTORY}/${element}_${test_element}.log"
+        log_argument="${LOG_DIRECTORY}/${element}_${test_element}.log"
     fi
 
     echo "Running $test ($element_type)"
