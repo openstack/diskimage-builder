@@ -2,20 +2,23 @@
     name: image0
 
 - partitioning:
-      base: image0
-      name: mbr
-      label: mbr
-      partitions:
-        - name: root
-          base: image0
-          flags: [ boot, primary ]
-          size: 55%
-        - name: var
-          base: image0
-          size: 40%
-        - name: var_log
-          base: image0
-          size: 5%
+    base: image0
+    name: mbr
+    label: mbr
+    partitions:
+      - name: root
+        base: image0
+        flags: [boot, primary]
+        size: 54%
+      - name: var
+        base: image0
+        size: 40%
+      - name: var_log
+        base: image0
+        size: 5%
+      - name: swap
+        base: image0
+        size: 1%
 
 - mkfs:
     base: root
@@ -67,3 +70,20 @@
     name: fstab_mount_mkfs_var_log
     fsck-passno: 1
     options: defaults
+
+- mkfs:
+    base: swap
+    name: mkfs_swap
+    type: swap
+    uuid: swap-uuid-1234
+
+- mount:
+    base: mkfs_swap
+    name: mount_mkfs_swap
+    mount_point: none
+
+- fstab:
+    base: mount_mkfs_swap
+    name: fstab_mount_mkfs_swap
+    fsck-passno: 0
+    options: sw

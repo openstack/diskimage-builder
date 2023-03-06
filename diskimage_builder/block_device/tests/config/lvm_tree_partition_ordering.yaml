@@ -7,10 +7,10 @@
     label: mbr
     partitions:
       - name: boot
-        flags: [ boot,primary ]
+        flags: [boot, primary]
         size: 1G
       - name: root
-        flags: [ primary ]
+        flags: [primary]
         size: 3G
 
 - lvm:
@@ -27,11 +27,15 @@
     lvs:
       - name: lv_root
         base: vg
-        size: 2000M
+        size: 1900M
 
       - name: lv_var
         base: vg
         size: 500M
+
+      - name: lv_swap
+        base: vg
+        size: 100M
 
 - mkfs:
     base: boot
@@ -50,8 +54,8 @@
     mount:
       mount_point: /
       fstab:
-          options: "noacl,errors=remount-ro"
-          fsck-passno: 1
+        options: "noacl,errors=remount-ro"
+        fsck-passno: 1
 
 - mkfs:
     name: mkfs_var
@@ -60,5 +64,15 @@
     mount:
       mount_point: /var
       fstab:
-          options: "noacl"
-          fsck-passno: 2
+        options: "noacl"
+        fsck-passno: 2
+
+- mkfs:
+    name: mkfs_swap
+    base: lv_swap
+    type: "swap"
+    mount:
+      mount_point: none
+      fstab:
+        options: "sw"
+        fsck-passno: 0

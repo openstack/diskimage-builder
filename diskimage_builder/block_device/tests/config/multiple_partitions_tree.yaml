@@ -2,39 +2,48 @@
     name: image0
 
 - partitioning:
-      base: image0
-      name: mbr
-      label: mbr
-      partitions:
-        - name: root
-          flags: [ boot, primary ]
-          size: 55%
-          mkfs:
-            type: xfs
-            uuid: root-uuid-1234
-            mount:
-              mount_point: /
-              fstab:
-                options: "defaults"
-                fsck-passno: 1
-        - name: var
-          size: 40%
-          mkfs:
-            type: xfs
-            uuid: var-uuid-1234
-            mount:
-              mount_point: /var
-              fstab:
-                options: "defaults"
-                fsck-passno: 1
-        - name: var_log
-          size: 5%
-          mkfs:
-            type: vfat
-            label: varlog
-            mount:
-              mount_point: /var/log
-              fstab:
-                options: "defaults"
-                fsck-passno: 1
-
+    base: image0
+    name: mbr
+    label: mbr
+    partitions:
+      - name: root
+        flags: [boot, primary]
+        size: 54%
+        mkfs:
+          type: xfs
+          uuid: root-uuid-1234
+          mount:
+            mount_point: /
+            fstab:
+              options: "defaults"
+              fsck-passno: 1
+      - name: var
+        size: 40%
+        mkfs:
+          type: xfs
+          uuid: var-uuid-1234
+          mount:
+            mount_point: /var
+            fstab:
+              options: "defaults"
+              fsck-passno: 1
+      - name: var_log
+        size: 5%
+        mkfs:
+          type: vfat
+          label: varlog
+          mount:
+            mount_point: /var/log
+            fstab:
+              options: "defaults"
+              fsck-passno: 1
+      - name: swap
+        size: 1%
+        mkfs:
+          type: swap
+          uuid: swap-uuid-1234
+          mount:
+            mount_point: none
+            fstab:
+              fsck-passno: 0
+              options: "sw"
