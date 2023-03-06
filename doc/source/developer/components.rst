@@ -24,6 +24,60 @@ Components
 
     Ironic no longer supports images created like this.
 
+`diskimage-builder [--dry-run] [--stop-on-failure] [--help] filename.yaml [filename2.yaml...]`
+
+    A YAML defined wrapper over `disk-image-create` and `ramdisk-image-create`.
+
+    To generate kernel+ramdisk pair for use with nova-baremetal, specify the YAML:
+
+    .. code-block:: yaml
+
+        - imagename: deploy.ramdisk
+          ramdisk: true
+          elements:
+          - deploy-baremetal
+
+    Duplicate `imagename` entries are merged into a single entry, allowing customizations over
+    a base image definition. If an `imagename` is missing, the `imagename` from the previous
+    entry is implied:
+
+    .. code-block:: yaml
+
+        # base image definition
+        - imagename: output.qcow
+          elements:
+          - vm
+          - block-device-gpt
+          - ubuntu-minimal
+          debug-trace: 1
+          environment:
+            DIB_IMAGE_SIZE: '10'
+
+        # debug logging customization
+        - imagename: output.qcow
+          debug-trace: 2
+
+        # adding element customization
+        - elements:
+          - devuser
+          environment:
+            DIB_DEV_USER_USERNAME: 'myuser'
+            DIB_DEV_USER_PWDLESS_SUDO: 'Yes'
+            DIB_DEV_USER_AUTHORIZED_KEYS: '/home/myuser/.ssh/id_rsa.pub'
+
+        # resulting image entry which will be built
+        - imagename: output.qcow
+          elements:
+          - vm
+          - block-device-gpt
+          - ubuntu-minimal
+          - devuser
+          debug-trace: 2
+          environment:
+            DIB_DEV_USER_USERNAME: 'myuser'
+            DIB_DEV_USER_PWDLESS_SUDO: 'Yes'
+            DIB_DEV_USER_AUTHORIZED_KEYS: '/home/myuser/.ssh/id_rsa.pub'
+            DIB_IMAGE_SIZE: '10'
 
 `element-info`
 
