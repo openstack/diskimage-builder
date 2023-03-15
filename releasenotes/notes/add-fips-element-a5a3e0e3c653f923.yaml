@@ -1,0 +1,12 @@
+---
+features:
+  - |
+    Adds a ``fips`` element which attempts to enable FIPS mode configuration
+    into the disk image being created.
+fixes:
+  - |
+    Fixes a possible case with a FIPS enabled disk image where the
+    cryptographic policies may be applied for enforcement of FIPS mode,
+    but the underlying kernel command line may be missing. This in particular
+    was discovered when testing on Rocky Linux. We now test, and add the FIPS
+    kernel command line flag if it is otherwise enabled.

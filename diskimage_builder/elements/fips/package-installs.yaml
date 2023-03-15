@@ -1,0 +1,14 @@
+crypto-policies:
+  when:
+    - DISTRO_NAME != ubuntu
+    - DISTRO_NAME != gentoo
+# NOTE(TheJulia): crypto-policies does not exist in:
+# - ubuntu
+# - gentoo
+crypto-policies-scripts:
+  when:
+    - DISTRO_NAME != debian
+    - DISTRO_NAME != ubuntu
+    - DISTRO_NAME != gentoo
+# NOTE(TheJulia): Crypto policies includes the
+# fips-mode-setup script in the debian package.
