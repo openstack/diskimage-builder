@@ -15,6 +15,7 @@
 import functools
 import logging
 import os
+import time
 
 from diskimage_builder.block_device.exception \
     import BlockDeviceSetupException
@@ -109,7 +110,21 @@ class MountPointNode(NodeBase):
         if self.state['filesys'][self.base]['fstype'] != 'vfat':
             exec_sudo(["fstrim", "--verbose",
                        self.state['mount'][self.mount_point]['path']])
-        exec_sudo(["umount", self.state['mount'][self.mount_point]['path']])
+        # Even 'fstrim' call sometimes don't solve the issue with 'busy'
+        # filesystem, so we need to catch the exception and repeat unount.
+        mount_point = self.state['mount'][self.mount_point]['path']
+        catch = None
+        for try_cnt in range(10, 1, -1):
+            try:
+                exec_sudo(["umount", mount_point])
+                return
+            except BlockDeviceSetupException as e:
+                catch = e
+                logger.error("umount failed (%s)", e.output.strip())
+                time.sleep(3)
+
+        logger.debug("Gave up trying to umount [%s]", mount_point)
+        raise catch
 
     def delete(self):
         self.umount()
