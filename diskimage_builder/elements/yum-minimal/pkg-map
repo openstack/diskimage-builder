@@ -1,4 +1,15 @@
 {
+  "release": {
+    "centos": {
+      "7": {
+        "NetworkManager": "",
+        "dhcp-client": ""
+      },
+      "9-stream": {
+        "lsb_release": "ed hostname patch postfix tar time"
+      }
+    }
+  },
   "distro": {
     "openeuler": {
       "linux-firmware": "",
@@ -7,25 +18,9 @@
       "redhat-rpm-config": "openEuler-rpm-config"
     }
   },
-  "release": {
-      "centos": {
-          "7": {
-              "NetworkManager": "",
-              "dhcp-client": ""
-          }
-      }
-  },
-  "release": {
-      "centos": {
-          "9-stream": {
-              "lsb_release": "ed hostname patch postfix tar time"
-          }
-      }
-  },
-"family": {
+  "family": {
     "redhat": {
       "lsb_release": "redhat-lsb-core"
     }
   }
 }
-
