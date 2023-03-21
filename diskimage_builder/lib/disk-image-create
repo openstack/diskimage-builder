@@ -343,6 +343,11 @@ export DIB_ROOT_LABEL
 DIB_ROOT_FSTYPE=$(${DIB_BLOCK_DEVICE} getval root-fstype)
 export DIB_ROOT_FSTYPE
 
+# Need to get the boot device label because, if defined, we may
+# need to update boot configuration in some cases
+DIB_BOOT_LABEL=$(${DIB_BLOCK_DEVICE} getval boot-label)
+export DIB_BOOT_LABEL
+
 # retrieve mount points so we can reuse in elements
 DIB_MOUNTPOINTS=$(${DIB_BLOCK_DEVICE} getval mount-points)
 export DIB_MOUNTPOINTS

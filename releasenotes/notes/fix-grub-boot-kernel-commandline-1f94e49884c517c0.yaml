@@ -1,0 +1,10 @@
+---
+fixes:
+  - |
+    Fixes the GRUB2 bootloader kernel command line where a prior ``boot``
+    parameter could cause issues with bootloader configuration when
+    an image is rebuilt and the ``bootloader`` element is utilized.
+    We now remove any prior ``boot`` parameter in */etc/default/grub*
+    when executing the ``bootloader`` element, and then assert a
+    valid entry ``boot`` parameter if a */boot* partition is defined
+    as part of the image build.
