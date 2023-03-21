@@ -19,6 +19,24 @@ The following command will start our image build (distro must be either
 
 This will create a qcow2 file 'image.qcow2' which can then be booted.
 
+Images can also be defined with YAML and built with the `diskimage-builder`.
+
+With an `image.yaml` file containing:
+
+.. code-block:: yaml
+
+   - elements:
+     - <distro>
+     - vm
+
+An image is built with:
+
+::
+
+   diskimage-builder image.yaml
+
+Run `diskimage-builder --help` full description of the YAML attributes supported.
+
 Elements
 --------
 
@@ -78,6 +96,13 @@ There are currently two defaults:
   build with ::
 
     disk-image-create -o output.qcow vm block-device-gpt ubuntu-minimal
+
+  Or with `diskimage-builder` YAML
+
+  .. code-block:: yaml
+
+    - imagename: output.qcow
+      elements: [vm, block-device-gpt, ubuntu-minimal]
 
 * When not using the ``vm`` element a plain filesystem image, without
   any partitioning, is created.

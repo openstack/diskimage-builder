@@ -7,8 +7,8 @@ to keep it separate.  For details, see the installation section in the
 :ref:`dev_install`.
 
 Once installed, you will be able to :doc:`build images
-<building_an_image>` using ``disk-image-create`` and the elements
-included in the main ``diskimage-builder`` repository.
+<building_an_image>` using ``disk-image-create`` or ``diskimage-builder``
+and the elements included in the main ``diskimage-builder`` repository.
 
 
 Requirements
