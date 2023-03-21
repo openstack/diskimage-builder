@@ -73,17 +73,21 @@ class MountPointNode(NodeBase):
         return (edge_from, edge_to)
 
     def create(self):
-        logger.debug("mount called [%s]", self.mount_point)
-        rel_mp = self.mount_point if self.mount_point[0] != '/' \
-                 else self.mount_point[1:]
-        mount_point = os.path.join(self.mount_base, rel_mp)
-        if not os.path.exists(mount_point):
-            # Need to sudo this because of permissions in the new
-            # file system tree.
-            exec_sudo(['mkdir', '-p', mount_point])
-        logger.info("Mounting [%s] to [%s]", self.name, mount_point)
-        exec_sudo(["mount", self.state['filesys'][self.base]['device'],
-                   mount_point])
+        if (self.state['filesys'][self.base]['fstype'] == 'swap'):
+            # No need to mount/activate swap during image build.
+            mount_point = self.mount_point = 'none'
+        else:
+            logger.debug("mount called [%s]", self.mount_point)
+            rel_mp = self.mount_point if self.mount_point[0] != '/' \
+                else self.mount_point[1:]
+            mount_point = os.path.join(self.mount_base, rel_mp)
+            if not os.path.exists(mount_point):
+                # Need to sudo this because of permissions in the new
+                # file system tree.
+                exec_sudo(['mkdir', '-p', mount_point])
+            logger.info("Mounting [%s] to [%s]", self.name, mount_point)
+            exec_sudo(["mount", self.state['filesys'][self.base]['device'],
+                      mount_point])
 
         if 'mount' not in self.state:
             self.state['mount'] = {}
@@ -95,6 +99,9 @@ class MountPointNode(NodeBase):
         self.state['mount_order'].append(self.mount_point)
 
     def umount(self):
+        if (self.state['filesys'][self.base]['fstype'] == 'swap'):
+            # Swap not mounted/activated during image build.
+            return
         logger.info("Called for [%s]", self.name)
         # Before calling umount, call 'fstrim' on suitable mounted
         # file systems.  This discards unused blocks from the mounted

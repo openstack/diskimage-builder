@@ -33,7 +33,8 @@ file_system_max_label_length = {
     "ext3": 16,
     "ext4": 16,
     "xfs": 12,
-    "vfat": 11
+    "vfat": 11,
+    "swap": 16
 }
 
 
@@ -102,18 +103,20 @@ class FilesystemNode(NodeBase):
         return (edge_from, edge_to)
 
     def create(self):
-        cmd = ["mkfs"]
-
-        cmd.extend(['-t', self.type])
-        if self.opts:
-            cmd.extend(self.opts)
+        if self.type in ('swap'):
+            cmd = ["mkswap"]
+        else:
+            cmd = ["mkfs"]
+            cmd.extend(['-t', self.type])
+            if self.opts:
+                cmd.extend(self.opts)
 
         if self.type in ('vfat', 'fat'):
             cmd.extend(["-n", self.label])
         else:
             cmd.extend(["-L", self.label])
 
-        if self.type in ('ext2', 'ext3', 'ext4'):
+        if self.type in ('ext2', 'ext3', 'ext4', 'swap'):
             cmd.extend(['-U', self.uuid])
         elif self.type == 'xfs':
             cmd.extend(['-m', "uuid=%s" % self.uuid])

@@ -80,6 +80,7 @@ class TestMountOrder(tc.TestGraphGeneration):
         state['blockdev']['root'] = {'device': '/dev/loopXp1/root'}
         state['blockdev']['var'] = {'device': '/dev/loopXp2/var'}
         state['blockdev']['var_log'] = {'device': '/dev/loopXp3/var_log'}
+        state['blockdev']['swap'] = {'device': '/dev/loopXp4/swap'}
 
         for node in call_order:
             if isinstance(node, (FilesystemNode, MountPointNode)):
@@ -89,7 +90,8 @@ class TestMountOrder(tc.TestGraphGeneration):
                 node.umount()
 
         # ensure that partitions were mounted in order root->var->var/log
-        self.assertListEqual(state['mount_order'], ['/', '/var', '/var/log'])
+        self.assertListEqual(state['mount_order'],
+                             ['/', '/var', '/var/log', 'none'])
 
         # fs creation sequence (note we don't care about order of this
         # as they're all independent)
@@ -101,7 +103,9 @@ class TestMountOrder(tc.TestGraphGeneration):
                        '-m', 'uuid=var-uuid-1234',
                        '-q', '/dev/loopXp2/var']),
             mock.call(['mkfs', '-t', 'vfat', '-n', 'VARLOG',
-                       '/dev/loopXp3/var_log'])
+                       '/dev/loopXp3/var_log']),
+            mock.call(['mkswap', '-L', 'mkfs_swap', '-U', 'swap-uuid-1234',
+                       '/dev/loopXp4/swap'])
         ]
         self.assertEqual(mock_exec_sudo_mkfs.call_count, len(cmd_sequence))
         mock_exec_sudo_mkfs.assert_has_calls(cmd_sequence, any_order=True)
@@ -154,6 +158,10 @@ class TestMountOrder(tc.TestGraphGeneration):
                 'device': '/dev/loopXp3',
                 'fstype': 'vfat',
             },
+            'mkfs_swap': {
+                'device': '/dev/loopXp4',
+                'fstype': 'swap',
+            },
         }
 
         for node in call_order:
@@ -164,7 +172,9 @@ class TestMountOrder(tc.TestGraphGeneration):
                 node.umount()
 
         # ensure that partitions are mounted in order / -> /boot -> /var
-        self.assertListEqual(state['mount_order'], ['/', '/boot', '/var'])
+        # swap not mounted in runtime, but should be in 'mount_order' list
+        self.assertListEqual(state['mount_order'],
+                             ['/', '/boot', '/var', 'none'])
 
         cmd_sequence = [
             # mount sequence

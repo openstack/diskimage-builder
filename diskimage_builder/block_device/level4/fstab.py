@@ -40,12 +40,15 @@ class FstabNode(NodeBase):
         if 'fstab' not in self.state:
             self.state['fstab'] = {}
 
+        swap = 'none' in self.state['mount'] and \
+            self.state['mount']['none']['name'] == self.base
+
         self.state['fstab'][self.base] = {
             'name': self.name,
             'base': self.base,
-            'options': self.options,
-            'dump-freq': self.dump_freq,
-            'fsck-passno': self.fsck_passno
+            'options': 'sw' if swap else self.options,
+            'dump-freq': 0 if swap else self.dump_freq,
+            'fsck-passno': 0 if swap else self.fsck_passno
         }
 
 
