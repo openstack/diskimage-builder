@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+
+if [[ "${DISTRO_NAME}" == "ubuntu" ]]; then
+    echo "ERROR: Setup of FIPS mode with DIB is not supported with Ubuntu."
+    echo "Please see refer to Ubuntu documentation on how to configure "
+    echo "FIPS, as it requires an Ubuntu Advantage subscription."
+    echo "https://ubuntu.com/security/certifications/docs/fips-enablement"
+    exit 1
+elif [[ "${DISTRO_NAME}" == "gentoo" ]]; then
+    echo "ERROR: Setup of FIPS mode with DIB is not supported with Gentoo."
+    echo "Gentoo's documentation appears to largely omit references to"
+    echo "FIPS setup, and the supportability is unknown."
+    exit 1
+elif [[ "${DISTRO_NAME}" == "opensuse" ]]; then
+    echo "ERROR: Setup of FIPS mode with DIB is not supported with OpenSUSE."
+    echo "Please refer to SUSE documentation on how to perform these actions."
+    echo "https://www.suse.com/support/kb/doc/?id=000019432"
+    exit 1
+else
+    # This command exists in Centos, Fedora, Rocky, and Debian
+    # and is referenced in documentation and posts about how to setup FIPS.
+    echo "Attempting to setup FIPS mode utilizing the fips-mode-setup command."
+    fips-mode-setup --enable
+    echo "FIPS mode setup completed, please remember this only applies to a"
+    echo "running operating system nor implies the certification state of the"
+    echo "resulting running operating system."
+fi
