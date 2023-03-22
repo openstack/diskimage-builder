@@ -1,3 +1,11 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
 if [ -n "${DIB_DISTRIBUTION_MIRROR:-}" ]; then
     # Only set the mirror for OS, everything, EPOL and update repositories,
     # The others (debuginfo and source) aren't mirrored since they do not exist on all mirrors
