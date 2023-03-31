@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    Added environment variable ``REG_SAT_REPO`` to the ``rhel-common``
+    element. Sets the repository label for Satellite client tools.
+fixes:
+  - |
+    The ``Satellite Client`` reposotories replaces the ``Satellite Tools``
+    repository since Satellite 6.11. The default repo labels in the
+    ``rhel-common`` element has been updated to reflect this change.
+    See `Red Hat Satellite 6.11 Release Notes <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.11/html/release_notes/assembly_introducing-red-hat-satellite_sat6-release-notes>`_.
+
+    To enable users that need to use the legacy ``Satellite Tools``
+    repository, the ``REG_SAT_REPO`` environment variable has been added to
+    enable manual override of the Satellite repository.
+
