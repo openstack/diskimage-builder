@@ -17,3 +17,8 @@ Arguments
 * ``DIB_BOOTLOADER_SERIAL_CONSOLE`` sets the serial device to be
   used as a console. It defaults to ``hvc0`` for PowerPC, 
   ``ttyAMA0,115200`` for ARM64, otherwise ``ttyS0,115200``.
+
+* ``DIB_BOOTLOADER_VIRTUAL_TERMINAL`` sets the virtual terminal be
+  used as a console. It defaults to ``tty0``. When explicitly set
+  to an empty string then no virtual terminal console kernel argument
+  is added.
