@@ -122,6 +122,19 @@ is applicable to both physical systems and virtual guests. Other types include
 hypervisor for virtual hosts, person, domain, rhui, and candlepin for some
 subscription management applications.
 
+#### REG\_SAT\_REPO
+Sets the repository label for Satellite client tools. The defaults are:
+
++------------+--------------------------------------------+
+| Release    | Repository label                           |
++============+============================================+
+| RHEL 7     | rhel-7-server-satellite-client-6-rpms      |
++------------+--------------------------------------------+
+| RHEL 8     | satellite-client-6-for-rhel-8-${arch}-rpms |
++------------+--------------------------------------------+
+| RHEL 9     | satellite-client-6-for-rhel-9-${arch}-rpms |
++------------+--------------------------------------------+
+
 Image Build Registration Examples
 ------------------------------------
 To register with Satellite 6, a common example would be to set the following

@@ -15,17 +15,17 @@ base_repos=
 
 if [ "${DIB_RELEASE:-7}" == "7" ]; then
     base_repos="rhel-7-server-rpms"
-    satellite_repo="rhel-7-server-rh-common-rpms"
+    satellite_repo="${REG_SAT_REPO:-"rhel-7-server-satellite-client-6-rpms"}"
 elif [ "${DIB_RELEASE}" == "8" ]; then
     if [ -n "${REG_RELEASE:-}" ]; then
         base_repos="rhel-8-for-${arch}-appstream-eus-rpms rhel-8-for-${arch}-baseos-eus-rpms"
     else
         base_repos="rhel-8-for-${arch}-appstream-rpms rhel-8-for-${arch}-baseos-rpms"
     fi
-    satellite_repo="satellite-tools-6.5-for-rhel-8-${arch}-rpms"
+    satellite_repo="${REG_SAT_REPO:-"satellite-client-6-for-rhel-8-${arch}-rpms"}"
 elif [ "${DIB_RELEASE}" == "9" ]; then
     base_repos="rhel-9-for-${arch}-appstream-rpms rhel-9-for-${arch}-baseos-rpms"
-    satellite_repo="rhel-9-for-${arch}-highavailability-rpms"
+    satellite_repo="${REG_SAT_REPO:-"satellite-client-6-for-rhel-9-${arch}-rpms"}"
 fi
 
 REG_SAT_CERT=${REG_SAT_CERT:-"katello-ca-consumer-latest.noarch.rpm"}
