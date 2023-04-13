@@ -2,6 +2,7 @@
   "family": {
     "redhat": {
       "dhcp-client": "dhclient",
+      "ifupdown": "NetworkManager-initscripts-updown",
       "ndisc6": ""
     },
     "gentoo": {
