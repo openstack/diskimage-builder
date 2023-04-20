@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The bootloader element now has variable DIB_BOOTLOADER_VIRTUAL_TERMINAL to
+    customize or suppress the console=tty0 kernel argument.
