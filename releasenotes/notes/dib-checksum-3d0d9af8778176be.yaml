@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    The usage of the ``DIB_CHECKSUM`` variable is extended. Now to be more
+    specific the variable can be set to the ``sha256`` or ``md5`` value to
+    generate only one checksum file. There also can be provided a
+    comma-separated list of the values, but only ``sha256`` and ``md5``
+    supported. For backward compatibility using ``DIB_CHECKSUM=1`` or option
+    ``--checksum`` in the command line still can be used to generate all
+    supported checksums.

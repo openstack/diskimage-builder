@@ -65,7 +65,7 @@ function finish_image () {
     fi
 
     mv $OUT_IMAGE_PATH $1
-    if [ "$DIB_CHECKSUM" == "1" ]; then
+    if [[ -n "$DIB_CHECKSUM" && "$DIB_CHECKSUM" != "0" ]]; then
 
       # NOTE(pabelanger): Read image into memory once and generate
       # both checksum files.
@@ -74,8 +74,9 @@ function finish_image () {
       # no tty).  Waiting for just these processes is a bit of hacky
       # workaround ...
       declare -a wait_for
-      md5sum $1 > $1.md5 & wait_for+=($!)
-      sha256sum $1 > $1.sha256 & wait_for+=($!)
+      [[ "$DIB_CHECKSUM" == "1" ]] && DIB_CHECKSUM="md5,sha256"
+      [[ "$DIB_CHECKSUM" == *md5* ]] && md5sum $1 > $1.md5 & wait_for+=($!)
+      [[ "$DIB_CHECKSUM" == *sha256* ]] && sha256sum $1 > $1.sha256 & wait_for+=($!)
       wait "${wait_for[@]}"
     fi
     echo "Image file $1 created..."
