@@ -1,0 +1,10 @@
+audit:
+dnf-plugins-core:
+dracut:
+dracut-config-generic:
+grubby:
+kernel:
+initscripts:
+man-pages:
+passwd:
+redhat-rpm-config:

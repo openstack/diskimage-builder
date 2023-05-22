@@ -8,7 +8,7 @@ set -eu
 set -o pipefail
 
 case "$DISTRO_NAME" in
-    centos* | rhel* | rocky*)
+    almalinux* | centos* | rhel* | rocky*)
     dnf install -y elrepo-release.noarch
     if [ ${DIB_ELREPO_KERNEL:-0} -eq 1 ]; then
         rpm -q dnf-plugins-core || dnf install -y dnf-plugins-core

@@ -1,5 +1,9 @@
 {
  "distro": {
+    "almalinux": {
+       "wget": "wget",
+       "yum-utils": "yum-utils"
+    },
     "centos7": {
        "wget": "wget",
        "yum-utils": "yum-utils"

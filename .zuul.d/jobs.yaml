@@ -58,6 +58,7 @@
     parent: dib-functests-base
     vars:
       dib_functests:
+        - almalinux-container/almalinux-9-aarch64-build-succeeds
         - centos-minimal/8-stream-aarch64-build-succeeds
         - centos-minimal/9-stream-aarch64-build-succeeds
         - openeuler-minimal/22.03-LTS-build-succeeds
@@ -81,6 +82,32 @@
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+
+- job:
+    name: dib-nodepool-functional-openstack-almalinux-8-containerfile-src
+    description: |
+      Test building and booting a AlmaLinux image from a
+      containerfile with Nodepool and OpenStack (using released
+      libraries)
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_debug: true
+      nodepool_diskimage:
+        base_element: almalinux-container
+        release: '8'
+
+- job:
+    name: dib-nodepool-functional-openstack-almalinux-9-containerfile-src
+    description: |
+      Test building and booting a AlmaLinux image from a
+      containerfile with Nodepool and OpenStack (using released
+      libraries)
+    parent: dib-nodepool-functional-src-base
+    vars:
+      nodepool_debug: true
+      nodepool_diskimage:
+        base_element: almalinux-container
+        release: '9'
 
 - job:
     name: dib-nodepool-functional-openstack-centos-7-src

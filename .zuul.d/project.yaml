@@ -32,6 +32,10 @@
         - dib-functests
         - opendev-buildset-registry
         - nodepool-build-image-siblings
+        - dib-nodepool-functional-openstack-almalinux-8-containerfile-src:
+            voting: false
+        - dib-nodepool-functional-openstack-almalinux-9-containerfile-src:
+            voting: false
         - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src

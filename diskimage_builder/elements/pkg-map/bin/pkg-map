@@ -26,7 +26,8 @@ log = logging.getLogger()
 
 def os_family(distro):
     family = None
-    if distro in ['fedora', 'rhel', 'rhel7', 'centos', 'centos7', 'openeuler',
+    if distro in ['almalinux', 'fedora', 'rhel', 'rhel7', 'centos', 'centos7',
+                    'openeuler',
                     'rocky']:
         family = 'redhat'
     elif distro in ['debian', 'ubuntu']:
