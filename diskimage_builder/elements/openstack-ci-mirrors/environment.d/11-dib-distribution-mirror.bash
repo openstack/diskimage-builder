@@ -30,8 +30,6 @@ if [[ "${DISTRO_NAME}" == "ubuntu" ]]; then
 elif [[ "${DISTRO_NAME}" == "debian" ]]; then
     export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_DEBIAN_MIRROR
     export DIB_DEBOOTSTRAP_EXTRA_ARGS+=" --no-check-gpg"
-elif [[ "${DISTRO_NAME}" == "fedora" ]]; then
-    export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_FEDORA_MIRROR
 elif [[ "${DISTRO_NAME}" == "centos" ]]; then
     if [[ "${DIB_RELEASE}" == '9-stream' ]]; then
         # NOTE(ianw) 2021-10-18 : no 9-stream mirrors, yet
@@ -55,13 +53,7 @@ export DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE=1
 # in the gate.  Not relevant inside the chroot.
 if [[ -d ${DIB_OS_CI_YUM_REPOS:-/not/a/path/} ]]; then
 
-    if [[ "${DISTRO_NAME}" == "fedora" ]]; then
-        if [[ -d ${DIB_OS_CI_YUM_REPOS}/fedora-minimal/${DIB_RELEASE} ]]; then
-            export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/fedora-minimal/${DIB_RELEASE}/yum.repos.d
-        else
-            export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/fedora-minimal/default/yum.repos.d
-        fi
-    elif [[ "${DISTRO_NAME}" == "centos" ]]; then
+    if [[ "${DISTRO_NAME}" == "centos" ]]; then
         export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/centos-minimal/${DIB_RELEASE}/yum.repos.d
     elif [[ "${DISTRO_NAME}" == "openeuler" ]]; then
         export DIB_YUM_MINIMAL_BOOTSTRAP_REPOS=${DIB_OS_CI_YUM_REPOS}/openeuler-minimal/${DIB_RELEASE}/yum.repos.d
