@@ -136,7 +136,7 @@ def exec_sudo(cmd):
     proc.wait()
 
     if proc.returncode:
-        e = BlockDeviceSetupException("exec_sudo failed")
+        e = BlockDeviceSetupException("exec_sudo failed: %s" % out)
         e.returncode = proc.returncode
         e.cmd = ' '.join(sudo_cmd)
         e.output = out
