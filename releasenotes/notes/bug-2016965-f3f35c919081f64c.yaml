@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    As NetworkManager can't automatically create default connection profiles
+    for InfiniBand interfaces, we are adding nm-dhcp-ib-interfaces element
+    to install NetworkManager-system-connections-infiniband.nmconnection to
+    NetworkManager to create a wildcard InfiniBand connection profile.

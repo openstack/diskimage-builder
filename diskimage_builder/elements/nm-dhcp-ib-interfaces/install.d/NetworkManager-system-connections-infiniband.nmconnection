@@ -1,0 +1,17 @@
+[connection]
+id=infiniband
+type=infiniband
+multi-connect=3
+
+[infiniband]
+transport-mode=datagram
+
+[ipv4]
+method=auto
+
+[ipv6]
+addr-gen-mode=default
+method=auto
+
+[proxy]
+
