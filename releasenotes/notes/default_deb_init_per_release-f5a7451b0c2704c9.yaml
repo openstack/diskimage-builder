@@ -1,0 +1,9 @@
+---
+
+other:
+  - |
+    Value of ``DIB_DEBIAN_ALT_INIT_PACKAGE`` has been switched to
+    ``systemd-sysv`` for Debian releases older then Jessie.
+    If you still need to build a version of Debian that is relying
+    on ``sysvinit`` please override the ``DIB_DEBIAN_ALT_INIT_PACKAGE``
+    variable for that.
