@@ -20,20 +20,23 @@ if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
 fi
 set -eu
 set -o pipefail
+
 case "${DIB_RELEASE}" in
     hamm|slink|potato|woody|sarge|etch|lenny|squeeze|wheezy)
         DIB_DEBIAN_ALT_INIT_PACKAGE=${DIB_DEBIAN_ALT_INIT_PACKAGE:-sysvinit}
+        DIB_DEBIAN_CLOUD_INIT_HELPER=${DIB_DEBIAN_CLOUD_INIT_HELPER:-'true'}
         ;;
     *)
         DIB_DEBIAN_ALT_INIT_PACKAGE=${DIB_DEBIAN_ALT_INIT_PACKAGE:-systemd-sysv}
         ;;
 esac
 
-
-adduser --gecos Debian-cloud-init-user --disabled-password --quiet debian
-install -d -m 0755 -o root -g root /etc/sudoers.d
-echo 'debian ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/debian-cloud-init
-chmod 0440 /etc/sudoers.d/debian-cloud-init
+if [ -n "${DIB_DEBIAN_CLOUD_INIT_HELPER:-}" ]; then
+    adduser --gecos Debian-cloud-init-user --disabled-password --quiet debian
+    install -d -m 0755 -o root -g root /etc/sudoers.d
+    echo 'debian ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/debian-cloud-init
+    chmod 0440 /etc/sudoers.d/debian-cloud-init
+fi
 
 if [ "$DIB_DEBIAN_ALT_INIT_PACKAGE" != "sysvinit" ]; then
     # To avoid a conflict against an essential package, we need to remove sysvinit first

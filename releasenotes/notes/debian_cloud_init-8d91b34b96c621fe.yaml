@@ -1,0 +1,8 @@
+---
+other:
+  - |
+    Added a ``DIB_DEBIAN_CLOUD_INIT_HELPER`` variable that controls whether
+    ``debian`` element will attempt to pre-create required users and sudoers
+    file for the default cloud-init user. This should not be needed for any
+    modern Debian distro.
+
