@@ -475,7 +475,7 @@ def find_thin_pool(devices, group):
             break
 
     if not thin_pool_device:
-        return
+        return None, None
 
     # ensure every volume uses the pool
     for d in lvs_devices:
@@ -490,7 +490,7 @@ def find_thin_pool(devices, group):
             raise Exception('All volumes need to be in pool %s. '
                             '%s is in pool %s' %
                             (thin_pool_name, lv_name, pool_lv))
-    return thin_pool_device
+    return thin_pool_device, thin_pool_name
 
 
 def main(argv):
@@ -522,13 +522,16 @@ def main(argv):
     group = find_group(opts)
     partnum = find_next_partnum(devices, disk_name)
     devname = find_next_device_name(devices, disk_name, partnum)
-    thin_pool = find_thin_pool(devices, group)
+    thin_pool, thin_pool_name = find_thin_pool(devices, group)
     if thin_pool:
-        # total size available, reduced by POOL_METADATA_SIZE
-        # rounded down to whole extent and reduced by 1 extent
-        # for metadata overhead
+        # reserve for the size of the metadata volume
         size_bytes -= POOL_METADATA_SIZE
+        # reserve for the size of the spare metadata volume,
+        # used for metadata check and repair
+        size_bytes -= POOL_METADATA_SIZE
+        # round down to a whole extent
         size_bytes -= size_bytes % PHYSICAL_EXTENT_BYTES
+        # reduce for metadata overhead
         size_bytes -= PHYSICAL_EXTENT_BYTES
     dev_path = '/dev/%s' % devname
     grow_vols = find_grow_vols(opts, devices, group, size_bytes)
@@ -562,8 +565,7 @@ def main(argv):
             'lvextend',
             '--poolmetadatasize',
             '+%sB' % POOL_METADATA_SIZE,
-            thin_pool,
-            dev_path
+            '%s/%s' % (group, thin_pool_name)
         ], 'Add %s to thin pool metadata %s' % (
             convert_bytes(POOL_METADATA_SIZE), thin_pool)))
         commands.append(Command([

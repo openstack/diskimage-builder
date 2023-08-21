@@ -433,14 +433,14 @@ class TestGrowvols(base.BaseTestCase):
     def test_find_thin_pool(self, mock_execute):
         # No thin pool
         mock_execute.return_value = LVS
-        self.assertIsNone(growvols.find_thin_pool(DEVICES, 'vg'))
+        self.assertEqual((None, None), growvols.find_thin_pool(DEVICES, 'vg'))
         mock_execute.assert_called_once_with([
             'lvs', '--noheadings', '--options',
             'lv_name,lv_dm_path,lv_attr,pool_lv'])
 
         # One thin pool, all volumes use it
         mock_execute.return_value = LVS_THIN
-        self.assertEqual('/dev/mapper/vg-lv_thinpool',
+        self.assertEqual(('/dev/mapper/vg-lv_thinpool', 'lv_thinpool'),
                          growvols.find_thin_pool(DEVICES, 'vg'))
 
         # One pool, not used by all volumes
@@ -621,14 +621,14 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['pvcreate', '/dev/sda5']),
             mock.call(['vgextend', 'vg', '/dev/sda5']),
             mock.call(['lvextend', '--poolmetadatasize', '+1073741824B',
+                       'vg/lv_thinpool']),
+            mock.call(['lvextend', '-L+207253143552B',
                        '/dev/mapper/vg-lv_thinpool', '/dev/sda5']),
-            mock.call(['lvextend', '-L+208326885376B',
-                       '/dev/mapper/vg-lv_thinpool', '/dev/sda5']),
-            mock.call(['lvextend', '--size', '+41662021632B',
+            mock.call(['lvextend', '--size', '+41448112128B',
                        '/dev/mapper/vg-lv_home']),
-            mock.call(['lvextend', '--size', '+83328237568B',
+            mock.call(['lvextend', '--size', '+82900418560B',
                        '/dev/mapper/vg-lv_var']),
-            mock.call(['lvextend', '--size', '+83336626176B',
+            mock.call(['lvextend', '--size', '+82904612864B',
                        '/dev/mapper/vg-lv_root']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
