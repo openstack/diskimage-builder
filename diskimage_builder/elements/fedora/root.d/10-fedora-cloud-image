@@ -29,17 +29,21 @@ else
     # note default DIB_RELEASE set in environment setup
     case ${ARCH} in
     x86_64|aarch64)
-        if [[ ${DIB_RELEASE} -ge 28 ]]; then
+        if [[ ${DIB_RELEASE} -ge 37 ]]; then
             DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/Cloud/${ARCH}/images}
+        elif [[ ${DIB_RELEASE} -ge 28 ]] && [[ ${DIB_RELEASE} -le 36 ]]; then
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/${DIB_RELEASE}/Cloud/${ARCH}/images}
         else
-            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://download.fedoraproject.org/pub/fedora/linux/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
         fi
         ;;
     ppc64|ppc64le)
-        if [[ ${DIB_RELEASE} -ge 28 ]]; then
+        if [[ ${DIB_RELEASE} -ge 37 ]]; then
             DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://dl.fedoraproject.org/pub/fedora-secondary/releases/${DIB_RELEASE}/Cloud/${ARCH}/images}
+        elif [[ ${DIB_RELEASE} -ge 28 ]] && [[ ${DIB_RELEASE} -le 36 ]]; then
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://archives.fedoraproject.org/pub/archive/fedora-secondary/releases/${DIB_RELEASE}/Cloud/${ARCH}/images}
         else
-            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://dl.fedoraproject.org/pub/fedora-secondary/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
+            DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://archives.fedoraproject.org/pub/archive/fedora-secondary/releases/${DIB_RELEASE}/CloudImages/${ARCH}/images}
         fi
         ;;
     *)
