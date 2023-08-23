@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    A new fail2ban element has been added  which has has been tested on Debian
+    and Rocky images. The usage of a new variable ``DIB_FAIL2BAN_CONF`` is now
+    mandatory during built time.
