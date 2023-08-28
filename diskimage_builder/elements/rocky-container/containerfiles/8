@@ -1,6 +1,6 @@
 FROM docker.io/library/rockylinux:8
 
-RUN dnf install -y findutils util-linux sudo python3 NetworkManager
+RUN dnf install -y findutils util-linux sudo python3 NetworkManager NetworkManager-config-server
 
 RUN systemctl unmask console-getty.service dev-hugepages.mount \
     getty.target sys-fs-fuse-connections.mount systemd-logind.service \
