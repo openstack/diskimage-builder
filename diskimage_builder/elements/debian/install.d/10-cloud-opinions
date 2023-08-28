@@ -37,3 +37,8 @@ if [ "$DIB_DEBIAN_ALT_INIT_PACKAGE" != "sysvinit" ]; then
         /etc/apt/preferences.d/sysvinit > /etc/apt/preferences.d/sysvinit
 fi
 
+case "${DIB_RELEASE}" in
+    bookworm|stable|testing)
+        apt-get install -y netplan.io
+        ;;
+esac
