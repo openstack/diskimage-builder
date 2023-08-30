@@ -75,8 +75,8 @@ function finish_image () {
       # workaround ...
       declare -a wait_for
       [[ "$DIB_CHECKSUM" == "1" ]] && DIB_CHECKSUM="md5,sha256"
-      [[ "$DIB_CHECKSUM" == *md5* ]] && md5sum $1 > $1.md5 & wait_for+=($!)
-      [[ "$DIB_CHECKSUM" == *sha256* ]] && sha256sum $1 > $1.sha256 & wait_for+=($!)
+      if [[ "$DIB_CHECKSUM" == *md5* ]]; then md5sum $1 > $1.md5 & wait_for+=($!); fi
+      if [[ "$DIB_CHECKSUM" == *sha256* ]]; then sha256sum $1 > $1.sha256 & wait_for+=($!); fi
       wait "${wait_for[@]}"
     fi
     echo "Image file $1 created..."
