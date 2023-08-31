@@ -221,3 +221,70 @@ class TestPackageInstall(base.BaseTestCase):
         }
 
         self.assertThat(result, IsMatchingInstallList(expected))
+
+    def test_install_overrides_uninstall_install_first(self):
+        '''Test an install overrides uninstall'''
+        objs = {
+            'test_package': ''
+        }
+
+        result = installs_squash.collect_data(
+            self.final_dict, objs, 'test_element1')
+
+        expected = {
+            'install.d': {
+                'install': [('test_package', 'test_element1')]
+            }
+        }
+
+        self.assertThat(result, IsMatchingInstallList(expected))
+
+        objs = {
+            'test_package': {'build-only': 'true'}
+        }
+
+        result = installs_squash.collect_data(
+            self.final_dict, objs, 'test_element2')
+
+        expected = {
+            'install.d': {
+                'install': [('test_package', 'test_element1'),
+                            ('test_package', 'test_element2')]
+            }
+        }
+
+        self.assertThat(result, IsMatchingInstallList(expected))
+
+    def test_install_overrides_uninstall_uninstall_first(self):
+        '''Test an install overrides uninstall'''
+        objs = {
+            'test_package': {'build-only': 'true'}
+        }
+
+        result = installs_squash.collect_data(
+            self.final_dict, objs, 'test_element1')
+
+        expected = {
+            'install.d': {
+                'install': [('test_package', 'test_element1')],
+                'uninstall': [('test_package', 'test_element1')]
+            }
+        }
+
+        self.assertThat(result, IsMatchingInstallList(expected))
+
+        objs = {
+            'test_package': ''
+        }
+
+        result = installs_squash.collect_data(
+            self.final_dict, objs, 'test_element2')
+
+        expected = {
+            'install.d': {
+                'install': [('test_package', 'test_element1'),
+                            ('test_package', 'test_element2')]
+            }
+        }
+
+        self.assertThat(result, IsMatchingInstallList(expected))
