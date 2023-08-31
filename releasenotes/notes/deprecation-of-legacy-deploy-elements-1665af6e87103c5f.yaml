@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    The ``deploy-baremetal``, ``deploy-kexec``, ``deploy-tgtadm``,
+    and ``deploy-targetcli`` elements are deprecated and will be removed in a
+    future release of diskimage-builder. The origins of the elemenets largely
+    dates back to the early efforts to support baremetal deployment, and the
+    methods have been long ago moved away from.
