@@ -105,10 +105,10 @@ sed -i 's/\ boot=[0-9A-Za-z/=\-]\+//' /etc/default/grub
 # is a separate filesystem, and convey this fact as a boot
 # argument so dracut does not halt the system on boot.
 
+BOOT_FS=""
+
 if [[ -n "${DIB_BOOT_LABEL}" ]]; then
-    BOOT_FS="boot=LABEL=${DIB_BOOT_LABEL}"
-else
-    BOOT_FS=""
+    BOOT_FS=" boot=LABEL=${DIB_BOOT_LABEL}"
 fi
 
 # NOTE(TheJulia): While on the subject of FIPS, if there is not an
@@ -128,7 +128,7 @@ if [[ -x /bin/fips-mode-setup ]]; then
     is_fips_enabled=$?
     set -e
     if [ $is_fips_enabled -eq 1 ]; then
-        BOOT_FIPS="fips=1"
+        BOOT_FIPS=" fips=1"
     fi
 fi
 
@@ -152,7 +152,7 @@ else
 fi
 
 GRUB_CMDLINE_LINUX_DEFAULT="${VIRTUAL_TERMINAL} ${SERIAL_CONSOLE} no_timer_check"
-echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE} ${BOOT_FS} ${BOOT_FIPS}\"" >>/etc/default/grub
+echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}${BOOT_FS}${BOOT_FIPS}\"" >>/etc/default/grub
 echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
 
 # os-prober leaks /dev/sda into config file in dual-boot host
