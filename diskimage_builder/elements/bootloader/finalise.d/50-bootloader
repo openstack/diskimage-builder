@@ -85,6 +85,7 @@ fi
 echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
 echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
 echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
+echo "GRUB_TIMEOUT_STYLE=${DIB_GRUB_TIMEOUT_STYLE:-hidden}" >>/etc/default/grub
 echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
 echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
 

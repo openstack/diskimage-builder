@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The ``bootloader`` element will explicitly set the timeout style to
+    ``hidden`` to hide the menu. Set ``DIB_GRUB_TIMEOUT_STYLE`` to ``menu``
+    to display the menu and then wait for the timeout expire before booting
+    the default entry.
