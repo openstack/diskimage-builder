@@ -20,15 +20,16 @@ gnupg2 [!platform:redhat !platform:ubuntu-trusty !platform:suse]
 # ubuntu
 apt-transport-https [platform:dpkg]
 inetutils-ping [platform:dpkg]
-python-lzma [platform:dpkg !platform:ubuntu-focal !platform:ubuntu-jammy !platform:debian-bullseye]
 qemu-utils [platform:dpkg]
 rpm [platform:dpkg]
 uuid-runtime [platform:dpkg]
-yum-utils [platform:dpkg !platform:ubuntu-focal !platform:ubuntu-jammy !platform:debian-bullseye]
-dnf [platform:debian-bullseye]
 debootstrap [platform:dpkg]
 zstd [platform:dpkg]
 procps [platform:dpkg]
+# Version/distro specific items
+python-lzma [platform:ubuntu-bionic platform:debian-buster]
+yum-utils [platform:ubuntu-bionic platform:debian-buster]
+dnf [platform:dpkg !platform:debian-buster !platform:ubuntu-trusty !platform:ubuntu-bionic !platform:ubuntu-focal]
 
 # centos/fedora
 qemu-img [platform:redhat]
