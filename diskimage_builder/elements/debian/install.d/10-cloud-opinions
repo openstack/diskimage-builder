@@ -20,8 +20,14 @@ if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
 fi
 set -eu
 set -o pipefail
-
-DIB_DEBIAN_ALT_INIT_PACKAGE=${DIB_DEBIAN_ALT_INIT_PACKAGE:-sysvinit}
+case "${DIB_RELEASE}" in
+    hamm|slink|potato|woody|sarge|etch|lenny|squeeze|wheezy)
+        DIB_DEBIAN_ALT_INIT_PACKAGE=${DIB_DEBIAN_ALT_INIT_PACKAGE:-sysvinit}
+        ;;
+    *)
+        DIB_DEBIAN_ALT_INIT_PACKAGE=${DIB_DEBIAN_ALT_INIT_PACKAGE:-systemd-sysv}
+        ;;
+esac
 
 
 adduser --gecos Debian-cloud-init-user --disabled-password --quiet debian
@@ -32,9 +38,9 @@ chmod 0440 /etc/sudoers.d/debian-cloud-init
 if [ "$DIB_DEBIAN_ALT_INIT_PACKAGE" != "sysvinit" ]; then
     # To avoid a conflict against an essential package, we need to remove sysvinit first
     dpkg --purge --force remove-essential sysvinit
-    apt-get install -y $apt_get_bp_extra_opts $DIB_DEBIAN_ALT_INIT_PACKAGE
-    printf \"Package: sysvinit\nPin: origin ""\nPin-Priority: -1\n\" > \
-        /etc/apt/preferences.d/sysvinit > /etc/apt/preferences.d/sysvinit
+    apt-get install -y $DIB_DEBIAN_ALT_INIT_PACKAGE
+    printf "Package: sysvinit\nPin: origin \"\"\nPin-Priority: -1\n" > \
+        /etc/apt/preferences.d/sysvinit
 fi
 
 case "${DIB_RELEASE}" in
