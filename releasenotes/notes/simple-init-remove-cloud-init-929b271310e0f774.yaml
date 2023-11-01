@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Use of the ``simple-init`` element now removes ``cloud-init``, in order
+    to prevent the two tools from clashing when booting a workload.

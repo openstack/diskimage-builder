@@ -9,6 +9,11 @@ present in the host cloud. Additionally, in environments where cloud-init
 is not used, there are a couple of small things, like mounting config-drive
 and pulling ssh keys from it, that need to be done at boot time.
 
+.. note::
+   This element removes cloud-init as it can stomp on the configuration
+   applied by glean, resulting in additional problems for operators,
+   and a more difficult path troubleshooting.
+
 Autodetect network interfaces during boot and configure them
 ------------------------------------------------------------
 
