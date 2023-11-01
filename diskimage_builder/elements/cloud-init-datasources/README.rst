@@ -25,3 +25,10 @@ DIB_CLOUD_INIT_DATASOURCES
   :Example: ``DIB_CLOUD_INIT_DATASOURCES="Ec2, ConfigDrive, OpenStack"`` will
     enable the Ec2, ConfigDrive and OpenStack data sources.
 
+.. warning::
+   Use of the ConfigDrive data source is only considered, by default,
+   for initial network configuration per cloud-init documentation.
+   It is recommended that you utilize ``OpenStack`` in addition to
+   ``ConfigDrive`` to collect all available metadata and configuration.
+   As a result of configuration drive use, cloud-init's automatic
+   metadata discovery network activation is disabled.

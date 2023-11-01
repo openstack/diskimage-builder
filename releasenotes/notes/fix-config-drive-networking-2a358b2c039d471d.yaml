@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    Fixes an issue where if an operator set a cloud-init data source to
+    ``ConfigDrive``, the host might not properly configure as automatic
+    metadata collection still attempts to operate. We now disable that
+    by default, when ``ConfigDrive`` is passed as an argument.

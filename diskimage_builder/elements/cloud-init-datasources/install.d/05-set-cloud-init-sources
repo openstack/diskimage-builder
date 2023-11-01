@@ -8,12 +8,19 @@ set -o pipefail
 
 DIB_CLOUD_INIT_DATASOURCES=${DIB_CLOUD_INIT_DATASOURCES:-""}
 
+# NOTE(TheJulia): If your looking at slightly more exotic configuration, the
+# following links may be wortwhile to review. Specifically: ConfigDrive is just
+# initial datasource configuration, and fallback network configuration basically
+# always happens. Plus, cloud-init by default ignores other data in the
+# configuration drive unless "openstack" is referenced. :\
+# https://cloudinit.readthedocs.io/en/latest/reference/datasources/configdrive.html
+# https://cloudinit.readthedocs.io/en/latest/reference/datasources/openstack.html#openstack-ironic-bare-metal
+
 if [ -z "$DIB_CLOUD_INIT_DATASOURCES" ] ; then
     echo "DIB_CLOUD_INIT_DATASOURCES must be set to a comma-separated list "
     echo "of cloud-init data sources you wish to use, ie 'Ec2, NoCloud, ConfigDrive'"
     exit 1
 fi
-
 if [ -d /etc/cloud/cloud.cfg.d ]; then
     cat > /etc/cloud/cloud.cfg.d/91-dib-cloud-init-datasources.cfg <<EOF
 datasource_list: [  $DIB_CLOUD_INIT_DATASOURCES, None ]
@@ -29,6 +36,15 @@ EOF
 datasource:
     Ec2:
         strict_id: false
+EOF
+    fi
+    # If we are drawing configuration from configuration drive, we *very*
+    # likely have network configuration there, so by default try that
+    # instead of trying to do DHCP out of the gate.
+    # https://cloudinit.readthedocs.io/en/latest/reference/network-config.html#disabling-network-activation
+    if [[ $DIB_CLOUD_INIT_DATASOURCES =~ ConfigDrive ]]; then
+        cat > /etc/cloud/cloud.cfg.d/93-dib-cloud-init-disable-datasource-network-activation.cfg <<EOF
+disable_network_activation: true
 EOF
     fi
 fi
