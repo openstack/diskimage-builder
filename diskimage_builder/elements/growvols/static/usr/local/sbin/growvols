@@ -258,14 +258,16 @@ def find_disk(opts, devices):
                 break
             if device['TYPE'] == 'disk':
                 break
+            if device['TYPE'] == 'mpath':
+                break
             if not device['PKNAME']:
                 break
         if not device:
             raise Exception('Could not detect disk device')
 
-    if device['TYPE'] != 'disk':
-        raise Exception('Expected a device with TYPE="disk", got: %s'
-                        % device['TYPE'])
+    if device['TYPE'] not in ('disk', 'mpath'):
+        raise Exception('Expected a device with TYPE="disk" or TYPE="mpath", '
+                        'got: %s' % device['TYPE'])
     return device
 
 
@@ -321,18 +323,34 @@ def find_group(opts):
     return vg_names.pop()
 
 
-def find_next_partnum(devices, disk_name):
-    return len([d for d in devices if d['PKNAME'] == disk_name]) + 1
+def find_next_partnum(devices, disk):
+    if disk['TYPE'] == 'disk':
+        disk_name = disk['KNAME']
+        return len([d for d in devices if d['PKNAME'] == disk_name]) + 1
+    if disk['TYPE'] == 'mpath':
+        max_partnum = 0
+        disk_name_length = len(disk['NAME'])
+        seen_devs = set()
+        for d in devices:
+            if d['PKNAME'] != disk['KNAME']:
+                continue
+            dev_name = d['NAME']
+            if dev_name in seen_devs:
+                continue
+            seen_devs.add(dev_name)
+            max_partnum = max(max_partnum, int(dev_name[disk_name_length:]))
+        return max_partnum + 1
 
 
-def find_next_device_name(devices, disk_name, partnum):
+def find_next_device_name(devices, disk, partnum):
+    disk_name = disk['NAME']
     existing_partnum = partnum - 1
 
     # try partition scheme for SATA etc, then NVMe
     for part_template in '%s%d', '%sp%d':
         part = part_template % (disk_name, existing_partnum)
         LOG.debug('Looking for device %s' % part)
-        if find_device(devices, 'KNAME', part):
+        if find_device(devices, 'NAME', part):
             return part_template % (disk_name, partnum)
 
     raise Exception('Could not find partition naming scheme for %s'
@@ -520,8 +538,8 @@ def main(argv):
         return 0
 
     group = find_group(opts)
-    partnum = find_next_partnum(devices, disk_name)
-    devname = find_next_device_name(devices, disk_name, partnum)
+    partnum = find_next_partnum(devices, disk)
+    devname = find_next_device_name(devices, disk, partnum)
     thin_pool, thin_pool_name = find_thin_pool(devices, group)
     if thin_pool:
         # reserve for the size of the metadata volume
@@ -533,7 +551,10 @@ def main(argv):
         size_bytes -= size_bytes % PHYSICAL_EXTENT_BYTES
         # reduce for metadata overhead
         size_bytes -= PHYSICAL_EXTENT_BYTES
-    dev_path = '/dev/%s' % devname
+    if disk['TYPE'] == 'mpath':
+        dev_path = '/dev/mapper/%s' % devname
+    else:
+        dev_path = '/dev/%s' % devname
     grow_vols = find_grow_vols(opts, devices, group, size_bytes)
 
     commands = []
@@ -544,6 +565,11 @@ def main(argv):
         '--change-name=%d:growvols' % partnum,
         '/dev/%s' % disk_name
     ], 'Create new partition %s' % devname))
+
+    if disk['TYPE'] == 'mpath':
+        commands.append(Command(
+            ['multipath', '-r'],
+            'Force a reload of all existing multipath maps'))
 
     commands.append(Command(
         ['partprobe'],
