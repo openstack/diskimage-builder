@@ -7,3 +7,5 @@ NetworkManager:
   when: DIB_SIMPLE_INIT_NETWORKMANAGER != 0
 NetworkManager-initscripts-ifcfg-rh:
   when: DIB_SIMPLE_INIT_NETWORKMANAGER != 0
+cloud-init:
+  uninstall: True
