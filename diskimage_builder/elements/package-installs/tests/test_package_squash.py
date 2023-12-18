@@ -13,16 +13,23 @@
 #    under the License.
 import collections
 import functools
-import imp
+import importlib
 import mock
 import os
+import sys
 
 from oslotest import base
 from testtools.matchers import Mismatch
 
-installs_squash_src = (os.path.dirname(os.path.realpath(__file__)) +
-                       '/../bin/package-installs-squash')
-installs_squash = imp.load_source('installs_squash', installs_squash_src)
+importlib.machinery.SOURCE_SUFFIXES.append('')
+file_path = (os.path.dirname(os.path.realpath(__file__)) +
+             '/../bin/package-installs-squash')
+spec = importlib.util.spec_from_file_location('installs_squash', file_path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+sys.modules['installs_squash'] = module
+installs_squash = module
+importlib.machinery.SOURCE_SUFFIXES.pop()
 
 
 class IsMatchingInstallList(object):
