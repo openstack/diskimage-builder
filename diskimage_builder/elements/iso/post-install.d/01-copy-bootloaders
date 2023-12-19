@@ -23,7 +23,7 @@ elif [ $DISTRO_NAME = "centos" ]; then
     SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
     LDLINUX_FILE="/usr/share/syslinux/ldlinux.c32"
 #debian/ubuntu
-elif [ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]; then
+elif [[ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]]; then
     GRUB_FILE="/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed"
     SHIM_FILE="/usr/lib/shim/shimx64.efi.signed"
     SYSLINUX_FILE="/usr/lib/ISOLINUX/isolinux.bin"
