@@ -4,3 +4,6 @@ sudo:
 kernel-devel:
 # lsb-release is not included by default.
 lsb-release:
+# compatibility for element scripts using mkinitrd
+dracut-mkinitrd-deprecated:
+
