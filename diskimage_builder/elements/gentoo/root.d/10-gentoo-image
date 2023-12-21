@@ -45,24 +45,24 @@ elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]
 elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/musl/hardened" ]]; then
     FILENAME_BASE='amd64_gentoo-stage3-hardened-musl'
     SIGNED_SOURCE_SUFFIX='-musl-hardened'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3-systemd'
-    SIGNED_SOURCE_SUFFIX='-systemd'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.1" ]]; then
+elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd/merged-usr" ]]; then
+    FILENAME_BASE='amd64_gentoo-stage3-systemd-mergedusr'
+    SIGNED_SOURCE_SUFFIX='-systemd-mergedusr'
+elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.0" ]]; then
     FILENAME_BASE='arm64_gentoo-stage3'
     SIGNED_SOURCE_SUFFIX=''
-elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.1/systemd" ]]; then
-    FILENAME_BASE='arm64_gentoo-stage3-systemd'
-    SIGNED_SOURCE_SUFFIX='-systemd'
+elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.0/systemd/merged-usr" ]]; then
+    FILENAME_BASE='arm64_gentoo-stage3-systemd-mergedusr'
+    SIGNED_SOURCE_SUFFIX='-systemd-mergedusr'
 else
     echo 'invalid profile, please select from the following profiles'
     echo 'default/linux/amd64/17.1'
     echo 'default/linux/amd64/17.1/no-multilib'
     echo 'default/linux/amd64/17.1/hardened'
     echo 'default/linux/amd64/17.1/no-multilib/hardened'
-    echo 'default/linux/amd64/17.1/systemd'
-    echo 'default/linux/arm64/17.1'
-    echo 'default/linux/arm64/17.1/systemd'
+    echo 'default/linux/amd64/17.1/systemd/merged-usr'
+    echo 'default/linux/arm64/17.0'
+    echo 'default/linux/arm64/17.0/systemd/merged-usr'
     exit 1
 fi
 
@@ -72,7 +72,7 @@ elif [[ "${GENTOO_PROFILE}" == *'arm64'* ]]; then
     ARCH_PATH='arm64'
 fi
 DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/latest-stage3-${ARCH_PATH}${SIGNED_SOURCE_SUFFIX}.txt"}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/$(curl "${DIB_CLOUD_SOURCE}" -s -f | tail -n 1 | cut -d\  -f 1)"}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/$(curl "${DIB_CLOUD_SOURCE}" -s -f | grep -B1 'BEGIN PGP SIGNATURE' | head -n 1 | cut -d\  -f 1)"}
 BASE_IMAGE_FILE_SUFFIX=${BASE_IMAGE_FILE_SUFFIX:-"$(basename "${BASE_IMAGE_FILE}" | cut -d. -f 2,3)"}
 SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.asc}"
 CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.${BASE_IMAGE_FILE_SUFFIX}"
