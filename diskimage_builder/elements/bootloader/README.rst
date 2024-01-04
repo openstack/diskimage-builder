@@ -27,3 +27,7 @@ Arguments
   used as a console. It defaults to ``tty0``. When explicitly set
   to an empty string then no virtual terminal console kernel argument
   is added.
+
+* ``DIB_NO_TIMER_CHECK`` allows the default kernel argument,
+  ``no_timer_check`` to be removed from the kernel command line
+  when the value is set to ``False``.

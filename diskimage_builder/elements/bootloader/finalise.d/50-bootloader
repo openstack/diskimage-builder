@@ -152,7 +152,13 @@ else
     VIRTUAL_TERMINAL=""
 fi
 
-GRUB_CMDLINE_LINUX_DEFAULT="${VIRTUAL_TERMINAL} ${SERIAL_CONSOLE} no_timer_check"
+if [[ "True" == "${DIB_NO_TIMER_CHECK:-True}" ]]; then
+    NO_TIMER_CHECK="no_timer_check"
+else
+    NO_TIMER_CHECK=""
+fi
+
+GRUB_CMDLINE_LINUX_DEFAULT="${VIRTUAL_TERMINAL} ${SERIAL_CONSOLE} ${NO_TIMER_CHECK}"
 echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${DIB_BOOTLOADER_DEFAULT_CMDLINE}${BOOT_FS}${BOOT_FIPS}\"" >>/etc/default/grub
 echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >>/etc/default/grub
 

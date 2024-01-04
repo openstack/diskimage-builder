@@ -7,3 +7,4 @@ else
     # DIB_BOOTLOADER_VIRTUAL_TERMINAL is set to empty string or other value
     export DIB_BOOTLOADER_VIRTUAL_TERMINAL=${DIB_BOOTLOADER_VIRTUAL_TERMINAL}
 fi
+export DIB_NO_TIMER_CHECK=${DIB_NO_TIMER_CHECK:-"True"}
