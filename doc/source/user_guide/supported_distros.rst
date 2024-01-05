@@ -104,7 +104,7 @@ versions:
 * ``openeuler-minimal``: 22.03-LTS
 * ``centos`` : (image-based build) 8-stream and 9-stream
 * ``fedora`` : (image-based build) latest
-* ``opensuse`` : 15.3
+* ``opensuse`` : 15.5
 * ``ubuntu`` : Bionic and Focal
 
 For ARM64, we also run functional tests on
