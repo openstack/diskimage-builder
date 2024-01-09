@@ -32,6 +32,117 @@ KNAME="dm-2" PKNAME="sda3" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xf
 KNAME="dm-3" PKNAME="sda3" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
 """ # noqa
 
+# output of multipath lsblk
+LSBLK_MULTIPATH = """KNAME="sda" PKNAME="" NAME="sda" LABEL="" TYPE="disk" FSTYPE="mpath_member" MOUNTPOINT=""
+KNAME="dm-0" PKNAME="sda" NAME="mpatha" LABEL="" TYPE="mpath" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-1" PKNAME="dm-0" NAME="mpatha1" LABEL="MKFS_ESP" TYPE="part" FSTYPE="vfat" MOUNTPOINT="/boot/efi"
+KNAME="dm-2" PKNAME="dm-0" NAME="mpatha2" LABEL="" TYPE="part" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-3" PKNAME="dm-0" NAME="mpatha3" LABEL="mkfs_boot" TYPE="part" FSTYPE="ext4" MOUNTPOINT="/boot"
+KNAME="dm-4" PKNAME="dm-0" NAME="mpatha4" LABEL="" TYPE="part" FSTYPE="LVM2_member" MOUNTPOINT=""
+KNAME="dm-6" PKNAME="dm-4" NAME="vg-lv_thinpool_tmeta" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-6" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-7" PKNAME="dm-4" NAME="vg-lv_thinpool_tdata" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-7" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-5" PKNAME="dm-0" NAME="mpatha5" LABEL="config-2" TYPE="part" FSTYPE="iso9660" MOUNTPOINT=""
+KNAME="sdb" PKNAME="" NAME="sdb" LABEL="" TYPE="disk" FSTYPE="mpath_member" MOUNTPOINT=""
+KNAME="dm-0" PKNAME="sdb" NAME="mpatha" LABEL="" TYPE="mpath" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-1" PKNAME="dm-0" NAME="mpatha1" LABEL="MKFS_ESP" TYPE="part" FSTYPE="vfat" MOUNTPOINT="/boot/efi"
+KNAME="dm-2" PKNAME="dm-0" NAME="mpatha2" LABEL="" TYPE="part" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-3" PKNAME="dm-0" NAME="mpatha3" LABEL="mkfs_boot" TYPE="part" FSTYPE="ext4" MOUNTPOINT="/boot"
+KNAME="dm-4" PKNAME="dm-0" NAME="mpatha4" LABEL="" TYPE="part" FSTYPE="LVM2_member" MOUNTPOINT=""
+KNAME="dm-6" PKNAME="dm-4" NAME="vg-lv_thinpool_tmeta" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-6" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-7" PKNAME="dm-4" NAME="vg-lv_thinpool_tdata" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-7" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-5" PKNAME="dm-0" NAME="mpatha5" LABEL="config-2" TYPE="part" FSTYPE="iso9660" MOUNTPOINT=""
+KNAME="sdc" PKNAME="" NAME="sdc" LABEL="" TYPE="disk" FSTYPE="mpath_member" MOUNTPOINT=""
+KNAME="dm-0" PKNAME="sdc" NAME="mpatha" LABEL="" TYPE="mpath" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-1" PKNAME="dm-0" NAME="mpatha1" LABEL="MKFS_ESP" TYPE="part" FSTYPE="vfat" MOUNTPOINT="/boot/efi"
+KNAME="dm-2" PKNAME="dm-0" NAME="mpatha2" LABEL="" TYPE="part" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-3" PKNAME="dm-0" NAME="mpatha3" LABEL="mkfs_boot" TYPE="part" FSTYPE="ext4" MOUNTPOINT="/boot"
+KNAME="dm-4" PKNAME="dm-0" NAME="mpatha4" LABEL="" TYPE="part" FSTYPE="LVM2_member" MOUNTPOINT=""
+KNAME="dm-6" PKNAME="dm-4" NAME="vg-lv_thinpool_tmeta" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-6" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-7" PKNAME="dm-4" NAME="vg-lv_thinpool_tdata" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-7" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-5" PKNAME="dm-0" NAME="mpatha5" LABEL="config-2" TYPE="part" FSTYPE="iso9660" MOUNTPOINT=""
+KNAME="sdd" PKNAME="" NAME="sdd" LABEL="" TYPE="disk" FSTYPE="mpath_member" MOUNTPOINT=""
+KNAME="dm-0" PKNAME="sdd" NAME="mpatha" LABEL="" TYPE="mpath" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-1" PKNAME="dm-0" NAME="mpatha1" LABEL="MKFS_ESP" TYPE="part" FSTYPE="vfat" MOUNTPOINT="/boot/efi"
+KNAME="dm-2" PKNAME="dm-0" NAME="mpatha2" LABEL="" TYPE="part" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-3" PKNAME="dm-0" NAME="mpatha3" LABEL="mkfs_boot" TYPE="part" FSTYPE="ext4" MOUNTPOINT="/boot"
+KNAME="dm-4" PKNAME="dm-0" NAME="mpatha4" LABEL="" TYPE="part" FSTYPE="LVM2_member" MOUNTPOINT=""
+KNAME="dm-6" PKNAME="dm-4" NAME="vg-lv_thinpool_tmeta" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-6" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-7" PKNAME="dm-4" NAME="vg-lv_thinpool_tdata" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-8" PKNAME="dm-7" NAME="vg-lv_thinpool-tpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-9" PKNAME="dm-8" NAME="vg-lv_thinpool" LABEL="" TYPE="lvm" FSTYPE="" MOUNTPOINT=""
+KNAME="dm-10" PKNAME="dm-8" NAME="vg-lv_root" LABEL="img-rootfs" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/"
+KNAME="dm-11" PKNAME="dm-8" NAME="vg-lv_tmp" LABEL="fs_tmp" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/tmp"
+KNAME="dm-12" PKNAME="dm-8" NAME="vg-lv_var" LABEL="fs_var" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var"
+KNAME="dm-13" PKNAME="dm-8" NAME="vg-lv_log" LABEL="fs_log" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log"
+KNAME="dm-14" PKNAME="dm-8" NAME="vg-lv_audit" LABEL="fs_audit" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/var/log/audit"
+KNAME="dm-15" PKNAME="dm-8" NAME="vg-lv_home" LABEL="fs_home" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/home"
+KNAME="dm-16" PKNAME="dm-8" NAME="vg-lv_srv" LABEL="fs_srv" TYPE="lvm" FSTYPE="xfs" MOUNTPOINT="/srv"
+KNAME="dm-5" PKNAME="dm-0" NAME="mpatha5" LABEL="config-2" TYPE="part" FSTYPE="iso9660" MOUNTPOINT=""
+""" # noqa
+
 DEVICES = [{
     "FSTYPE": "",
     "KNAME": "sda",
@@ -180,6 +291,10 @@ class TestGrowvols(base.BaseTestCase):
         devices = list(growvols.parse_shell_vars(LSBLK))
         self.assertEqual(DEVICES, devices)
 
+    def test_parse_shell_vars_multipath(self):
+        devices = list(growvols.parse_shell_vars(LSBLK_MULTIPATH))
+        self.assertEqual(108, len(devices))
+
     def test_find_device(self):
         sda = {
             "FSTYPE": "",
@@ -213,6 +328,22 @@ class TestGrowvols(base.BaseTestCase):
             growvols.find_device(
                 DEVICES, ['KNAME', 'NAME'], 'asdf'))
 
+    def test_find_device_multipath(self):
+        mpatha = {
+            'FSTYPE': '',
+            'KNAME': 'dm-0',
+            'LABEL': '',
+            'MOUNTPOINT': '',
+            'NAME': 'mpatha',
+            'PKNAME': 'sda',
+            'TYPE': 'mpath'
+        }
+        devices = list(growvols.parse_shell_vars(LSBLK_MULTIPATH))
+        self.assertEqual(
+            mpatha,
+            growvols.find_device(
+                devices, ['KNAME', 'NAME'], 'mpatha'))
+
     def test_find_disk(self):
         devices = list(growvols.parse_shell_vars(LSBLK))
         opts = mock.Mock()
@@ -242,7 +373,8 @@ class TestGrowvols(base.BaseTestCase):
         sda['TYPE'] = 'dissed'
         opts.device = 'sda'
         e = self.assertRaises(Exception, growvols.find_disk, opts, devices)
-        self.assertEqual('Expected a device with TYPE="disk", got: dissed',
+        self.assertEqual('Expected a device with TYPE="disk" or TYPE="mpath"'
+                         ', got: dissed',
                          str(e))
 
     @mock.patch('growvols.execute')
@@ -298,30 +430,91 @@ class TestGrowvols(base.BaseTestCase):
         self.assertEqual('Could not find specified --group: novg', str(e))
 
     def test_find_next_partnum(self):
-        self.assertEqual(5, growvols.find_next_partnum(DEVICES, 'sda'))
-        self.assertEqual(1, growvols.find_next_partnum(DEVICES, 'sdb'))
+        opts = mock.Mock()
+        opts.device = None
+        disk = growvols.find_disk(opts, DEVICES)
+        self.assertEqual(5, growvols.find_next_partnum(DEVICES, disk))
+        disk = {
+            "FSTYPE": "",
+            "KNAME": "sdb",
+            "LABEL": "",
+            "MOUNTPOINT": "",
+            "NAME": "sdb",
+            "PKNAME": "",
+            "TYPE": "disk",
+        }
+        self.assertEqual(1, growvols.find_next_partnum(DEVICES, disk))
+
+    def test_find_next_partnum_multipath(self):
+        opts = mock.Mock()
+        opts.device = 'mpatha'
+        devices = list(growvols.parse_shell_vars(LSBLK_MULTIPATH))
+        disk = growvols.find_disk(opts, devices)
+        self.assertEqual(6, growvols.find_next_partnum(devices, disk))
 
     def test_find_next_device_name(self):
         devices = list(growvols.parse_shell_vars(LSBLK))
-
+        disk = {
+            "FSTYPE": "",
+            "KNAME": "sda",
+            "LABEL": "",
+            "MOUNTPOINT": "",
+            "NAME": "sda",
+            "PKNAME": "",
+            "TYPE": "disk",
+        }
         # Use SATA etc device naming
         self.assertEqual(
             'sda5',
-            growvols.find_next_device_name(devices, 'sda', 5))
+            growvols.find_next_device_name(devices, disk, 5))
 
+    def test_find_next_device_name_no_partitions(self):
+        devices = list(growvols.parse_shell_vars(LSBLK))
+        disk_no_partitions = {
+            "FSTYPE": "",
+            "KNAME": "sdb",
+            "LABEL": "",
+            "MOUNTPOINT": "",
+            "NAME": "sdb",
+            "PKNAME": "",
+            "TYPE": "disk",
+        }
         # No partitions
         e = self.assertRaises(Exception, growvols.find_next_device_name,
-                              devices, 'sdb', 1)
+                              devices, disk_no_partitions, 1)
         self.assertEqual(
             'Could not find partition naming scheme for sdb', str(e))
 
+    def test_find_next_device_name_nvme(self):
+        devices = list(growvols.parse_shell_vars(LSBLK))
+        disk = {
+            "FSTYPE": "",
+            "KNAME": "nvme0",
+            "LABEL": "",
+            "MOUNTPOINT": "",
+            "NAME": "nvme0",
+            "PKNAME": "",
+            "TYPE": "disk",
+        }
         # Use NVMe device naming
         for i in (1, 2, 3, 4):
             d = growvols.find_device(devices, 'KNAME', 'sda%s' % i)
             d['KNAME'] = 'nvme0p%s' % i
+            d['NAME'] = 'nvme0p%s' % i
         self.assertEqual(
             'nvme0p5',
-            growvols.find_next_device_name(devices, 'nvme0', 5))
+            growvols.find_next_device_name(devices, disk, 5))
+
+    def test_find_next_device_name_multipath(self):
+        opts = mock.Mock()
+        opts.device = 'mpatha'
+        devices = list(growvols.parse_shell_vars(LSBLK_MULTIPATH))
+        disk = growvols.find_disk(opts, devices)
+
+        # Use dm device naming
+        self.assertEqual(
+            'mpatha6',
+            growvols.find_next_device_name(devices, disk, 6))
 
     def test_amount_unit_to_extent(self):
         one_m = growvols.UNIT_BYTES['MiB']
@@ -431,9 +624,17 @@ class TestGrowvols(base.BaseTestCase):
 
     @mock.patch('growvols.execute')
     def test_find_thin_pool(self, mock_execute):
+        self._find_thin_pool(mock_execute, DEVICES)
+
+    @mock.patch('growvols.execute')
+    def test_find_thin_pool_multipath(self, mock_execute):
+        devices = list(growvols.parse_shell_vars(LSBLK_MULTIPATH))
+        self._find_thin_pool(mock_execute, devices)
+
+    def _find_thin_pool(self, mock_execute, devices):
         # No thin pool
         mock_execute.return_value = LVS
-        self.assertEqual((None, None), growvols.find_thin_pool(DEVICES, 'vg'))
+        self.assertEqual((None, None), growvols.find_thin_pool(devices, 'vg'))
         mock_execute.assert_called_once_with([
             'lvs', '--noheadings', '--options',
             'lv_name,lv_dm_path,lv_attr,pool_lv'])
@@ -441,7 +642,7 @@ class TestGrowvols(base.BaseTestCase):
         # One thin pool, all volumes use it
         mock_execute.return_value = LVS_THIN
         self.assertEqual(('/dev/mapper/vg-lv_thinpool', 'lv_thinpool'),
-                         growvols.find_thin_pool(DEVICES, 'vg'))
+                         growvols.find_thin_pool(devices, 'vg'))
 
         # One pool, not used by all volumes
         mock_execute.return_value = '''
@@ -449,7 +650,7 @@ class TestGrowvols(base.BaseTestCase):
   lv_home     /dev/mapper/vg-lv_home     Vwi-aotz--
   lv_root     /dev/mapper/vg-lv_root     Vwi-aotz-- lv_thinpool'''
         e = self.assertRaises(Exception, growvols.find_thin_pool,
-                              DEVICES, 'vg')
+                              devices, 'vg')
         self.assertEqual('All volumes need to be in pool lv_thinpool. '
                          'lv_home is in pool None', str(e))
 
@@ -460,7 +661,7 @@ class TestGrowvols(base.BaseTestCase):
   lv_home  /dev/mapper/vg-lv_home  Vwi-aotz-- lv_thin2
   lv_root  /dev/mapper/vg-lv_root  Vwi-aotz-- lv_thin1'''
         e = self.assertRaises(Exception, growvols.find_thin_pool,
-                              DEVICES, 'vg')
+                              devices, 'vg')
         self.assertEqual('All volumes need to be in pool lv_thin1. '
                          'lv_home is in pool lv_thin2', str(e))
 
@@ -624,6 +825,55 @@ class TestGrowvols(base.BaseTestCase):
                        'vg/lv_thinpool']),
             mock.call(['lvextend', '-L+207253143552B',
                        '/dev/mapper/vg-lv_thinpool', '/dev/sda5']),
+            mock.call(['lvextend', '--size', '+41448112128B',
+                       '/dev/mapper/vg-lv_home']),
+            mock.call(['lvextend', '--size', '+82900418560B',
+                       '/dev/mapper/vg-lv_var']),
+            mock.call(['lvextend', '--size', '+82904612864B',
+                       '/dev/mapper/vg-lv_root']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
+            mock.call(['xfs_growfs', '/dev/mapper/vg-lv_root']),
+        ])
+
+    @mock.patch('growvols.find_sector_size')
+    @mock.patch('growvols.execute')
+    def test_main_thin_provision_multipath(self, mock_execute,
+                                           mock_sector_size):
+        mock_sector_size.return_value = 512
+
+        # assign to /home, /var, remainder to /
+        mock_execute.reset_mock()
+        mock_execute.side_effect = [
+            LSBLK_MULTIPATH,
+            '',
+            SGDISK_LARGEST,
+            VGS,
+            LVS_THIN,
+            '', '', '', '', '', '', '', '', '', '', '', '', ''
+        ]
+        growvols.main(['growvols', '--yes', '--device', 'mpatha',
+                       '--group', 'vg',
+                       '/home=20%', 'fs_var=40%'])
+        mock_execute.assert_has_calls([
+            mock.call(['lsblk', '-Po',
+                       'kname,pkname,name,label,type,fstype,mountpoint']),
+            mock.call(['sgdisk', '-v', '/dev/dm-0']),
+            mock.call(['sgdisk', '--first-aligned-in-largest',
+                       '--end-of-largest', '/dev/dm-0']),
+            mock.call(['vgs', '--noheadings', '--options', 'vg_name']),
+            mock.call(['lvs', '--noheadings', '--options',
+                       'lv_name,lv_dm_path,lv_attr,pool_lv']),
+            mock.call(['sgdisk', '--new=6:79267840:488265727',
+                       '--change-name=6:growvols', '/dev/dm-0']),
+            mock.call(['multipath', '-r']),
+            mock.call(['partprobe']),
+            mock.call(['pvcreate', '/dev/mapper/mpatha6']),
+            mock.call(['vgextend', 'vg', '/dev/mapper/mpatha6']),
+            mock.call(['lvextend', '--poolmetadatasize', '+1073741824B',
+                       'vg/lv_thinpool']),
+            mock.call(['lvextend', '-L+207253143552B',
+                       '/dev/mapper/vg-lv_thinpool', '/dev/mapper/mpatha6']),
             mock.call(['lvextend', '--size', '+41448112128B',
                        '/dev/mapper/vg-lv_home']),
             mock.call(['lvextend', '--size', '+82900418560B',
