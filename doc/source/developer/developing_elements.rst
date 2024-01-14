@@ -276,10 +276,6 @@ Global image-build variables
   be attempted as the user may have an external cache able to keep the operation
   functional.
 
-``DIB_IMAGE_ROOT_FS_UUID``
-  This contains the UUID of the root filesystem, when diskimage-builder is
-  building a disk image. This works only for ext filesystems.
-
 ``DIB_IMAGE_CACHE``
   Path to where cached inputs to the build process are stored. Defaults to
   ``~/.cache/image_create``.
