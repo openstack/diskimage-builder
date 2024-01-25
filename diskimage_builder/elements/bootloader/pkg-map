@@ -13,7 +13,8 @@
       "dkms_package": "",
       "extlinux": "syslinux",
       "grub-pc": "grub2",
-      "grub-efi": "grub2"
+      "grub-efi": "grub2",
+      "grub-efi-amd64": "grub2-x86_64-efi"
     },
     "redhat": {
       "extlinux": "syslinux-extlinux",
