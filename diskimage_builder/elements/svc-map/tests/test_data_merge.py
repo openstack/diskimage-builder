@@ -11,13 +11,21 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import imp
+import importlib
 import os
+import sys
 from oslotest import base
 
-module_path = (os.path.dirname(os.path.realpath(__file__)) +
-               '/../extra-data.d/10-merge-svc-map-files')
-service_map = imp.load_source('service_map', module_path)
+
+importlib.machinery.SOURCE_SUFFIXES.append('')
+file_path = (os.path.dirname(os.path.realpath(__file__)) +
+             '/../extra-data.d/10-merge-svc-map-files')
+spec = importlib.util.spec_from_file_location('service_map', file_path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+sys.modules['service_map'] = module
+service_map = module
+importlib.machinery.SOURCE_SUFFIXES.pop()
 
 
 class TestDataMerge(base.BaseTestCase):

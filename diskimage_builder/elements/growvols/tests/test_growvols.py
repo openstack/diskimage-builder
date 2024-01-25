@@ -11,14 +11,22 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import imp
+import importlib
 import mock
 import os
+import sys
 from oslotest import base
 
-module_path = (os.path.dirname(os.path.realpath(__file__)) +
-               '/../static/usr/local/sbin/growvols')
-growvols = imp.load_source('growvols', module_path)
+
+importlib.machinery.SOURCE_SUFFIXES.append('')
+file_path = (os.path.dirname(os.path.realpath(__file__)) +
+             '/../static/usr/local/sbin/growvols')
+spec = importlib.util.spec_from_file_location('growvols', file_path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+sys.modules['growvols'] = module
+growvols = module
+importlib.machinery.SOURCE_SUFFIXES.pop()
 
 # output of lsblk -Po kname,pkname,name,label,type,fstype,mountpoint
 LSBLK = """KNAME="sda" PKNAME="" NAME="sda" LABEL="" TYPE="disk" FSTYPE="" MOUNTPOINT=""
