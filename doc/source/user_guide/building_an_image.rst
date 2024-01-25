@@ -67,13 +67,13 @@ output formats may be specified using the `-t <format>` argument. Multiple
 output formats can also be specified by comma separation. The supported output
 formats are:
 
- * qcow2
- * tar
- * tgz
- * squashfs
- * vhd
- * docker
- * raw
+* qcow2
+* tar
+* tgz
+* squashfs
+* vhd
+* docker
+* raw
 
 When building a tgz image, note that the `DIB_GZIP_BIN` environment variable
 can be used to set the path of the gzip executable.
