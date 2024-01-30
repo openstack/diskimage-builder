@@ -126,8 +126,20 @@ else
         if [[ ! -f ${PORTDIR}/profiles ]]; then
             emerge-webrsync -q
         fi
-        install_gentoo_packages -C "${PKGS}"
+        # remove packages from uninstall list that are not already installed
+        # this can result in false positives if not presented with full category/package names
+        CLEANED_PKGS=()
+        for PKG in ${PKGS}; do
+            # the '^' and '$' in the search query are important so we don't get matched to
+            # packages that include our package name as part of their package name
+            if [ ! emerge --search "^${PKG}$" | grep -q 'Not Installed' ]; then
+                CLEANED_PKGS+=("${PKG}")
+            fi
+        done
+        if [ ${#CLEANED_PKGS[@]} -ne 0 ]; then
+            install_gentoo_packages -C "${CLEANED_PKGS[@]}"
+        fi
     else
-        echo 'something when really wrong, install action is not install or remove'
+        echo 'something went really wrong, install action is not install or remove'
     fi
 fi

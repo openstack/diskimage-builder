@@ -232,7 +232,7 @@
         base_element: gentoo
         release: ''
         env-vars:
-          GENTOO_PROFILE: 'default/linux/amd64/17.1/systemd'
+          GENTOO_PROFILE: 'default/linux/amd64/17.1/systemd/merged-usr'
 
 - job:
     name: dib-nodepool-functional-openstack-debian-stretch-src
