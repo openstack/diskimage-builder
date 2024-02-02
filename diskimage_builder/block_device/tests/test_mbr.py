@@ -12,9 +12,9 @@
 
 import fixtures
 import logging
-import mock
 import os
 import subprocess
+from unittest import mock
 
 import diskimage_builder.block_device.tests.test_base as tb
 

@@ -12,9 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import importlib
-import mock
 import os
 import sys
+from unittest import mock
+
 from oslotest import base
 
 

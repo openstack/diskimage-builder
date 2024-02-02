@@ -12,8 +12,8 @@
 
 import functools
 import logging
-import mock
 import os
+from unittest import mock
 
 import diskimage_builder.block_device.tests.test_config as tc
 
