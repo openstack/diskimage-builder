@@ -20,6 +20,12 @@ fi
 set -eu
 set -o pipefail
 
+# note(JayF): YACC and LEX are both set by gentoo alternatives handling if you want to
+#             use alternative implementations of them. Since whatever alternative
+#             implementation is opted-for may not availabe inside the image, we need to 
+#             unset the environment to ensure default behavior.
+unset YACC LEX
+
 # env is not sourced with user specified package inclusions
 # set the default bash array if GENTOO_EMERGE_ENV is not defined as an array
 if ! declare -p GENTOO_EMERGE_ENV  2> /dev/null | grep -q '^declare \-a'; then
@@ -36,7 +42,7 @@ for (( i=0; i<${#GENTOO_EMERGE_ENV[@]}; i++ )); do
     eval export "${GENTOO_EMERGE_ENV[i]}"
 done
 # set default opts
-GENTOO_EMERGE_DEFAULT_OPTS=${GENTOO_EMERGE_DEFAULT_OPTS:-"--binpkg-respect-use --rebuilt-binaries=y --usepkg=y --with-bdeps=y --binpkg-changed-deps=y --quiet --jobs=2 --autounmask=n"}
+GENTOO_EMERGE_DEFAULT_OPTS=${GENTOO_EMERGE_DEFAULT_OPTS:-"--binpkg-respect-use --rebuilt-binaries=y --usepkg=y --with-bdeps=y --binpkg-changed-deps=y --jobs=2 --verbose --autounmask=n"}
 
 ACTION='install'
 
@@ -76,7 +82,7 @@ while true; do
             if [[ ! -f ${PORTDIR}/profiles ]]; then
                 emerge-webrsync -q
             fi
-            install_gentoo_packages --update --deep --newuse --complete-graph=y @world
+            install_gentoo_packages --update --deep --changed-use @world
             install_gentoo_packages --verbose=n --depclean
             install_gentoo_packages --usepkg=n @preserved-rebuild
             etc-update --automode -5
@@ -121,7 +127,7 @@ else
         if [[ ! -f ${PORTDIR}/profiles ]]; then
             emerge-webrsync -q
         fi
-        install_gentoo_packages -q --jobs=2 --changed-use "${PKGS}"
+        install_gentoo_packages --changed-use "${PKGS}"
     elif [[ "${ACTION}" == 'remove' ]]; then
         if [[ ! -f ${PORTDIR}/profiles ]]; then
             emerge-webrsync -q
@@ -143,3 +149,4 @@ else
         echo 'something went really wrong, install action is not install or remove'
     fi
 fi
+

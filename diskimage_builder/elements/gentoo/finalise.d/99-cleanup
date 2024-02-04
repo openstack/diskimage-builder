@@ -18,7 +18,7 @@ fi
 [[ ! -e ${PORTDIR}/profiles ]] && emerge-webrsync
 
 # make world consistent
-emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --complete-graph=y --update --newuse --deep @world
+emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --update --changed-use --deep @world
 # rebuild packages that might need it
 emerge ${GENTOO_EMERGE_DEFAULT_OPTS} --usepkg=n @preserved-rebuild
 # remove unneeded packages
