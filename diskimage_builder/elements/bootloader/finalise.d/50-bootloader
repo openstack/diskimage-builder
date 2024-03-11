@@ -57,6 +57,11 @@ if [[ ! $($GRUBNAME --version) =~ ' 2.' ]]; then
     exit 1
 fi
 
+# Ensure BLS entries are updated with default args
+if [[ $($GRUB_MKCONFIG --help) =~ '--update-bls-cmdline' ]]; then
+    GRUB_MKCONFIG="$GRUB_MKCONFIG --update-bls-cmdline"
+fi
+
 # Some distros keep things in /boot/grub2, others in /boot/grub
 if [ -d /boot/grub2 ]; then
     GRUB_CFG=/boot/grub2/grub.cfg
