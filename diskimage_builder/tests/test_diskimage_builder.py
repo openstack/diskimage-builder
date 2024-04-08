@@ -12,12 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import jsonschema
-import mock
+import os
 import subprocess
 import tempfile
+from unittest import mock
+
+import jsonschema
 import testtools
-import os
 import yaml
 
 from diskimage_builder import diskimage_builder as dib

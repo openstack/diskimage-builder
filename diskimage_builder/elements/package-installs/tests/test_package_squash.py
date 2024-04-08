@@ -14,9 +14,9 @@
 import collections
 import functools
 import importlib
-import mock
 import os
 import sys
+from unittest import mock
 
 from oslotest import base
 from testtools.matchers import Mismatch
