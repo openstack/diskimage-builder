@@ -93,7 +93,7 @@ function podman_cleanup() {
 
 trap "podman_cleanup" EXIT
 
-${_sudo} ${DIB_CONTAINERFILE_RUNTIME} build ${DIB_CONTAINERFILE_RUNTIME_NETWORK} -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE $DIB_CONTAINER_CONTEXT
+${_sudo} ${DIB_CONTAINERFILE_RUNTIME} build ${DIB_CONTAINERFILE_RUNTIME_NETWORK} -t ${_podman_build_image} -f $DIB_CONTAINERFILE_DOCKERFILE ${DIB_CONTAINERFILE_BUILDOPTS:-} $DIB_CONTAINER_CONTEXT
 ${_sudo} ${DIB_CONTAINERFILE_RUNTIME} run ${DIB_CONTAINERFILE_RUNTIME_NETWORK} --name ${_podman_export_container} -d ${_podman_build_image} /bin/sh
 # NOTE(ianw) 2021-11-10 the tar must always be sudo to write out the chroot files
 # as other uids

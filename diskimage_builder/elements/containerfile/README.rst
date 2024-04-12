@@ -22,3 +22,5 @@ Set ``DIB_CONTAINERFILE_RUNTIME_ROOT`` to ``1`` to run the runtime
 
 Set ``DIB_CONTAINERFILE_NETWORK_DRIVER`` to a network driver of your choice
 (e.g. host) to use it instead of the default bridge during build.
+
+Set ``DIB_CONTAINERFILE_BUILDOPTS`` to pass any other options to build command, e.g. ``--from docker.io/library/ubuntu:jammy --build-arg=HTTP_PROXY=http://10.20.30.2:1234``
