@@ -48,6 +48,7 @@
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src
         - dib-nodepool-functional-openstack-ubuntu-jammy-src
+        - dib-nodepool-functional-openstack-ubuntu-noble-src
         # NOTE(ianw): 2020-04-22 these have been out of the gate for a
         # while; promote to voting after some stability.
         - dib-nodepool-functional-openstack-opensuse-15-src:
@@ -97,6 +98,7 @@
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src
         - dib-nodepool-functional-openstack-ubuntu-jammy-src
+        - dib-nodepool-functional-openstack-ubuntu-noble-src
         - dib-functests
         - ironic-python-agent-check-image-dib-centos9
     experimental:
