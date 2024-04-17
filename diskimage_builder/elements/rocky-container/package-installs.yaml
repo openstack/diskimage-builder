@@ -8,7 +8,3 @@ initscripts:
 man-pages:
 redhat-rpm-config:
 passwd:
-linux-firmware:
-    uninstall: true
-linux-firmware-whence:
-    uninstall: true
