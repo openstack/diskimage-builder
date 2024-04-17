@@ -207,16 +207,16 @@ fi
 # linuxefi/initrdefi for the image to boot under efi
 if [[ ${DIB_BLOCK_DEVICE} == "efi" ]]; then
     sed -i 's%\(linux\|initrd\)16 /boot%\1efi /boot%g' $GRUB_CFG
+fi
 
-    # Finally copy the grub.cfg and grubenv to the EFI specific dir
-    # to support functionality like secure boot. We make a copy because
-    # /boot and /boot/efi may be different partitions and uefi looks
-    # for a specific partition UUID preventing symlinks from working.
-    if [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
-        cp $GRUB_CFG /boot/efi/$EFI_BOOT_DIR/grub.cfg
-        if [ -a $GRUBENV ]; then
-            cp $GRUBENV /boot/efi/$EFI_BOOT_DIR/grubenv
-        fi
+# Finally copy the grub.cfg and grubenv to the EFI specific dir
+# to support functionality like secure boot. We make a copy because
+# /boot and /boot/efi may be different partitions and uefi looks
+# for a specific partition UUID preventing symlinks from working.
+if [ -n "${EFI_BOOT_DIR:-}" ] && [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
+    cp $GRUB_CFG /boot/efi/$EFI_BOOT_DIR/grub.cfg
+    if [ -a $GRUBENV ]; then
+        cp $GRUBENV /boot/efi/$EFI_BOOT_DIR/grubenv
     fi
 fi
 
