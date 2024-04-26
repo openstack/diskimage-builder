@@ -26,6 +26,11 @@
               nodes:
                 - name: ubuntu-jammy
                   label: ubuntu-jammy
+        - tox-py311:
+            nodeset:
+              nodes:
+                - name: debian-bookworm
+                  label: debian-bookworm
         - dib-functests
         - opendev-buildset-registry
         - nodepool-build-image-siblings
@@ -84,6 +89,11 @@
               nodes:
                 - name: ubuntu-jammy
                   label: ubuntu-jammy
+        - tox-py311:
+            nodeset:
+              nodes:
+                - name: debian-bookworm
+                  label: debian-bookworm
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
