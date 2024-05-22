@@ -27,7 +27,7 @@ case "$DIB_INIT_SYSTEM" in
         else
             # NOTE(ianw): it might be better to whitelist platforms in
             # the future, but for now assume it will "just work"
-            continue
+            true 
         fi
         ;;
     openrc)
