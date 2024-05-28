@@ -2,7 +2,7 @@ FROM docker.io/rockylinux/rockylinux:9
 
 RUN dnf group install -y 'Minimal Install' --allowerasing && \
     dnf install -y findutils util-linux sudo python3 NetworkManager \
-    NetworkManager-config-server
+    NetworkManager-config-server curl libcurl --allowerasing
 
 RUN systemctl unmask console-getty.service dev-hugepages.mount \
     getty.target sys-fs-fuse-connections.mount systemd-logind.service \
