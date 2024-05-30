@@ -2,5 +2,4 @@ containerfile
 package-installs
 redhat-common
 rpm-distro
-vm
 yum
