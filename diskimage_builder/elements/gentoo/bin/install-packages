@@ -138,7 +138,7 @@ else
         for PKG in ${PKGS}; do
             # the '^' and '$' in the search query are important so we don't get matched to
             # packages that include our package name as part of their package name
-            if [ ! emerge --search "^${PKG}$" | grep -q 'Not Installed' ]; then
+            if ! emerge --search "^${PKG}$" | grep -q 'Not Installed' ; then
                 CLEANED_PKGS+=("${PKG}")
             fi
         done
