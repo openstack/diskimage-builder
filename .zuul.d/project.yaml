@@ -39,9 +39,13 @@
         - dib-nodepool-functional-openstack-almalinux-9-containerfile-src:
             voting: false
         - dib-nodepool-functional-openstack-centos-7-src
-        - dib-nodepool-functional-openstack-centos-8-stream-src
+        # NOTE(rpittau) CS8 is EOL
+        # - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
-        - dib-nodepool-functional-openstack-fedora-37-containerfile-src
+        # NOTE(rpittau) Fedora 37 is EOL, moving to non-voting for the time being
+        # until we move to Fedora 39 or more recent.
+        - dib-nodepool-functional-openstack-fedora-37-containerfile-src:
+            voting: false
         - dib-nodepool-functional-openstack-rockylinux-8-containerfile-src:
             voting: false
         - dib-nodepool-functional-openstack-rockylinux-9-containerfile-src:
@@ -98,9 +102,7 @@
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-7-src
-        - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
-        - dib-nodepool-functional-openstack-fedora-37-containerfile-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-nodepool-functional-openstack-ubuntu-focal-src

@@ -24,9 +24,10 @@
         - containerfile/jammy-build-succeeds
         - openeuler-minimal/22.03-LTS-build-succeeds
         # Image based tests
-        - centos/8-stream-build-succeeds
         - centos/9-stream-build-succeeds
-        - fedora/build-succeeds
+        # NOTE(rpittau) Fedora 37 is EOL, disalbing this until we move to
+        # Fedora 39 or more recent.
+        #- fedora/build-succeeds
         # NOTE(ianw) 2022-08-02 : disabled due to upstream
         # checksum mismatches; see
         #  https://bugzilla.suse.com/show_bug.cgi?id=1202041
@@ -59,7 +60,6 @@
     vars:
       dib_functests:
         - almalinux-container/almalinux-9-aarch64-build-succeeds
-        - centos-minimal/8-stream-aarch64-build-succeeds
         - centos-minimal/9-stream-aarch64-build-succeeds
         - openeuler-minimal/22.03-LTS-build-succeeds
         - rocky-container/rocky-9-aarch64-build-succeeds

@@ -4,9 +4,9 @@
   shell: |
     set -ex
     echo "APT::Default-Release: 'stable';" > /etc/apt/apt.conf.d/default-release
-    echo "deb http://deb.debian.org/debian unstable main" > /etc/apt/sources.list.d/unstable-debian.list
+    # echo "deb http://deb.debian.org/debian unstable main" > /etc/apt/sources.list.d/unstable-debian.list
     apt-get update
-    apt-get install -y debootstrap/unstable
+    apt-get install -y debootstrap
     # Remove the use of unstable as it seems to interfere with other tasks
-    rm /etc/apt/sources.list.d/unstable-debian.list
-    apt-get update
+    # rm /etc/apt/sources.list.d/unstable-debian.list
+    apt-get --assume-yes update
