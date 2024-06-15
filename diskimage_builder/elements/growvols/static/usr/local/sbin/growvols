@@ -577,6 +577,8 @@ def main(argv):
 
     commands.append(Command([
         'pvcreate',
+        '-ff',
+        '--yes',
         dev_path
     ], 'Initialize %s for use by LVM' % devname))
 
