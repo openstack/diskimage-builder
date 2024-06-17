@@ -53,7 +53,7 @@ else
     esac
     # We have curl write headers to stderr so that we can debug fedora
     # mirror locations that don't have valid subreleases in their paths.
-    SUBRELEASE=$(head -1 < <(curl -Lis -D /dev/stderr $DIB_CLOUD_IMAGES/ | grep -o -P '(?<=Fedora-Cloud-Base-'${DIB_RELEASE}'-).*?(?=.'${ARCH}'.qcow2")' | sort -r))
+    SUBRELEASE=$(head -1 < <(curl -Lis -D /dev/stderr $DIB_CLOUD_IMAGES/ | grep -o -P '(?<=Fedora-Cloud-Base-'${DIB_RELEASE}'-).*?(?=.'${ARCH}'.qcow2)' | sort -r))
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-Fedora-Cloud-Base-$DIB_RELEASE-$SUBRELEASE.$ARCH.qcow2}
     BASE_IMAGE_TAR=Fedora-Cloud-Base-$DIB_RELEASE-$SUBRELEASE.$ARCH.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
