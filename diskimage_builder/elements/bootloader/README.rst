@@ -19,6 +19,9 @@ Arguments
   to the ``GRUB_CMDLINE_LINUX_DEFAULT`` values in ``grub.cfg``
   configuration. It defaults to ``nofb nomodeset gfxpayload=text``.
 
+* ``DIB_BOOTLOADER_USE_SERIAL_CONSOLE`` allows usage of a serial console
+  to be disabled in the resulting image by setting to a value of ``False``.
+
 * ``DIB_BOOTLOADER_SERIAL_CONSOLE`` sets the serial device to be
   used as a console. It defaults to ``hvc0`` for PowerPC, 
   ``ttyAMA0,115200`` for ARM64, otherwise ``ttyS0,115200``.

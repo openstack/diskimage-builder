@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Adds the ability to disable serial console logging from being setup in
+    the ``bootloader`` element by setting the
+    ``DIB_BOOTLOADER_USE_SERIAL_CONSOLE`` environment variable to ``False``.
