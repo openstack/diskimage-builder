@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Adds logic to permit the removal of consoles when the bootloader element
+    when no configuration has been expressed which requests it, and serial
+    console is disabled. This involves ``DIB_BOOTLOADER_VIRTUAL_TERMINAL``
+    being set to an empty string and ``DIB_BOOTLOADER_USE_SERIAL_CONSOLE``
+    is set to ``False``.

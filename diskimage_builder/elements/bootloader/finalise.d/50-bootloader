@@ -232,7 +232,7 @@ if [ -n "${EFI_BOOT_DIR:-}" ] && [ -d /boot/efi/$EFI_BOOT_DIR ] ; then
 fi
 
 # Ensure paths in BLS entries account for /boot being a partition or part of the
-# root partition
+# root partition and perform any required entry removal.
 if [[ -e /boot/loader/entries ]]; then
     pushd /boot/loader/entries
     set +e
@@ -250,6 +250,17 @@ if [[ -e /boot/loader/entries ]]; then
     done
     set -e
     popd
+
+    # Since we are already aware we're using BLS, we can go ahead and
+    # do any cleanup to disable embedded serial console settings if they
+    # already exist.
+    if [[ "True" != "${DIB_BOOTLOADER_USE_SERIAL_CONSOLE:-True}" ]] && [[ "${VIRTUAL_TERMINAL}" == "" ]]; then
+        # NOTE(TheJulia): This removes any console arguments and allows grub
+        # to use it's default. It will also remove any embedded consoles in
+        # source images, which may be highly desirable if your running
+        # interrupt sensitive workloads, such as NFV workloads.
+        grubby --update-kernel ALL --remove-args=console
+    fi
     # Print resulting grubby output for debug purposes
     grubby --info=ALL
 fi
