@@ -18,7 +18,7 @@
     description: |
       This is the base set of stable tests
     parent: dib-functests-base
-    nodeset: debian-bullseye
+    nodeset: debian-bookworm
     vars:
       dib_functests:
         - containerfile/jammy-build-succeeds
