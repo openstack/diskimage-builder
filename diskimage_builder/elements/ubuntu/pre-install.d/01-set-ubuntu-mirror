@@ -7,24 +7,50 @@ set -eu
 set -o pipefail
 
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
+SIGNED_BY=${SIGNED_BY:-}
+DEB822_SOURCES_FILE=/etc/apt/sources.list.d/ubuntu.sources
 
-[[ -n "$DIB_DISTRIBUTION_MIRROR" ]] || exit 0
+if [[ -z "$DIB_DISTRIBUTION_MIRROR" ]]; then
+    echo "DIB_DISTRIBUTION_MIRROR is empty"
+    exit 0
+fi
 
-while IFS= read line
-do
-    if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-}" && "$line" =~ ${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-} ]]; then
-        # append line unmodified
-        echo "$line" | tee --append /etc/apt/sources.list.new
-    else
-        echo "$line" | \
-            sed -e "s&http://\(archive\|security\).ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&" | \
-            tee --append /etc/apt/sources.list.new
-    fi
-done < /etc/apt/sources.list
+# ubuntu versions > jammy use https://repolib.readthedocs.io/en/latest/deb822-format.html
+# check if the sources file is in the sources.list.d directory.
+if [[ -f "$DEB822_SOURCES_FILE" ]]; then
+    # ubuntu > jammy
+    while IFS= read line
+    do
+        if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-}" && "$line" =~ ${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-} ]]; then
+            # append line unmodified
+            echo "$line" | tee --append /etc/apt/sources.list.d/ubuntu.sources.new
+        else
+            if [[ "$line" == URIs:* ]]; then
+                line=$(echo "$line" | sed -e "s&http://\(archive\|security\).ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&")
+            elif [[ -n "$SIGNED_BY" && "$line" == Signed-By:* ]]; then
+                line="Signed-By: $SIGNED_BY"
+            fi
+            echo "$line" | tee --append /etc/apt/sources.list.d/ubuntu.sources.new
+        fi
+    done < /etc/apt/sources.list.d/ubuntu.sources
+    mv /etc/apt/sources.list.d/ubuntu.sources.new /etc/apt/sources.list.d/ubuntu.sources
+else
+    # ubuntu <= jammy
+    while IFS= read line
+    do
+        if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-}" && "$line" =~ ${DIB_DISTRIBUTION_MIRROR_UBUNTU_IGNORE:-} ]]; then
+            # append line unmodified
+            echo "$line" | tee --append /etc/apt/sources.list.new
+        else
+            echo "$line" | \
+                sed -e "s&http://\(archive\|security\).ubuntu.com/ubuntu&$DIB_DISTRIBUTION_MIRROR&" | \
+                tee --append /etc/apt/sources.list.new
+        fi
+    done < /etc/apt/sources.list
 
+    mv /etc/apt/sources.list.new /etc/apt/sources.list
+fi
 if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE:-}" ]]; then
     echo "APT::Get::AllowUnauthenticated \"true\";" | tee /etc/apt/apt.conf.d/95allow-unauthenticated
     echo "Acquire::AllowInsecureRepositories \"true\";" | tee -a /etc/apt/apt.conf.d/95allow-unauthenticated
 fi
-
-mv /etc/apt/sources.list.new /etc/apt/sources.list
