@@ -39,8 +39,6 @@
         - dib-nodepool-functional-openstack-almalinux-9-containerfile-src:
             voting: false
         - dib-nodepool-functional-openstack-centos-7-src
-        # NOTE(rpittau) CS8 is EOL
-        # - dib-nodepool-functional-openstack-centos-8-stream-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
         # NOTE(rpittau) Fedora 37 is EOL, moving to non-voting for the time being
         # until we move to Fedora 39 or more recent.
