@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    The ``bootloader`` element now strips prior explicit console settings
+    from the ``/etc/default/grub`` file, in order to prevent accidential
+    re-introduction of prior settings when grub configuration is manually
+    updated later.

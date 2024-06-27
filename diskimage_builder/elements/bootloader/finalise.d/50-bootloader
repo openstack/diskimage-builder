@@ -87,6 +87,16 @@ if [[ -L $GRUBENV ]]; then
     rm -f $GRUBENV
 fi
 
+# NOTE(TheJulia): Explicitly strip out embedded console settings
+# in the source's grub defaults. This prevents re-introduction later.
+# Intentionally matching 'console=ttyS0,115200n8 console=tty0'
+# Also globally matches so it can handle 'console=tty0 stuff console=tty1'
+# ... and also matches
+# 'console=ttyS0,112500n81 console=ttyS1,n8 console=tty0'
+if [[ -f /etc/default/grub ]]; then
+    sed -i 's/\<console=[[:alnum:],]*[[:space:]]*//g' /etc/default/grub
+fi
+
 echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
 echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
 echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
