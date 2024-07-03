@@ -110,17 +110,6 @@
         release: '9'
 
 - job:
-    name: dib-nodepool-functional-openstack-centos-7-src
-    description: |
-      Test building and booting a Centos 7 image with Nodepool and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: centos-minimal
-        release: '7'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
-
-- job:
     name: dib-nodepool-functional-openstack-centos-8-stream-src
     description: |
       Test building and booting a Centos 8 Stream image with Nodepool and

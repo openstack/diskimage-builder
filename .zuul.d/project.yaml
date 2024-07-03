@@ -38,7 +38,6 @@
             voting: false
         - dib-nodepool-functional-openstack-almalinux-9-containerfile-src:
             voting: false
-        - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
         # NOTE(rpittau) Fedora 37 is EOL, moving to non-voting for the time being
         # until we move to Fedora 39 or more recent.
@@ -99,7 +98,6 @@
                   label: debian-bookworm
         - opendev-buildset-registry
         - nodepool-build-image-siblings
-        - dib-nodepool-functional-openstack-centos-7-src
         - dib-nodepool-functional-openstack-centos-9-stream-src
         - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-nodepool-functional-openstack-ubuntu-bionic-src
