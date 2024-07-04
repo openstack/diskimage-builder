@@ -88,7 +88,7 @@ function _install_repos {
     if [[ ${DISTRO_NAME} = fedora ]]; then
         packages+="fedora-release-cloud fedora-release-common "
         packages+="fedora-repos fedora-gpg-keys"
-    elif [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE%-stream} -gt 7 ]]; then
+    elif [[ ${DISTRO_NAME} = centos ]]; then
         packages+="centos-gpg-keys "
         if [[ "$DIB_RELEASE" =~ (stream) ]]; then
             packages+="centos-stream-release centos-stream-repos "
@@ -98,11 +98,6 @@ function _install_repos {
     elif [[ ${DISTRO_NAME} == 'openeuler' ]]; then
         packages+="openEuler-release "
         packages+="openEuler-repos openEuler-gpg-keys "
-    else
-        # NOTE(ianw) 2022-04-20 : can probably remove when we don't
-        # support centos 7, unlikely anything else ends up here at
-        # this point.
-        packages+="${DISTRO_NAME}-release "
     fi
 
     # By default, parent elements (fedora-minimal, centos-minimal)
@@ -210,8 +205,7 @@ function _install_pkg_manager {
         local _lang_pack=""
         local _extra_pkgs=""
 
-        if [[ $DISTRO_NAME == "fedora" ]] || \
-            [[ $DISTRO_NAME == "centos" && $DIB_RELEASE > "7" ]]; then
+        if [[ $DISTRO_NAME == "fedora" ]]; then
             # glibc from F24 onwards has split locales into "langpack"
             # packages.  Host yum doesn't understand the
             # weak-dependencies glibc now uses to get the
@@ -310,7 +304,7 @@ _install_repos
 # seemingly mismatched libraries.
 if [[ ${DISTRO_NAME} =~ (fedora|openeuler) ]]; then
     _install_pkg_manager dnf dnf-plugins-core curl
-elif [[ ${DISTRO_NAME} == centos && $DIB_RELEASE > "7" ]]; then
+elif [[ ${DISTRO_NAME} == centos ]]; then
     _install_pkg_manager dnf dnf-plugins-core curl libcurl
 else
     _install_pkg_manager yum
@@ -323,25 +317,6 @@ function _run_chroot {
     local cmd="$@"
     sudo -E chroot $TARGET_ROOT env -u TMPDIR sh -c "$cmd"
 }
-
-# The rpmdb has been created by the host RPM.  CentOS 7 only
-# understands bdb-based db's, while the host is (likey as not) a more
-# modern rpm that has created a sqlite db.  These don't share files in
-# common, so to the in-chroot rpm the db just looks empty.  This is a
-# super-weird state that the system is in, because everything is
-# installed and working, but packages don't look like they are.  One
-# consequence of this is that yum's querying to setup the $releasever
-# variable fails and it remains unset.  Because the default .repo
-# files use this we get invalid repo paths for any yum commands.  The
-# easiest way around this seems to be to manually set --releasever=7;
-# this way yum can rebuild itself and recreate the rpmdb as it likes.
-# This is a mess that can hopefully go away when we don't care about
-# CentOS 7.  For this reason, we only do this for CentOS 7, to avoid
-# hiding any problems on other distros.  We only need to do this
-# for these initial steps, after that the db is correct.
-if [[ ${DISTRO_NAME} = centos && ${DIB_RELEASE%-stream} -le 7 ]]; then
-    YUM="${YUM} --releasever=${DIB_RELEASE}"
-fi
 
 # we just installed yum/dnf with "outside" tools (yum/rpm) which
 # might have created /var/lib/[yum|rpm] (etc) that are slighlty

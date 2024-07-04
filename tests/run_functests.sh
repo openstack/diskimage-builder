@@ -39,7 +39,6 @@ DEFAULT_SKIP_TESTS=(
     # better caching for the images
     opensuse/build-succeeds
     opensuse/opensuse15-build-succeeds
-    centos7/build-succeeds
     debian/build-succeeds
     fedora/build-succeeds
     ubuntu/trusty-build-succeeds

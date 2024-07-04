@@ -38,9 +38,6 @@ elif [[ "${DISTRO_NAME}" == "centos" ]]; then
         export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_CENTOS_MIRROR
         export DIB_EPEL_MIRROR=$NODEPOOL_EPEL_MIRROR
     fi
-elif [[ "${DISTRO_NAME}" == "centos7" ]]; then
-    export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_CENTOS_MIRROR
-    export DIB_EPEL_MIRROR=$NODEPOOL_EPEL_MIRROR
 elif [[ "${DISTRO_NAME}" == "opensuse" ]]; then
     export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_OPENSUSE_MIRROR
 fi

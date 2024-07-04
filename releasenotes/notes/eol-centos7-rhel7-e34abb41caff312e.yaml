@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    It is no longer possible to build images using CentOS 7 or RHEL 7 as a base
+    image as these reached EOL on 30th June 2024. The centos and centos-minimal
+    elements now default to a ``DIB_RELEASE`` value of ``9-stream``.

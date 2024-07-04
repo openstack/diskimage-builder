@@ -28,12 +28,6 @@ elif [[ $DISTRO_NAME = "ubuntu" || $DISTRO_NAME = "debian" ]]; then
     SHIM_FILE="/usr/lib/shim/shimx64.efi.signed"
     SYSLINUX_FILE="/usr/lib/ISOLINUX/isolinux.bin"
     LDLINUX_FILE="/usr/lib/syslinux/modules/bios/ldlinux.c32"
-#rhel7
-elif [ $DISTRO_NAME = "rhel7" ]; then
-    GRUB_FILE="/boot/efi/EFI/redhat/grubx64.efi"
-    SHIM_FILE="/boot/efi/EFI/redhat/shim.efi"
-    SYSLINUX_FILE="/usr/share/syslinux/isolinux.bin"
-    LDLINUX_FILE="/usr/share/syslinux/ldlinux.c32"
 #other
 else
     GRUB_FILE="/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed"

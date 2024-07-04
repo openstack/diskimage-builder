@@ -2,7 +2,7 @@
 # upgrading packaged system pip/setuptools/virtualenv binaries with
 # upstream non-packaged versions, we wish to avoid this completely on
 # modern distros.
-if [[ $DISTRO_NAME =~ (centos|rhel) && $DIB_RELEASE > 7 ]]; then
+if [[ $DISTRO_NAME =~ (centos|rhel) ]]; then
     export DIB_INSTALLTYPE_pip_and_virtualenv=${DIB_INSTALLTYPE_pip_and_virtualenv:-package}
 
     if [[ ${DIB_INSTALLTYPE_pip_and_virtualenv} == "source" ]]; then
@@ -10,7 +10,6 @@ if [[ $DISTRO_NAME =~ (centos|rhel) && $DIB_RELEASE > 7 ]]; then
         exit 1
     fi
 fi
-
 # The default variables setup below are only useful during the phases
 # that dib-python exists
 if [[ ! -e /usr/local/bin/dib-python ]]; then

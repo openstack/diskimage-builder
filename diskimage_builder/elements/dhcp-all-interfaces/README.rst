@@ -46,6 +46,6 @@ DIB_DHCP_CLIENT
   :Description: When NetworkManager is in use, this setting conveys which DHCP
    client is in use for acquiring a DHCP address for the node. In some specific
    cases, where known that dhclient is the tested or most compatible default,
-   specifically for Centos 7, 8, and 8-Stream, as well as derived distributions.
+   specifically for Centos 8, and 8-Stream, as well as derived distributions.
    Otherwise, the "internal" dhcp client is the default.
   :Example: DIB_DHCP_CLIENT

@@ -21,7 +21,7 @@ DIB_LOCAL_IMAGE
    diskimage-builder as input. The cloud image does not have to have been built
    by diskimage-builder. It should be a full disk image, not just a filesystem
    image.
-  :Example: ``DIB_LOCAL_IMAGE=rhel-guest-image-7.1-20150224.0.x86_64.qcow2``
+  :Example: ``DIB_LOCAL_IMAGE=rhel-9.4-x86_64-kvm.qcow2``
 
 DIB_DISABLE_KERNEL_CLEANUP
   :Required: No

@@ -6,8 +6,8 @@ fi
 set -eu
 set -o pipefail
 
-if [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} > 7 ]]; then
-    # RHEL8 has a system python, separate from the user python.  What
+if [[ ${DISTRO_NAME} =~ (centos|rhel) ]]; then
+    # RHEL8 onwards has a system python, separate from the user python.  What
     # a good idea, abstracting the python binary for system scripts!
     # :)  Use it for dib-python.
     python_path=/usr/libexec/platform-python

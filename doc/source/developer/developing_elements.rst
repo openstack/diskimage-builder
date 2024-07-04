@@ -477,7 +477,7 @@ example if one were building tripleo-images, the variable would be set like:
   .. sourcecode:: sh
 
       export ELEMENTS_PATH=tripleo-image-elements/elements
-      disk-image-create rhel7 cinder-api
+      disk-image-create rhel cinder-api
 
 Linting
 -------

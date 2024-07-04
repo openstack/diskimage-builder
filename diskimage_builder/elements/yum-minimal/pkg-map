@@ -1,10 +1,6 @@
 {
   "release": {
     "centos": {
-      "7": {
-        "NetworkManager": "",
-        "dhcp-client": ""
-      },
       "9-stream": {
         "lsb_release": "ed hostname patch postfix tar time"
       }

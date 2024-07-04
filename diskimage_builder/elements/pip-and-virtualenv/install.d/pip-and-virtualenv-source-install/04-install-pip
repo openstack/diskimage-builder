@@ -27,7 +27,7 @@ function install_python2_pip {
 # force things to happen so our assumptions hold
 pip_args="-U --force-reinstall"
 
-if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
+if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|rhel) ]]; then
 
     # Default packages
     _do_py3=0
@@ -35,7 +35,7 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
     # see notes below on this var...
     _clear_old_files=0
     case "$DISTRO_NAME" in
-        centos*|rhel7)
+        centos*)
             # note python2-pip in epel
             _extra_repo="--enablerepo=epel"
             packages="python-virtualenv python2-pip"
@@ -64,17 +64,6 @@ if [[ $DISTRO_NAME =~ (opensuse|fedora|centos|centos7|rhel|rhel7) ]]; then
                     _do_py3=1
                     _clear_old_files=0
                     packages=" python3-virtualenv python3-pip python3-setuptools"
-                    ;;
-                7)
-                    # note python2-pip in epel
-                    _extra_repo="--enablerepo=epel"
-                    _clear_old_files=1
-                    packages="python-virtualenv python2-pip"
-                    if [[ "$(rpm -q --qf '[%{obsoletes}\n]' python2-setuptools)" == "python-setuptools" ]]; then
-                        packages+=" python2-setuptools"
-                    else
-                        packages+=" python-setuptools"
-                    fi
                     ;;
             esac
             ;;
