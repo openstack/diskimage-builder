@@ -11,6 +11,7 @@ kpartx
 sudo
 curl
 git
+podman [!platform:debian-buster !platform:debian-stretch !platform:ubuntu-trusty !platform:ubuntu-bionic !platform:ubuntu-focal !platform:suse !platform:gentoo]
 
 squashfs-tools [!platform:suse]
 squashfs [platform:suse]
