@@ -31,6 +31,11 @@
               nodes:
                 - name: debian-bookworm
                   label: debian-bookworm
+        - tox-py312:
+            nodeset:
+              nodes:
+                - name: ubuntu-noble
+                  label: ubuntu-noble
         - dib-functests
         - opendev-buildset-registry
         - nodepool-build-image-siblings
@@ -96,6 +101,11 @@
               nodes:
                 - name: debian-bookworm
                   label: debian-bookworm
+        - tox-py312:
+            nodeset:
+              nodes:
+                - name: ubuntu-noble
+                  label: ubuntu-noble
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-nodepool-functional-openstack-centos-9-stream-src
