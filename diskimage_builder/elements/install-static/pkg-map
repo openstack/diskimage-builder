@@ -1,0 +1,7 @@
+{
+    "family":{
+        "gentoo": {
+            "rsync": "net-misc/rsync"
+        }
+    }
+}

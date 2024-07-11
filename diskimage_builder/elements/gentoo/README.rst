@@ -23,25 +23,29 @@ Notes:
 * In order to run the vm element you will need to make sure `sys-block/parted`
   is installed on the host.
 
-* Other profiles can be used by exporting GENTOO_PROFILE with a valid profile.
-  A list of valid profiles follows:
+* The default profile is ``default/linux/amd64/23.0``.
 
-    default/linux/amd64/17.1
-    default/linux/amd64/17.1/no-multilib
-    default/linux/amd64/17.1/hardened
-    default/linux/amd64/17.1/no-multilib/hardened
-    default/linux/amd64/17.1/systemd
-    default/linux/arm64/17.0
-    default/linux/arm64/17.0/systemd
+* Any ``amd64`` or ``arm64`` profile with a stage tarball published by gentoo
+  in the ``autobuilds`` directory for that arch are supported. Warning:
+  the GENTOO_PROFILE environment variable will take precedence over the ARCH
+  environment variable. 
 
 * You can set the `GENTOO_PORTAGE_CLEANUP` environment variable to False to
   disable the clean up of portage repositories (including overlays).  This
   will make the image bigger if caching is also disabled.
 
+* In many cases, the resulting image will not have a valid profile set. If
+  you need to interactively use portage in a machine created with DIB, you
+  will need to run `eselect profile set some/valid/profile` before interacting
+  with portage.
+
 * Gentoo supports many different versions of python, in order to select one
   you may use the `GENTOO_PYTHON_TARGETS` environment variable to select
   the versions of python you want on your image.  The format of this variable
-  is a string as follows `"python2_7 python3_6"`.
+  is a string as follows `"python3_10 python3_11"`. This variable only impacts
+  the python versions used for distribution-installed python packages; see
+  https://wiki.gentoo.org/wiki/Project:Python/PYTHON_TARGETS for more
+  information.
 
 * You can enable overlays using the `GENTOO_OVERLAYS` variable.  In it you
   should put a space separated list of overlays.  The overlays must be in the

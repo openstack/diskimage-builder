@@ -1,0 +1,14 @@
+features:
+  - Supports Gentoo profile 23.0 and removes support for the nonworking
+    17.1 and 17.0 profiles.
+  - Gentoo element updated to avoid using testing (~arch) packages.
+  - Gentoo element now uses upstream binary package host by default.
+fixes:
+  - Fixed an issue where the growroot element on openrc init systems would
+    not function.
+  - Fixed an issue where the devuser element was unable to grant sudo
+    capabilities on gentoo images.
+  - Fixed an issue in Gentoo implmentation for install-packages element
+    where build time would grow linearly with each additional package removal.
+    Now, all removed packages are deselected and removed in a single
+    transaction.
