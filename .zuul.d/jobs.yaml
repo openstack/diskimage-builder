@@ -18,7 +18,7 @@
     description: |
       This is the base set of stable tests
     parent: dib-functests-base
-    nodeset: debian-bullseye
+    nodeset: debian-bookworm
     vars:
       dib_functests:
         - containerfile/jammy-build-succeeds
@@ -42,7 +42,7 @@
     name: dib-functests-arm64-deb
     description: |
       ARM64 build tests (Debian-like distros)
-    nodeset: debian-bullseye-arm64
+    nodeset: debian-bookworm-arm64
     parent: dib-functests-base
     vars:
       dib_functests:
@@ -55,7 +55,7 @@
     name: dib-functests-arm64-rpm
     description: |
       ARM64 build tests (RPM-like distros)
-    nodeset: debian-bullseye-arm64
+    nodeset: debian-bookworm-arm64
     parent: dib-functests-base
     vars:
       dib_functests:
