@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import copy
 import importlib
 import os
 import sys
@@ -485,6 +486,19 @@ class TestGrowvols(base.BaseTestCase):
         opts = mock.Mock()
         opts.device = 'mpatha'
         devices = list(growvols.parse_shell_vars(LSBLK_MULTIPATH))
+        disk = growvols.find_disk(opts, devices)
+        self.assertEqual(6, growvols.find_next_partnum(devices, disk))
+
+    def test_find_next_partnum_multipath_partition_delimiter(self):
+        opts = mock.Mock()
+        opts.device = 'mpath2'
+        local_lsblk = copy.deepcopy(LSBLK_MULTIPATH)
+        local_lsblk = local_lsblk.replace('mpatha1', 'mpath2p1')
+        local_lsblk = local_lsblk.replace('mpatha2', 'mpath2p2')
+        local_lsblk = local_lsblk.replace('mpatha3', 'mpath2p3')
+        local_lsblk = local_lsblk.replace('mpatha4', 'mpath2p4')
+        local_lsblk = local_lsblk.replace('mpatha', 'mpath2')
+        devices = list(growvols.parse_shell_vars(local_lsblk))
         disk = growvols.find_disk(opts, devices)
         self.assertEqual(6, growvols.find_next_partnum(devices, disk))
 

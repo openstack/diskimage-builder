@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Fixed an issue in the growvols element where a ``partition_delimiter``
+    inserted between the device name and the partition number for multipath
+    devices was not handled correctly. This fix resolves `bug 2109988
+    <https://bugs.launchpad.net/diskimage-builder/+bug/2109988>`_.
+
