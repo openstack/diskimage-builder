@@ -1,0 +1,18 @@
+{
+    "family":{
+        "redhat": {
+            "autoupdates": "dnf-automatic"
+        },
+        "debian":{
+            "autoupdates": "unattended-upgrades"
+        },
+        "suse": {
+            "autoupdates": ""
+        },
+        "gentoo": {
+            "autoupdates": ""
+        }
+    }
+}
+
+

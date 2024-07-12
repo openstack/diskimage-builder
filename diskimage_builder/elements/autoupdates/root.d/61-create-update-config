@@ -1,0 +1,38 @@
+#!/bin/bash
+# Copyright (c) 2024 ECMWF
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+#
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Check that only one of DIB_DEB_UPDATES_CONF or DIB_YUM_UPDATES_CONF is set
+
+if [[ -n ${DIB_DEB_UPDATES_CONF:-} && -n ${DIB_YUM_UPDATES_CONF:-} ]]; then
+    echo "Error: Both DIB_DEB_UPDATES_CONF and DIB_YUM_UPDATES_CONF are set. Please select only one based on the distro." >&2
+    exit 1
+elif [[ -z ${DIB_DEB_UPDATES_CONF:-} && -z ${DIB_YUM_UPDATES_CONF:-} ]]; then
+    echo "Warning: Neither DIB_DEB_UPDATES_CONF nor DIB_YUM_UPDATES_CONF is set. Continuing without adding a config file." >&2
+fi
+
+# Copy the appropriate configuration file if one is set
+if [[ -n ${DIB_DEB_UPDATES_CONF:-} ]]; then
+    sudo cp ${DIB_DEB_UPDATES_CONF} $TARGET_ROOT/etc/apt/apt.conf.d/50unattended-upgrades
+elif [[ -n ${DIB_YUM_UPDATES_CONF:-} ]]; then
+    sudo cp ${DIB_YUM_UPDATES_CONF} $TARGET_ROOT/etc/dnf/automatic.conf
+fi

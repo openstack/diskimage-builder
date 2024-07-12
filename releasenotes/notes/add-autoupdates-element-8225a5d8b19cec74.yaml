@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    A new element ``autoupdates`` is added to DIB. This element, with proper
+    configuration, will enable and configure cloud images to have a system that
+    automatically updates the image, from the upstream binaries. To this end,
+    ``DIB_DEB_UPDATES_CONF`` or ``DIB_YUM_UPDATES_CONF`` must be set during build time.
+other:
+  - |
+    The ``autoupdates`` element has only been tested in Rocky and Ubuntu images.
+    In addition, the element does not check the validity of the configuration files in any way.
