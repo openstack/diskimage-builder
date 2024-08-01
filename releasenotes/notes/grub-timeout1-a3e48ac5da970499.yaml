@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    DIB_GRUB_TIMEOUT defaulting to 1 second,
+    GRUB_TIMEOUT was duplicated in the /etc/defaults/grub the original
+    intension of DIB_GRUB_TIMEOUT default was to match the typical image
+    default which is one 1 second instead of 5 second today.

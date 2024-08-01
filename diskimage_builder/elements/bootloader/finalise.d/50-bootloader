@@ -87,6 +87,19 @@ if [[ -L $GRUBENV ]]; then
     rm -f $GRUBENV
 fi
 
+function append_or_replace {
+    local file=$1
+    local key=$2
+    local value=$3
+
+    if grep -q "^$key=" "$file"; then
+        sed -i "s/^$key=.*/$key=$value/" "$file"
+    else
+        echo $key=$value >>"$file"
+    fi
+}
+
+
 # NOTE(TheJulia): Explicitly strip out embedded console settings
 # in the source's grub defaults. This prevents re-introduction later.
 # Intentionally matching 'console=ttyS0,115200n8 console=tty0'
@@ -97,16 +110,16 @@ if [[ -f /etc/default/grub ]]; then
     sed -i 's/\<console=[[:alnum:],]*[[:space:]]*//g' /etc/default/grub
 fi
 
-echo "GRUB_DEVICE=LABEL=${DIB_ROOT_LABEL}" >> /etc/default/grub
-echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
-echo "GRUB_TIMEOUT=${DIB_GRUB_TIMEOUT:-5}" >>/etc/default/grub
-echo "GRUB_TIMEOUT_STYLE=${DIB_GRUB_TIMEOUT_STYLE:-hidden}" >>/etc/default/grub
+append_or_replace /etc/default/grub GRUB_DEVICE "LABEL=${DIB_ROOT_LABEL}"
+append_or_replace /etc/default/grub GRUB_DISABLE_LINUX_UUID true
+append_or_replace /etc/default/grub GRUB_TIMEOUT "${DIB_GRUB_TIMEOUT:-1}"
+append_or_replace /etc/default/grub GRUB_TIMEOUT_STYLE "${DIB_GRUB_TIMEOUT_STYLE:-hidden}"
 if [[ "True" == "${DIB_BOOTLOADER_USE_SERIAL_CONSOLE:-True}" ]]; then
-    echo 'GRUB_TERMINAL="serial console"' >>/etc/default/grub
+    append_or_replace /etc/default/grub GRUB_TERMINAL \""serial console"\"
 else
-    echo 'GRUB_TERMINAL="console"' >>/etc/default/grub
+    append_or_replace /etc/default/grub GRUB_TERMINAL \"console\"
 fi
-echo 'GRUB_GFXPAYLOAD_LINUX=auto' >>/etc/default/grub
+append_or_replace /etc/default/grub GRUB_GFXPAYLOAD_LINUX auto
 
 # NOTE(TheJulia): We need to remove any boot entry from the /etc/default/grub
 # file that may already exist, such as what was added by fips being setup on
