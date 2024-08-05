@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    The default release for the ``centos`` element is now "9-stream" instead of
+    "8". This is a result of Centos8 having reached End of Life.

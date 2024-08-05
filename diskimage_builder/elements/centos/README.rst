@@ -24,3 +24,10 @@ DIB_CLOUD_IMAGES:
                 ppc64le images. Until then you'll need to set this to a local
                 image file.
   :Example: ``DIB_CLOUD_IMAGES=/path/to/my/centos/8/CentOS-8-GenericCloud-x86_64.qcow2``
+
+DIB_RELEASE:
+  :Required: No
+  :Description: To override the release to build, utilize this paraemter.
+                Presently defaults to ``9-stream``, however may be changed by
+                diskimage-builder to newer versions *as* the distribution
+                versions move through their lifecycle.
