@@ -29,7 +29,7 @@ function build_efiboot_img() {
     # Ubuntu: grub-efi-amd64-signed and shim-signed
     # Fedora: grub2-efi and shim
 
-    if [[ $DISTRO_NAME = "fedora" || $DISTRO_NAME = "rhel7" ]] ; then
+    if [[ $DISTRO_NAME = "fedora" ]] ; then
         cp $TMP_BOOTLOADER_DIR/shim.efi $TMP_BUILD_DIR/bootx64.efi
         cp $TMP_BOOTLOADER_DIR/grubx64.efi $TMP_BUILD_DIR/grubx64.efi
     elif [[ $DISTRO_NAME = "centos" ]] ; then

@@ -10,27 +10,9 @@ if [[ (${DISTRO_NAME} =~ "almalinux" || ${DISTRO_NAME} =~ "centos" || ${DISTRO_N
     # Centos has "epel-release" in extras, which is default enabled.
     ${YUM} install -y epel-release
 else
-    # For RHEL, we have to scrape the download page to find the latest
-    # release and install that
-    [ -n "$ARCH" ]
-    if [ 'amd64' = "$ARCH" ] ; then
-        ARCH="x86_64"
-    fi
-
-    BASE_URL=${DIB_EPEL_MIRROR:-https://dl.fedoraproject.org/pub/epel}
-    case "$DISTRO_NAME" in
-        rhel7)
-            RELEASE=7
-            URL=$BASE_URL/$RELEASE/x86_64/Packages/e/
-            ;;
-        *)
-            echo "$DISTRO_NAME is not supported"
-            # Not really a failure; we just don't do anything
-            exit 0
-            ;;
-    esac
-    PKG_NAME=$(wget -q $URL -O - |grep -oE "(href=\"epel-release-$RELEASE-[0-9,.].*)" | cut -d'"' -f2)
-    rpm -q epel-release || yum install -y $URL/$PKG_NAME
+    echo "$DISTRO_NAME is not supported"
+    # Not really a failure; we just don't do anything
+    exit 0
 fi
 
 if [ ${DIB_EPEL_DISABLED:-0} -ne 0 ]; then

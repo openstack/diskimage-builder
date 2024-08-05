@@ -89,7 +89,7 @@ is correct.
 As of Feburary 2022, the default end-to-end testing covers the
 following elements on x86-64
 
-* ``centos-minimal``: CentOS 7, 8-stream and 9-stream
+* ``centos-minimal``: 8-stream and 9-stream
 * ``fedora-containerfile``: the latest Fedora.
 * ``ubuntu-minimal``: Ubuntu Xenial, Bionic and Focal
 * ``opensuse-minimal``: Leap 15.3 and Tumbleweed (non-voting)

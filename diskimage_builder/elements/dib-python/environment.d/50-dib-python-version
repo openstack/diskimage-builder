@@ -14,19 +14,8 @@ if [ -z "${DIB_PYTHON_VERSION:-}" ]; then
             DIB_PYTHON_VERSION=2
         fi
     ;;
-    centos7)
-        DIB_PYTHON_VERSION=2
-    ;;
-    rhel7)
-        # TODO(nmagnezi): Remove this when the 'rhel7' element gets replaced by 'rhel'
-        DIB_PYTHON_VERSION=2
-    ;;
     rhel|centos)
-        if [ "$DIB_RELEASE" == "7" ]; then
-            DIB_PYTHON_VERSION=2
-        else
-            DIB_PYTHON_VERSION=3
-        fi
+        DIB_PYTHON_VERSION=3
     ;;
     opensuse)
         if [ "${DIB_RELEASE:0:2}" == "42" ]; then

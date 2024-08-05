@@ -10,18 +10,8 @@ set -o pipefail
 # early (even before package-installs, which is written in Python and
 # uses YAML).
 
-if [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} == 7 ]]; then
-    # Our package map and install stuff doesn't have a way to say
-    # "install this from EPEL".  So we hack in an install of it here
-    # from EPEL.  Nothing else should have installed EPEL at this
-    # early stage.
-    yum install -y python3
-    # NOTE(dpawlik) The epel-release package is not available in RHEL.
-    yum install -y ${DIB_CENTOS_7_PREINSTALL_EPEL_URL_PACKAGE:-https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm}
-    yum install -y python36-PyYAML
-    yum remove -y epel-release
-elif [[ ${DISTRO_NAME} =~ (centos|rhel) && ${DIB_RELEASE} > 7 ]]; then
-    # For 8 and above ensure the "user" python3 package is installed
+if [[ ${DISTRO_NAME} =~ (centos|rhel) ]]; then
+    # Ensure the "user" python3 package is installed
     # so we have /usr/bin/python3 and pyyaml.
     dnf install -y python3 python3-pyyaml
 fi

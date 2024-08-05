@@ -10,8 +10,8 @@ path to the resulting file to disk-image-create as the ``DIB_LOCAL_IMAGE``
 environment variable.
 
 The cloud image can be found at (login required):
-RHEL8: https://access.redhat.com/downloads/content/479/ver=/rhel---8/8.0/x86_64/product-software
-RHEL7: https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.1/x86_64/product-downloads
+RHEL8: https://access.redhat.com/downloads/content/479/ver=/rhel---8/8.10/x86_64/product-software
+RHEL9: https://access.redhat.com/downloads/content/479/ver=/rhel---9/9.4/x86_64/product-software
 
 
 Then before running the image build, define DIB_LOCAL_IMAGE (replace the file
@@ -19,7 +19,7 @@ name with the one downloaded, if it differs from the example):
 
 .. code-block:: bash
 
-   export DIB_LOCAL_IMAGE=rhel-8.0-x86_64-kvm.qcow2
+   export DIB_LOCAL_IMAGE=rhel-9.4-x86_64-kvm.qcow2
 
 The downloaded file will then be used as the basis for any subsequent image
 builds.
@@ -33,8 +33,8 @@ Environment Variables
 DIB_LOCAL_IMAGE
   :Required: Yes
   :Default: None
-  :Description: The RHEL 8 base image you have downloaded. See the element
+  :Description: The RHEL base image you have downloaded. See the element
                 description above for more details.
-  :Example: ``DIB_LOCAL_IMAGE=/tmp/rhel8-cloud.qcow2``
+  :Example: ``DIB_LOCAL_IMAGE=/tmp/rhel-9.4-x86_64-kvm.qcow2``
 
 

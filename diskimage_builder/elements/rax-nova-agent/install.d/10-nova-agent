@@ -85,7 +85,7 @@ respawn
 exec /sbin/getty -L 115200 hvc0 vt102
 EOF
     ;;
-    'fedora'|'centos'|'centos7'|'opensuse')
+    'fedora'|'centos'|'opensuse')
 
     cat > /usr/local/bin/run-nova-agent.sh <<'EOF'
 #!/bin/bash

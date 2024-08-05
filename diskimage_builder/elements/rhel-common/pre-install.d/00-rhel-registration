@@ -13,10 +13,7 @@ arch=$(uname -m)
 repos="repos "
 base_repos=
 
-if [ "${DIB_RELEASE:-7}" == "7" ]; then
-    base_repos="rhel-7-server-rpms"
-    satellite_repo="${REG_SAT_REPO:-"rhel-7-server-satellite-client-6-rpms"}"
-elif [ "${DIB_RELEASE}" == "8" ]; then
+if [ "${DIB_RELEASE}" == "8" ]; then
     if [ -n "${REG_RELEASE:-}" ]; then
         base_repos="rhel-8-for-${arch}-appstream-eus-rpms rhel-8-for-${arch}-baseos-eus-rpms"
     else

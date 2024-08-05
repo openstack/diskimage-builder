@@ -33,11 +33,3 @@ DIB_DNF_MODULE_STREAMS
                 stream for the given module is first disabled prior to enabling the specified
                 stream.
   :Example: ``DIB_DNF_MODULE_STREAMS='virt:8.2 container-tools:3.0'``
-
-DIB_CENTOS_7_PREINSTALL_EPEL_URL_PACKAGE
-  :Required: No
-  :Default: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  :Description: The environment variable is used to override default value in pre-install 
-                stage to install epel repository from custom source
-  :Example: ``DIB_CENTOS_7_PREINSTALL_EPEL_URL_PACKAGE=http://repos.example.com/epel/epel-latest-7.noarch.rpm``
-
