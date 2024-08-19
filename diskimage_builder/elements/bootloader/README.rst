@@ -8,7 +8,7 @@ Arguments
 =========
 
 * ``DIB_GRUB_TIMEOUT`` sets the ``grub`` menu timeout.  It defaults to
-  5 seconds.  Set this to 0 (no timeout) for fast boot times.
+  1 seconds.  Set this to 0 (no timeout) for fast boot times.
 
 * ``DIB_GRUB_TIMEOUT_STYLE`` sets the visibility of the ``grub`` menu.
   It defaults to ``hidden`` (or ``countdown`` as an alias). Set this to
