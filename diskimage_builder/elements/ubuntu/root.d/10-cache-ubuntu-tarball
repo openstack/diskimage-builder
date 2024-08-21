@@ -32,6 +32,8 @@ function get_ubuntu_tarball() {
         exit 1
         fi
         IMAGE_PATH=$DIB_LOCAL_IMAGE
+        BASE_IMAGE_FILE=$(basename $DIB_LOCAL_IMAGE)
+        CACHED_FILE=$IMAGE_PATH
     else
         if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
             echo "Not checking freshness of cached $CACHED_FILE."
@@ -52,7 +54,15 @@ function get_ubuntu_tarball() {
     # Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
     # image tarball and host OS e.g. when building Ubuntu image on an openSUSE host)
     if [ "$DIB_RELEASE" != "trusty" ] ; then
-            sudo unsquashfs -f -d $TARGET_ROOT $IMAGE_PATH
+            # If image is local, it may not be squashfs.
+            # Fall back to extract-image.
+            {
+                sudo unsquashfs -f -d $TARGET_ROOT $IMAGE_PATH
+            } ||
+            {
+                BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
+                $TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_PATH $CACHED_FILE
+            }
     else
             sudo tar -C $TARGET_ROOT --numeric-owner -xzf $IMAGE_PATH
     fi
