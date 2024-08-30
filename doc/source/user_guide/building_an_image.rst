@@ -216,6 +216,22 @@ size
 directory
   (optional) The directory where the image is created.
 
+block_size
+  (optional) Defaults to 512 bytes. Usable to set a different logical block
+  size, or in loopback context sector size, which will govern how partitioning
+  and filesystem utilities will interact with the device and ultimately the
+  block layout on disk.
+  Examples: 512, 4096.
+  This option is critical if you have block devices which natively operate
+  with 4KiB block sizes and need to craft an image to use boot from those
+  devices using a GPT partition table. This setting can also be asserted
+  using a DIB_BLOCK_SIZE environment variable which may be useful for
+  users who need to craft similar, but different block size images without
+  the need to separately maintain different block device YAML documents.
+  Please keep in mind, with larger block sizes, total disk image sizes
+  *and* partition sizes on the disk image will need to be perfectly
+  divisible by the block size being asserted.
+
 Example:
 
 .. code-block:: yaml

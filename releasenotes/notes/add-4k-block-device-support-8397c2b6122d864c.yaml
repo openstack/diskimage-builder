@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Adds the ability for diskimage-builder to create images with different
+    block sizes. By default, this remains at the default of 512 bytes,
+    but some newer devices require 4096 bytes to be used, which impacts
+    the overall layout rendering 512 byte images incompatible. This setting
+    can also be asserted and overridden using the ``DIB_BLOCK_SIZE``
+    environment variable, but alternatively exists as a new ``block_size``
+    parameter for ``local_loop`` section in block device YAML documents. 
