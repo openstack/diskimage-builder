@@ -34,3 +34,6 @@ Arguments
 * ``DIB_NO_TIMER_CHECK`` allows the default kernel argument,
   ``no_timer_check`` to be removed from the kernel command line
   when the value is set to ``False``.
+
+* ``DIB_SKIP_GRUB_PACKAGE_INSTALL`` when set to ``True`` will not install any
+  grub packages, and will assume all necessary packages are already installed.
