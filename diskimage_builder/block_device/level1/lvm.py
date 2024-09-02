@@ -20,7 +20,6 @@ from diskimage_builder.block_device.plugin import NodeBase
 from diskimage_builder.block_device.plugin import PluginBase
 from diskimage_builder.block_device.utils import exec_sudo
 from diskimage_builder.block_device.utils import parse_abs_size_spec
-from diskimage_builder.block_device.utils import remove_device
 
 PHYSICAL_EXTENT_BYTES = parse_abs_size_spec('4MiB')
 LVS_TYPES = ['thin', 'thin-pool']
@@ -68,6 +67,27 @@ logger = logging.getLogger(__name__)
 # For this reason, their create() calls are blank.  However, for code
 # organisational purposes they have a private _create() and _cleanup()
 # call that is driven by the LVSNode object.
+
+
+def lvremove(device_name):
+    logger.debug('Removing logical volume %s', device_name)
+    try:
+        exec_sudo(["lvchange", "--activate", "n", device_name])
+        exec_sudo(["lvremove", "--yes", "/dev/%s" % device_name])
+    except BlockDeviceSetupException as e:
+        # Do not raise an error - maybe other cleanup methods
+        # can at least do some more work.
+        logger.warning("Removing logical volume failed (%s)", e.returncode)
+
+
+def vgremove(vg_name):
+    logger.debug('Removing volume group %s', vg_name)
+    try:
+        exec_sudo(["vgremove", "--yes", "--force", vg_name])
+    except BlockDeviceSetupException as e:
+        # Do not raise an error - maybe other cleanup methods
+        # can at least do some more work.
+        logger.warning("Removing volume group failed (%s)", e.returncode)
 
 
 class PvsNode(NodeBase):
@@ -150,6 +170,7 @@ class VgsNode(NodeBase):
         logger.debug("Creating vg command [%s]", cmd)
         exec_sudo(cmd)
 
+        self.add_rollback(vgremove, self.name)
         # save state
         if 'vgs' not in self.state:
             self.state['vgs'] = {}
@@ -232,7 +253,7 @@ class LvsNode(NodeBase):
             'opts': self.options,
             'device': '/dev/mapper/%s' % device_name
         }
-        self.add_rollback(remove_device, device_name)
+        self.add_rollback(lvremove, "%s/%s" % (self.base, self.name))
 
     def _umount(self):
         exec_sudo(['lvchange', '-an',
