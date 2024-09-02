@@ -7,4 +7,6 @@ fi
 set -eu
 set -o pipefail
 
-install-packages -m base iscsi_package
+if [ ${DIB_SKIP_BASE_PACKAGE_INSTALL} -eq 0 ]; then
+    install-packages -m base iscsi_package
+fi

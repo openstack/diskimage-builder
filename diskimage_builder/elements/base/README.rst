@@ -28,6 +28,10 @@ update.
 
  * set 'DIB_AVOID_PACKAGES_UPDATE' to '1' to avoid updating all packages.
 
+
+The 'DIB_SKIP_BASE_PACKAGE_INSTALL' environment variable can be used to
+avoid installing base packages, set to '1' to skip.
+
 Notes:
 
  * If you are getting warnings during the build about your locale
