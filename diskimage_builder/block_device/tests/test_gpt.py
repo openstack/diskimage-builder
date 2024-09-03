@@ -63,7 +63,7 @@ class TestGPT(tc.TestGraphGeneration):
                 node.create()
 
         # check the parted call looks right
-        parted_cmd = ['sgdisk', self.image_path,
+        parted_cmd = ['sgdisk', '/dev/loopX',
                       '-n', '1:0:+8M', '-t', '1:EF00', '-c', '1:ESP',
                       '-n', '2:0:+8M', '-t', '2:EF02', '-c', '2:BSP',
                       '-n', '3:0:+1006M', '-t', '3:8300', '-c', '3:Root Part']

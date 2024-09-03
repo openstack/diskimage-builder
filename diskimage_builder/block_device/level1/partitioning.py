@@ -95,6 +95,8 @@ class Partitioning(PluginBase):
 
     def _create_mbr(self):
         """Create partitions with MBR"""
+        # NOTE(TheJulia): This is funcitonally incompatible with block/sector
+        # sizing other than 512 bytes.
         with MBR(self.image_path, self.disk_size, self.align) as part_impl:
             for part_cfg in self.partitions:
                 part_name = part_cfg.get_name()
@@ -127,7 +129,10 @@ class Partitioning(PluginBase):
     def _create_gpt(self):
         """Create partitions with GPT"""
 
-        cmd = ['sgdisk', self.image_path]
+        # Use the loopback via device_path, as using the file means the
+        # partitioning is exposed to sector sizing of the OS, not of the
+        # underlying "device" provided by the loopback.
+        cmd = ['sgdisk', self.device_path]
 
         # This padding gives us a little room for rounding so we don't
         # go over the end of the disk

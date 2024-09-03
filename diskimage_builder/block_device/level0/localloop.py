@@ -38,10 +38,16 @@ def image_delete(filename):
     os.remove(filename)
 
 
-def loopdev_attach(filename):
+def loopdev_attach(filename, block_size):
+    if str(block_size) not in ['512', '4096']:
+        logger.warning("Block device size is set to %s, only 512 and "
+                       "4096 has been tested.", block_size)
     logger.info("loopdev attach")
-    logger.debug("Calling [sudo losetup --show -f %s]", filename)
-    block_device = exec_sudo(["losetup", "--show", "-f", filename])
+    log_msg = ("Calling [sudo losetup --sector-size %s --show -f %s]"
+               % (str(block_size), filename))
+    logger.debug(log_msg)
+    block_device = exec_sudo(["losetup", "--sector-size", str(block_size),
+                              "--show", "-f", filename])
     # [:-1]: Cut of the newline
     block_device = block_device[:-1]
     logger.info("New block device [%s]", block_device)
@@ -85,6 +91,12 @@ class LocalLoopNode(NodeBase):
             self.image_dir = config['directory']
         else:
             self.image_dir = default_config['image-dir']
+        if 'DIB_BLOCK_SIZE' in os.environ:
+            self.block_size = os.environ['DIB_BLOCK_SIZE']
+        elif 'block_size' in config:
+            self.block_size = config['block_size']
+        else:
+            self.block_size = 512
         self.filename = os.path.join(self.image_dir, self.name + ".raw")
 
     def get_edges(self):
@@ -98,7 +110,7 @@ class LocalLoopNode(NodeBase):
         self.add_rollback(image_delete, self.filename)
         image_create(self.filename, self.size)
 
-        block_device = loopdev_attach(self.filename)
+        block_device = loopdev_attach(self.filename, self.block_size)
         self.add_rollback(loopdev_detach, block_device)
 
         if 'blockdev' not in self.state:
