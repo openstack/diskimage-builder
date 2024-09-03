@@ -26,7 +26,6 @@ import json
 import logging
 import logging.config
 import os
-import sys
 
 
 # A simple formatter to more or less copy oslo.log's ContextFormatter
@@ -43,11 +42,8 @@ class DibFormatter(logging.Formatter):
         else:
             fmt = self.fmt
 
-        if sys.version_info < (3, 2):
-            self._fmt = fmt
-        else:
-            self._style = logging.PercentStyle(fmt)
-            self._fmt = self._style._fmt
+        self._style = logging.PercentStyle(fmt)
+        self._fmt = self._style._fmt
 
         return logging.Formatter.format(self, record)
 
