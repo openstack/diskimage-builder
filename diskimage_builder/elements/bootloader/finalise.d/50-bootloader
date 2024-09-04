@@ -31,14 +31,18 @@ DIB_BLOCK_DEVICE=${DIB_BLOCK_DEVICE:-}
 # architecture specific virtual package so we can install the
 # rigth thing based on distribution.
 if [[ "$ARCH" =~ "ppc" ]]; then
-    install-packages -m bootloader grub-ppc64
+    GRUB_PACKAGES="grub-ppc64"
 elif [[ "${DIB_BLOCK_DEVICE}" == "mbr" ||
             "${DIB_BLOCK_DEVICE}" == "gpt" ]]; then
-    install-packages -m bootloader grub-pc
+    GRUB_PACKAGES="grub-pc"
 elif [[ "${DIB_BLOCK_DEVICE}" == "efi" ]]; then
-    install-packages -m bootloader grub-efi grub-efi-$ARCH
+    GRUB_PACKAGES="grub-efi grub-efi-$ARCH"
 else
-    install-packages -m bootloader grub-pc grub-efi grub-efi-$ARCH
+    GRUB_PACKAGES="grub-pc grub-efi grub-efi-$ARCH"
+fi
+
+if [[ "False" == "${DIB_SKIP_GRUB_PACKAGE_INSTALL:-False}" ]]; then
+    install-packages -m bootloader $GRUB_PACKAGES
 fi
 
 GRUBNAME=$(type -p grub-install) || echo "trying grub2-install"
