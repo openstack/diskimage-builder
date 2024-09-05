@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[ -n "$TARGET_ROOT" ]
+
+DIB_LOCAL_IMAGE=${DIB_LOCAL_IMAGE:-""}
+
+if [ -n "$DIB_LOCAL_IMAGE" ]; then
+    IMAGE_LOCATION=$DIB_LOCAL_IMAGE
+    # No need to copy a local image into the cache directory, so just specify
+    # the cached path as the original path.
+    CACHED_IMAGE=$IMAGE_LOCATION
+else
+    echo "DIB_LOCAL_IMAGE is required"
+    exit 1
+fi
+
+guestfish -v -x -i --blocksize=$DIB_SOURCE_BLOCK_SIZE -a $CACHED_IMAGE <<EOF
+tar-out / - numericowner:true xattrs:true | sudo tar -C $TARGET_ROOT --numeric-owner --xattrs --xattrs-include='*' --xattrs-exclude='security.selinux' -xf -
+EOF
+

@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    The new element ``replace-partition`` has been added which allows a
+    diskimage-builder built image to be used as the base image so that it can be
+    copied to a new partition layout. This allows the content to be copied from
+    one image to a new one without making any package changes. The element
+    ``replace-partition-redhat`` has a documented example for redhat family
+    images.

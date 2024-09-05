@@ -27,6 +27,7 @@ uuid-runtime [platform:dpkg]
 debootstrap [platform:dpkg]
 zstd [platform:dpkg]
 procps [platform:dpkg]
+libguestfs-tools [platform:dpkg]
 # Version/distro specific items
 python-lzma [platform:ubuntu-bionic platform:debian-buster]
 yum-utils [platform:ubuntu-bionic platform:debian-buster]
@@ -34,6 +35,7 @@ dnf [platform:dpkg !platform:debian-buster !platform:ubuntu-trusty !platform:ubu
 
 # centos/fedora
 qemu-img [platform:redhat]
+libguestfs [platform:redhat]
 policycoreutils-python [platform:rhel-7 platform:centos-7]
 policycoreutils-python-utils [platform:fedora platform:rhel-8 platform:centos-8]
 procps-ng [platform:redhat]
