@@ -14,6 +14,21 @@ for this element include:
 
 See element ``replace-partition-redhat`` for a full example of how to use this element
 
+.. WARNING::
+   When using this element or elements based upon it, differences in the
+   needs of ramdisk component artifacts are generally **not** accounted for.
+   I.E. if you rebuild an image which did not have LVM to a disk layout with
+   LVM, then the image is *unlikely* to work because the ramdisk lacks the
+   contents necessary to detect and initailize the ramdisk.
+
+.. WARNING::
+   When rebuilding images, specifically with filesystems like XFS, you should
+   utilize diskimage-builder on the same OS and Version as the image you
+   are rebuilding. This is because some filesystem version and metadata
+   characteristics of newer host kernels can prevent the image from being used
+   by the kernel inside of the image. This is most pertinant with the XFS
+   filesystem, but there may be other cases we are unaware of.
+
 Arguments
 =========
 
