@@ -5,6 +5,5 @@
     - bindep
     - dib-setup-gate-mirrors
     - ensure-podman
-    - dib-ensure-debootstrap
     - dib-functests
 
