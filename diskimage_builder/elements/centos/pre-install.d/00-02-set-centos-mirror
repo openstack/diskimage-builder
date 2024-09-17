@@ -10,14 +10,24 @@ DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
 
 [ -n "$DIB_DISTRIBUTION_MIRROR" ] || exit 0
 
+if [[ ${DIB_RELEASE} =~ ([0-9]+)-stream ]]; then
+    # By virtue of capturing the version number, this match also
+    # implicitly indicates that this is a CentOS stream release version
+    STREAM_RELEASE_VERSION=${BASH_REMATCH[1]}
+fi
+
 # Only set the mirror for the Base, Extras and Updates repositories
 # The others aren't enabled and do not exist on all mirrors
-# CentOS Stream releases (9-stream)
-if [[ ${DIB_RELEASE} =~ '9-stream' ]]; then
+# CentOS Stream >= 9
+if [[ "${STREAM_RELEASE_VERSION}" -ge "9" ]]; then
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/centos.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/centos-addons.repo
-# CentOS Stream releases (8-stream)
-elif [[ ${DIB_RELEASE} =~ '-stream' ]]; then
+    # Handle metalinks and new directory structure of https://mirror.stream.centos.org/
+    sed -e "s,^metalink=http[s]*://mirrors.centos.org/metalink?repo=centos-baseos-.*,baseurl=$DIB_DISTRIBUTION_MIRROR/$DIB_RELEASE/BaseOS/\$basearch/os," -i /etc/yum.repos.d/centos.repo
+    sed -e "s,^metalink=http[s]*://mirrors.centos.org/metalink?repo=centos-appstream-.*,baseurl=$DIB_DISTRIBUTION_MIRROR/$DIB_RELEASE/AppStream/\$basearch/os," -i /etc/yum.repos.d/centos.repo
+    sed -e "s,^metalink=http[s]*://mirrors.centos.org/metalink?repo=centos-extras-sig-extras-common-.*,baseurl=$DIB_DISTRIBUTION_MIRROR/SIGs/$DIB_RELEASE/extras/\$basearch/extras-common," -i /etc/yum.repos.d/centos-addons.repo
+# CentOS 8-stream
+elif [[ "${STREAM_RELEASE_VERSION}" -eq "8" ]]; then
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-BaseOS.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-AppStream.repo
     sed -e "s,^#baseurl=http[s]*://mirror.centos.org/\$contentdir/,baseurl=$DIB_DISTRIBUTION_MIRROR/,;/^mirrorlist=/d" -i /etc/yum.repos.d/CentOS-Stream-Extras.repo
