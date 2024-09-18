@@ -35,6 +35,7 @@
         - ubuntu/bionic-build-succeeds
         - ubuntu/focal-build-succeeds
         - ubuntu/jammy-build-succeeds
+        - ubuntu/noble-build-succeeds
 
 # NOTE(ianw) : these jobs are split to keep the build times a bit more
 # reasonable.
@@ -49,7 +50,9 @@
         - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
         - ubuntu-minimal/jammy-arm64-build-succeeds
+        - ubuntu-minimal/noble-arm64-build-succeeds
         - debian-minimal/bullseye-arm64-build-succeeds
+        - debian-minimal/bookworm-arm64-build-succeeds
 
 - job:
     name: dib-functests-arm64-rpm
