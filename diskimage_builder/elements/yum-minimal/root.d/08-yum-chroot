@@ -325,7 +325,7 @@ _run_chroot rpm --rebuilddb
 _run_chroot ${YUM} clean all
 
 # populate the lang reduction macro in the chroot
-echo "%_install_langs C:en_US:en_US.UTF-8" | \
+echo "%_install_langs C:C.UTF-8:en_US:en_US.UTF-8" | \
     sudo tee -a $TARGET_ROOT/etc/rpm/macros.langs > /dev/null
 
 _base_packages="systemd passwd findutils sudo util-linux-ng "
