@@ -279,6 +279,33 @@ class TestGrowvols(base.BaseTestCase):
         self.assertEqual('2GiB', growvols.convert_bytes(3000000000))
         self.assertEqual('3725GiB', growvols.convert_bytes(4000000000000))
 
+    def test_shrink_bytes_for_alignment(self):
+        peb = growvols.PHYSICAL_EXTENT_BYTES
+        half_peb = peb // 2
+
+        # shrink 3 extents to 1
+        self.assertEqual(peb, growvols.shrink_bytes_for_alignment(peb * 3))
+
+        # shrink 4.5 extents to 2 (round down to whole extent minus 2 extents)
+        self.assertEqual(peb * 2,
+                         growvols.shrink_bytes_for_alignment(
+                             peb * 4 + half_peb))
+
+        # error shrinking zero
+        e = self.assertRaises(Exception,
+                              growvols.shrink_bytes_for_alignment, 0)
+        self.assertIn('Requires more than 8MiB, requested: 0B', str(e))
+
+        # error shrinking 1 extent
+        e = self.assertRaises(Exception,
+                              growvols.shrink_bytes_for_alignment, peb)
+        self.assertIn('Requires more than 8MiB, requested: 4MiB', str(e))
+
+        # error shrinking 2 extents
+        e = self.assertRaises(Exception,
+                              growvols.shrink_bytes_for_alignment, peb * 2)
+        self.assertIn('Requires more than 8MiB, requested: 8MiB', str(e))
+
     @mock.patch('subprocess.Popen')
     def test_execute(self, mock_popen):
         mock_process = mock.Mock()
@@ -728,7 +755,7 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['partprobe']),
             mock.call(['pvcreate', '-ff', '--yes', '/dev/sda5']),
             mock.call(['vgextend', 'vg', '/dev/sda5']),
-            mock.call(['lvextend', '--size', '+209404821504B',
+            mock.call(['lvextend', '--size', '+209396432896B',
                        '/dev/mapper/vg-lv_root', '/dev/sda5']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_root'])
         ])
@@ -759,11 +786,11 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['partprobe']),
             mock.call(['pvcreate', '-ff', '--yes', '/dev/sda5']),
             mock.call(['vgextend', 'vg', '/dev/sda5']),
-            mock.call(['lvextend', '--size', '+41880125440B',
+            mock.call(['lvextend', '--size', '+41871736832B',
                        '/dev/mapper/vg-lv_home', '/dev/sda5']),
-            mock.call(['lvextend', '--size', '+83760250880B',
+            mock.call(['lvextend', '--size', '+83751862272B',
                        '/dev/mapper/vg-lv_var', '/dev/sda5']),
-            mock.call(['lvextend', '--size', '+83764445184B',
+            mock.call(['lvextend', '--size', '+83756056576B',
                        '/dev/mapper/vg-lv_root', '/dev/sda5']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
@@ -832,13 +859,13 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['vgextend', 'vg', '/dev/sda5']),
             mock.call(['lvextend', '--poolmetadatasize', '+1073741824B',
                        'vg/lv_thinpool']),
-            mock.call(['lvextend', '-L+207253143552B',
+            mock.call(['lvextend', '-L+207244754944B',
                        '/dev/mapper/vg-lv_thinpool', '/dev/sda5']),
-            mock.call(['lvextend', '--size', '+41448112128B',
+            mock.call(['lvextend', '--size', '+41439723520B',
                        '/dev/mapper/vg-lv_home']),
-            mock.call(['lvextend', '--size', '+82900418560B',
+            mock.call(['lvextend', '--size', '+82892029952B',
                        '/dev/mapper/vg-lv_var']),
-            mock.call(['lvextend', '--size', '+82904612864B',
+            mock.call(['lvextend', '--size', '+82896224256B',
                        '/dev/mapper/vg-lv_root']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
@@ -881,13 +908,13 @@ class TestGrowvols(base.BaseTestCase):
             mock.call(['vgextend', 'vg', '/dev/mapper/mpatha6']),
             mock.call(['lvextend', '--poolmetadatasize', '+1073741824B',
                        'vg/lv_thinpool']),
-            mock.call(['lvextend', '-L+207253143552B',
+            mock.call(['lvextend', '-L+207244754944B',
                        '/dev/mapper/vg-lv_thinpool', '/dev/mapper/mpatha6']),
-            mock.call(['lvextend', '--size', '+41448112128B',
+            mock.call(['lvextend', '--size', '+41439723520B',
                        '/dev/mapper/vg-lv_home']),
-            mock.call(['lvextend', '--size', '+82900418560B',
+            mock.call(['lvextend', '--size', '+82892029952B',
                        '/dev/mapper/vg-lv_var']),
-            mock.call(['lvextend', '--size', '+82904612864B',
+            mock.call(['lvextend', '--size', '+82896224256B',
                        '/dev/mapper/vg-lv_root']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_home']),
             mock.call(['xfs_growfs', '/dev/mapper/vg-lv_var']),
