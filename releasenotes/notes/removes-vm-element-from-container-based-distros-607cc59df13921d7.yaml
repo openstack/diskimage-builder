@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The ``vm`` element is no longer included dependency of the
+    ``rocky-container``, ``almalinux-container`` and ``fedora-container``
+    elements. You will need to update your build configuration to include this
+    element if you still wish to create partitioned disk based images.
