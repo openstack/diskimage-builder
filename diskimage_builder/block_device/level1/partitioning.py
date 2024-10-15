@@ -152,6 +152,9 @@ class Partitioning(PluginBase):
             # megabytes so it can align on sensible boundaries. And
             # create partitions right after previous so no need to
             # calculate start/end - just size.
+            if not size <= disk_free:
+                logger.error('The requested size of the image is smaller '
+                             'than the block device configuration.')
             assert size <= disk_free
             args['size'] = size // (1024 * 1024)
 
