@@ -191,6 +191,31 @@ def convert_bytes(num):
     return "%d%s" % (unit_num, x)
 
 
+def shrink_bytes_for_alignment(num):
+    """Shrink the amount of bytes to line up with LVM.
+
+    The purpose of this method is to gently shrink the requested volume
+    size of bytes to ensure that the size of the bytes range is in alignment
+    with the LVM extent size, and that the bytes value used is modeled in
+    the concept of extents where *two* extents have also been removed from
+    the value to account for any possible structural alignment differences
+    due to varying block sizes. In other words, reduce the size slightly to
+    account for the differences.
+
+    :param: num as in the number of bytes desired.
+    :returns: The closest value accounting for extent sizing *minus* two LVM
+              extents.
+    """
+    result = ((num // PHYSICAL_EXTENT_BYTES) - 2) * PHYSICAL_EXTENT_BYTES
+    if result <= 0:
+        raise Exception(
+            'Not enough space available to shrink to alignment. '
+            'Requires more than %s, requested: %s' % (
+                convert_bytes(PHYSICAL_EXTENT_BYTES * 2),
+                convert_bytes(num)))
+    return result
+
+
 def execute(cmd):
     """Run a command"""
     LOG.info('Running: %s', printable_cmd(cmd))
@@ -542,7 +567,8 @@ def main(argv):
     devname = find_next_device_name(devices, disk, partnum)
     thin_pool, thin_pool_name = find_thin_pool(devices, group)
     if thin_pool:
-        # reserve for the size of the metadata volume
+        # reserve for the size of the metadata volume, which
+        # is *allocated* from the underlying storage as well.
         size_bytes -= POOL_METADATA_SIZE
         # reserve for the size of the spare metadata volume,
         # used for metadata check and repair
@@ -598,18 +624,18 @@ def main(argv):
             convert_bytes(POOL_METADATA_SIZE), thin_pool)))
         commands.append(Command([
             'lvextend',
-            '-L+%sB' % size_bytes,
+            '-L+%sB' % shrink_bytes_for_alignment(size_bytes),
             thin_pool,
             dev_path
         ], 'Add %s to thin pool %s' % (convert_bytes(size_bytes),
-                                                     thin_pool)))
+                                       thin_pool)))
 
     for volume_path, size_bytes in grow_vols.items():
         if size_bytes > 0:
             extend_args = [
                 'lvextend',
                 '--size',
-                '+%sB' % size_bytes,
+                '+%sB' % shrink_bytes_for_alignment(size_bytes),
                 volume_path
             ]
             if not thin_pool:
