@@ -205,7 +205,7 @@ function _install_pkg_manager {
         local _lang_pack=""
         local _extra_pkgs=""
 
-        if [[ $DISTRO_NAME == "fedora" ]]; then
+        if [[ ${DISTRO_NAME} =~ (centos|fedora) ]]; then
             # glibc from F24 onwards has split locales into "langpack"
             # packages.  Host yum doesn't understand the
             # weak-dependencies glibc now uses to get the
