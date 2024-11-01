@@ -41,7 +41,8 @@ The images used by the OpenDev's `Zuul <https://zuul-ci.org>`__ system
 are built by `Nodepool <https://zuul-ci.org/docs/nodepool/>`__.  Thus
 the simplest way to have the most supported build-host environment is
 to use ``diskimage-buidler`` installed in the `nodepool-builder
-container image <https://hub.docker.com/r/zuul/nodepool-builder>`__.
+container image
+<https://quay.io/repository/zuul-ci/nodepool?tab=tags&tag=latest>`__.
 You can run ``disk-image-create`` directly from this container, e.g.
 
 ::
@@ -52,7 +53,8 @@ You can run ``disk-image-create`` directly from this container, e.g.
             -v nested_var_lib_containers:/var/lib/containers \
             -v /var/run/dib_output:/var/run/dib_output \
             -v /opt/dib_tmp:/opt/dib_tmp \
-            zuul/nodepool-builder disk-image-create -x -t qcow2 \
+            quay.io/zuul-ci/nodepool-builder \
+            disk-image-create -x -t qcow2 \
             --no-tmpfs \
             -o /var/run/dib_output/image -n <element(s)>
 
