@@ -26,6 +26,7 @@ MAP_ELEMENT=
 
 # allow override for dnf, as shipped by default with >=F22
 YUM=${YUM:-yum}
+YUM_FLAGS=${YUM_FLAGS:--y -v}
 
 # save global xtrace state
 _xtrace=$(set +o | grep xtrace)
@@ -134,12 +135,20 @@ if [ -n "$WHITELIST" ]; then
     #
     # [1] https://bugzilla.redhat.com/show_bug.cgi?id=965567
     set -o xtrace
-    ${YUM} -v -y $ACTION $EXTRA_ARGS $PKGS
+
+    DNF5=$(command -v dnf5 2>/dev/null || true)
+    if [ ${YUM} == 'dnf' ] && [ -n "$DNF5" ]; then
+        # dnf5 does not support debug flag
+        YUM_FLAGS=${YUM_FLAGS//-v}
+    fi
+
+    ${YUM} $YUM_FLAGS $ACTION $EXTRA_ARGS $PKGS
 
     if [ "$ACTION" == "install" ]; then
-        if [ ${YUM} == "dnf" ]; then
-            # Make sure dnf won't autoremove these packages
+        if [ ${YUM} == "dnf" ] && [ -z "$DNF5" ]; then
             dnf mark install $PKGS
+        elif [ ${YUM} == "dnf" ] && [ -n "$DNF5" ]; then
+            dnf mark user $PKGS
         fi
     fi
     $_xtrace
