@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixes an issue where an image using the ``manifest`` element could fail to
+    build when using a non-root user. See `bug 2069956
+    <https://bugs.launchpad.net/diskimage-builder/+bug/2069956>`__.

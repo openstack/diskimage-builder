@@ -34,10 +34,11 @@ echo "$DIB_ARGS" | sudo dd of=${MANIFEST_IMAGE_PATH}/dib_arguments  # dib-lint: 
 
 # Save the manifests locally to the save dir
 mkdir -p ${DIB_MANIFEST_SAVE_DIR}
-cp --no-preserve=ownership -rv ${MANIFEST_IMAGE_PATH} ${DIB_MANIFEST_SAVE_DIR}
+sudo cp --no-preserve=ownership -rv ${MANIFEST_IMAGE_PATH} ${DIB_MANIFEST_SAVE_DIR} # dib-lint: safe_sudo
+sudo chown -R $(whoami): ${DIB_MANIFEST_SAVE_DIR} # dib-lint: safe_sudo
 
 # Lock down permissions on the manifest files inside the image to
 # root.  We don't want regular users being able to see what might
 # contain a password, etc.
-find ${MANIFEST_IMAGE_PATH} -type f | xargs sudo chown root:root # dib-lint: safe_sudo
-find ${MANIFEST_IMAGE_PATH} -type f | xargs sudo chmod 600 # dib-lint: safe_sudo
+sudo find ${MANIFEST_IMAGE_PATH} -type f | xargs sudo chown root:root # dib-lint: safe_sudo
+sudo find ${MANIFEST_IMAGE_PATH} -type f | xargs sudo chmod 600 # dib-lint: safe_sudo
