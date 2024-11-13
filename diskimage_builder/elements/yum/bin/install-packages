@@ -135,6 +135,13 @@ if [ -n "$WHITELIST" ]; then
     # [1] https://bugzilla.redhat.com/show_bug.cgi?id=965567
     set -o xtrace
     ${YUM} -v -y $ACTION $EXTRA_ARGS $PKGS
+
+    if [ "$ACTION" == "install" ]; then
+        if [ ${YUM} == "dnf" ]; then
+            # Make sure dnf won't autoremove these packages
+            dnf mark install $PKGS
+        fi
+    fi
     $_xtrace
 
     # probably not the right place for this; but python-pip package on
