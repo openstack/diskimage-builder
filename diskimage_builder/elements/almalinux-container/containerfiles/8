@@ -1,7 +1,8 @@
 FROM quay.io/almalinuxorg/almalinux:8
 
 RUN dnf group install -y 'Minimal Install' --allowerasing && \
-    dnf install -y findutils util-linux sudo python3 NetworkManager
+    dnf install -y findutils util-linux sudo python3 NetworkManager \
+    curl libcurl --allowerasing
 
 RUN systemctl unmask console-getty.service dev-hugepages.mount \
     getty.target sys-fs-fuse-connections.mount systemd-logind.service \
