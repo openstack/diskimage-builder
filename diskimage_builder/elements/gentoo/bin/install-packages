@@ -87,7 +87,7 @@ while true; do
             install_gentoo_packages --usepkg=n @preserved-rebuild
             etc-update --automode -5
             eselect news read new
-            exit 0;
+            exit 0
             ;;
         -e )
             ACTION='remove'
@@ -127,24 +127,33 @@ else
         if [[ ! -f ${PORTDIR}/profiles ]]; then
             emerge-webrsync -q
         fi
-        install_gentoo_packages --changed-use "${PKGS}"
+        # --noreplace prevents us from rebuilding a package already installed
+        # --changed-use means that package will be rebuilt *if* USE flags for
+        #               it (configuration) has changed
+        install_gentoo_packages --noreplace --changed-use "${PKGS}"
     elif [[ "${ACTION}" == 'remove' ]]; then
         if [[ ! -f ${PORTDIR}/profiles ]]; then
             emerge-webrsync -q
         fi
-        # remove packages from uninstall list that are not already installed
-        # this can result in false positives if not presented with full category/package names
-        CLEANED_PKGS=()
+        # A good practice for removing packages in gentoo is to deselect them,
+        # removing them from "world" set -- the equivalent of "unmark" in dnf.
+        # This tells portage we no longer care if the package is installed,
+        # and it can be removed if depedancies allow.
+        # This means a removal is two steps:
+        #   - emerge --deselect $pkg
+        #   - emerge --depclean
+        #
+        # The depclean step removes all packages that are not in the "world"
+        # set and are not in the dependency graph for any packages in "world"
+        # set.
+        #
+        # Other methods of removal may work; but this method sets us up to
+        # calculate the dependency graph exactly once and prevents portage
+        # from erroring if any of the packages were not already selected.
         for PKG in ${PKGS}; do
-            # the '^' and '$' in the search query are important so we don't get matched to
-            # packages that include our package name as part of their package name
-            if ! emerge --search "^${PKG}$" | grep -q 'Not Installed' ; then
-                CLEANED_PKGS+=("${PKG}")
-            fi
+            install_gentoo_packages --deselect $PKG
         done
-        if [ ${#CLEANED_PKGS[@]} -ne 0 ]; then
-            install_gentoo_packages -C "${CLEANED_PKGS[@]}"
-        fi
+        install_gentoo_packages --depclean
     else
         echo 'something went really wrong, install action is not install or remove'
     fi

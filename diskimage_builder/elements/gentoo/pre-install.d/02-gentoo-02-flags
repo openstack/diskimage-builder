@@ -20,20 +20,12 @@ mkdir -p /etc/portage/package.use
 echo 'dev-python/pip vanilla' >> /etc/portage/package.use/pip
 # needed to create disk images
 echo 'sys-fs/lvm2 lvm -thin' >> /etc/portage/package.use/grub
-echo 'sys-kernel/installkernel dracut' >> /etc/portage/package.use/kernel
+echo 'sys-kernel/installkernel grub dracut' >> /etc/portage/package.use/kernel
 echo 'sys-boot/grub device-mapper' >> /etc/portage/package.use/grub
 echo 'sys-boot/grub grub_platforms_efi-64' >> /etc/portage/package.use/grub  # always enable efi-64
 if [[ 'amd64' == "${ARCH}" ]]; then
     echo 'sys-boot/grub grub_platforms_pc' >> /etc/portage/package.use/grub  # bios support for bios systems
 fi
-
-# needed to install static kernel
-echo "sys-kernel/gentoo-kernel-bin ~${ARCH}" >> /etc/portage/package.accept_keywords/kernel
-echo "virtual/dist-kernel ~${ARCH}" >> /etc/portage/package.accept_keywords/kernel
-
-# needed for gcc-10 support
-echo "~sys-block/open-iscsi-2.1.4 ~${ARCH}" >> /etc/portage/package.accept_keywords/open-iscsi
-echo "~sys-block/open-isns-0.101 ~${ARCH}" >> /etc/portage/package.accept_keywords/open-iscsi
 
 # musl only valid for amd64 for now
 if [[ "${GENTOO_PROFILE}" == *"musl"* ]]; then

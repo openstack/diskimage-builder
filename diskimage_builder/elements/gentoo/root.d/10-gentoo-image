@@ -24,56 +24,30 @@ set -o pipefail
 [ -n "${ARCH}" ]
 [ -n "${TARGET_ROOT}" ]
 
-if [[ 'amd64' != "${ARCH}" ]] && [[ 'arm64' != "${ARCH}" ]]; then
-    echo "Only amd64 or arm64 images are currently available but ARCH is set to ${ARCH}."
+P_SUFFIX="${GENTOO_PROFILE#$GENTOO_BASE_PROFILE}"
+F_SUFFIX="${P_SUFFIX//\//\-}"
+if [[ ${F_SUFFIX} != *"-systemd" ]]; then
+    # NOTE(JayF): OpenRC is implied, and appended to the filename, unless systemd is specified.
+    F_SUFFIX="${F_SUFFIX}-openrc"
+fi
+
+DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"https://distfiles.gentoo.org/releases/${ARCH}/autobuilds/latest-stage3-${ARCH}${F_SUFFIX}.txt"}
+echo "Fetching available stages from ${DIB_CLOUD_SOURCE} for profile ${GENTOO_PROFILE}"
+
+STAGE_LIST=$(curl "${DIB_CLOUD_SOURCE}" -s -f || true)
+if [[ -z ${STAGE_LIST} ]]; then
+    echo "Unable to find a stage list for ${GENTOO_PROFILE} at ${DIB_CLOUD_SOURCE}."
+    echo "This element only currently supports profiles included in the periodic"
+    echo "Gentoo autobuilds."
     exit 1
 fi
 
-GENTOO_PROFILE=${GENTOO_PROFILE:-'default/linux/amd64/17.1'}
-if [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3'
-    SIGNED_SOURCE_SUFFIX='-openrc'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3-nomultilib'
-    SIGNED_SOURCE_SUFFIX='-nomultilib-openrc'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/hardened" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3-hardened'
-    SIGNED_SOURCE_SUFFIX='-hardened-openrc'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/no-multilib/hardened" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3-hardened-nomultilib'
-    SIGNED_SOURCE_SUFFIX='-hardened-nomultilib-openrc'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.0/musl/hardened" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3-hardened-musl'
-    SIGNED_SOURCE_SUFFIX='-musl-hardened'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/amd64/17.1/systemd/merged-usr" ]]; then
-    FILENAME_BASE='amd64_gentoo-stage3-systemd-mergedusr'
-    SIGNED_SOURCE_SUFFIX='-systemd-mergedusr'
-elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.0" ]]; then
-    FILENAME_BASE='arm64_gentoo-stage3'
-    SIGNED_SOURCE_SUFFIX=''
-elif [[ "${GENTOO_PROFILE}" == "default/linux/arm64/17.0/systemd/merged-usr" ]]; then
-    FILENAME_BASE='arm64_gentoo-stage3-systemd-mergedusr'
-    SIGNED_SOURCE_SUFFIX='-systemd-mergedusr'
-else
-    echo 'invalid profile, please select from the following profiles'
-    echo 'default/linux/amd64/17.1'
-    echo 'default/linux/amd64/17.1/no-multilib'
-    echo 'default/linux/amd64/17.1/hardened'
-    echo 'default/linux/amd64/17.1/no-multilib/hardened'
-    echo 'default/linux/amd64/17.1/systemd/merged-usr'
-    echo 'default/linux/arm64/17.0'
-    echo 'default/linux/arm64/17.0/systemd/merged-usr'
-    exit 1
-fi
+UPSTREAM_FILENAME=$(echo "${STAGE_LIST}" | grep -B1 'BEGIN PGP SIGNATURE' | head -n1 | cut -d\  -f1)
 
-if [[ "${GENTOO_PROFILE}" == *'amd64'* ]]; then
-    ARCH_PATH='amd64'
-elif [[ "${GENTOO_PROFILE}" == *'arm64'* ]]; then
-    ARCH_PATH='arm64'
-fi
-DIB_CLOUD_SOURCE=${DIB_CLOUD_SOURCE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/latest-stage3-${ARCH_PATH}${SIGNED_SOURCE_SUFFIX}.txt"}
-BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"http://distfiles.gentoo.org/releases/${ARCH_PATH}/autobuilds/$(curl "${DIB_CLOUD_SOURCE}" -s -f | grep -B1 'BEGIN PGP SIGNATURE' | head -n 1 | cut -d\  -f 1)"}
+echo "Chose ${UPSTREAM_FILENAME} as candidate stage tarball"
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-"https://distfiles.gentoo.org/releases/${ARCH}/autobuilds/${UPSTREAM_FILENAME}"}
 BASE_IMAGE_FILE_SUFFIX=${BASE_IMAGE_FILE_SUFFIX:-"$(basename "${BASE_IMAGE_FILE}" | cut -d. -f 2,3)"}
+FILENAME_BASE="gentoo-${GENTOO_PROFILE//\//\-}.${BASE_IMAGE_FILE_SUFFIX}"
 SIGNATURE_FILE="${SIGNATURE_FILE:-${BASE_IMAGE_FILE}.asc}"
 CACHED_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.${BASE_IMAGE_FILE_SUFFIX}"
 CACHED_SIGNATURE_FILE="${DIB_IMAGE_CACHE}/${FILENAME_BASE}.asc"
@@ -89,7 +63,7 @@ else
     # this key can be verified at one of the following places
     # https://wiki.gentoo.org/wiki/Project:RelEng#Keys
     # https://dev.gentoo.org/~dolsen/releases/keyrings/gentoo-keys-*.tar.xz
-    # http://distfiles.gentoo.org/distfiles/gentoo-keys-*.tar.xz
+    # https://distfiles.gentoo.org/distfiles/gentoo-keys-*.tar.xz
     # check the sig file
     if ! gpgv --keyring "${TMP_HOOKS_PATH}"/extra-data.d/gentoo-releng.gpg "${CACHED_SIGNATURE_FILE}" "${CACHED_FILE}"; then
         echo 'invalid signature file'
@@ -110,3 +84,4 @@ sudo tar -C "${TARGET_ROOT}" --numeric-owner --xattrs -xf "${CACHED_FILE}"
 # This broken link confuses things like dhclient.
 # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1197204
 echo -e "# This file intentionally left blank\n" | sudo tee "${TARGET_ROOT}"/etc/resolv.conf
+

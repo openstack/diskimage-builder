@@ -19,6 +19,7 @@ fi
 set -x
 
 if [ -n "${DIB_DEV_USER_PWDLESS_SUDO}" ]; then
+    mkdir -p /etc/sudoers.d/
     cat > /etc/sudoers.d/${DIB_DEV_USER_USERNAME} << EOF
 ${DIB_DEV_USER_USERNAME} ALL=(ALL) NOPASSWD:ALL
 EOF
