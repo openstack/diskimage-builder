@@ -329,9 +329,9 @@ else
                 # This call installs grub for BIOS compatability
                 # which makes portable EFI/BIOS images.
                 $GRUBNAME --modules="$modules" --target=i386-pc $BOOT_DEV
-                # Set the x86_64 specific efi target for the generic
+                # Append the x86_64 specific efi target for the generic
                 # installation below.
-                GRUB_OPTS="--target=x86_64-efi"
+                GRUB_OPTS="${GRUB_OPTS} --target=x86_64-efi"
                 ;;
             # At this point, we don't need to override the target
             # for any other architectures.
