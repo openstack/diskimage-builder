@@ -1,5 +1,5 @@
 export DISTRO_NAME=${DISTRO_NAME:-ubuntu}
-export DIB_RELEASE=${DIB_RELEASE:-focal}
+export DIB_RELEASE=${DIB_RELEASE:-noble}
 export DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main,universe}
 export EFI_BOOT_DIR="EFI/ubuntu"
 

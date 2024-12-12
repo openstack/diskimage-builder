@@ -12,7 +12,7 @@ set -o pipefail
 
 shopt -s extglob
 
-DIB_RELEASE=${DIB_RELEASE:-trusty}
+DIB_RELEASE=${DIB_RELEASE:-noble}
 DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-https://cloud-images.ubuntu.com/$DIB_RELEASE/current}
 if [ $DIB_RELEASE != "trusty" ] ; then
     BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-$DIB_RELEASE-server-cloudimg-$ARCH.squashfs}
