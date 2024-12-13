@@ -116,8 +116,14 @@ fi
 
 append_or_replace /etc/default/grub GRUB_DEVICE "LABEL=${DIB_ROOT_LABEL}"
 append_or_replace /etc/default/grub GRUB_DISABLE_LINUX_UUID true
-append_or_replace /etc/default/grub GRUB_TIMEOUT "${DIB_GRUB_TIMEOUT:-1}"
-append_or_replace /etc/default/grub GRUB_TIMEOUT_STYLE "${DIB_GRUB_TIMEOUT_STYLE:-hidden}"
+# Please do not change these defaults unless the change is to only set our
+# overrides when overrides are present. The current defaults are based on
+# upstream Grub defaults. These values are clearly contentious with different
+# groups wanting different values. For this reason we pick the current GRUB
+# defaults and stick to them. The only exception should be an update to
+# fall through to GRUB using its own defaults.
+append_or_replace /etc/default/grub GRUB_TIMEOUT "${DIB_GRUB_TIMEOUT:-5}"
+append_or_replace /etc/default/grub GRUB_TIMEOUT_STYLE "${DIB_GRUB_TIMEOUT_STYLE:-menu}"
 if [[ "True" == "${DIB_BOOTLOADER_USE_SERIAL_CONSOLE:-True}" ]]; then
     append_or_replace /etc/default/grub GRUB_TERMINAL \""serial console"\"
 else

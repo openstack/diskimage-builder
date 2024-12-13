@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    Change default values for ``DIB_GRUB_TIMEOUT_STYLE`` and
+    ``DIB_GRUB_TIMEOUT``. The default value for ``DIB_GRUB_TIMEOUT_STYLE``
+    will be ``menu`` and for ``DIB_GRUB_TIMEOUT`` will be ``5``. These
+    values are based on current GRUB defaults.
