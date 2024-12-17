@@ -1,0 +1,16 @@
+- hosts: all
+  tasks:
+  - name: Copy the cpu-level script into place
+    copy:
+      src: cpu-level.sh
+      dest: /tmp/cpu-level.sh
+      mode:
+  - name: Collect CPU flags for node
+    command:  bash /tmp/cpu-level.sh
+    # NOTE(tonyb):  This is interesting as QEMU gains the ability to emuluate
+    # newer machine types for example 7.2 is needed for haswell.
+  - name: Collect QEMU version
+    ignore_errors: true
+    shell: |-
+      qemu-kvm --version
+      qemu-system-$(arch) --version

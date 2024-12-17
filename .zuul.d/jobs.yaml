@@ -79,6 +79,7 @@
       Base job for DIB functional tests, which build and boot a node
       under nodepool, using source versions of dependencies such as
       nodepool, dib, openstacksdk and glean.
+    pre-run: playbooks/dib-nodepool/node-information.yaml
     parent: nodepool-functional-container-openstack-siblings-base
     post-run: playbooks/dib-nodepool/collect-openstack-logs.yaml
     vars:
