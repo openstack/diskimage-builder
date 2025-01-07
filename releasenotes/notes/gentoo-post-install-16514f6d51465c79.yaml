@@ -1,0 +1,6 @@
+fixes:
+  - |
+    The gentoo element no longer runs finalization actions during finalise
+    phase; these actions now happen in post-install phase. This fixes an issue
+    where the final ``emerge --update @world`` would fail due to limited disk
+    space, due to the environment finalise steps run in.
