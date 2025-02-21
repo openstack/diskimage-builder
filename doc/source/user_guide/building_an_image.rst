@@ -4,6 +4,10 @@ Building An Image
 Now that you have diskimage-builder properly :doc:`installed <installation>`
 you can get started by building your first disk image.
 
+.. note:: diskimage-builder requires a linux machine able to mount filesystems
+          and execute code for the target CPU architecture of the image. (e.g.;
+          building an ARM image requires a linux machine that can run ARM code).
+
 VM Image
 --------
 
