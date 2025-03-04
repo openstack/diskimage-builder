@@ -26,15 +26,18 @@ set -o pipefail
 #             unset the environment to ensure default behavior.
 unset YACC LEX
 
+export GENTOO_ACCEPT_KEYWORDS=${GENTOO_ACCEPT_KEYWORDS:-"${ARCH}"}
+
 # env is not sourced with user specified package inclusions
 # set the default bash array if GENTOO_EMERGE_ENV is not defined as an array
 if ! declare -p GENTOO_EMERGE_ENV  2> /dev/null | grep -q '^declare \-a'; then
     declare -a GENTOO_EMERGE_ENV
-    GENTOO_EMERGE_ENV+=("USE=\"-build\"")
+    GENTOO_EMERGE_ENV+=("USE=\"-build dist-kernel\"")
     GENTOO_EMERGE_ENV+=("FEATURES=\"binpkg-multi-instance buildpkg parallel-fetch parallel-install\"")
     GENTOO_EMERGE_ENV+=("PKGDIR=\"/tmp/portage-pkgdir\"")
     GENTOO_EMERGE_ENV+=("DISTDIR=\"/tmp/portage-distdir\"")
     GENTOO_EMERGE_ENV+=("PORTDIR=\"/tmp/portage-portdir\"")
+    GENTOO_EMERGE_ENV+=("ACCEPT_KEYWORDS=\"${GENTOO_ACCEPT_KEYWORDS}\"")
     export GENTOO_EMERGE_ENV
 fi
 # iterate over the array, exporting each 'line'

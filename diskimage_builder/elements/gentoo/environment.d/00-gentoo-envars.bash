@@ -6,6 +6,7 @@ export GENTOO_PORTAGE_CLEANUP=${GENTOO_PORTAGE_CLEANUP:-'True'}
 export GENTOO_PYTHON_TARGETS=${GENTOO_PYTHON_TARGETS:-''}
 export GENTOO_OVERLAYS=${GENTOO_OVERLAYS:-''}
 export GENTOO_EMERGE_DEFAULT_OPTS=${GENTOO_EMERGE_DEFAULT_OPTS:-"--binpkg-respect-use --rebuilt-binaries=y --usepkg=y --with-bdeps=y --binpkg-changed-deps=y --quiet --jobs=2 --autounmask=n"}
+export GENTOO_ACCEPT_KEYWORDS=${GENTOO_ACCEPT_KEYWORDS:-"${ARCH}"}
 
 # NOTE(JayF): This defines the base gentoo profile version supported
 # in DIB. As gentoo is a rolling release distro, the older profiles
@@ -16,11 +17,12 @@ export GENTOO_PROFILE=${GENTOO_PROFILE:-$GENTOO_BASE_PROFILE}
 # set the default bash array if GENTOO_EMERGE_ENV is not defined as an array
 if ! declare -p GENTOO_EMERGE_ENV  2> /dev/null | grep -q '^declare \-a'; then
     declare -a GENTOO_EMERGE_ENV
-    GENTOO_EMERGE_ENV+=("USE=\"-build\"")
+    GENTOO_EMERGE_ENV+=("USE=\"-build dist-kernel\"")
     GENTOO_EMERGE_ENV+=("FEATURES=\"binpkg-multi-instance buildpkg parallel-fetch parallel-install\"")
     GENTOO_EMERGE_ENV+=("PKGDIR=\"/tmp/portage-pkgdir\"")
     GENTOO_EMERGE_ENV+=("DISTDIR=\"/tmp/portage-distdir\"")
     GENTOO_EMERGE_ENV+=("PORTDIR=\"/tmp/portage-portdir\"")
+    GENTOO_EMERGE_ENV+=("ACCEPT_KEYWORDS=\"${GENTOO_ACCEPT_KEYWORDS}\"")
     export GENTOO_EMERGE_ENV
 fi
 # iterate over the array, exporting each 'line'

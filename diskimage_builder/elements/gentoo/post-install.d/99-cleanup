@@ -38,7 +38,12 @@ if [[ "${GENTOO_PORTAGE_CLEANUP}" != "False" ]]; then
     # remove the overlays
     if [[ ${GENTOO_OVERLAYS} != '' ]]; then
         for OVERLAY in ${GENTOO_OVERLAYS}; do
-            layman -d "${OVERLAY}"
+            eselect repository remove "${OVERLAY}"
+        done
+    fi
+    if [[ ${GENTOO_CUSTOM_OVERLAY} != '' ]]; then
+        for OVERLAY in ${GENTOO_CUSTOM_OVERLAYS}; do
+            eselect repository remove "${OVERLAY}"
         done
     fi
 fi

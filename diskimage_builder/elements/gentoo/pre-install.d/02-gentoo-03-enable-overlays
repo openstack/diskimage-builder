@@ -25,6 +25,15 @@ if [[ ${GENTOO_OVERLAYS} != '' ]]; then
     set +e
     for OVERLAY in ${GENTOO_OVERLAYS}; do
         eselect repository enable "${OVERLAY}"
+        emaint sync -r "${OVERLAY}"
+    done
+    set -e
+
+    # enable the various custom overlays, ignore failures (overlay my already be enabled)
+    set +e
+    for OVERLAY in ${GENTOO_CUSTOM_OVERLAYS}; do
+        eselect repository add $(echo "${OVERLAY}" | sed 's/:/ git /' )
+        emaint sync -r $(echo "${OVERLAY}" | sed 's/:.*//' ) 
     done
     set -e
 

@@ -51,6 +51,10 @@ Notes:
   should put a space separated list of overlays.  The overlays must be in the
   official overlay list and must be git based.
 
+* You can enable custom overlays using the `GENTOO_CUSTOM_OVERLAYS` variable.  In it you
+  should put a space separated list of overlay tuples.  The tuples must of the
+  form `<reponame>:<sync-uri>`.  The overlays must be git based.
+
 * `GENTOO_EMERGE_ENV` is a bash array containing default environment
   variables for package install, you can override it with another bash array.
 

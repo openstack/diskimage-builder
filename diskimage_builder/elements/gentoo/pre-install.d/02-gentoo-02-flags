@@ -12,6 +12,9 @@ mkdir -p /etc/portage/package.accept_keywords
 if [[ -f /etc/portage/package.keywords ]]; then
     mv /etc/portage/package.keywords /etc/portage/package.accept_keywords/prebuilt-1
 fi
+if [[ -z "${GENTOO_ACCEPT_KEYWORDS}" ]]; then
+    echo "ACCEPT_KEYWORDS=\"${GENTOO_ACCEPT_KEYWORDS}\"" >> /etc/portage/make.conf
+fi
 mkdir -p /etc/portage/package.mask
 mkdir -p /etc/portage/package.unmask
 mkdir -p /etc/portage/package.use
