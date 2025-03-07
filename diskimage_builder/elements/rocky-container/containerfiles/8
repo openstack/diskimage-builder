@@ -1,4 +1,4 @@
-FROM docker.io/library/rockylinux:8
+FROM quay.io/rockylinux/rockylinux:8
 
 RUN dnf group install -y 'Minimal Install' --allowerasing && \
     dnf install -y findutils util-linux sudo python3 NetworkManager \
