@@ -62,7 +62,7 @@ def main():
         if skip_line(line):
             continue
 
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         ts_line = ("%s | %s" % (
             now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
             line))
