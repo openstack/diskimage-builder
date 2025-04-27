@@ -1,0 +1,13 @@
+---
+fixes:
+  - |
+    Fixes an issue on RHEL or Centos based image builds where an initial 
+    source image state may have a multipath capible initial ramdisk,
+    but then lack the necessary package to support regeneration of a new
+    ramdisk with multipathing. The end result being that a regenerated or
+    updated ramdisk after the fact is that the ramdisk then fails to boot
+    when multipath devices are present where it previously booted without
+    any issues. This is because the ramdisk build process used by ``dracut``
+    does not fail if it does not find the necessary multipath components,
+    thus requiring the ``device-mapper-multipath`` package to be present
+    for the ramdisk with the necessary artifacts.
