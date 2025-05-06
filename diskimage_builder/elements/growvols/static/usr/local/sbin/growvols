@@ -43,6 +43,9 @@ UNIT_BYTES_FORMAT = {
     'GiB': 1073741824
 }
 
+# Regular expression to get digits at the end of a string
+DIGITS_EOF_STR_RE = re.compile(r'\d+$')
+
 # Only create growth partition if there is at least 1GiB available
 MIN_DISK_SPACE_BYTES = UNIT_BYTES['GiB']
 
@@ -363,7 +366,15 @@ def find_next_partnum(devices, disk):
             if dev_name in seen_devs:
                 continue
             seen_devs.add(dev_name)
-            max_partnum = max(max_partnum, int(dev_name[disk_name_length:]))
+            # Multipath device names may have a partition_delimiter between
+            # the base device name and the partition number. By default, if
+            # partition_delimiter is unset in the multipath configuration and
+            # the base name ends in a digit, a 'p' is inserted.
+            # A regular expression is used to reliably extract trailing
+            # digits, regardless the presence of a partition delimiter or not.
+            max_partnum = max(max_partnum,
+                              int(DIGITS_EOF_STR_RE.search(
+                                  dev_name[disk_name_length:]).group(0)))
         return max_partnum + 1
 
 
