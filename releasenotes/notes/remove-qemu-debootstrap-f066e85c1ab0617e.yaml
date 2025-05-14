@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fix cross-architecture builds that use the debootstrap element by
+    removing use of deprecated qemu-debootstrap, in favor of using
+    debootstrap directly.

@@ -34,8 +34,6 @@ DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-$
 http_proxy=${http_proxy:-}
 no_proxy=${no_proxy:-}
 
-DEBOOTSTRAP_QEMU=""
-
 _debootstrap_version=$(debootstrap --version)
 # could be like "debootstrap 1.0.114~bpo16.04+1"
 _debootstrap_version=${_debootstrap_version:16:3}
@@ -57,13 +55,7 @@ else
     # Have to --include=sudo for pre-install.d use of sudoers files
     # Have to --include=busybox because initramfs needs it
 
-    if [ $(dpkg --print-architecture) != ${ARCH} ]; then
-        # Target architecture different from host architecture:
-        # there is the need to call 'qemu-debootstrap'.
-        DEBOOTSTRAP_QEMU="qemu-"
-    fi
-
-    sudo sh -c "http_proxy=$http_proxy no_proxy=$no_proxy ${DEBOOTSTRAP_QEMU}debootstrap --verbose \
+    sudo sh -c "http_proxy=$http_proxy no_proxy=$no_proxy debootstrap --verbose \
         --variant=minbase \
         --components=${DIB_DEBIAN_COMPONENTS} \
         --arch=${ARCH} \
