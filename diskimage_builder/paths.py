@@ -15,20 +15,15 @@
 """Export paths"""
 
 import os
-import pkg_resources
 import sys
 
 
 def get_path(var):
-    if var == "lib":
-        return os.path.abspath(
-            pkg_resources.resource_filename(__name__, "lib"))
-    elif var == "elements":
-        return os.path.abspath(
-            pkg_resources.resource_filename(__name__, "elements"))
-    else:
-        print("Unknown path request!")
-        sys.exit(1)
+    if var in ("lib", "elements"):
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), var))
+
+    print("Unknown path request!")
+    sys.exit(1)
 
 
 def show_path(var):
