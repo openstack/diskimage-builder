@@ -1,0 +1,105 @@
+- hosts: all
+  gather_facts: false
+  vars:
+    dib_src_path: "{{ ansible_user_dir }}/{{ zuul['projects']['opendev.org/openstack/diskimage-builder']['src_dir'] }}"
+    DIB_KEY_NAME: "root"
+    DIB_SSH_KEY: "{{ ansible_user_dir }}/.ssh/id_dib"
+    DIB_SSH_PUBKEY: "{{ ansible_user_dir }}/.ssh/id_dib.pub"
+  roles:
+    - name: ensure-dib
+    - name: build-diskimage
+  tasks:
+  - name: Add image to devstack as test-image
+    command: |-
+      openstack --os-cloud devstack image create \
+        --disk-format '{{ build_diskimage_formats[0] }}' --container-format bare \
+        --file '{{ build_diskimage_image_root }}/{{ diskimage.base_element }}.{{ build_diskimage_formats[0] }}' \
+        test-image
+
+  - name: Create DIB flavor
+    args:
+      executable: /bin/bash
+    shell: |
+      openstack --os-cloud devstack-admin flavor create --ram=1024 --disk=5 --vcpus=1 --id=128 dib1024
+
+  - name: Create security groups
+    args:
+      executable: /bin/bash
+    shell: |
+      openstack --os-cloud devstack security group rule create --ingress --protocol tcp --dst-port 1:65535 --remote-ip 0.0.0.0/0 default
+      openstack --os-cloud devstack security group rule create --ingress --protocol udp --dst-port 1:65535 --remote-ip 0.0.0.0/0 default
+
+  - name: Create nodepool SSH keypair
+    args:
+      executable: /bin/bash
+    shell: |
+      ssh-keygen -f {{ DIB_SSH_KEY }} -P ""
+      openstack --os-cloud=devstack keypair create --public-key="{{ DIB_SSH_PUBKEY }}" "{{ DIB_KEY_NAME }}"
+
+  - name: Create a floating IP
+    register: floating_ip
+    command: openstack --os-cloud devstack floating ip create public -f json
+
+  - name: Boot test-image in devstack as test-server
+    command: |-
+      openstack --os-cloud devstack server create \
+        --flavor dib1024 \
+        --image test-image \
+        --use-config-drive \
+        --key-name "{{ DIB_KEY_NAME }}" \
+        --network private \
+        test-server
+
+  # Give it, up to, another 5 minutes to boot or fail
+  - name: Wait for server to boot or fail
+    command: openstack --os-cloud devstack server show -f json test-server
+    register: server_status
+    until: server_status.stdout|from_json|json_query("status") == "ACTIVE"
+    retries: 100
+    delay: 3
+
+  - name: Convert test-server details from JSON
+    set_fact:
+      server_status: "{{ server_status.stdout|from_json }}"
+      floating_ip: "{{ floating_ip.stdout|from_json }}"
+
+  - name: Extract IP addresses from server details
+    set_fact:
+      access_ipv4: "{{ server_status|json_query('addresses.private')| ansible.utils.ipv4 | join(' ') }}"
+      # TODO: Uncomment and add IPv6, hostname, routing and ssh-keyscan.
+      # access_ipv6: "{{ server_status|json_query('addresses.private')| ansible.utils.ipv6 | join(' ') }}"
+
+  - name: Add floating IP to test-server
+    command: openstack --os-cloud devstack server add floating ip --fixed-ip {{ access_ipv4 }} test-server {{ floating_ip.floating_ip_address }}
+
+  - name: Remove any test-server entries from /etc/hosts
+    become: true
+    lineinfile:
+      regex: ".*test-server.*"
+      path: /etc/hosts
+      state: absent
+
+  - name: Add entries for test-server entries to /etc/hosts
+    become: true
+    lineinfile:
+      path: /etc/hosts
+      line: "{{ floating_ip.floating_ip_address }}\t\ttest-server"
+
+  - name: Check for ssh connectivity with log collection on failure
+    block:
+      # Wait a total of 20 mins, this is fairly high as we're probably running in "usermode emulation" QEMU+TCG
+      - name: Wait for SSH to come online
+        command: ssh-keyscan -4 test-server
+        register: keyscan
+        until: keyscan.rc == 0
+        retries: 120
+        delay: 10
+    rescue:
+      - name: Print console logs
+        command: openstack --os-cloud devstack console log show test-server
+      - name: Force failure now that we're in the rescue block
+        fail:
+          msg: SSH connectivity failed
+
+  - name: Run functional tests
+    command: "{{ dib_src_path }}/tools/functional-test-check.sh"

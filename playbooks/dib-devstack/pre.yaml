@@ -1,4 +1,6 @@
 - hosts: all
+  roles:
+    - name: run-devstack
   tasks:
   - name: Copy the cpu-level script into place
     copy:
