@@ -3,6 +3,10 @@
     "centos": {
       "9-stream": {
         "lsb_release": "ed hostname patch postfix tar time"
+      },
+      "10-stream": {
+        "lsb_release": "python3-distro ed hostname patch postfix tar time",
+        "dhcp-client": "dhcpcd"
       }
     }
   },

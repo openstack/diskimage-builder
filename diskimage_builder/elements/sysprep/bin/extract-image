@@ -130,6 +130,13 @@ function extract_image() {
                 fi
             done
 
+            # in case where ROOT_LOOPDEV is not set - use BOOT_LOOPDEV for that case
+            # (e.g. CentOS Stream 10)
+            if [ -z "$ROOT_LOOPDEV" ]; then
+                ROOT_LOOPDEV=${BOOT_LOOPDEV}
+                BOOT_LOOPDEV=
+            fi
+
             mkdir $WORKING/mnt
             ROOT_FSTYPE=$(sudo blkid -o value -s TYPE $ROOT_LOOPDEV)
             if [ "xfs" = "$ROOT_FSTYPE" ]; then

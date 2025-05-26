@@ -21,6 +21,8 @@ if [ -e "/etc/redhat-release" ]; then
         DIB_DHCP_CLIENT=${DIB_DHCP_CLIENT:-dhclient}
     elif [[ '8' =~ ${DIB_RELEASE} ]]; then
         DIB_DHCP_CLIENT=${DIB_DHCP_CLIENT:-dhclient}
+    elif [[ '10' =~ ${DIB_RELEASE} ]]; then
+        DIB_DHCP_CLIENT=${DIB_DHCP_CLIENT:-dhcpcd}
     fi
     # NOTE(TheJulia): Centos 9-stream/RHEL9, appear to need to leverage the
     # internal interface. See: https://storyboard.openstack.org/#!/story/2010109

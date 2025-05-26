@@ -18,7 +18,10 @@
     description: |
       This is the base set of stable tests
     parent: dib-functests-base
-    nodeset: debian-bookworm
+    nodeset:
+      nodes:
+        - name: nested-virt-debian-bookworm
+          label: nested-virt-debian-bookworm
     vars:
       dib_functests:
         - containerfile/jammy-build-succeeds
@@ -26,6 +29,7 @@
         #- openeuler-minimal/22.03-LTS-build-succeeds
         # Image based tests
         - centos/9-stream-build-succeeds
+        - centos/10-stream-build-succeeds
         # NOTE(rpittau) Fedora 37 is EOL, disalbing this until we move to
         # Fedora 39 or more recent.
         #- fedora/build-succeeds
@@ -65,6 +69,7 @@
       dib_functests:
         - almalinux-container/almalinux-9-aarch64-build-succeeds
         - centos-minimal/9-stream-aarch64-build-succeeds
+        - centos-minimal/10-stream-aarch64-build-succeeds
         # Disabled until it gets updated to match the version being mirrored
         #- openeuler-minimal/22.03-LTS-build-succeeds
         - rocky-container/rocky-9-aarch64-build-succeeds
@@ -241,6 +246,24 @@
       diskimage:
         base_element: centos-minimal
         release: '9-stream'
+
+- job:
+    name: dib-devstack-functional-openstack-centos-10-stream-src
+    description: |
+      Test building and booting a Centos 10 Stream image with devstack and
+      OpenStack.
+    nodeset:
+      nodes:
+        - name: controller
+          label: nested-virt-ubuntu-noble
+    parent: dib-devstack-functional-src-base
+    vars:
+      diskimage:
+        base_element: centos-minimal
+        release: '10-stream'
+      devstack_localrc:
+        LIBVIRT_CPU_MODE: custom
+        LIBVIRT_CPU_MODEL: Haswell
 
 - job:
     name: dib-nodepool-functional-openstack-fedora-37-containerfile-src

@@ -32,6 +32,11 @@
        "37": {
          "NetworkManager-initscripts-ifcfg-rh": "NetworkManager-initscripts-ifcfg-rh"
        }
+    },
+    "centos": {
+      "10-stream": {
+        "dhcp-client": "dhcpcd"
+      }
     }
   },
   "default": {
