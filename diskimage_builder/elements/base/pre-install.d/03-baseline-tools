@@ -12,6 +12,9 @@ case $DISTRO_NAME in
         # Note: add-apt-repository would be nice for RPM platforms too - so when we
         # need something like it, create a wrapper in dpkg/bin and fedora/bin.
         apt-get -y update
-        install-packages software-properties-common apt-transport-https
+        install-packages apt-transport-https
+        if ! [[ $DIB_RELEASE =~ ^(testing|trixie|unstable) ]]; then
+            install-packages software-properties-common
+        fi
         ;;
 esac
