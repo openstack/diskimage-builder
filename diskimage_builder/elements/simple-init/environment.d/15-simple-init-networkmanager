@@ -6,7 +6,7 @@ fi
 
 if [[ (${DISTRO_NAME} == "almalinux" || ${DISTRO_NAME} == "rocky") && $DIB_RELEASE > 7 ]] || [[ ${DISTRO_NAME} == "fedora" ]]; then
     if [[ $DIB_SIMPLE_INIT_NETWORKMANAGER == 0 ]]; then
-        echo "simple-init only supports NetworkManager mode on Fedora and AlmaLinux/CentOS/Rocky 8 & 9"
+        echo "simple-init only supports NetworkManager mode on Fedora and AlmaLinux/CentOS/Rocky 8/9/10"
         exit 1
     fi
 fi

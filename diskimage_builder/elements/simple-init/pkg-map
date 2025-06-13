@@ -37,6 +37,11 @@
       "10-stream": {
         "dhcp-client": "dhcpcd"
       }
+    },
+    "rocky": {
+      "10": {
+        "dhcp-client": "dhcpcd"
+      }
     }
   },
   "default": {

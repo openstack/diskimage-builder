@@ -73,6 +73,7 @@
         # Disabled until it gets updated to match the version being mirrored
         #- openeuler-minimal/22.03-LTS-build-succeeds
         - rocky-container/rocky-9-aarch64-build-succeeds
+        - rocky-container/rocky-10-aarch64-build-succeeds
 
 #
 # Build and boot functional tests
@@ -339,6 +340,25 @@
       diskimage:
         base_element: rocky-container
         release: '9'
+
+- job:
+    name: dib-devstack-functional-openstack-rockylinux-10-containerfile-src
+    description: |
+      Test building and booting a Rocky Linux image from a
+      containerfile with Nodepool and OpenStack (using released
+      libraries)
+    nodeset:
+      nodes:
+        - name: controller
+          label: nested-virt-ubuntu-noble
+    parent: dib-devstack-functional-src-base
+    vars:
+      diskimage:
+        base_element: rocky-container
+        release: '10'
+      devstack_localrc:
+        LIBVIRT_CPU_MODE: custom
+        LIBVIRT_CPU_MODEL: Haswell
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-xenial-src
