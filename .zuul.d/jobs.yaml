@@ -134,35 +134,6 @@
         SWIFT_LOOPBACK_DISK_SIZE: "6G"  # Alittle more than ^^
 
 - job:
-    name: dib-nodepool-functional-src-base
-    description: |
-      Base job for DIB functional tests, which build and boot a node
-      under nodepool, using source versions of dependencies such as
-      nodepool, dib, openstacksdk and glean.
-    pre-run: playbooks/dib-nodepool/node-information.yaml
-    parent: nodepool-functional-container-openstack-siblings-base
-    post-run: playbooks/dib-nodepool/collect-openstack-logs.yaml
-    vars:
-      nodepool_debug: true
-    irrelevant-files:
-      - ^.*\.rst$
-      - ^doc/.*$
-      - ^releasenotes/.*$
-
-- job:
-    name: dib-nodepool-functional-openstack-almalinux-8-containerfile-src
-    description: |
-      Test building and booting a AlmaLinux image from a
-      containerfile with Nodepool and OpenStack (using released
-      libraries)
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_debug: true
-      nodepool_diskimage:
-        base_element: almalinux-container
-        release: '8'
-
-- job:
     name: dib-devstack-functional-openstack-almalinux-8-containerfile-src
     description: |
       Test building and booting a AlmaLinux image from a
@@ -172,19 +143,6 @@
       diskimage:
         base_element: almalinux-container
         release: '8'
-
-- job:
-    name: dib-nodepool-functional-openstack-almalinux-9-containerfile-src
-    description: |
-      Test building and booting a AlmaLinux image from a
-      containerfile with Nodepool and OpenStack (using released
-      libraries)
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_debug: true
-      nodepool_diskimage:
-        base_element: almalinux-container
-        release: '9'
 
 - job:
     name: dib-devstack-functional-openstack-almalinux-9-containerfile-src
@@ -199,19 +157,6 @@
         release: '9'
 
 - job:
-    name: dib-nodepool-functional-openstack-centos-8-stream-src
-    description: |
-      Test building and booting a Centos 8 Stream image with Nodepool and
-      OpenStack.
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: centos-minimal
-        release: '8-stream'
-        # TODO: set when CentOS 8 Stream repos mirrored.
-        # mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
-
-- job:
     name: dib-devstack-functional-openstack-centos-8-stream-src
     description: |
       Test building and booting a Centos 8 Stream image with devstack and
@@ -221,19 +166,6 @@
       diskimage:
         base_element: centos-minimal
         release: '8-stream'
-
-- job:
-    name: dib-nodepool-functional-openstack-centos-9-stream-src
-    description: |
-      Test building and booting a Centos 9 Stream image with Nodepool and
-      OpenStack.
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: centos-minimal
-        release: '9-stream'
-        # TODO: set when CentOS 9 Stream repos mirrored.
-        # mirror: "http://{{ zuul_site_mirror_fqdn }}/centos"
 
 - job:
     name: dib-devstack-functional-openstack-centos-9-stream-src
@@ -265,19 +197,6 @@
         LIBVIRT_CPU_MODEL: Haswell
 
 - job:
-    name: dib-nodepool-functional-openstack-fedora-37-containerfile-src
-    description: |
-      Test building and booting an Fedora image from a
-      containerfile with Nodepool and OpenStack (using released
-      libraries)
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_debug: true
-      nodepool_diskimage:
-        base_element : fedora-container
-        release: '37'
-
-- job:
     name: dib-devstack-functional-openstack-fedora-37-containerfile-src
     description: |
       Test building and booting an Fedora image from a
@@ -290,19 +209,6 @@
         release: '37'
 
 - job:
-    name: dib-nodepool-functional-openstack-rockylinux-8-containerfile-src
-    description: |
-      Test building and booting a Rocky Linux image from a
-      containerfile with Nodepool and OpenStack (using released
-      libraries)
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_debug: true
-      nodepool_diskimage:
-        base_element: rocky-container
-        release: '8'
-
-- job:
     name: dib-devstack-functional-openstack-rockylinux-8-containerfile-src
     description: |
       Test building and booting a Rocky Linux image from a
@@ -313,19 +219,6 @@
       diskimage:
         base_element: rocky-container
         release: '8'
-
-- job:
-    name: dib-nodepool-functional-openstack-rockylinux-9-containerfile-src
-    description: |
-      Test building and booting a Rocky Linux image from a
-      containerfile with Nodepool and OpenStack (using released
-      libraries)
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_debug: true
-      nodepool_diskimage:
-        base_element: rocky-container
-        release: '9'
 
 - job:
     name: dib-devstack-functional-openstack-rockylinux-9-containerfile-src
@@ -359,54 +252,6 @@
         LIBVIRT_CPU_MODEL: Haswell
 
 - job:
-    name: dib-nodepool-functional-openstack-ubuntu-xenial-src
-    description: |
-      Test building and booting an Ubuntu xenial image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'xenial'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
-    name: dib-nodepool-functional-openstack-ubuntu-bionic-src
-    description: |
-      Test building and booting an Ubuntu bionic image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'bionic'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
-    name: dib-nodepool-functional-openstack-ubuntu-focal-src
-    description: |
-      Test building and booting an Ubuntu focal image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'focal'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
     name: dib-devstack-functional-openstack-ubuntu-focal-src
     description: |
       Test building and booting an Ubuntu focal image with devstack
@@ -421,22 +266,6 @@
           DIB_DISABLE_APT_CLEANUP: '1'
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
           DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-
-- job:
-    name: dib-nodepool-functional-openstack-ubuntu-jammy-src
-    description: |
-      Test building and booting an Ubuntu jammy image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'jammy'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-devstack-functional-openstack-ubuntu-jammy-src
@@ -455,22 +284,6 @@
           DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
 
 - job:
-    name: dib-nodepool-functional-openstack-ubuntu-noble-src
-    description: |
-      Test building and booting an Ubuntu noble image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: ubuntu-minimal
-        release: 'noble'
-        # mirror: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
     name: dib-devstack-functional-openstack-ubuntu-noble-src
     description: |
       Test building and booting Ubuntu Noble with devstack.
@@ -486,16 +299,6 @@
           DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
 
 - job:
-    name: dib-nodepool-functional-openstack-gentoo-src
-    description: |
-      Test building and booting a Gentoo image with Nodepool and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: gentoo
-        release: ''
-
-- job:
     name: dib-devstack-functional-openstack-gentoo-src
     description: |
       Test building and booting a Gentoo image with devstack and OpenStack
@@ -504,22 +307,6 @@
       diskimage:
         base_element: gentoo
         release: ''
-
-- job:
-    name: dib-nodepool-functional-openstack-debian-stretch-src
-    description: |
-      Test building and booting a Debian stretch image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: debian-minimal
-        release: 'stretch'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-devstack-functional-openstack-debian-stretch-src
@@ -531,22 +318,6 @@
       diskimage:
         base_element: debian-minimal
         release: 'stretch'
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
-    name: dib-nodepool-functional-openstack-debian-bullseye-src
-    description: |
-      Test building and booting a Debian bullseye image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: debian-minimal
-        release: 'bullseye'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
         env-vars:
           DIB_APT_LOCAL_CACHE: '0'
           DIB_DISABLE_APT_CLEANUP: '1'
@@ -569,22 +340,6 @@
           DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/debian"
 
 - job:
-    name: dib-nodepool-functional-openstack-debian-buster-src
-    description: |
-      Test building and booting a Debian buster image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: debian-minimal
-        release: 'buster'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/debian"
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
     name: dib-devstack-functional-openstack-debian-buster-src
     description: |
       Test building and booting a Debian buster image with devstack
@@ -598,18 +353,6 @@
           DIB_APT_LOCAL_CACHE: '0'
           DIB_DISABLE_APT_CLEANUP: '1'
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
-    name: dib-nodepool-functional-openstack-opensuse-15-src
-    description: |
-      Test building and booting an openSUSE 15.x image with Nodepool
-      and OpenStack
-    parent: dib-nodepool-functional-src-base
-    vars:
-      nodepool_diskimage:
-        base_element: opensuse-minimal
-        release: '15.2'
-        mirror: "http://{{ zuul_site_mirror_fqdn }}/opensuse"
 
 - job:
     name: dib-devstack-functional-openstack-opensuse-15-src
