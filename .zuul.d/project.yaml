@@ -40,10 +40,6 @@
         - dib-devstack-functional-openstack-centos-9-stream-src
         - dib-devstack-functional-openstack-centos-10-stream-src:
             voting: false
-        # NOTE(rpittau) Fedora 37 is EOL, moving to non-voting for the time being
-        # until we move to Fedora 39 or more recent.
-        - dib-devstack-functional-openstack-fedora-37-containerfile-src:
-            voting: false
         - dib-devstack-functional-openstack-rockylinux-8-containerfile-src:
             voting: false
         - dib-devstack-functional-openstack-rockylinux-9-containerfile-src:
