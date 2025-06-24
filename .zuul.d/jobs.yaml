@@ -569,7 +569,6 @@
           DIB_APT_LOCAL_CACHE: '0'
           DIB_DISABLE_APT_CLEANUP: '1'
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-          DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/debian"
 
 - job:
     name: dib-nodepool-functional-openstack-debian-bullseye-src
@@ -633,7 +632,6 @@
           DIB_APT_LOCAL_CACHE: '0'
           DIB_DISABLE_APT_CLEANUP: '1'
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-          DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/debian"
 
 - job:
     name: dib-nodepool-functional-openstack-opensuse-15-src
