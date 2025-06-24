@@ -38,52 +38,29 @@
                   label: ubuntu-noble
         - dib-functests
         - opendev-buildset-registry
-        - nodepool-build-image-siblings
-        - dib-nodepool-functional-openstack-almalinux-8-containerfile-src:
-            voting: false
         - dib-devstack-functional-openstack-almalinux-8-containerfile-src:
-            voting: false
-        - dib-nodepool-functional-openstack-almalinux-9-containerfile-src:
             voting: false
         - dib-devstack-functional-openstack-almalinux-9-containerfile-src:
             voting: false
-        - dib-nodepool-functional-openstack-centos-9-stream-src
         - dib-devstack-functional-openstack-centos-9-stream-src
         # NOTE(rpittau) Fedora 37 is EOL, moving to non-voting for the time being
         # until we move to Fedora 39 or more recent.
-        - dib-nodepool-functional-openstack-fedora-37-containerfile-src:
-            voting: false
         - dib-devstack-functional-openstack-fedora-37-containerfile-src:
-            voting: false
-        - dib-nodepool-functional-openstack-rockylinux-8-containerfile-src:
             voting: false
         - dib-devstack-functional-openstack-rockylinux-8-containerfile-src:
             voting: false
-        - dib-nodepool-functional-openstack-rockylinux-9-containerfile-src:
-            voting: false
         - dib-devstack-functional-openstack-rockylinux-9-containerfile-src:
             voting: false
-        - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-devstack-functional-openstack-ubuntu-xenial-src
-        - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-devstack-functional-openstack-ubuntu-bionic-src
-        - dib-nodepool-functional-openstack-ubuntu-focal-src
         - dib-devstack-functional-openstack-ubuntu-focal-src
-        - dib-nodepool-functional-openstack-ubuntu-jammy-src
         - dib-devstack-functional-openstack-ubuntu-jammy-src
-        - dib-nodepool-functional-openstack-ubuntu-noble-src
         - dib-devstack-functional-openstack-ubuntu-noble-src
         # NOTE(ianw): 2020-04-22 these have been out of the gate for a
         # while; promote to voting after some stability.
-        - dib-nodepool-functional-openstack-opensuse-15-src:
-            voting: false
         - dib-devstack-functional-openstack-opensuse-15-src:
             voting: false
-        - dib-nodepool-functional-openstack-gentoo-src:
-            voting: false
         - dib-devstack-functional-openstack-gentoo-src:
-            voting: false
-        - dib-nodepool-functional-openstack-debian-bullseye-src:
             voting: false
         - dib-devstack-functional-openstack-debian-bullseye-src:
             voting: false
@@ -130,17 +107,11 @@
                   label: ubuntu-noble
         - opendev-buildset-registry
         - nodepool-build-image-siblings
-        - dib-nodepool-functional-openstack-centos-9-stream-src
         - dib-devstack-functional-openstack-centos-9-stream-src
-        - dib-nodepool-functional-openstack-ubuntu-xenial-src
         - dib-devstack-functional-openstack-ubuntu-xenial-src
-        - dib-nodepool-functional-openstack-ubuntu-bionic-src
         - dib-devstack-functional-openstack-ubuntu-bionic-src
-        - dib-nodepool-functional-openstack-ubuntu-focal-src
         - dib-devstack-functional-openstack-ubuntu-focal-src
-        - dib-nodepool-functional-openstack-ubuntu-jammy-src
         - dib-devstack-functional-openstack-ubuntu-jammy-src
-        - dib-nodepool-functional-openstack-ubuntu-noble-src
         - dib-devstack-functional-openstack-ubuntu-noble-src
         - dib-functests
         - ironic-python-agent-check-image-dib-centos9
@@ -148,7 +119,5 @@
       jobs:
         - opendev-buildset-registry
         - nodepool-build-image-siblings
-        - dib-nodepool-functional-openstack-debian-stretch-src
         - dib-devstack-functional-openstack-debian-stretch-src
-        - dib-nodepool-functional-openstack-debian-buster-src
         - dib-devstack-functional-openstack-debian-buster-src
