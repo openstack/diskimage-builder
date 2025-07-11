@@ -1,0 +1,10 @@
+---
+upgrade:
+  - |
+    Debian images built with the debian-minimal element will no longer
+    include the backports repository in sources.list.d by default. This
+    change updates DIB built images to better match the configuration
+    of upstream Debian cloud images. Users who wish to continue to
+    include backports repo sources in their images can set
+    DIB_APT_SOURCES_CONF to include backports or have a custom element
+    add the source configuration to their images.
