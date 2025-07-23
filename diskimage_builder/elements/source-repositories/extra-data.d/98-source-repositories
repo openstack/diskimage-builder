@@ -132,6 +132,9 @@ function get_repos_for_element(){
                             echo "Attempt $attempt failed. Trying again..."
                             rm -rf $CACHE_PATH.tmp
                             attempt=$((attempt + 1))
+                            if [ $attempt -le $max_attempts ] ; then
+                                sleep 5
+                            fi
                         fi
                         set -e
                     done
@@ -169,6 +172,9 @@ function get_repos_for_element(){
                             else
                                 echo "Attempt $attempt failed. Trying again..."
                                 attempt=$((attempt + 1))
+                                if [ $attempt -le $max_attempts ] ; then
+                                    sleep 5
+                                fi
                             fi
                         set -e
                         done
