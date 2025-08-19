@@ -6,11 +6,6 @@
     check:
       jobs:
         - openstack-tox-linters
-        - tox-py36:
-            nodeset:
-              nodes:
-                - name: ubuntu-bionic
-                  label: ubuntu-bionic
         - tox-py38:
             nodeset:
               nodes:
@@ -55,8 +50,6 @@
             voting: false
         - dib-devstack-functional-openstack-rockylinux-10-containerfile-src:
             voting: false
-        - dib-devstack-functional-openstack-ubuntu-xenial-src
-        - dib-devstack-functional-openstack-ubuntu-bionic-src
         - dib-devstack-functional-openstack-ubuntu-focal-src
         - dib-devstack-functional-openstack-ubuntu-jammy-src
         - dib-devstack-functional-openstack-ubuntu-noble-src
@@ -79,11 +72,6 @@
     gate:
       jobs:
         - openstack-tox-linters
-        - tox-py36:
-            nodeset:
-              nodes:
-                - name: ubuntu-bionic
-                  label: ubuntu-bionic
         - tox-py38:
             nodeset:
               nodes:
@@ -112,8 +100,6 @@
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-devstack-functional-openstack-centos-9-stream-src
-        - dib-devstack-functional-openstack-ubuntu-xenial-src
-        - dib-devstack-functional-openstack-ubuntu-bionic-src
         - dib-devstack-functional-openstack-ubuntu-focal-src
         - dib-devstack-functional-openstack-ubuntu-jammy-src
         - dib-devstack-functional-openstack-ubuntu-noble-src

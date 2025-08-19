@@ -37,7 +37,6 @@
         # checksum mismatches; see
         #  https://bugzilla.suse.com/show_bug.cgi?id=1202041
         # - opensuse/build-succeeds
-        - ubuntu/bionic-build-succeeds
         - ubuntu/focal-build-succeeds
         - ubuntu/jammy-build-succeeds
         - ubuntu/noble-build-succeeds
@@ -52,7 +51,6 @@
     parent: dib-functests-base
     vars:
       dib_functests:
-        - ubuntu-minimal/bionic-arm64-build-succeeds
         - ubuntu-minimal/focal-arm64-build-succeeds
         - ubuntu-minimal/jammy-arm64-build-succeeds
         - ubuntu-minimal/noble-arm64-build-succeeds
@@ -377,22 +375,6 @@
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
-    name: dib-devstack-functional-openstack-ubuntu-xenial-src
-    description: |
-      Test building and booting an Ubuntu xenial image with devstack
-      and OpenStack
-    parent: dib-devstack-functional-src-base
-    vars:
-      diskimage:
-        base_element: ubuntu-minimal
-        release: 'xenial'
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-          DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
-
-- job:
     name: dib-nodepool-functional-openstack-ubuntu-bionic-src
     description: |
       Test building and booting an Ubuntu bionic image with Nodepool
@@ -407,22 +389,6 @@
           DIB_APT_LOCAL_CACHE: '0'
           DIB_DISABLE_APT_CLEANUP: '1'
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-
-- job:
-    name: dib-devstack-functional-openstack-ubuntu-bionic-src
-    description: |
-      Test building and booting an Ubuntu bionic image with devstack
-      and OpenStack
-    parent: dib-devstack-functional-src-base
-    vars:
-      diskimage:
-        base_element: ubuntu-minimal
-        release: 'bionic'
-        env-vars:
-          DIB_APT_LOCAL_CACHE: '0'
-          DIB_DISABLE_APT_CLEANUP: '1'
-          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
-          DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
 
 - job:
     name: dib-nodepool-functional-openstack-ubuntu-focal-src
