@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    Debian changed locations for its security package repos. We had been
+    accounting for that with specific overrides for some time. Enough time
+    has now passed where all modern Debian releases use a consistent
+    security package repo location so we have dropped the special accounting
+    to make adding new Debian releases simpler. Note, this means DIB no
+    longer supports building Debian older than Bullseye.
