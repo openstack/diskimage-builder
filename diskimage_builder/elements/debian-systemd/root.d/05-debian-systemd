@@ -6,6 +6,6 @@ fi
 set -eu
 set -o pipefail
 
-cat > ${TARGET_ROOT}/.extra_settings << EOF
+cat << EOF | sudo tee ${TARGET_ROOT}/.extra_settings > /dev/null
 DIB_DEBIAN_ALT_INIT_PACKAGE=systemd-sysv
 EOF
