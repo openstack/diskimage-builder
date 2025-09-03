@@ -46,6 +46,22 @@ else
     BASE_IMAGE_TAR=$BASE_IMAGE_FILE.tgz
     IMAGE_LOCATION=$DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE
     CACHED_IMAGE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+
+    IMAGE_SUM_FILE=$BASE_IMAGE_FILE.SHA256SUM
+    IMAGE_SUM_LOCATION=$IMAGE_LOCATION.SHA256SUM
+    CACHED_SUM=$DIB_IMAGE_CACHE/$IMAGE_SUM_FILE
+    # Fetching image and its hash prior to extract-image below.
+    # extract-image will find the cached image and continue normally.
+    # Until extract-image also incorporates hash checking, this is the way.
+    $TMP_HOOKS_PATH/bin/cache-url $IMAGE_LOCATION $CACHED_IMAGE
+    $TMP_HOOKS_PATH/bin/cache-url $IMAGE_SUM_LOCATION $CACHED_SUM
+    pushd $DIB_IMAGE_CACHE
+    if ! sha256sum --quiet --check $CACHED_SUM ; then
+        echo "ERROR: Image '$CACHED_IMAGE' failed sha256sum check!"
+        exit 1
+    fi
+    popd
 fi
 
+echo "Extracting image..."
 $TMP_HOOKS_PATH/bin/extract-image $BASE_IMAGE_FILE $BASE_IMAGE_TAR $IMAGE_LOCATION $CACHED_IMAGE
