@@ -15,9 +15,7 @@ disk-image-builder to not refresh cached resources. Alternatively you can set
 Note that we don't maintain operating system package caches, instead depending
 on your local infrastructure (e.g. Squid cache, or an APT or Yum proxy) to
 facilitate caching of that layer, so you need to arrange independently for
-offline mode. For more information about setting up a squid proxy, consult the
-`TripleO documentation
-<https://docs.openstack.org/tripleo-incubator/latest/devtest_setup.html>`_.
+offline mode.
 
 Base images
 -----------
