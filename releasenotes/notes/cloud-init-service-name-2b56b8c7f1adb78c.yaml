@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Starting from 'cloud-init' version '24.3' service 'cloud-init.service'
+    is splitted in to 'cloud-init-network.service' and 'cloud-init-main.service'.
+    But some distributions are reverted to old service name.

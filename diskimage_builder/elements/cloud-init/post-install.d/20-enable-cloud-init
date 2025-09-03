@@ -18,5 +18,10 @@ if [[ "${DIB_INIT_SYSTEM}" == "systemd" ]]; then
     systemctl enable cloud-config.service
     systemctl enable cloud-final.service
     systemctl enable cloud-init-local.service
-    systemctl enable cloud-init.service
+    if ! [[ $DIB_RELEASE =~ ^(testing|trixie|unstable) ]]; then
+        systemctl enable cloud-init.service
+    else
+        systemctl enable cloud-init-main.service
+        systemctl enable cloud-init-network.service
+    fi
 fi
