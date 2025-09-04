@@ -50,7 +50,7 @@ if [ -z "$GRUBNAME" ]; then
     GRUBNAME=$(type -p grub2-install)
 fi
 
-if type grub2-mkconfig >/dev/null; then
+if type grub2-mkconfig >/dev/null 2>&1; then
     GRUB_MKCONFIG="grub2-mkconfig"
 else
     GRUB_MKCONFIG="grub-mkconfig"
