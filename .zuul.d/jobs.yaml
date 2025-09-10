@@ -30,6 +30,11 @@
         # Image based tests
         - centos/9-stream-build-succeeds
         - centos/10-stream-build-succeeds
+        # Containerfile based tests
+        - almalinux-container/almalinux-9-build-succeeds
+        - almalinux-container/almalinux-10-build-succeeds
+        - rocky-container/rocky-9-build-succeeds
+        - rocky-container/rocky-10-build-succeeds
         # NOTE(rpittau) Fedora 37 is EOL, disalbing this until we move to
         # Fedora 39 or more recent.
         #- fedora/build-succeeds
@@ -66,6 +71,7 @@
     vars:
       dib_functests:
         - almalinux-container/almalinux-9-aarch64-build-succeeds
+        - almalinux-container/almalinux-10-aarch64-build-succeeds
         - centos-minimal/9-stream-aarch64-build-succeeds
         - centos-minimal/10-stream-aarch64-build-succeeds
         # Disabled until it gets updated to match the version being mirrored
@@ -155,6 +161,20 @@
       diskimage:
         base_element: almalinux-container
         release: '9'
+
+- job:
+    name: dib-devstack-functional-openstack-almalinux-10-v2-containerfile-src
+    description: |
+      Test building and booting a AlmaLinux image from a
+      containerfile with devstack and OpenStack (using released
+      libraries)
+    parent: dib-devstack-functional-src-base
+    vars:
+      diskimage:
+        base_element: almalinux-container
+        env-vars:
+          DIB_CONTAINERFILE_BUILDOPTS: "--platform linux/amd64/v2"
+        release: '10'
 
 - job:
     name: dib-devstack-functional-openstack-centos-8-stream-src

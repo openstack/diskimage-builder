@@ -1,5 +1,11 @@
 {
   "release": {
+    "almalinux": {
+      "10": {
+        "dhcp-client": "dhcpcd",
+        "ifupdown": ""
+      }
+    },
     "centos": {
       "10-stream": {
         "dhcp-client": "dhcpcd",

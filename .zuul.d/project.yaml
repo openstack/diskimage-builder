@@ -37,6 +37,8 @@
             voting: false
         - dib-devstack-functional-openstack-almalinux-9-containerfile-src:
             voting: false
+        - dib-devstack-functional-openstack-almalinux-10-v2-containerfile-src:
+            voting: false
         - dib-devstack-functional-openstack-centos-9-stream-src
         - dib-devstack-functional-openstack-centos-10-stream-src:
             voting: false

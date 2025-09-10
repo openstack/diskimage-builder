@@ -25,6 +25,16 @@
     }
   },
   "release": {
+    "almalinux": {
+      "10": {
+        "dhcp-client": "dhcpcd"
+      }
+    },
+    "centos": {
+      "10-stream": {
+        "dhcp-client": "dhcpcd"
+      }
+    },
     "fedora": {
        "36": {
          "NetworkManager-initscripts-ifcfg-rh": "NetworkManager-initscripts-ifcfg-rh"
@@ -32,11 +42,6 @@
        "37": {
          "NetworkManager-initscripts-ifcfg-rh": "NetworkManager-initscripts-ifcfg-rh"
        }
-    },
-    "centos": {
-      "10-stream": {
-        "dhcp-client": "dhcpcd"
-      }
     },
     "rocky": {
       "10": {
