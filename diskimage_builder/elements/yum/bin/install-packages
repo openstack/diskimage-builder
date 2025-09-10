@@ -146,9 +146,9 @@ if [ -n "$WHITELIST" ]; then
 
     if [ "$ACTION" == "install" ]; then
         if [ ${YUM} == "dnf" ] && [ -z "$DNF5" ]; then
-            dnf mark install $PKGS
+            dnf -y mark install $PKGS
         elif [ ${YUM} == "dnf" ] && [ -n "$DNF5" ]; then
-            dnf mark user $PKGS
+            dnf -y mark user $PKGS
         fi
     fi
     $_xtrace
