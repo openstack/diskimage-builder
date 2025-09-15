@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The password hash provided on the kernel command line for dynamic login 
+    can now be base64 encoded and double quotes are no longer required.
+    The same command line can be used for both Syslinux (legacy BIOS)
+    and Grub (UEFI) although their escaping conventions are different.

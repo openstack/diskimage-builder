@@ -19,8 +19,15 @@ set -o pipefail
 
 # Reads an encrypted root password from the kernel command line and set
 # it to the root user
-if [[ $(</proc/cmdline) =~ rootpwd=\"?([^\"]+)\" ]]; then
-    echo "root:${BASH_REMATCH[1]}" | chpasswd -e
+
+if [[ $(</proc/cmdline) =~ rootpwd=\"?([^\"]+)\" ]] || \
+    [[ $(</proc/cmdline) =~ rootpwd=([^\" ]+)( |$) ]]
+then
+    pwdhash="${BASH_REMATCH[1]}"
+    if ! [[ $pwdhash =~ ^\$ ]]; then
+        pwdhash=$(base64 -d <<<"$pwdhash")
+    fi
+    echo "root:$pwdhash" | chpasswd -e
 fi
 
 # Reads a sshkey from the kernel command line and appends it to the root

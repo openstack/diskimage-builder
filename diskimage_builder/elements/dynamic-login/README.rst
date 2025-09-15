@@ -27,10 +27,12 @@ rootpwd
   :Description: If the operator append rootpwd="$ENCRYPTED_PASSWORD" to the
                 kernel command line on boot, the helper script will set the
                 root password to the one specified by this option. Note that
-                this password must be **encrypted**. Interpolation can be
-                avoided by using $$. Encrypted passwords can be generated
-                using the ``openssl`` command, e.g: ``openssl passwd -1
-                -stdin <<< YOUR_PASSWORD | sed 's/\$/\$\$/g'``.
+                this password must be **encrypted** and encoded in base64
+                format. For compatibility with previous versions of this
+                element, the later step can be avoided but then $ character
+                must be escaped. Encrypted passwords can be generated
+                using the ``openssl`` command, e.g: ``openssl passwd -6
+                -stdin <<< YOUR_PASSWORD | base64 -w 0``.
 
 
 .. note::
