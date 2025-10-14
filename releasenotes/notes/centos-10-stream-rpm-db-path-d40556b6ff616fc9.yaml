@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixed an issue with the RPM DB path in Centos 10 Stream, building Centos
+    images with specific RPMs may have pulled dependencies that broken the RPM
+    DB.

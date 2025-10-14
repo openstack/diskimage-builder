@@ -55,11 +55,17 @@ then
     HOST_YUM="dnf"
 fi
 
+MAJOR_RELEASE=$(echo ${DIB_RELEASE} | cut -d- -f1)
+if [ ${MAJOR_RELEASE} -ge 10 ]; then
+    RPMDB_PATH=/usr/lib/sysimage/rpm
+else
+    RPMDB_PATH=/var/lib/rpm
+fi
 
 # Note, on Debian/Ubuntu, %_dbpath is set in the RPM macros as
 # ${HOME}/.rpmdb/ -- this makes sense as RPM isn't the system
 # packager.  This path is relative to the "--root" argument
-_RPM="rpm --dbpath=/var/lib/rpm"
+_RPM="rpm --dbpath=$RPMDB_PATH"
 
 # install the [fedora|centos]-[release|repo] packages inside the
 # chroot, which are needed to bootstrap yum/dnf
@@ -198,9 +204,12 @@ function _install_pkg_manager {
     # [1]), but setting --releasever works around this.
     #
     # [1] https://bugzilla.redhat.com/show_bug.cgi?id=1287333
+    #
+    # Note(gthiemonge): since Centos 10 Stream the dbpath is
+    # /usr/lib/sysimage/rpm
     (
         flock -w 1200 9 || die "Can not lock .rpmmacros"
-        echo "%_dbpath /var/lib/rpm" >> $HOME/.rpmmacros
+        echo "%_dbpath $RPMDB_PATH" >> $HOME/.rpmmacros
 
         local _lang_pack=""
         local _extra_pkgs=""
@@ -271,7 +280,15 @@ sudo mount -t devpts $(mount_dev_pts_options) devpts $TARGET_ROOT/dev/pts
 sudo mount -o ro -t sysfs none $TARGET_ROOT/sys
 
 # initalize rpmdb
-sudo mkdir -p $TARGET_ROOT/var/lib/rpm
+if [ ${MAJOR_RELEASE} -ge 10 ]; then
+    # Since Centos 10 Stream, the rpmdb is stored in /usr and
+    # a symlink is added to /var/lib for compatibility.
+    sudo mkdir -p $TARGET_ROOT/var/lib
+    sudo mkdir -p $TARGET_ROOT/usr/lib/sysimage/rpm
+    sudo ln -fs ../../usr/lib/sysimage/rpm $TARGET_ROOT/var/lib/rpm
+else
+    sudo mkdir -p $TARGET_ROOT/var/lib/rpm
+fi
 sudo $_RPM --root $TARGET_ROOT --initdb
 
 # this makes sure that running yum/dnf in the chroot it can get
