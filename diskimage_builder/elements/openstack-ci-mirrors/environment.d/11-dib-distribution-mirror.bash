@@ -32,9 +32,6 @@ elif [[ "${DISTRO_NAME}" == "debian" ]]; then
     export DIB_DEBOOTSTRAP_EXTRA_ARGS+=" --no-check-gpg"
 elif [[ "${DISTRO_NAME}" == "centos" ]]; then
     if [[ "${DIB_RELEASE}" == '9-stream' ]]; then
-        # NOTE(ianw) 2021-10-18 : no 9-stream mirrors, yet
-        :
-    else
         export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_CENTOS_MIRROR
         export DIB_EPEL_MIRROR=$NODEPOOL_EPEL_MIRROR
     fi
