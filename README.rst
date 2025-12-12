@@ -1,3 +1,4 @@
+==================================
 Image building tools for OpenStack
 ==================================
 
@@ -17,13 +18,12 @@ For example::
 will create a bootable Ubuntu Bionic based ``qcow2`` image.
 
 ``diskimage-builder`` is useful to anyone looking to produce
-customised images for deployment into clouds. These tools are the
-components of `TripleO <https://wiki.openstack.org/wiki/TripleO>`__
-that are responsible for building disk images. They are also used
+customised images for deployment into clouds. They are used
 extensively to build images for testing OpenStack itself, particularly
 with `nodepool
-<https://docs.openstack.org/infra/system-config/nodepool.html>`__.
-Platforms supported include Ubuntu, CentOS, RHEL and Fedora.
+<https://zuul-ci.org/docs/nodepool/latest/>`__.
+Platforms supported include AlmaLinux, CentOS Stream, Debian, Fedora,
+RHEL, Rocky Linux and Ubuntu.
 
 Full documentation, the source of which is in ``doc/source/``, is
 published at:
