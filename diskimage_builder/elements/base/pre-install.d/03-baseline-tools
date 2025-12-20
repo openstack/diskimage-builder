@@ -13,7 +13,7 @@ case $DISTRO_NAME in
         # need something like it, create a wrapper in dpkg/bin and fedora/bin.
         apt-get -y update
         install-packages apt-transport-https
-        if ! [[ $DIB_RELEASE =~ ^(testing|trixie|unstable) ]]; then
+        if ! [[ $DIB_RELEASE =~ ^(testing|trixie|unstable|stable) ]]; then
             install-packages software-properties-common
         fi
         ;;
