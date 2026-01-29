@@ -33,4 +33,14 @@ linux-generic-hwe-20.04:
     - DIB_UBUNTU_KERNEL = linux-image-hwe
     - DIB_RELEASE = focal
 
+linux-generic-hwe-22.04:
+  when:
+    - DIB_UBUNTU_KERNEL = linux-image-hwe
+    - DIB_RELEASE = jammy
+
+linux-generic-hwe-24.04:
+  when:
+    - DIB_UBUNTU_KERNEL = linux-image-hwe
+    - DIB_RELEASE = noble
+
 initramfs-tools:
