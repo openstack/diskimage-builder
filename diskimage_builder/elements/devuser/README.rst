@@ -13,6 +13,12 @@ DIB_DEV_USER_USERNAME
   :Default: devuser
   :Description: Username for the created user.
 
+DIB_DEV_USER_GROUPS
+  :Required: No
+  :Default: No
+  :Description: Additional groups (comma separated if many) for the created
+    user (groups should already exist).
+
 DIB_DEV_USER_SHELL
   :Required: No
   :Default: System default (The useradd default is used)

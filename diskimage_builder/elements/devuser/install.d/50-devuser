@@ -11,6 +11,9 @@ if [ -n "${DIB_DEV_USER_SHELL}" ]; then
     user_shell_args="-s ${DIB_DEV_USER_SHELL}"
 fi
 useradd -m ${DIB_DEV_USER_USERNAME} $user_shell_args
+if [ -n "${DIB_DEV_USER_GROUPS}" ]; then
+    usermod -a -G ${DIB_DEV_USER_GROUPS} ${DIB_DEV_USER_USERNAME}
+fi
 set +x
 if [ -n "${DIB_DEV_USER_PASSWORD}" ]; then
     echo "Setting password."
