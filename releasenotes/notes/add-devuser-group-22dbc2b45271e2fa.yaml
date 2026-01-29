@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The newly created devuser now can be added to the specified group(s) with
+    new variable ``DIB_DEV_USER_GROUPS``. Groups should already exist.
