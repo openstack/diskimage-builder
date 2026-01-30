@@ -7,6 +7,7 @@ set -eu
 set -o pipefail
 
 DIB_DISTRIBUTION_MIRROR=${DIB_DISTRIBUTION_MIRROR:-}
+DIB_DISTRIBUTION_MIRROR_VERIFY_HTTPS=${DIB_DISTRIBUTION_MIRROR_VERIFY_HTTPS:-1}
 SIGNED_BY=${SIGNED_BY:-}
 DEB822_SOURCES_FILE=/etc/apt/sources.list.d/ubuntu.sources
 
@@ -53,4 +54,7 @@ fi
 if [[ -n "${DIB_DISTRIBUTION_MIRROR_UBUNTU_INSECURE:-}" ]]; then
     echo "APT::Get::AllowUnauthenticated \"true\";" | tee /etc/apt/apt.conf.d/95allow-unauthenticated
     echo "Acquire::AllowInsecureRepositories \"true\";" | tee -a /etc/apt/apt.conf.d/95allow-unauthenticated
+fi
+if [[ "${DIB_DISTRIBUTION_MIRROR_VERIFY_HTTPS}" == "0" && ${DIB_DISTRIBUTION_MIRROR} =~ "https:" ]]; then
+    echo "Acquire::https::Verify-Peer \"false\";" | tee -a /etc/apt/apt.conf.d/95allow-unauthenticated
 fi

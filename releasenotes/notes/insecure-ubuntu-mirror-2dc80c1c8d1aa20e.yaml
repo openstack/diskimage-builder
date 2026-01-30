@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The new variable ``DIB_DISTRIBUTION_MIRROR_VERIFY_HTTPS`` can be set to the
+    "0" value to solve the issue with an insecure HTTPS repository that is
+    "secured" using an insecure certificate.
