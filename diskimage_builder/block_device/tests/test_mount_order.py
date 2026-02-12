@@ -10,7 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import functools
 import logging
 import os
 from unittest import mock
@@ -20,35 +19,9 @@ import diskimage_builder.block_device.tests.test_config as tc
 from diskimage_builder.block_device.config import config_tree_to_graph
 from diskimage_builder.block_device.config import create_graph
 from diskimage_builder.block_device.level2.mkfs import FilesystemNode
-from diskimage_builder.block_device.level3.mount import cmp_mount_order
 from diskimage_builder.block_device.level3.mount import MountPointNode
-from diskimage_builder.block_device.tests.test_base import TestBase
 
 logger = logging.getLogger(__name__)
-
-
-class TestMountComparator(TestBase):
-
-    def test_mount_comparator(self):
-        # This tests cmp_mount_order to ensure it sorts in the
-        # expected order.  The comparator takes a tuple of
-        # (mount_point, node_name) but we can ignore the name
-        partitions = [
-            ('/var/log', 'fake_log'),
-            ('/boot', 'fake_boot'),
-            ('/', 'fake_name'),
-            ('/var', 'fake_name')]
-        partitions.sort(key=functools.cmp_to_key(cmp_mount_order))
-
-        res = list(x[0] for x in partitions)
-
-        # "/" must be first
-        self.assertEqual(res[0], '/')
-
-        # /var before /var/log
-        var_pos = res.index('/var')
-        var_log_pos = res.index('/var/log')
-        self.assertGreater(var_log_pos, var_pos)
 
 
 class TestMountOrder(tc.TestGraphGeneration):

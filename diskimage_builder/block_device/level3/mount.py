@@ -12,7 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import functools
 import logging
 import os
 import time
@@ -137,30 +136,6 @@ class MountPointNode(NodeBase):
         self.umount()
 
 
-def cmp_mount_order(this, other):
-    """Sort comparision function for mount-point sorting
-
-    See if ``this`` comes before ``other`` in mount-order list.  In
-    words: if the other mount-point has us as it's parent, we come
-    before it (are less than it). e.g. ``/var < /var/log <
-    /var/log/foo``
-
-    :param this: tuple of mount_point, node name
-    :param other: tuple of mount_point, node name
-    :returns int: cmp value
-
-    """
-    # sort is only based on the mount_point.
-    this, _ = this
-    other, _ = other
-    if this == other:
-        return 0
-    if other.startswith(this):
-        return -1
-    else:
-        return 1
-
-
 class Mount(PluginBase):
     def __init__(self, config, defaults, state):
         super(Mount, self).__init__()
@@ -185,7 +160,10 @@ class Mount(PluginBase):
                 "Mount point [%s] specified more than once"
                 % self.node.mount_point)
         sorted_mount_points.append((self.node.mount_point, self.node.name))
-        sorted_mount_points.sort(key=functools.cmp_to_key(cmp_mount_order))
+        # Sort by mount point so hierarchy is in shortest to longest, such
+        # that parents mount before children; e.g.
+        #  /var < /var/log
+        sorted_mount_points.sort(key=lambda x: x[0])
         # Save the state if it's new (otherwise this is idempotent update)
         state['sorted_mount_points'] = sorted_mount_points
         logger.debug("Ordered mounts now: %s", sorted_mount_points)
