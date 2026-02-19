@@ -31,6 +31,11 @@
               nodes:
                 - name: ubuntu-noble
                   label: ubuntu-noble
+        - tox-py313:
+            nodeset:
+              nodes:
+                - name: debian-trixie
+                  label: debian-trixie-8GB
         - dib-functests
         - opendev-buildset-registry
         - dib-devstack-functional-openstack-almalinux-8-containerfile-src:
@@ -95,6 +100,11 @@
               nodes:
                 - name: ubuntu-noble
                   label: ubuntu-noble
+        - tox-py313:
+            nodeset:
+              nodes:
+                - name: debian-trixie
+                  label: debian-trixie-8GB
         - opendev-buildset-registry
         - nodepool-build-image-siblings
         - dib-devstack-functional-openstack-centos-9-stream-src
