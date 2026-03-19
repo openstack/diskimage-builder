@@ -16,7 +16,6 @@ mstflint:
 opensm:
 pciutils:
 perftest:
-qperf:
 rdma:
 rpm-build:
 srptools:

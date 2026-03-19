@@ -22,7 +22,6 @@
             "libibmad": "libibmad.*",
             "libibumad": "libibumad.*",
             "rdma": "rdma",
-            "qperf": "qperf",
             "pciutils": "pciutils"
         },
         "suse":{
@@ -33,7 +32,6 @@
             "libibmad": "libibmad",
             "libibumad": "libibumad",
             "rdma": "rdma",
-            "qperf": "qperf",
             "rpm-build": "rpm-build",
             "libibverbs-runtime": "libibverbs-runtime",
             "librdmacm-runtime": "librdmacm-runtime",
@@ -54,7 +52,6 @@
         "libibverbs-runtime": "",
         "librdmacm-runtime": "",
         "ibacm": "",
-        "qperf": "",
         "dkms": "",
         "libibcommon": ""
     }
