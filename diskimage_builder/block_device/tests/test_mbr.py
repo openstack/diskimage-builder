@@ -42,7 +42,6 @@ class TestMBR(tb.TestBase):
         for d in dirs:
             if os.path.exists(os.path.join(d, "partx")):
                 return os.path.join(d, "partx")
-                return
         # If not found, try without path.
         return "partx"
 
