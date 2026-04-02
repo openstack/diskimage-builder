@@ -45,6 +45,7 @@
         - ubuntu/focal-build-succeeds
         - ubuntu/jammy-build-succeeds
         - ubuntu/noble-build-succeeds
+        - ubuntu/resolute-build-succeeds
 
 # NOTE(ianw) : these jobs are split to keep the build times a bit more
 # reasonable.
@@ -59,6 +60,7 @@
         - ubuntu-minimal/focal-arm64-build-succeeds
         - ubuntu-minimal/jammy-arm64-build-succeeds
         - ubuntu-minimal/noble-arm64-build-succeeds
+        - ubuntu-minimal/resolute-arm64-build-succeeds
         - debian-minimal/bullseye-arm64-build-succeeds
         - debian-minimal/bookworm-arm64-build-succeeds
 
@@ -317,6 +319,28 @@
           DIB_DISABLE_APT_CLEANUP: '1'
           DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
           DIB_DISTRIBUTION_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/ubuntu"
+
+- job:
+    name: dib-devstack-functional-openstack-ubuntu-resolute-src
+    description: |
+      Test building and booting Ubuntu Resolute with devstack.
+    parent: dib-devstack-functional-src-base
+    vars:
+      # TODO(mnasiadka): Remove when Resolute is mirrored within OpenDev
+      default_elements:
+          - vm
+          - simple-init
+          - growroot
+          - devuser
+          - openssh-server
+          - journal-to-console
+      diskimage:
+        base_element: ubuntu-minimal
+        release: 'resolute'
+        env-vars:
+          DIB_APT_LOCAL_CACHE: '0'
+          DIB_DISABLE_APT_CLEANUP: '1'
+          DIB_DEBOOTSTRAP_EXTRA_ARGS: '--no-check-gpg'
 
 - job:
     name: dib-devstack-functional-openstack-gentoo-src
