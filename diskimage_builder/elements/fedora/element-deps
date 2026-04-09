@@ -3,4 +3,5 @@ dkms
 redhat-common
 rpm-distro
 source-repositories
+systemd-machine-id
 yum

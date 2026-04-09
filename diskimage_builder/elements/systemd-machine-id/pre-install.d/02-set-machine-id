@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-# Set a machine-id.  The .qcow2 image doesn't have one, and sometimes
+# Set a machine-id.  Image-based builds may not have one, and sometimes
 # one will get made (if systemd is upgraded as part of the build
 # process) and sometimes not.  The problem is that certain kernel
 # install scripts bail silently without it; kernel packages end up

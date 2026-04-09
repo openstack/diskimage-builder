@@ -3,4 +3,5 @@ redhat-common
 rhel-common
 rpm-distro
 source-repositories
+systemd-machine-id
 yum
