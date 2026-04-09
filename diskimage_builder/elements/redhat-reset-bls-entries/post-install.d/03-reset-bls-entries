@@ -6,7 +6,9 @@ fi
 set -eu
 set -o pipefail
 
-if [[ ! '9-stream' =~ ${DIB_RELEASE} ]]; then
+# This workaround is only needed for releases that ship a qcow2 image
+# with pre-existing BLS entries: centos 9-stream and rhel 9.
+if [[ ! ${DIB_RELEASE} =~ ^(9-stream|9)$ ]]; then
     exit 0
 fi
 
