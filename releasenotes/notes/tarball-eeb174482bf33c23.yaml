@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    A new `tarball` base element has been added that creates disk images from
+    a pre-built OS root filesystem tarball. This element is designed for
+    unprivileged container environments where neither device mapper (required
+    by qcow2-based elements like centos, rhel, fedora) nor FUSE/container
+    runtimes (required by the containerfile element) are available. The
+    element requires only `tar` and `sudo`, making it the simplest and most
+    portable OS-provider element.
