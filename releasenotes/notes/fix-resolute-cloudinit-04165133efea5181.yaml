@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Extend support for new cloud-init service names for Ubuntu Resolute.
