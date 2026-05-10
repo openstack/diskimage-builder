@@ -1,5 +1,7 @@
 - hosts: all
   gather_facts: false
+  environment:
+    EVENTLET_TESTS: 1
   vars:
     dib_src_path: "{{ ansible_user_dir }}/{{ zuul['projects']['opendev.org/openstack/diskimage-builder']['src_dir'] }}"
     DIB_KEY_NAME: "root"
