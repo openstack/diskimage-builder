@@ -29,7 +29,8 @@
         #- openeuler-minimal/22.03-LTS-build-succeeds
         # Image based tests
         - centos/9-stream-build-succeeds
-        - centos/10-stream-build-succeeds
+        # Disabled until upstream centos-10 image hash file is valid
+        #- centos/10-stream-build-succeeds
         # Containerfile based tests
         - almalinux-container/almalinux-9-build-succeeds
         - almalinux-container/almalinux-10-build-succeeds

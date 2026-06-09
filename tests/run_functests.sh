@@ -48,6 +48,10 @@ DEFAULT_SKIP_TESTS=(
     # No longer reasonable to test upstream (lacks a mirror in infra)
     # Note this is centos6 and should probably be removed
     centos/build-succeeds
+    # Disabled because CentOS Stream is no currently publishing valid
+    # image hash files (the files are empty so images cannot be validated
+    # leading to test failures)
+    centos/10-stream-build-succeeds
 
     # This job is a bit unreliable, even if we get mirroring
     debian-minimal/testing-build-succeeds
