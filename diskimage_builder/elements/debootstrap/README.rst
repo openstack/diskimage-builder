@@ -61,9 +61,21 @@ pass extra arguments to the debootstrap command used to create the
 base filesystem image. If --keyring is used in ``DIB_DEBOOTSTRAP_EXTRA_ARGS``,
 it will override ``DIB_APT_KEYRING`` if that is used as well.
 
+If the ``mmdebstrap`` tool is installed, it will automatically be used
+instead of ``debootstrap`` (unless ``DIB_DEBIAN_DEBOOTSTRAP_SCRIPT`` is
+set, since mmdebstrap does not support a custom debootstrap script). In
+this case, the ``DIB_MMDEBSTRAP_EXTRA_ARGS`` environment variable may be
+used to pass extra arguments to ``mmdebstrap`` instead of
+``DIB_DEBOOTSTRAP_EXTRA_ARGS`` (which is mostly debootstrap-specific).
+``--include=apt,tzdata`` is always added automatically. For convenience,
+if ``--no-check-gpg`` is present in ``DIB_DEBOOTSTRAP_EXTRA_ARGS``, it is
+automatically translated to mmdebstrap's ``--skip=check/signed-by``
+equivalent.
+
 For further information about ``DIB_DEBIAN_DEBOOTSTRAP_SCRIPT`` ,
-``DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE`` and ``DIB_DEBOOTSTRAP_EXTRA_ARGS``
-please consult "README.rst" of the debootstrap element.
+``DIB_DEBIAN_USE_DEBOOTSTRAP_CACHE``, ``DIB_DEBOOTSTRAP_EXTRA_ARGS`` and
+``DIB_MMDEBSTRAP_EXTRA_ARGS`` please consult "README.rst" of the
+debootstrap element.
 
 .. note::
 
