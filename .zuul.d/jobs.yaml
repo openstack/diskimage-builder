@@ -141,6 +141,10 @@
       devstack_localrc:
         SWIFT_MAX_FILE_SIZE: 5368709122 # 5G + 2 bytes (swift default)
         SWIFT_LOOPBACK_DISK_SIZE: "6G"  # Alittle more than ^^
+        # Default is "2000" and we seem to hit that with errors indicating
+        # image sizes near 5000. Set to 6000 to match the swift disk size
+        # above and easily clear 5000.
+        GLANCE_LIMIT_IMAGE_SIZE_TOTAL: "6000"
 
 - job:
     name: dib-devstack-functional-openstack-almalinux-8-containerfile-src
