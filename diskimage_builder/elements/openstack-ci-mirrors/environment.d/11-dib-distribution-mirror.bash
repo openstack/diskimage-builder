@@ -37,6 +37,9 @@ elif [[ "${DISTRO_NAME}" == "centos" ]]; then
     fi
 elif [[ "${DISTRO_NAME}" == "opensuse" ]]; then
     export DIB_DISTRIBUTION_MIRROR=$NODEPOOL_OPENSUSE_MIRROR
+# Use Rocky primary mirror instead of mirrorlist - their mirrors are usually unstable
+elif [[ "${DISTRO_NAME}" == "rocky" ]]; then
+    export DIB_DISTRIBUTION_MIRROR="http://dl.rockylinux.org/\\\$contentdir"
 fi
 
 # Infra doesn't mirror non-free repos, so instruct to ignore these
