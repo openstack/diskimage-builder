@@ -215,10 +215,10 @@ function get_repos_for_element(){
                             +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
                         git_sha=$(sudo git -C ${REPO_DEST} rev-parse HEAD)
                     else
-                        sudo git -C ${REPO_DEST} fetch -q $CACHE_PATH $REPOREF:fetch_$REPOREF
+                        sudo git -C ${REPO_DEST} fetch -q $CACHE_PATH +$REPOREF:refs/tags/fetch_$REPOREF
                         sudo git -C ${REPO_DEST} reset --hard FETCH_HEAD
                         # Get the sha in use
-                        git_sha=$(sudo git -C ${REPO_DEST} rev-parse FETCH_HEAD)
+                        git_sha=$(sudo git -C ${REPO_DEST} rev-parse "FETCH_HEAD^{commit}")
                     fi
 
                     # Write the sha being used into the source-repositories manifest
