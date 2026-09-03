@@ -30,10 +30,12 @@ fi
 
 DIB_DEBIAN_COMPONENTS=${DIB_DEBIAN_COMPONENTS:-main}
 DIB_DEBOOTSTRAP_EXTRA_ARGS=${DIB_DEBOOTSTRAP_EXTRA_ARGS:-}
+DIB_MMDEBSTRAP_EXTRA_ARGS=${DIB_MMDEBSTRAP_EXTRA_ARGS:-}
 DEBOOTSTRAP_TARBALL=$DIB_IMAGE_CACHE/debootstrap-${DISTRO_NAME}-${DIB_RELEASE}-${ARCH}.tar.gz
 http_proxy=${http_proxy:-}
 no_proxy=${no_proxy:-}
 bootstrap_tool=debootstrap
+bootstrap_extra_args=${DIB_DEBOOTSTRAP_EXTRA_ARGS:-}
 
 _debootstrap_version=$(debootstrap --version)
 # could be like "debootstrap 1.0.114~bpo16.04+1"
@@ -58,11 +60,19 @@ else
 
     # Check if mmdebstrap tool is available to use
     if command -v mmdebstrap &> /dev/null; then
-        # Only use mmdebstrap if KEYRING_OPT, DIB_DEBOOTSTRAP_EXTRA_ARGS and DIB_DEBIAN_DEBOOTSTRAP_SCRIPT are not set to prevent arguments incompatibility between debootstrap and mmdebstrap
-        if [ -z "$KEYRING_OPT" ] && [ -z "$DIB_DEBOOTSTRAP_EXTRA_ARGS" ] && [ -z "${DIB_DEBIAN_DEBOOTSTRAP_SCRIPT:-}" ]; then
+        # Only use mmdebstrap if DIB_DEBIAN_DEBOOTSTRAP_SCRIPT are not set to prevent arguments incompatibility between debootstrap and mmdebstrap
+        if [ -z "${DIB_DEBIAN_DEBOOTSTRAP_SCRIPT:-}" ]; then
             echo "mmdebstrap is installed; use it"
             bootstrap_tool=mmdebstrap
-            DIB_DEBOOTSTRAP_EXTRA_ARGS+="--include=apt,tzdata"
+            DIB_MMDEBSTRAP_EXTRA_ARGS+=" --include=apt,tzdata "
+            # Convert --no-check-gpg to mmdebstrap equivalent if present
+            if [[ "$DIB_DEBOOTSTRAP_EXTRA_ARGS" == *"--no-check-gpg"* ]]; then
+                # Only add if not already present to avoid duplicates
+                if [[ "$DIB_MMDEBSTRAP_EXTRA_ARGS" != *"--skip=check/signed-by"* ]]; then
+                    DIB_MMDEBSTRAP_EXTRA_ARGS+=" --skip=check/signed-by"
+                fi
+            fi
+            bootstrap_extra_args=${DIB_MMDEBSTRAP_EXTRA_ARGS}
         fi
     fi
 
@@ -71,7 +81,7 @@ else
         --components=${DIB_DEBIAN_COMPONENTS} \
         --arch=${ARCH} \
         $KEYRING_OPT \
-        $DIB_DEBOOTSTRAP_EXTRA_ARGS \
+        $bootstrap_extra_args \
         $DIB_RELEASE \
         $TARGET_ROOT \
         $DIB_DISTRIBUTION_MIRROR \
