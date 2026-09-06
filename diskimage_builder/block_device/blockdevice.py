@@ -67,7 +67,7 @@ class BlockDeviceState(collections.abc.MutableMapping):
         :param filename: if :param:`filename` is passed and exists, it
           will be loaded as the state.  If it does not exist an
           exception is raised.  If :param:`filename` is not
-          passed, state will be initalised to a blank dictionary.
+          passed, state will be initialized to a blank dictionary.
         """
         if filename:
             if not os.path.exists(filename):

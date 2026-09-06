@@ -279,7 +279,7 @@ sudo mount -t devpts $(mount_dev_pts_options) devpts $TARGET_ROOT/dev/pts
 # that we are in a container
 sudo mount -o ro -t sysfs none $TARGET_ROOT/sys
 
-# initalize rpmdb
+# initialize rpmdb
 if [ ${MAJOR_RELEASE} -ge 10 ]; then
     # Since Centos 10 Stream, the rpmdb is stored in /usr and
     # a symlink is added to /var/lib for compatibility.
