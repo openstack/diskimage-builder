@@ -414,7 +414,7 @@ if [[ "${DIB_SHOW_IMAGE_USAGE:-0}" != 0 ]]; then
     # signal:noise ratio
     if [[ ${DIB_SHOW_IMAGE_USAGE_FULL:-0} == 0 ]]; then
         # numfmt will start giving a decimal place when < 10MiB
-        du_output_show+="| egrep 'MiB|GiB|TiB|PiB' | grep -v '\..MiB'"
+        du_output_show+="| grep -E 'MiB|GiB|TiB|PiB' | grep -v '\..MiB'"
         echo "================================="
         echo "Image size report (files > 10MiB)"
         echo "================================="

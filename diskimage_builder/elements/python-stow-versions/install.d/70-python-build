@@ -14,7 +14,7 @@ DIB_VERSIONS_TO_INSTALL=${1:-$DIB_PYTHON_VERSIONS}
 
 # Get pyenv versions
 DIB_PYENV_VERSIONS=$(python-build --definitions \
-    | egrep "^\s*[2,3]\.[0-9]{1,2}\.[0-9]{1,2}$")
+    | grep -E "^\s*[2,3]\.[0-9]{1,2}\.[0-9]{1,2}$")
 
 declare -A DIB_PYTHON_VERSIONS_ARRAY
 

@@ -81,7 +81,7 @@ function sshintonode {
     #  glean@lo.service    loaded active exited    Glean for interface lo with NetworkManager
     # ---
     # So if we see anything other than 'loaded active exited' we have a problem.
-    glean_status=$(/tmp/ssh_wrapper $node -- "systemctl | egrep 'glean[@|-]' | { grep -v 'loaded active exited' || true; }")
+    glean_status=$(/tmp/ssh_wrapper $node -- "systemctl | grep -E 'glean[@|-]' | { grep -v 'loaded active exited' || true; }")
     if [[ ${glean_status} != '' ]]; then
         echo "*** Glean not loaded correctly"
         echo "*** saw: ${glean_status}"
