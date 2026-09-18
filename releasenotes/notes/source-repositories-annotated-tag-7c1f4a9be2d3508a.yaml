@@ -1,0 +1,12 @@
+---
+fixes:
+  - |
+    Fixed ``source-repositories`` failing to check out a repository pinned to
+    an annotated tag. The requested ref was fetched into
+    ``refs/heads/fetch_<ref>``, and git refuses to write a tag object to a
+    branch, which aborted the build. The ref is now fetched into
+    ``refs/tags/fetch_<ref>``, which can hold a tag object.
+  - |
+    The ``source-repositories`` git manifest now records the commit hash for a
+    repository pinned to an annotated tag, rather than the hash of the tag
+    object.
