@@ -20,4 +20,5 @@ DIB_EPEL_DISABLED:
    :Required: No
    :Default: 0
    :Description: To disable the EPEL repo (but leave it available if
-                 used with an explicit ``--enablerepo``) set this to 1
+                 used with an explicit ``--enablerepo``) set this to 1.
+                 To avoid installing the epel-release entirely, set this to 2.

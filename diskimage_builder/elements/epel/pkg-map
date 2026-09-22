@@ -1,20 +1,16 @@
 {
  "distro": {
     "almalinux": {
-       "wget": "wget",
        "yum-utils": "yum-utils"
     },
     "centos": {
-       "wget": "wget",
        "yum-utils": "yum-utils"
     },
     "rocky": {
-       "wget": "wget",
        "yum-utils": "yum-utils"
     }
  },
  "default": {
-   "wget": "",
    "yum-utils": ""
  }
 }

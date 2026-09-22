@@ -1,4 +1,0 @@
-wget:
-  phase: pre-install.d
-yum-utils:
-  phase: pre-install.d

@@ -6,16 +6,22 @@ fi
 set -eu
 set -o pipefail
 
+if [ ${DIB_EPEL_DISABLED:-0} -gt 1 ]; then
+    exit 0
+fi
+
+install-packages yum-utils
+
 if [[ (${DISTRO_NAME} =~ "almalinux" || ${DISTRO_NAME} =~ "centos" || ${DISTRO_NAME} =~ "rocky") ]]; then
     # Centos has "epel-release" in extras, which is default enabled.
-    ${YUM} install -y epel-release
+    install-packages epel-release
 else
     echo "$DISTRO_NAME is not supported"
     # Not really a failure; we just don't do anything
     exit 0
 fi
 
-if [ ${DIB_EPEL_DISABLED:-0} -ne 0 ]; then
+if [ ${DIB_EPEL_DISABLED:-0} -gt 0 ]; then
     if [[ ${YUM} == "dnf" ]]; then
         rpm  -q dnf-plugins-core || dnf install -y dnf-plugins-core
         dnf config-manager --set-disabled "epel*"

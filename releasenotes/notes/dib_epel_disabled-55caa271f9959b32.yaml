@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Previously `DIB_EPEL_DISABLED` was documented to install epel-release
+    but disable the repositories when set to `1`. It is now possible to
+    avoid installing the epel-release package entirely by setting
+    `DIB_EPEL_DISABLED` to `2`. This is to accomodate scenarios where
+    using EPEL is strictly forbidden.
