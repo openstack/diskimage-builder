@@ -1,0 +1,3 @@
+yum-utils:
+  phase: pre-install.d
+  when: DIB_EPEL_DISABLED != 2

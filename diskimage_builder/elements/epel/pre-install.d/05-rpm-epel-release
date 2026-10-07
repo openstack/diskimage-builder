@@ -10,8 +10,6 @@ if [ ${DIB_EPEL_DISABLED:-0} -gt 1 ]; then
     exit 0
 fi
 
-install-packages yum-utils
-
 if [[ (${DISTRO_NAME} =~ "almalinux" || ${DISTRO_NAME} =~ "centos" || ${DISTRO_NAME} =~ "rocky") ]]; then
     # Centos has "epel-release" in extras, which is default enabled.
     install-packages epel-release
