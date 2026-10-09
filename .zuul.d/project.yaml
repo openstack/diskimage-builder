@@ -61,8 +61,6 @@
         # while; promote to voting after some stability.
         - dib-devstack-functional-openstack-opensuse-15-src:
             voting: false
-        - dib-devstack-functional-openstack-gentoo-src:
-            voting: false
         - dib-devstack-functional-openstack-debian-bullseye-src:
             voting: false
         - ironic-python-agent-check-image-dib-centos9
@@ -120,3 +118,4 @@
         - nodepool-build-image-siblings
         - dib-devstack-functional-openstack-debian-stretch-src
         - dib-devstack-functional-openstack-debian-buster-src
+        - dib-devstack-functional-openstack-gentoo-src
