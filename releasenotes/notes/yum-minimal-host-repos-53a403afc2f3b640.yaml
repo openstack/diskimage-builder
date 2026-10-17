@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    The host package manager is now restricted to the repositories supplied
+    for a ``yum-minimal`` bootstrap. Previously the repositories configured on
+    the build host were also consulted, which could satisfy a bootstrap
+    package from the wrong distribution or release.

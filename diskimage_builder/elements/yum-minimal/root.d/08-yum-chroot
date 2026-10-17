@@ -67,6 +67,46 @@ fi
 # packager.  This path is relative to the "--root" argument
 _RPM="rpm --dbpath=$RPMDB_PATH"
 
+# _set_host_repo_args repo_dir
+#
+# The host package manager reads its own repository configuration in
+# addition to the repository directory it is given with "reposdir".
+# Set HOST_REPO_ARGS to the arguments needed to use only the
+# repositories defined in repo_dir, so a host repository can never
+# satisfy a package installed into the target root.
+function _set_host_repo_args {
+    local repo_dir=$1
+    local repo_ids
+    local repo_id
+
+    repo_ids=$(awk '
+        function emit() { if (section != "" && enabled) print section }
+        /^[[:space:]]*\[/ {
+            emit()
+            section=$0
+            sub(/^[[:space:]]*\[/, "", section)
+            sub(/\][[:space:]]*$/, "", section)
+            enabled=1
+            next
+        }
+        tolower($0) ~ /^[[:space:]]*enabled[[:space:]]*=/ {
+            value=tolower($0)
+            sub(/^[^=]*=[[:space:]]*/, "", value)
+            enabled=(value != "0" && value != "false" && value != "no")
+        }
+        END { emit() }
+    ' $repo_dir/*.repo | sort -u)
+
+    if [[ -z $repo_ids ]]; then
+        die "No enabled repositories found in $repo_dir"
+    fi
+
+    HOST_REPO_ARGS=("--disablerepo=*")
+    for repo_id in $repo_ids; do
+        HOST_REPO_ARGS+=("--enablerepo=$repo_id")
+    done
+}
+
 # install the [fedora|centos]-[release|repo] packages inside the
 # chroot, which are needed to bootstrap yum/dnf
 #
@@ -132,9 +172,11 @@ function _install_repos {
     # version.  There is another variable "$stream" that we don't pass
     local temp_tmp
     temp_tmp=$(mktemp -d)
+    _set_host_repo_args $repo
     TMPDIR=${temp_tmp} ${HOST_YUM_DOWNLOADER} --verbose \
         --releasever=${DIB_RELEASE/-*/} \
         --setopt=reposdir=$repo \
+        "${HOST_REPO_ARGS[@]}" \
         --setopt=cachedir=$temp_tmp \
         --destdir=$WORKING \
         ${packages} && rc=$? || rc=$?
@@ -241,10 +283,12 @@ function _install_pkg_manager {
             sudo ln -s $TARGET_ROOT/etc/dnf/vars $TARGET_ROOT/etc/yum/vars
         fi
 
+        _set_host_repo_args $TARGET_ROOT/etc/yum.repos.d
         sudo -E ${HOST_YUM} -y \
             --disableexcludes=all \
             --setopt=cachedir=$YUM_CACHE/$ARCH/$DIB_RELEASE \
             --setopt=reposdir=$TARGET_ROOT/etc/yum.repos.d \
+            "${HOST_REPO_ARGS[@]}" \
             --releasever=${DIB_RELEASE/-*/} \
             --installroot $TARGET_ROOT \
             install $@ ${_lang_pack} ${_extra_pkgs} && rc=$? || rc=$?
